@@ -3,6 +3,42 @@ import { dirname } from 'path';
 import { log } from './logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+/**
+ * 작업 완료 시 에이전트에 설정된 웹훅 URL로 알림 전송.
+ * Discord/Telegram 호환 형식. 실패해도 로그만 남기고 무시.
+ */
+async function sendWebhook(
+  supabase: SupabaseClient,
+  agentId: string,
+  prompt: string,
+  result: string
+): Promise<void> {
+  const { data: agent } = await supabase
+    .from('agents')
+    .select('name, webhook_url')
+    .eq('id', agentId)
+    .single();
+
+  const webhookUrl = (agent as Record<string, unknown>)?.webhook_url;
+  if (!webhookUrl || typeof webhookUrl !== 'string') return;
+
+  const agentName = (agent as Record<string, unknown>)?.name ?? 'Unknown';
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        content: `**[ACP] ${agentName}** 작업 완료\n> ${prompt.substring(0, 100)}\n\`\`\`\n${result.substring(0, 300)}\n\`\`\``,
+      }),
+    });
+    log('웹훅 전송 완료');
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    log(`웹훅 전송 실패: ${errMsg}`, 'warn');
+  }
+}
+
 export async function executeClaudeCommand(
   supabase: SupabaseClient,
   agentId: string,
@@ -129,6 +165,11 @@ export async function executeClaudeCommand(
             })
             .eq('id', responseId);
           log(`완료 (코드: ${code}, ${fullOutput.length}자)`);
+
+          // 완료 시 웹훅 알림 전송
+          if (code === 0) {
+            sendWebhook(supabase, agentId, content, fullOutput);
+          }
         }
         resolve();
       });

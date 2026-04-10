@@ -9,6 +9,8 @@ import { MessageInput } from '@/components/chat/MessageInput';
 import { PCList } from '@/components/sidebar/PCList';
 import { HarnessSelector } from '@/components/sidebar/HarnessSelector';
 import { AgentLogs } from '@/components/sidebar/AgentLogs';
+import { ScheduleManager } from '@/components/sidebar/ScheduleManager';
+import { WebhookSetting } from '@/components/sidebar/WebhookSetting';
 import { AddPCDialog } from '@/components/sidebar/AddPCDialog';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Menu, LogOut, Trash2, Monitor, Square, Search, X } from 'lucide-react';
+import { Menu, LogOut, Trash2, Monitor, Square, Search, X, LayoutDashboard } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ChatPage() {
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
@@ -138,7 +141,11 @@ export default function ChatPage() {
         onSelect={setSelectedHarnessId}
       />
 
+      <ScheduleManager agentId={selectedAgentId} />
+
       <AgentLogs agentId={selectedAgentId} />
+
+      <WebhookSetting agentId={selectedAgentId} />
 
       <Separator />
       <div className="p-2 space-y-1">
@@ -258,6 +265,16 @@ export default function ChatPage() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               )}
+              <Link href="/dashboard">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
+                  title="대시보드"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                </Button>
+              </Link>
             </>
           )}
         </header>

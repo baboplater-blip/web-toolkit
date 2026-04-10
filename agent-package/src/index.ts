@@ -6,6 +6,7 @@ import { startHeartbeat } from './heartbeat';
 import { syncHarnesses } from './harness';
 import { acquireLock, releaseLock } from './lock';
 import { initLogger, log } from './logger';
+import { startScheduler } from './scheduler';
 
 // 환경변수
 const SUPABASE_URL = process.env.SUPABASE_URL!;
@@ -156,6 +157,7 @@ async function main() {
 
   currentChannel = subscribeMessages(supabase, agent.id);
   watchRestart(supabase, agent.id);
+  startScheduler(supabase, agent.id);
 
   log('메시지 대기 중...');
 
