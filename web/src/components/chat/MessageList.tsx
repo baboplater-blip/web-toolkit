@@ -9,9 +9,10 @@ import { Loader2 } from 'lucide-react';
 interface MessageListProps {
   messages: Message[];
   loading: boolean;
+  onRetry?: (content: string) => void;
 }
 
-export function MessageList({ messages, loading }: MessageListProps) {
+export function MessageList({ messages, loading, onRetry }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,9 +38,30 @@ export function MessageList({ messages, loading }: MessageListProps) {
   return (
     <ScrollArea className="flex-1 px-4">
       <div className="py-4 space-y-3">
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
+        {messages.map((message, index) => {
+          // Feature 5: error/cancelled assistant 메시지의 경우 직전 user 메시지 content를 찾아 전달
+          let retryContent: string | undefined;
+          if (
+            message.role === 'assistant' &&
+            (message.status === 'error' || message.status === 'cancelled') &&
+            onRetry
+          ) {
+            for (let i = index - 1; i >= 0; i--) {
+              if (messages[i].role === 'user') {
+                retryContent = messages[i].content;
+                break;
+              }
+            }
+          }
+          return (
+            <MessageBubble
+              key={message.id}
+              message={message}
+              onRetry={onRetry}
+              retryContent={retryContent}
+            />
+          );
+        })}
         <div ref={bottomRef} />
       </div>
     </ScrollArea>

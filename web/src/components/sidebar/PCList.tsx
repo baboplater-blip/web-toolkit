@@ -2,7 +2,9 @@
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Monitor, Wifi, WifiOff, Loader2 } from 'lucide-react';
+import { Monitor, Wifi, WifiOff, Loader2, RotateCw } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { useRef } from 'react';
 import type { Agent } from '@/lib/supabase/types';
 
 interface PCListProps {
@@ -41,6 +43,15 @@ function formatSystemInfo(info: Record<string, unknown>): string {
 }
 
 export function PCList({ agents, selectedId, onSelect, loading }: PCListProps) {
+  const supabaseRef = useRef(createClient());
+
+  const handleRestart = async (e: React.MouseEvent, agentId: string) => {
+    e.stopPropagation();
+    await supabaseRef.current
+      .from('agents')
+      .update({ restart_requested: true })
+      .eq('id', agentId);
+  };
   if (loading) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -93,6 +104,13 @@ export function PCList({ agents, selectedId, onSelect, loading }: PCListProps) {
               <span className="text-[10px] text-muted-foreground">
                 {status.label}
               </span>
+              <button
+                onClick={(e) => handleRestart(e, agent.id)}
+                className="ml-0.5 p-0.5 rounded hover:bg-accent/80 text-muted-foreground hover:text-foreground transition-colors"
+                title="에이전트 재시작"
+              >
+                <RotateCw className="h-3 w-3" />
+              </button>
             </div>
           </button>
         );

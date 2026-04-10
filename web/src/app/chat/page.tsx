@@ -8,6 +8,7 @@ import { MessageList } from '@/components/chat/MessageList';
 import { MessageInput } from '@/components/chat/MessageInput';
 import { PCList } from '@/components/sidebar/PCList';
 import { HarnessSelector } from '@/components/sidebar/HarnessSelector';
+import { AgentLogs } from '@/components/sidebar/AgentLogs';
 import { AddPCDialog } from '@/components/sidebar/AddPCDialog';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,13 @@ export default function ChatPage() {
   const handleSend = async (content: string) => {
     return sendMessage(content, selectedHarnessId, continueMode);
   };
+
+  const handleRetry = useCallback(
+    (content: string) => {
+      sendMessage(content, selectedHarnessId, continueMode);
+    },
+    [sendMessage, selectedHarnessId, continueMode]
+  );
 
   const handleToggleContinue = useCallback(() => {
     setContinueMode((prev) => !prev);
@@ -129,6 +137,8 @@ export default function ChatPage() {
         selectedId={selectedHarnessId}
         onSelect={setSelectedHarnessId}
       />
+
+      <AgentLogs agentId={selectedAgentId} />
 
       <Separator />
       <div className="p-2 space-y-1">
@@ -253,7 +263,7 @@ export default function ChatPage() {
         </header>
 
         {/* 메시지 목록 */}
-        <MessageList messages={filteredMessages} loading={messagesLoading} />
+        <MessageList messages={filteredMessages} loading={messagesLoading} onRetry={handleRetry} />
 
         {/* 메시지 입력 */}
         <MessageInput

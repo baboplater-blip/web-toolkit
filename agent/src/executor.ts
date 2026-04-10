@@ -1,12 +1,7 @@
 import { spawn } from 'child_process';
 import { dirname } from 'path';
+import { log } from './logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-// Windows에서 claude.cmd의 전체 경로
-const CLAUDE_CMD = process.env.CLAUDE_PATH
-  || (process.platform === 'win32'
-    ? `${process.env.APPDATA}\\npm\\claude.cmd`
-    : 'claude');
 
 export async function executeClaudeCommand(
   supabase: SupabaseClient,
@@ -28,19 +23,19 @@ export async function executeClaudeCommand(
     .single();
 
   if (insertError || !responseMsg) {
-    console.error('[실행] 응답 메시지 생성 실패:', insertError);
+    log(`응답 메시지 생성 실패: ${insertError?.message}`, 'error');
     return;
   }
 
   const responseId = responseMsg.id;
 
   try {
-    // [CTX] 접두사 감지: 컨텍스트 유지 모드 → --continue 플래그 사용
+    // [CTX] 접두사 감지: 컨텍스트 유지 모드
     const isContinueMode = content.startsWith('[CTX]');
     const actualContent = isContinueMode ? content.slice(5) : content;
 
-    // claude --print "prompt" 형태로 실행
-    const args: string[] = ['--print'];
+    // 인자 구성
+    const args = ['--print', '--dangerously-skip-permissions'];
     if (isContinueMode) {
       args.push('--continue');
     }
@@ -49,14 +44,15 @@ export async function executeClaudeCommand(
     // 하네스 경로가 있으면 해당 디렉토리에서 실행 (CLAUDE.md 자동 로드)
     const cwd = harnessPath ? dirname(harnessPath) : undefined;
 
-    console.log(`[실행] claude ${args.slice(0, -1).join(' ')} "${actualContent.substring(0, 50)}..."${cwd ? ` (cwd: ${cwd})` : ''}`);
+    log(`실행: "${actualContent.substring(0, 60)}..."${cwd ? ` (${cwd})` : ''}${isContinueMode ? ' [컨텍스트]' : ''}`);
 
-    // Windows: cmd.exe /c claude ... 로 실행 (shell:false + .cmd 파일은 EINVAL 발생)
+    // Windows: cmd.exe /c claude ..., Linux/Mac: claude 직접
+    const spawnCmd = process.platform === 'win32' ? 'cmd.exe' : 'claude';
     const spawnArgs = process.platform === 'win32'
-      ? ['cmd.exe', ['/c', 'claude', ...args]]
-      : ['claude', args];
+      ? ['/c', 'claude', ...args]
+      : args;
 
-    const child = spawn(spawnArgs[0] as string, spawnArgs[1] as string[], {
+    const child = spawn(spawnCmd, spawnArgs, {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: false,
       windowsHide: true,
@@ -67,7 +63,7 @@ export async function executeClaudeCommand(
     let updateTimer: NodeJS.Timeout | null = null;
     let cancelled = false;
 
-    // 취소 감지: 1초마다 메시지 상태 확인
+    // 취소 감지: 1.5초마다 상태 확인
     const cancelCheck = setInterval(async () => {
       const { data } = await supabase
         .from('messages')
@@ -78,9 +74,9 @@ export async function executeClaudeCommand(
         cancelled = true;
         child.kill();
         clearInterval(cancelCheck);
-        console.log('[실행] 사용자가 취소함');
+        log('사용자가 취소함', 'warn');
       }
-    }, 1000);
+    }, 1500);
 
     const scheduleUpdate = () => {
       if (updateTimer || cancelled) return;
@@ -101,8 +97,8 @@ export async function executeClaudeCommand(
     });
 
     child.stderr.on('data', (data: Buffer) => {
-      // stderr에서 Warning은 무시, 실제 에러만 수집
       const text = data.toString();
+      // Warning/Deprecation은 무시
       if (!text.includes('Warning:') && !text.includes('DeprecationWarning')) {
         fullOutput += text;
         scheduleUpdate();
@@ -112,10 +108,7 @@ export async function executeClaudeCommand(
     await new Promise<void>((resolve) => {
       child.on('close', async (code) => {
         clearInterval(cancelCheck);
-        if (updateTimer) {
-          clearTimeout(updateTimer);
-          updateTimer = null;
-        }
+        if (updateTimer) { clearTimeout(updateTimer); updateTimer = null; }
 
         if (cancelled) {
           await supabase
@@ -125,7 +118,7 @@ export async function executeClaudeCommand(
               status: 'cancelled',
             })
             .eq('id', responseId);
-          console.log('[실행] 취소 완료');
+          log('취소 완료');
         } else {
           await supabase
             .from('messages')
@@ -135,12 +128,14 @@ export async function executeClaudeCommand(
               error_message: code !== 0 ? `종료 코드: ${code}` : null,
             })
             .eq('id', responseId);
-          console.log(`[실행] 완료 (코드: ${code})`);
+          log(`완료 (코드: ${code}, ${fullOutput.length}자)`);
         }
         resolve();
       });
 
       child.on('error', async (err) => {
+        clearInterval(cancelCheck);
+        log(`프로세스 오류: ${err.message}`, 'error');
         await supabase
           .from('messages')
           .update({
@@ -149,13 +144,12 @@ export async function executeClaudeCommand(
             error_message: err.message,
           })
           .eq('id', responseId);
-
-        console.error('[실행] 오류:', err.message);
         resolve();
       });
     });
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
+    log(`치명적 실행 오류: ${errorMsg}`, 'error');
     await supabase
       .from('messages')
       .update({
