@@ -1,11 +1,6 @@
-/**
- * PC 등록 + .env 자동 생성 스크립트
- * install.bat에서 호출됨
- */
-
 import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'crypto';
-import { writeFileSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { createInterface } from 'readline';
 
@@ -27,39 +22,36 @@ function ask(question: string): Promise<string> {
 async function main() {
   console.log('');
   console.log('================================================================');
-  console.log('  Agent Control Panel - PC 등록');
+  console.log('  Agent Control Panel - Register PC');
   console.log('================================================================');
   console.log('');
 
-  // 이미 .env가 있고 AGENT_API_KEY가 설정되어 있으면 스킵
   if (existsSync(envPath)) {
-    const existing = require('fs').readFileSync(envPath, 'utf-8');
+    const existing = readFileSync(envPath, 'utf-8');
     const match = existing.match(/AGENT_API_KEY=(.+)/);
     if (match && match[1].trim()) {
-      console.log('이미 등록된 PC입니다.');
+      console.log('Already registered.');
       console.log(`API Key: ${match[1].trim().substring(0, 20)}...`);
-      const answer = await ask('다시 등록하시겠습니까? (y/N): ');
+      const answer = await ask('Re-register? (y/N): ');
       if (answer.toLowerCase() !== 'y') {
-        console.log('설치 완료. start.bat으로 실행하세요.');
+        console.log('Done. Run start.bat to start.');
         process.exit(0);
       }
     }
   }
 
-  // PC 이름 입력
   let pcName = process.argv[2];
   if (!pcName) {
-    pcName = await ask('이 PC의 이름을 입력하세요 (예: 집PC, 회사PC): ');
+    pcName = await ask('Enter PC name (e.g. HomePC, OfficePC): ');
   }
 
   if (!pcName) {
-    console.error('PC 이름을 입력해주세요.');
+    console.error('PC name is required.');
     process.exit(1);
   }
 
-  // Supabase에 등록
   console.log('');
-  console.log(`"${pcName}" 등록 중...`);
+  console.log(`Registering "${pcName}"...`);
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
   const apiKey = `acp_${randomBytes(24).toString('hex')}`;
@@ -71,11 +63,10 @@ async function main() {
     .single();
 
   if (error) {
-    console.error('등록 실패:', error.message);
+    console.error('Failed:', error.message);
     process.exit(1);
   }
 
-  // .env 파일 생성
   const envContent = [
     `SUPABASE_URL=${SUPABASE_URL}`,
     `SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}`,
@@ -87,23 +78,21 @@ async function main() {
 
   console.log('');
   console.log('================================================================');
-  console.log('  등록 완료!');
+  console.log('  Registration Complete!');
   console.log('================================================================');
   console.log('');
-  console.log(`  PC 이름: ${pcName}`);
-  console.log(`  PC ID:   ${data.id}`);
-  console.log(`  API 키:  ${apiKey.substring(0, 20)}...`);
+  console.log(`  PC Name : ${pcName}`);
+  console.log(`  PC ID   : ${data.id}`);
+  console.log(`  API Key : ${apiKey.substring(0, 20)}...`);
   console.log('');
-  console.log('  .env 파일이 자동 생성되었습니다.');
-  console.log('  start.bat 를 더블클릭하면 Agent가 시작됩니다.');
+  console.log('  .env file created automatically.');
+  console.log('  Double-click start.bat to start the agent.');
   console.log('');
-  console.log('  웹: https://agent-control-panel-phi.vercel.app');
-  console.log('  이메일: admin@acp.local');
-  console.log('  비밀번호: AcpAdmin2026!');
+  console.log('  Web: https://agent-control-panel-phi.vercel.app');
   console.log('');
 }
 
 main().catch((err) => {
-  console.error('오류:', err.message);
+  console.error('Error:', err.message);
   process.exit(1);
 });
