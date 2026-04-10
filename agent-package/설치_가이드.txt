@@ -1,0 +1,122 @@
+================================================================
+  Agent Control Panel - PC Agent 설치 가이드
+================================================================
+
+이 폴더를 다른 PC에 복사하면 해당 PC를 원격 제어할 수 있습니다.
+핸드폰이나 다른 PC에서 아래 주소로 접속해서 제어합니다:
+
+  웹 주소: https://agent-control-panel-phi.vercel.app
+  이메일:  admin@acp.local
+  비밀번호: AcpAdmin2026!
+
+
+================================================================
+  사전 준비 (이미 설치되어 있으면 건너뛰세요)
+================================================================
+
+1. Node.js 설치 (v18 이상)
+   https://nodejs.org 에서 LTS 버전 다운로드 후 설치
+
+2. Claude Code 설치
+   터미널(cmd/PowerShell)에서:
+   npm install -g @anthropic-ai/claude-code
+
+3. Claude Code 로그인
+   터미널에서:
+   claude
+   (최초 1회 로그인 필요)
+
+
+================================================================
+  설치 방법 (3단계)
+================================================================
+
+[1단계] 이 폴더를 원하는 위치에 복사
+  예: C:\agent-control-panel 또는 바탕화면
+
+[2단계] install.bat 더블클릭
+  - Node.js 패키지 자동 설치
+  - PC 이름 입력 (예: "집PC", "회사PC" 등)
+  - 자동으로 PC 등록 및 .env 파일 생성
+
+[3단계] start.bat 더블클릭
+  - Agent가 시작되고 웹에서 이 PC가 온라인으로 표시됩니다
+  - 창을 닫으면 Agent가 중지됩니다 (오프라인)
+
+
+================================================================
+  API 키 정보 (참고용, install.bat이 자동 처리)
+================================================================
+
+Supabase URL:
+https://prrmddwsduibyplsijfq.supabase.co
+
+Supabase Service Role Key:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBycm1kZHdzZHVpYnlwbHNpamZxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTgwNzA3MSwiZXhwIjoyMDkxMzgzMDcxfQ.MNjp5Cfoge2ooboU-A8zarupOx0pNMjRCIokWuOn1lw
+
+Supabase Anon Key:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBycm1kZHdzZHVpYnlwbHNpamZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MDcwNzEsImV4cCI6MjA5MTM4MzA3MX0.gSCYl6nrHqmrfzraAjQHnCeWCYWWLpA6MatIeellyNs
+
+AGENT_API_KEY:
+install.bat 실행 시 자동 생성됩니다.
+수동 등록: npx tsx src/register.ts "PC이름"
+
+
+================================================================
+  수동 설치 (배치파일 없이)
+================================================================
+
+1. 터미널에서 이 폴더로 이동:
+   cd C:\경로\agent-package
+
+2. 패키지 설치:
+   npm install
+
+3. PC 등록:
+   npx tsx src/register.ts "내PC이름"
+
+4. .env 파일 편집 - AGENT_API_KEY에 위에서 나온 키 입력
+
+5. 실행:
+   npx tsx src/index.ts
+
+
+================================================================
+  자동 시작 설정 (선택사항)
+================================================================
+
+PC 부팅 시 자동 실행하려면:
+
+1. pm2 설치:
+   npm install -g pm2
+
+2. Agent 등록:
+   pm2 start ecosystem.config.js
+
+3. 자동 시작 설정:
+   pm2 save
+   pm2-startup install
+
+4. 상태 확인:
+   pm2 status
+
+
+================================================================
+  문제 해결
+================================================================
+
+Q: "Agent 인증 실패" 에러가 뜹니다
+A: .env 파일의 AGENT_API_KEY가 올바른지 확인하세요.
+   다시 등록하려면: npx tsx src/register.ts "PC이름"
+
+Q: "claude: command not found" 에러
+A: Claude Code가 설치되지 않았습니다.
+   npm install -g @anthropic-ai/claude-code 실행 후
+   claude 명령으로 로그인하세요.
+
+Q: 웹에서 PC가 오프라인으로 표시됩니다
+A: start.bat (또는 npx tsx src/index.ts)이 실행 중인지 확인하세요.
+
+Q: 하네스가 안 보입니다
+A: Desktop, Documents, Projects 폴더에서 CLAUDE.md를 찾습니다.
+   다른 경로의 하네스를 쓰려면 src/harness.ts의 SEARCH_PATHS를 수정하세요.

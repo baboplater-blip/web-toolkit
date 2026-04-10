@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { Agent } from '@/lib/supabase/types';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export function useAgents() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
+    const supabase = createClient();
+
     async function fetchAgents() {
       const { data } = await supabase
         .from('agents')
@@ -21,8 +24,13 @@ export function useAgents() {
 
     fetchAgents();
 
+    // 기존 채널 정리
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+
     const channel = supabase
-      .channel('agents-status')
+      .channel(`agents-status-${Date.now()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'agents' },
@@ -44,8 +52,11 @@ export function useAgents() {
       )
       .subscribe();
 
+    channelRef.current = channel;
+
     return () => {
       supabase.removeChannel(channel);
+      channelRef.current = null;
     };
   }, []);
 

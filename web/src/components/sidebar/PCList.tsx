@@ -18,6 +18,28 @@ const statusConfig = {
   busy: { label: '작업 중', color: 'bg-yellow-500', icon: Loader2 },
 } as const;
 
+/** system_info JSON을 한 줄 요약 문자열로 변환 */
+function formatSystemInfo(info: Record<string, unknown>): string {
+  const parts: string[] = [];
+
+  if (info.cpu) {
+    // CPU 모델에서 핵심 부분만 추출 (예: "13th Gen Intel(R) Core(TM) i7-13700K" → "i7-13700K")
+    const cpuStr = String(info.cpu);
+    const match = cpuStr.match(/[iIrR][3579]-?\w+/);
+    parts.push(match ? match[0] : cpuStr.substring(0, 20));
+  }
+
+  if (info.totalMemory) {
+    parts.push(String(info.totalMemory));
+  }
+
+  if (info.cores) {
+    parts.push(`${info.cores}코어`);
+  }
+
+  return parts.join(' \u00b7 ');
+}
+
 export function PCList({ agents, selectedId, onSelect, loading }: PCListProps) {
   if (loading) {
     return (
@@ -56,6 +78,11 @@ export function PCList({ agents, selectedId, onSelect, loading }: PCListProps) {
             <Monitor className="h-4 w-4 shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{agent.name}</p>
+              {agent.system_info && Object.keys(agent.system_info).length > 0 && (
+                <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                  {formatSystemInfo(agent.system_info)}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-1.5">
               {agent.status === 'busy' ? (

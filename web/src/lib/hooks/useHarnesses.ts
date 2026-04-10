@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { Harness } from '@/lib/supabase/types';
 
@@ -30,5 +30,12 @@ export function useHarnesses(agentId: string | null) {
     fetchHarnesses();
   }, [agentId]);
 
-  return { harnesses, loading };
+  /** 로컬 상태에서 하네스를 업데이트 (편집 후 리프레시 없이 반영) */
+  const updateHarness = useCallback((updated: Harness) => {
+    setHarnesses((prev) =>
+      prev.map((h) => (h.id === updated.id ? updated : h))
+    );
+  }, []);
+
+  return { harnesses, loading, updateHarness };
 }

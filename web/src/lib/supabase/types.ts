@@ -1,6 +1,6 @@
 export type AgentStatus = 'online' | 'offline' | 'busy';
 export type MessageRole = 'user' | 'assistant' | 'system';
-export type MessageStatus = 'pending' | 'streaming' | 'completed' | 'error';
+export type MessageStatus = 'pending' | 'streaming' | 'completed' | 'error' | 'cancelled';
 
 export interface Agent {
   id: string;

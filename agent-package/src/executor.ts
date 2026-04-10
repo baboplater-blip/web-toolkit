@@ -35,21 +35,13 @@ export async function executeClaudeCommand(
   const responseId = responseMsg.id;
 
   try {
-    // [CTX] 접두사 감지: 컨텍스트 유지 모드 → --continue 플래그 사용
-    const isContinueMode = content.startsWith('[CTX]');
-    const actualContent = isContinueMode ? content.slice(5) : content;
-
     // claude --print "prompt" 형태로 실행
-    const args: string[] = ['--print'];
-    if (isContinueMode) {
-      args.push('--continue');
-    }
-    args.push(actualContent);
+    const args = ['--print', content];
 
     // 하네스 경로가 있으면 해당 디렉토리에서 실행 (CLAUDE.md 자동 로드)
     const cwd = harnessPath ? dirname(harnessPath) : undefined;
 
-    console.log(`[실행] claude ${args.slice(0, -1).join(' ')} "${actualContent.substring(0, 50)}..."${cwd ? ` (cwd: ${cwd})` : ''}`);
+    console.log(`[실행] claude --print "${content.substring(0, 50)}..."${cwd ? ` (cwd: ${cwd})` : ''}`);
 
     // Windows: cmd.exe /c claude ... 로 실행 (shell:false + .cmd 파일은 EINVAL 발생)
     const spawnArgs = process.platform === 'win32'
@@ -65,28 +57,12 @@ export async function executeClaudeCommand(
 
     let fullOutput = '';
     let updateTimer: NodeJS.Timeout | null = null;
-    let cancelled = false;
-
-    // 취소 감지: 1초마다 메시지 상태 확인
-    const cancelCheck = setInterval(async () => {
-      const { data } = await supabase
-        .from('messages')
-        .select('status')
-        .eq('id', responseId)
-        .single();
-      if (data && data.status === 'cancelled') {
-        cancelled = true;
-        child.kill();
-        clearInterval(cancelCheck);
-        console.log('[실행] 사용자가 취소함');
-      }
-    }, 1000);
 
     const scheduleUpdate = () => {
-      if (updateTimer || cancelled) return;
+      if (updateTimer) return;
       updateTimer = setTimeout(async () => {
         updateTimer = null;
-        if (fullOutput && !cancelled) {
+        if (fullOutput) {
           await supabase
             .from('messages')
             .update({ content: fullOutput })
@@ -111,32 +87,21 @@ export async function executeClaudeCommand(
 
     await new Promise<void>((resolve) => {
       child.on('close', async (code) => {
-        clearInterval(cancelCheck);
         if (updateTimer) {
           clearTimeout(updateTimer);
           updateTimer = null;
         }
 
-        if (cancelled) {
-          await supabase
-            .from('messages')
-            .update({
-              content: fullOutput + '\n\n(사용자에 의해 취소됨)',
-              status: 'cancelled',
-            })
-            .eq('id', responseId);
-          console.log('[실행] 취소 완료');
-        } else {
-          await supabase
-            .from('messages')
-            .update({
-              content: fullOutput || '(응답 없음)',
-              status: code === 0 ? 'completed' : 'error',
-              error_message: code !== 0 ? `종료 코드: ${code}` : null,
-            })
-            .eq('id', responseId);
-          console.log(`[실행] 완료 (코드: ${code})`);
-        }
+        await supabase
+          .from('messages')
+          .update({
+            content: fullOutput || '(응답 없음)',
+            status: code === 0 ? 'completed' : 'error',
+            error_message: code !== 0 ? `종료 코드: ${code}` : null,
+          })
+          .eq('id', responseId);
+
+        console.log(`[실행] 완료 (코드: ${code})`);
         resolve();
       });
 
