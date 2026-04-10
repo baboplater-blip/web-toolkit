@@ -1,0 +1,21 @@
+{
+  "name": "agent-control-panel-agent",
+  "version": "1.0.0",
+  "description": "PC Agent for Agent Control Panel - Claude Code 원격 실행 데몬",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "register": "tsx src/register.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "dotenv": "^17.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
