@@ -12,11 +12,12 @@ import {
   MessageSquare,
   LayoutDashboard,
   FileCode,
-  Star,
   ChevronDown,
   ChevronRight,
   Monitor,
   RefreshCw,
+  Loader2,
+  Wand2,
 } from 'lucide-react';
 
 interface HarnessWithAgent {
@@ -71,9 +72,17 @@ function ScoreBar({ score }: { score: number }) {
   );
 }
 
-function HarnessCard({ harness }: { harness: HarnessWithAgent }) {
+function HarnessCard({ harness, onImprove }: { harness: HarnessWithAgent; onImprove: (h: HarnessWithAgent) => void }) {
   const [expanded, setExpanded] = useState(false);
+  const [improving, setImproving] = useState(false);
   const features = Array.isArray(harness.features) ? harness.features : [];
+
+  const handleImprove = async () => {
+    setImproving(true);
+    onImprove(harness);
+    // 버튼을 5초 후 리셋 (명령이 전송되면 바로 반영되지 않으므로)
+    setTimeout(() => setImproving(false), 5000);
+  };
 
   return (
     <div className="border rounded-xl p-4 bg-card">
@@ -115,10 +124,26 @@ function HarnessCard({ harness }: { harness: HarnessWithAgent }) {
         </div>
       )}
 
-      {/* 경로 */}
-      <p className="text-[10px] text-muted-foreground mt-3 font-mono truncate">
-        {harness.path}
-      </p>
+      {/* 경로 + 개선 버튼 */}
+      <div className="flex items-center justify-between mt-3 gap-2">
+        <p className="text-[10px] text-muted-foreground font-mono truncate flex-1">
+          {harness.path}
+        </p>
+        <Button
+          variant={harness.score >= 90 ? 'outline' : 'default'}
+          size="sm"
+          className="shrink-0 h-7 text-xs gap-1"
+          onClick={handleImprove}
+          disabled={improving || harness.agents?.status === 'offline'}
+        >
+          {improving ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <Wand2 className="h-3 w-3" />
+          )}
+          {improving ? '개선 중...' : harness.score >= 90 ? '추가 개선' : '개선하기'}
+        </Button>
+      </div>
 
       {/* 내용 펼치기/접기 */}
       {harness.content && (
@@ -159,6 +184,42 @@ export default function HarnessesPage() {
   };
 
   useEffect(() => { fetchData(); }, []);
+
+  /** 하네스 개선 명령을 해당 PC Agent에게 전송 */
+  const handleImprove = async (h: HarnessWithAgent) => {
+    // 부족한 항목 분석
+    const allPossible = [
+      '기술 스택 정의', '프로젝트 구조', '코딩 컨벤션', '명령어 가이드',
+      '제약사항/규칙', 'DB/스키마 정의', '코드 예시', '테이블 사용',
+      '워크플로우 정의', '문제해결 가이드', 'API 정의', '테스트 가이드',
+      '배포 가이드', '인증/보안',
+    ];
+    const existing = Array.isArray(h.features) ? h.features : [];
+    const missing = allPossible.filter((f) => !existing.includes(f));
+
+    const prompt = `이 프로젝트의 CLAUDE.md 하네스 파일을 분석하고 개선해주세요.
+
+현재 점수: ${h.score}/100점
+현재 포함된 항목: ${existing.join(', ') || '없음'}
+부족한 항목: ${missing.join(', ') || '없음'}
+
+다음을 수행해주세요:
+1. 현재 프로젝트 코드를 분석하여 CLAUDE.md에 빠진 정보를 파악
+2. ${missing.length > 0 ? `특히 다음 항목을 보강: ${missing.slice(0, 5).join(', ')}` : '기존 내용의 정확성과 최신성을 검증'}
+3. CLAUDE.md 파일을 직접 수정하여 개선
+4. 불필요한 내용은 제거하고, 실제 코드 구조에 맞게 업데이트
+
+프로젝트 코드를 먼저 탐색한 후 CLAUDE.md를 수정해주세요.`;
+
+    // 해당 agent에게 메시지 전송
+    await supabase.from('messages').insert({
+      agent_id: h.agent_id,
+      harness_id: h.id,
+      role: 'user',
+      content: prompt,
+      status: 'completed',
+    });
+  };
 
   const avgScore = harnesses.length > 0
     ? Math.round(harnesses.reduce((sum, h) => sum + h.score, 0) / harnesses.length)
@@ -251,7 +312,7 @@ export default function HarnessesPage() {
           )}
 
           {harnesses.map((h) => (
-            <HarnessCard key={h.id} harness={h} />
+            <HarnessCard key={h.id} harness={h} onImprove={handleImprove} />
           ))}
         </div>
       </ScrollArea>
