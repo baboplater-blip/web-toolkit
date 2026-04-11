@@ -18,6 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { TemplateMenu } from '@/components/chat/TemplateMenu';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Menu, LogOut, Trash2, Monitor, Square, Search, X, LayoutDashboard, FileCode } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,6 +28,7 @@ export default function ChatPage() {
   const [selectedHarnessId, setSelectedHarnessId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [continueMode, setContinueMode] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
   // 검색 상태
   const [searchOpen, setSearchOpen] = useState(false);
@@ -150,15 +153,18 @@ export default function ChatPage() {
       <Separator />
       <div className="p-2 space-y-1">
         <AddPCDialog />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start text-muted-foreground"
-          onClick={handleLogout}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          로그아웃
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 justify-start text-muted-foreground"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            로그아웃
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
@@ -292,13 +298,24 @@ export default function ChatPage() {
         {/* 메시지 목록 */}
         <MessageList messages={filteredMessages} loading={messagesLoading} onRetry={handleRetry} />
 
-        {/* 메시지 입력 */}
-        <MessageInput
-          onSend={handleSend}
-          disabled={!selectedAgentId}
-          continueMode={continueMode}
-          onToggleContinue={handleToggleContinue}
-        />
+        {/* 템플릿 메뉴 + 메시지 입력 */}
+        <div className="border-t bg-background">
+          <div className="max-w-3xl mx-auto px-3 pt-1.5">
+            <TemplateMenu
+              onSelect={setInputValue}
+              agentId={selectedAgentId}
+              currentInput={inputValue}
+            />
+          </div>
+          <MessageInput
+            onSend={handleSend}
+            disabled={!selectedAgentId}
+            continueMode={continueMode}
+            onToggleContinue={handleToggleContinue}
+            value={inputValue}
+            onValueChange={setInputValue}
+          />
+        </div>
       </main>
     </div>
   );

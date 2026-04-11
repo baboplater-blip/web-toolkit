@@ -11,6 +11,10 @@ interface MessageInputProps {
   disabled?: boolean;
   continueMode: boolean;
   onToggleContinue: () => void;
+  /** 외부 제어 모드: 입력 값 */
+  value?: string;
+  /** 외부 제어 모드: 값 변경 콜백 */
+  onValueChange?: (value: string) => void;
 }
 
 export function MessageInput({
@@ -18,10 +22,19 @@ export function MessageInput({
   disabled,
   continueMode,
   onToggleContinue,
+  value: controlledValue,
+  onValueChange,
 }: MessageInputProps) {
-  const [value, setValue] = useState('');
+  const [internalValue, setInternalValue] = useState('');
   const [sending, setSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 외부 제어/내부 제어 모드 통합
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : internalValue;
+  const setValue = isControlled
+    ? (v: string) => onValueChange?.(v)
+    : setInternalValue;
 
   const handleSend = useCallback(async () => {
     if (!value.trim() || sending || disabled) return;
@@ -33,7 +46,7 @@ export function MessageInput({
       textareaRef.current?.focus();
     }
     setSending(false);
-  }, [value, sending, disabled, onSend]);
+  }, [value, sending, disabled, onSend, setValue]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -43,7 +56,7 @@ export function MessageInput({
   };
 
   return (
-    <div className="border-t bg-background p-3">
+    <div className="bg-background p-3">
       <div className="flex gap-2 items-end max-w-3xl mx-auto">
         <Button
           variant={continueMode ? 'secondary' : 'ghost'}

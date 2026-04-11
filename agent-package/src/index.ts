@@ -36,6 +36,33 @@ function getBackoff(): number {
 
 let currentChannel: RealtimeChannel | null = null;
 
+// 동시 작업 큐: 메시지를 순차적으로 처리
+interface QueueItem {
+  msgId: string;
+  content: string;
+  harnessPath: string | null;
+}
+
+const messageQueue: QueueItem[] = [];
+let processing = false;
+
+async function processQueue(client: SupabaseClient, agentId: string): Promise<void> {
+  if (processing || messageQueue.length === 0) return;
+  processing = true;
+
+  while (messageQueue.length > 0) {
+    const item = messageQueue.shift()!;
+    await client.from('agents').update({ status: 'busy' }).eq('id', agentId);
+    await executeClaudeCommand(client, agentId, item.msgId, item.content, item.harnessPath);
+    if (messageQueue.length > 0) {
+      log(`큐 남은 작업: ${messageQueue.length}개`);
+    }
+  }
+
+  await client.from('agents').update({ status: 'online' }).eq('id', agentId);
+  processing = false;
+}
+
 function subscribeMessages(client: SupabaseClient, agentId: string): RealtimeChannel {
   const channel = client
     .channel(`agent-${agentId}-${Date.now()}`)
@@ -70,8 +97,6 @@ function subscribeMessages(client: SupabaseClient, agentId: string): RealtimeCha
 
         log(`메시지 수신: "${msg.content.substring(0, 50)}..."`);
 
-        await client.from('agents').update({ status: 'busy' }).eq('id', agentId);
-
         // 하네스 경로 조회
         let harnessPath: string | null = null;
         if (msg.harness_id) {
@@ -83,9 +108,9 @@ function subscribeMessages(client: SupabaseClient, agentId: string): RealtimeCha
           if (h) harnessPath = h.path;
         }
 
-        await executeClaudeCommand(client, agentId, msg.id, msg.content, harnessPath);
-
-        await client.from('agents').update({ status: 'online' }).eq('id', agentId);
+        // 큐에 추가하고 순차 처리
+        messageQueue.push({ msgId: msg.id, content: msg.content, harnessPath });
+        processQueue(client, agentId);
       }
     )
     .subscribe((status, err) => {

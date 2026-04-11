@@ -40,6 +40,7 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} dark`}
+      suppressHydrationWarning
     >
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
