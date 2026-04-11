@@ -3,7 +3,6 @@ import { join, basename } from 'path';
 import { homedir } from 'os';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-// CLAUDE.md 파일을 찾을 기본 경로 목록
 const SEARCH_PATHS = [
   join(homedir(), 'Desktop'),
   join(homedir(), 'Documents'),
@@ -16,11 +15,86 @@ interface HarnessInfo {
   name: string;
   path: string;
   description: string;
+  content: string;
+  score: number;
+  features: string[];
 }
 
 /**
- * 지정된 디렉토리에서 CLAUDE.md 파일을 탐색 (최대 2단계 깊이)
+ * CLAUDE.md 내용을 분석하여 점수와 기능 목록을 추출
  */
+function analyzeHarness(content: string): { score: number; features: string[]; description: string } {
+  const features: string[] = [];
+  let score = 0;
+
+  const lines = content.split('\n');
+  const headings = lines.filter((l) => l.startsWith('#'));
+  const totalLength = content.length;
+
+  // 1. 기본 구조 점수 (최대 20점)
+  if (totalLength > 100) score += 5;
+  if (totalLength > 500) score += 5;
+  if (totalLength > 1500) score += 5;
+  if (totalLength > 3000) score += 5;
+
+  // 2. 섹션 구조 점수 (최대 20점)
+  if (headings.length >= 2) { score += 5; features.push('섹션 구조화'); }
+  if (headings.length >= 5) score += 5;
+  if (headings.length >= 8) score += 5;
+  if (headings.length >= 12) score += 5;
+
+  // 3. 핵심 항목 존재 여부 (각 10점, 최대 60점)
+  if (/기술\s*스택|tech\s*stack|스택/i.test(content)) {
+    score += 10; features.push('기술 스택 정의');
+  }
+  if (/프로젝트\s*구조|구조|structure|디렉토리/i.test(content)) {
+    score += 10; features.push('프로젝트 구조');
+  }
+  if (/컨벤션|convention|코딩\s*스타일|스타일/i.test(content)) {
+    score += 10; features.push('코딩 컨벤션');
+  }
+  if (/명령어|command|스크립트|npm run|yarn/i.test(content)) {
+    score += 10; features.push('명령어 가이드');
+  }
+  if (/제약|constraint|주의|금지|절대|never|must not/i.test(content)) {
+    score += 10; features.push('제약사항/규칙');
+  }
+  if (/데이터|db|database|스키마|schema|테이블|table/i.test(content)) {
+    score += 10; features.push('DB/스키마 정의');
+  }
+
+  // 보너스 항목 (각 5점)
+  if (/```/.test(content)) { score += 5; features.push('코드 예시'); }
+  if (/\|.*\|.*\|/.test(content)) { score += 5; features.push('테이블 사용'); }
+  if (/플로우|flow|워크플로우|workflow|순서/i.test(content)) {
+    score += 5; features.push('워크플로우 정의');
+  }
+  if (/에러|error|디버그|debug|문제\s*해결|troubleshoot/i.test(content)) {
+    score += 5; features.push('문제해결 가이드');
+  }
+  if (/api|엔드포인트|endpoint|route/i.test(content)) {
+    score += 5; features.push('API 정의');
+  }
+  if (/테스트|test|jest|vitest/i.test(content)) {
+    score += 5; features.push('테스트 가이드');
+  }
+  if (/배포|deploy|vercel|docker|ci\/cd/i.test(content)) {
+    score += 5; features.push('배포 가이드');
+  }
+  if (/인증|auth|보안|security/i.test(content)) {
+    score += 5; features.push('인증/보안');
+  }
+
+  // 100점 상한
+  score = Math.min(score, 100);
+
+  // 설명 추출: 첫 비헤딩 비빈줄
+  const firstLine = lines.find((l) => l.trim() && !l.startsWith('#'));
+  const description = firstLine ? firstLine.trim().substring(0, 100) : '';
+
+  return { score, features, description };
+}
+
 function findHarnesses(searchPath: string, depth = 0, maxDepth = 2): HarnessInfo[] {
   const results: HarnessInfo[] = [];
 
@@ -37,21 +111,22 @@ function findHarnesses(searchPath: string, depth = 0, maxDepth = 2): HarnessInfo
 
         if (!stat.isDirectory()) {
           if (entry === 'CLAUDE.md') {
-            // 프로젝트 이름은 부모 디렉토리 이름 사용
             const projectName = basename(searchPath);
-            let description = '';
+            let content = '';
 
-            // 파일 첫 줄에서 설명 추출
             try {
-              const content = readFileSync(fullPath, 'utf-8');
-              const firstLine = content.split('\n').find((l) => l.trim() && !l.startsWith('#'));
-              if (firstLine) description = firstLine.trim().substring(0, 100);
+              content = readFileSync(fullPath, 'utf-8');
             } catch {}
+
+            const analysis = analyzeHarness(content);
 
             results.push({
               name: projectName,
               path: fullPath,
-              description,
+              content,
+              description: analysis.description,
+              score: analysis.score,
+              features: analysis.features,
             });
           }
           continue;
@@ -67,9 +142,6 @@ function findHarnesses(searchPath: string, depth = 0, maxDepth = 2): HarnessInfo
   return results;
 }
 
-/**
- * PC의 하네스 목록을 Supabase에 동기화
- */
 export async function syncHarnesses(supabase: SupabaseClient, agentId: string) {
   console.log('[하네스] 스캔 시작...');
 
@@ -80,19 +152,15 @@ export async function syncHarnesses(supabase: SupabaseClient, agentId: string) {
       statSync(searchPath);
       const found = findHarnesses(searchPath);
       allHarnesses.push(...found);
-    } catch {
-      // 경로가 존재하지 않으면 스킵
-    }
+    } catch {}
   }
 
-  // 중복 제거 (path 기준)
   const uniqueHarnesses = allHarnesses.filter(
     (h, i, arr) => arr.findIndex((x) => x.path === h.path) === i
   );
 
   console.log(`[하네스] ${uniqueHarnesses.length}개 발견`);
 
-  // 기존 하네스 삭제 후 재등록
   await supabase.from('harnesses').delete().eq('agent_id', agentId);
 
   if (uniqueHarnesses.length > 0) {
@@ -101,6 +169,9 @@ export async function syncHarnesses(supabase: SupabaseClient, agentId: string) {
       name: h.name,
       path: h.path,
       description: h.description,
+      content: h.content,
+      score: h.score,
+      features: h.features,
     }));
 
     const { error } = await supabase.from('harnesses').insert(rows);
@@ -108,7 +179,7 @@ export async function syncHarnesses(supabase: SupabaseClient, agentId: string) {
       console.error('[하네스] 등록 실패:', error.message);
     } else {
       uniqueHarnesses.forEach((h) =>
-        console.log(`  - ${h.name}: ${h.path}`)
+        console.log(`  - ${h.name}: ${h.score}점 [${h.features.join(', ')}]`)
       );
     }
   }

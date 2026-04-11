@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Menu, LogOut, Trash2, Monitor, Square, Search, X, LayoutDashboard } from 'lucide-react';
+import { Menu, LogOut, Trash2, Monitor, Square, Search, X, LayoutDashboard, FileCode } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ChatPage() {
@@ -265,6 +265,16 @@ export default function ChatPage() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               )}
+              <Link href="/harnesses">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
+                  title="하네스 분석"
+                >
+                  <FileCode className="h-4 w-4" />
+                </Button>
+              </Link>
               <Link href="/dashboard">
                 <Button
                   variant="ghost"
