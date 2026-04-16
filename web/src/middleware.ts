@@ -13,5 +13,6 @@ export const config = {
     '/harnesses/:path*',
     '/login',
     '/signup',
+    '/update-password',
   ],
 };

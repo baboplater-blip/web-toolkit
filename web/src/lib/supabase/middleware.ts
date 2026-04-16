@@ -30,6 +30,8 @@ export async function updateSession(request: NextRequest) {
 
   // 인증이 필요한 영역: /chat, /dashboard, /settings, /harnesses
   const PROTECTED = /^\/(chat|dashboard|settings|harnesses)(\/|$)/;
+  // 비로그인 전용 페이지 (로그인 상태면 /chat 으로 튕김)
+  // update-password 는 recovery 세션 위에서 동작해야 하므로 제외
   const AUTH_PAGES = /^\/(login|signup)(\/|$)/;
 
   if (!user && PROTECTED.test(path)) {
