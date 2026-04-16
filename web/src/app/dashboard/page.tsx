@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Clock,
   CheckCircle,
+  Wand2,
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Agent, Message } from '@/lib/supabase/types';
@@ -156,6 +157,12 @@ export default function DashboardPage() {
             >
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
+            <Link href="/tools/compress">
+              <Button variant="outline" size="sm" className="h-8 text-xs">
+                <Wand2 className="h-3.5 w-3.5 mr-1.5" />
+                압축
+              </Button>
+            </Link>
             <Link href="/chat">
               <Button variant="outline" size="sm" className="h-8 text-xs">
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
