@@ -2,27 +2,27 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { AgentLogs } from '@/components/sidebar/AgentLogs';
 import {
   LayoutDashboard,
-  MessageSquare,
   Monitor,
-  Wifi,
-  WifiOff,
   Loader2,
   AlertTriangle,
   RefreshCw,
   Clock,
   CheckCircle,
-  LayoutGrid,
+  MessageSquare,
+  Wifi,
+  WifiOff,
+  Play,
 } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import type { Agent, Message } from '@/lib/supabase/types';
 
-/** 시간 차이를 한국어 상대 시간으로 변환 */
 function timeAgo(dateStr: string): string {
   const now = Date.now();
   const diff = now - new Date(dateStr).getTime();
@@ -36,7 +36,6 @@ function timeAgo(dateStr: string): string {
   return `${days}일 전`;
 }
 
-/** system_info JSON 요약 */
 function formatSystemInfo(info: Record<string, unknown>): string {
   const parts: string[] = [];
   if (info.cpu) {
@@ -49,24 +48,64 @@ function formatSystemInfo(info: Record<string, unknown>): string {
   return parts.join(' \u00b7 ') || '-';
 }
 
-/** 상태 설정 */
-const statusConfig = {
-  online: { label: '온라인', color: 'bg-green-500', textColor: 'text-green-500', icon: Wifi },
-  offline: { label: '오프라인', color: 'bg-gray-400', textColor: 'text-gray-400', icon: WifiOff },
-  busy: { label: '작업 중', color: 'bg-yellow-500', textColor: 'text-yellow-500', icon: Loader2 },
+const STATUS = {
+  online: {
+    label: '온라인',
+    dot: 'bg-emerald-500',
+    text: 'text-emerald-400',
+    bg: 'bg-emerald-500/15',
+    icon: Wifi,
+  },
+  busy: {
+    label: '작업 중',
+    dot: 'bg-amber-500 animate-pulse',
+    text: 'text-amber-400',
+    bg: 'bg-amber-500/15',
+    icon: Play,
+  },
+  offline: {
+    label: '오프라인',
+    dot: 'bg-zinc-500',
+    text: 'text-zinc-400',
+    bg: 'bg-zinc-500/15',
+    icon: WifiOff,
+  },
 } as const;
+
+function StatusPill({ status }: { status: keyof typeof STATUS }) {
+  const s = STATUS[status];
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium',
+        s.bg,
+        s.text,
+      )}
+    >
+      <span className={cn('h-1.5 w-1.5 rounded-full', s.dot)} />
+      {s.label}
+    </span>
+  );
+}
+
+type TabKey = 'recent' | 'errors';
 
 export default function DashboardPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [recentMessages, setRecentMessages] = useState<(Message & { agent_name?: string })[]>([]);
-  const [errorMessages, setErrorMessages] = useState<(Message & { agent_name?: string })[]>([]);
+  const [recentMessages, setRecentMessages] = useState<
+    (Message & { agent_name?: string })[]
+  >([]);
+  const [errorMessages, setErrorMessages] = useState<
+    (Message & { agent_name?: string })[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [tab, setTab] = useState<TabKey>('recent');
+  const [logAgentId, setLogAgentId] = useState<string | null>(null);
 
   const supabase = createClient();
 
   const fetchData = useCallback(async () => {
-    // 에이전트 목록
     const { data: agentData } = await supabase
       .from('agents')
       .select('*')
@@ -74,11 +113,15 @@ export default function DashboardPage() {
 
     const agentList = (agentData ?? []) as Agent[];
     setAgents(agentList);
+    if (!logAgentId && agentList.length > 0) {
+      const online =
+        agentList.find((a) => a.status === 'online' || a.status === 'busy') ??
+        agentList[0];
+      setLogAgentId(online.id);
+    }
 
-    // 에이전트 이름 매핑
     const agentMap = new Map(agentList.map((a) => [a.id, a.name]));
 
-    // 최근 완료 메시지 10개
     const { data: recentData } = await supabase
       .from('messages')
       .select('*')
@@ -92,11 +135,10 @@ export default function DashboardPage() {
         (recentData as Message[]).map((m) => ({
           ...m,
           agent_name: agentMap.get(m.agent_id) ?? '알 수 없음',
-        }))
+        })),
       );
     }
 
-    // 에러 메시지 5개
     const { data: errorData } = await supabase
       .from('messages')
       .select('*')
@@ -109,16 +151,17 @@ export default function DashboardPage() {
         (errorData as Message[]).map((m) => ({
           ...m,
           agent_name: agentMap.get(m.agent_id) ?? '알 수 없음',
-        }))
+        })),
       );
     }
 
     setLoading(false);
-  }, [supabase]);
+  }, [supabase, logAgentId]);
 
   useEffect(() => {
     fetchData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -126,7 +169,9 @@ export default function DashboardPage() {
     setRefreshing(false);
   };
 
-  const onlineCount = agents.filter((a) => a.status === 'online' || a.status === 'busy').length;
+  const onlineCount = agents.filter(
+    (a) => a.status === 'online' || a.status === 'busy',
+  ).length;
   const offlineCount = agents.filter((a) => a.status === 'offline').length;
 
   if (loading) {
@@ -138,197 +183,220 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-background">
-      {/* 헤더 */}
+    <div className="min-h-dvh bg-background pb-14 md:pb-0">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-5xl mx-auto">
-          <div className="flex items-center gap-2">
-            <LayoutDashboard className="h-5 w-5" />
-            <h1 className="font-semibold text-base">Agent Control Panel - 대시보드</h1>
-          </div>
-          <div className="flex items-center gap-2">
+        <div className="mx-auto flex h-[52px] max-w-5xl items-center gap-2 px-4">
+          <LayoutDashboard className="h-5 w-5" />
+          <h1 className="text-base font-semibold">현황</h1>
+          <div className="ml-auto">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-11 w-11"
               onClick={handleRefresh}
               disabled={refreshing}
+              aria-label="새로고침"
               title="새로고침"
             >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={cn('h-5 w-5', refreshing && 'animate-spin')}
+              />
             </Button>
-            <Link href="/tools">
-              <Button variant="outline" size="sm" className="h-8 text-xs">
-                <LayoutGrid className="h-3.5 w-3.5 mr-1.5" />
-                도구
-              </Button>
-            </Link>
-            <Link href="/chat">
-              <Button variant="outline" size="sm" className="h-8 text-xs">
-                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
-                채팅
-              </Button>
-            </Link>
           </div>
         </div>
       </header>
 
-      {/* 메인 콘텐츠 */}
-      <main className="p-4 max-w-5xl mx-auto space-y-4">
-        {/* 1. 전체 현황 카드 */}
-        <div className="rounded-xl border bg-card p-4">
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+      <main className="mx-auto max-w-5xl space-y-4 p-4">
+        {/* 전체 현황 */}
+        <section className="rounded-xl border bg-card p-4">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             전체 현황
           </h2>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <p className="text-3xl font-bold">{agents.length}</p>
-              <p className="text-xs text-muted-foreground mt-1">총 PC</p>
+              <p className="mt-1 text-xs text-muted-foreground">총 PC</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-green-500">{onlineCount}</p>
-              <p className="text-xs text-muted-foreground mt-1">온라인</p>
+              <p className="text-3xl font-bold text-emerald-400">{onlineCount}</p>
+              <p className="mt-1 text-xs text-muted-foreground">온라인</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-gray-400">{offlineCount}</p>
-              <p className="text-xs text-muted-foreground mt-1">오프라인</p>
+              <p className="text-3xl font-bold text-zinc-400">{offlineCount}</p>
+              <p className="mt-1 text-xs text-muted-foreground">오프라인</p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* 2. PC별 상태 카드 */}
-        <div className="rounded-xl border bg-card p-4">
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+        {/* PC 상태 */}
+        <section className="rounded-xl border bg-card p-4">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             PC 상태
           </h2>
           {agents.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
+            <p className="py-4 text-center text-sm text-muted-foreground">
               등록된 PC가 없습니다
             </p>
           ) : (
             <div className="grid gap-2 sm:grid-cols-2">
-              {agents.map((agent) => {
-                const status = statusConfig[agent.status];
-                const StatusIcon = status.icon;
-                return (
-                  <div
-                    key={agent.id}
-                    className="flex items-center gap-3 rounded-lg border p-3"
-                  >
-                    <Monitor className="h-5 w-5 shrink-0 text-muted-foreground" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-sm truncate">{agent.name}</p>
-                        <Badge
-                          variant={agent.status === 'online' ? 'default' : agent.status === 'busy' ? 'secondary' : 'outline'}
-                          className="text-[10px] shrink-0"
-                        >
-                          {agent.status === 'busy' ? (
-                            <StatusIcon className="h-2.5 w-2.5 animate-spin mr-0.5" />
-                          ) : (
-                            <div className={`h-1.5 w-1.5 rounded-full ${status.color} mr-0.5`} />
-                          )}
-                          {status.label}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        {agent.last_heartbeat && (
-                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                            <Clock className="h-2.5 w-2.5" />
-                            {timeAgo(agent.last_heartbeat)}
-                          </span>
-                        )}
-                        {agent.system_info && Object.keys(agent.system_info).length > 0 && (
+              {agents.map((agent) => (
+                <Link
+                  key={agent.id}
+                  href={`/chat?agent=${agent.id}`}
+                  className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:border-primary/50 hover:bg-muted/50"
+                >
+                  <Monitor className="h-5 w-5 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-medium">
+                        {agent.name}
+                      </p>
+                      <StatusPill status={agent.status} />
+                    </div>
+                    <div className="mt-0.5 flex items-center gap-2">
+                      {agent.last_heartbeat && (
+                        <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {timeAgo(agent.last_heartbeat)}
+                        </span>
+                      )}
+                      {agent.system_info &&
+                        Object.keys(agent.system_info).length > 0 && (
                           <>
                             <Separator orientation="vertical" className="h-3" />
-                            <span className="text-[10px] text-muted-foreground truncate">
+                            <span className="truncate text-[11px] text-muted-foreground">
                               {formatSystemInfo(agent.system_info)}
                             </span>
                           </>
                         )}
-                      </div>
                     </div>
                   </div>
-                );
-              })}
+                  <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                </Link>
+              ))}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* 하단 2컬럼: 최근 작업 + 에러 */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {/* 3. 최근 작업 카드 */}
-          <div className="rounded-xl border bg-card p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+        {/* 최근 작업 / 에러 (탭) */}
+        <section className="rounded-xl border bg-card p-4">
+          <div className="mb-3 flex items-center gap-1 rounded-lg bg-muted p-1">
+            <button
+              type="button"
+              onClick={() => setTab('recent')}
+              className={cn(
+                'flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md text-xs font-medium transition-colors',
+                tab === 'recent'
+                  ? 'bg-background shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
               <CheckCircle className="h-3.5 w-3.5" />
-              최근 완료 작업
-            </h2>
-            {recentMessages.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
+              최근 완료 {recentMessages.length > 0 && `(${recentMessages.length})`}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab('errors')}
+              className={cn(
+                'flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md text-xs font-medium transition-colors',
+                tab === 'errors'
+                  ? 'bg-background shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <AlertTriangle
+                className={cn(
+                  'h-3.5 w-3.5',
+                  errorMessages.length > 0 && 'text-red-400',
+                )}
+              />
+              에러 {errorMessages.length > 0 && `(${errorMessages.length})`}
+            </button>
+          </div>
+
+          {tab === 'recent' ? (
+            recentMessages.length === 0 ? (
+              <p className="py-4 text-center text-sm text-muted-foreground">
                 완료된 작업이 없습니다
               </p>
             ) : (
-              <ScrollArea className="max-h-64 overflow-y-auto">
+              <ScrollArea className="max-h-80">
                 <div className="space-y-2">
                   {recentMessages.map((msg) => (
                     <div
                       key={msg.id}
-                      className="rounded-lg border p-2.5 space-y-1"
+                      className="space-y-1 rounded-lg border p-2.5"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <Badge variant="secondary" className="text-[10px]">
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
                           {msg.agent_name}
-                        </Badge>
-                        <span className="text-[10px] text-muted-foreground shrink-0">
+                        </span>
+                        <span className="shrink-0 text-[11px] text-muted-foreground">
                           {timeAgo(msg.created_at)}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {msg.content.substring(0, 100)}
+                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                        {msg.content.substring(0, 140)}
                       </p>
                     </div>
                   ))}
                 </div>
               </ScrollArea>
-            )}
-          </div>
+            )
+          ) : errorMessages.length === 0 ? (
+            <p className="py-4 text-center text-sm text-muted-foreground">
+              에러가 없습니다
+            </p>
+          ) : (
+            <ScrollArea className="max-h-80">
+              <div className="space-y-2">
+                {errorMessages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className="space-y-1 rounded-lg border border-red-500/20 bg-red-500/5 p-2.5"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] font-medium text-red-400">
+                        {msg.agent_name}
+                      </span>
+                      <span className="shrink-0 text-[11px] text-muted-foreground">
+                        {timeAgo(msg.created_at)}
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-xs text-red-400">
+                      {msg.error_message ?? msg.content.substring(0, 140)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          )}
+        </section>
 
-          {/* 4. 에러 카드 */}
-          <div className="rounded-xl border bg-card p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
-              최근 에러
-            </h2>
-            {errorMessages.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                에러가 없습니다
-              </p>
-            ) : (
-              <ScrollArea className="max-h-64 overflow-y-auto">
-                <div className="space-y-2">
-                  {errorMessages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className="rounded-lg border border-red-500/20 bg-red-500/5 p-2.5 space-y-1"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <Badge variant="destructive" className="text-[10px]">
-                          {msg.agent_name}
-                        </Badge>
-                        <span className="text-[10px] text-muted-foreground shrink-0">
-                          {timeAgo(msg.created_at)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-red-400 line-clamp-2">
-                        {msg.error_message ?? msg.content.substring(0, 100)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
-          </div>
-        </div>
+        {/* 에이전트 로그 */}
+        {agents.length > 0 && (
+          <section className="rounded-xl border bg-card p-1.5">
+            <div className="flex items-center gap-2 px-3 pt-2 pb-1">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                에이전트 로그
+              </h2>
+              <select
+                value={logAgentId ?? ''}
+                onChange={(e) => setLogAgentId(e.target.value || null)}
+                className="ml-auto h-7 rounded-md border bg-background px-2 text-xs"
+              >
+                {agents.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="border-t">
+              <AgentLogs agentId={logAgentId} />
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

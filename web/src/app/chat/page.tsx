@@ -1,322 +1,229 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAgents } from '@/lib/hooks/useAgents';
 import { useMessages } from '@/lib/hooks/useMessages';
 import { useNotification } from '@/lib/hooks/useNotification';
 import { MessageList } from '@/components/chat/MessageList';
 import { MessageInput } from '@/components/chat/MessageInput';
-import { PCList } from '@/components/sidebar/PCList';
+import { PCPicker } from '@/components/chat/PCPicker';
 import { HarnessSelector } from '@/components/sidebar/HarnessSelector';
-import { AgentLogs } from '@/components/sidebar/AgentLogs';
-import { ScheduleManager } from '@/components/sidebar/ScheduleManager';
-import { WebhookSetting } from '@/components/sidebar/WebhookSetting';
-import { AddPCDialog } from '@/components/sidebar/AddPCDialog';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 import { TemplateMenu } from '@/components/chat/TemplateMenu';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { Menu, LogOut, Trash2, Monitor, Square, Search, X, LayoutDashboard, FileCode } from 'lucide-react';
-import Link from 'next/link';
+import { Trash2, Square, Search, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export default function ChatPage() {
-  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+function ChatPageInner() {
+  const searchParams = useSearchParams();
+  const presetAgentId = searchParams?.get('agent') ?? null;
+
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(presetAgentId);
   const [selectedHarnessId, setSelectedHarnessId] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [continueMode, setContinueMode] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
-  // 검색 상태
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { agents, loading: agentsLoading } = useAgents();
   const {
-    messages, loading: messagesLoading, sendMessage,
-    clearMessages, cancelRunning, isRunning,
+    messages,
+    loading: messagesLoading,
+    sendMessage,
+    clearMessages,
+    cancelRunning,
+    isRunning,
   } = useMessages(selectedAgentId);
 
-  // 브라우저 알림 (Feature 2)
   useNotification(messages);
 
-  const router = useRouter();
-  const supabase = createClient();
+  // URL ?agent=id 또는 첫 로드 시 에이전트 기본 선택
+  useEffect(() => {
+    if (selectedAgentId) return;
+    if (presetAgentId && agents.some((a) => a.id === presetAgentId)) {
+      setSelectedAgentId(presetAgentId);
+      return;
+    }
+    if (agents.length > 0) {
+      const online = agents.find(
+        (a) => a.status === 'online' || a.status === 'busy',
+      );
+      setSelectedAgentId((online ?? agents[0]).id);
+    }
+  }, [agents, presetAgentId, selectedAgentId]);
 
-  const selectedAgent = agents.find((a) => a.id === selectedAgentId);
-
-  // 검색 필터링된 메시지 (Feature 4)
   const filteredMessages = useMemo(() => {
     if (!searchQuery.trim()) return messages;
-    const query = searchQuery.toLowerCase();
-    return messages.filter((m) =>
-      m.content.toLowerCase().includes(query)
-    );
+    const q = searchQuery.toLowerCase();
+    return messages.filter((m) => m.content.toLowerCase().includes(q));
   }, [messages, searchQuery]);
 
   const handleSelectAgent = (id: string) => {
     setSelectedAgentId(id);
     setSelectedHarnessId(null);
-    setSidebarOpen(false);
-    // 에이전트 변경 시 검색 초기화
     setSearchOpen(false);
     setSearchQuery('');
   };
 
-  const handleSend = async (content: string) => {
-    return sendMessage(content, selectedHarnessId, continueMode);
-  };
+  const handleSend = async (content: string) =>
+    sendMessage(content, selectedHarnessId, continueMode);
 
   const handleRetry = useCallback(
     (content: string) => {
       sendMessage(content, selectedHarnessId, continueMode);
     },
-    [sendMessage, selectedHarnessId, continueMode]
+    [sendMessage, selectedHarnessId, continueMode],
   );
 
   const handleToggleContinue = useCallback(() => {
     setContinueMode((prev) => !prev);
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
   const handleToggleSearch = useCallback(() => {
     setSearchOpen((prev) => {
-      const nextOpen = !prev;
-      if (!nextOpen) {
-        setSearchQuery('');
-      }
-      return nextOpen;
+      if (prev) setSearchQuery('');
+      return !prev;
     });
   }, []);
 
-  // 검색 열릴 때 input에 포커스
   useEffect(() => {
     if (searchOpen) {
-      // 약간의 딜레이 후 포커스 (렌더링 완료 대기)
-      const timer = setTimeout(() => searchInputRef.current?.focus(), 50);
-      return () => clearTimeout(timer);
+      const t = setTimeout(() => searchInputRef.current?.focus(), 50);
+      return () => clearTimeout(t);
     }
   }, [searchOpen]);
 
-  // ESC 키로 검색 닫기
-  const handleSearchKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSearchOpen(false);
-        setSearchQuery('');
-      }
-    },
-    []
-  );
-
-  // 사이드바 내용 (데스크탑과 모바일 공유)
-  const sidebarContent = (
-    <div className="flex flex-col h-full">
-      <div className="p-3 font-semibold text-sm flex items-center gap-2">
-        <Monitor className="h-4 w-4" />
-        Agent Control Panel
-      </div>
-      <Separator />
-
-      <div className="flex-1 overflow-y-auto">
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-4 pt-3 pb-1">
-          PC 목록
-        </p>
-        <PCList
-          agents={agents}
-          selectedId={selectedAgentId}
-          onSelect={handleSelectAgent}
-          loading={agentsLoading}
-        />
-      </div>
-
-      <HarnessSelector
-        agentId={selectedAgentId}
-        selectedId={selectedHarnessId}
-        onSelect={setSelectedHarnessId}
-      />
-
-      <ScheduleManager agentId={selectedAgentId} />
-
-      <AgentLogs agentId={selectedAgentId} />
-
-      <WebhookSetting agentId={selectedAgentId} />
-
-      <Separator />
-      <div className="p-2 space-y-1">
-        <AddPCDialog />
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-1 justify-start text-muted-foreground"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            로그아웃
-          </Button>
-          <ThemeToggle />
-        </div>
-      </div>
-    </div>
-  );
+  const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setSearchOpen(false);
+      setSearchQuery('');
+    }
+  }, []);
 
   return (
-    <div className="flex h-dvh bg-background">
-      {/* 데스크탑 사이드바 */}
-      <aside className="hidden md:flex w-64 border-r flex-col">
-        {sidebarContent}
-      </aside>
-
-      {/* 메인 채팅 영역 */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* 헤더 */}
-        <header className="flex items-center gap-2 border-b px-3 py-2.5 shrink-0">
-          {/* 모바일 메뉴 버튼 */}
-          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetTrigger
-              render={
-                <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" />
-              }
-            >
-              <Menu className="h-4 w-4" />
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
-              {sidebarContent}
-            </SheetContent>
-          </Sheet>
-
-          {/* 검색 바 또는 타이틀 */}
-          {searchOpen ? (
-            <div className="flex-1 flex items-center gap-2 min-w-0">
-              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-              <Input
-                ref={searchInputRef}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                placeholder="메시지 검색..."
-                className="h-7 text-sm"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 shrink-0"
-                onClick={handleToggleSearch}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="flex-1 min-w-0">
-                {selectedAgent ? (
-                  <div className="flex items-center gap-2">
-                    <h1 className="font-semibold text-sm truncate">
-                      {selectedAgent.name}
-                    </h1>
-                    <span
-                      className={`h-2 w-2 rounded-full shrink-0 ${
-                        selectedAgent.status === 'online'
-                          ? 'bg-green-500'
-                          : selectedAgent.status === 'busy'
-                            ? 'bg-yellow-500'
-                            : 'bg-gray-400'
-                      }`}
-                    />
-                  </div>
-                ) : (
-                  <h1 className="text-sm text-muted-foreground">PC를 선택하세요</h1>
-                )}
-              </div>
-
-              {selectedAgentId && isRunning && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={cancelRunning}
-                >
-                  <Square className="h-3 w-3 mr-1" />
-                  중지
-                </Button>
-              )}
-              {selectedAgentId && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground"
-                  onClick={handleToggleSearch}
-                  title="메시지 검색"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-              )}
-              {selectedAgentId && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground"
-                  onClick={clearMessages}
-                  title="채팅 이력 삭제"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-              <Link href="/harnesses">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground"
-                  title="하네스 분석"
-                >
-                  <FileCode className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground"
-                  title="대시보드"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                </Button>
-              </Link>
-            </>
-          )}
-        </header>
-
-        {/* 메시지 목록 */}
-        <MessageList messages={filteredMessages} loading={messagesLoading} onRetry={handleRetry} />
-
-        {/* 템플릿 메뉴 + 메시지 입력 */}
-        <div className="border-t bg-background">
-          <div className="max-w-3xl mx-auto px-3 pt-1.5">
-            <TemplateMenu
-              onSelect={setInputValue}
-              agentId={selectedAgentId}
-              currentInput={inputValue}
-            />
-          </div>
-          <MessageInput
-            onSend={handleSend}
-            disabled={!selectedAgentId}
-            continueMode={continueMode}
-            onToggleContinue={handleToggleContinue}
-            value={inputValue}
-            onValueChange={setInputValue}
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col bg-background md:h-dvh">
+      {/* 헤더 */}
+      <header className="flex items-center gap-1 border-b px-3 h-[52px] shrink-0">
+        <div className="flex-1 min-w-0">
+          <PCPicker
+            agents={agents}
+            selectedId={selectedAgentId}
+            onSelect={handleSelectAgent}
+            loading={agentsLoading}
           />
         </div>
-      </main>
+
+        {selectedAgentId && isRunning && (
+          <Button
+            variant="destructive"
+            size="sm"
+            className="h-9 text-xs px-3"
+            onClick={cancelRunning}
+          >
+            <Square className="h-3.5 w-3.5 mr-1" />
+            중지
+          </Button>
+        )}
+        {selectedAgentId && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 text-muted-foreground"
+            onClick={handleToggleSearch}
+            aria-label="메시지 검색"
+            title="메시지 검색"
+          >
+            {searchOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Search className="h-5 w-5" />
+            )}
+          </Button>
+        )}
+        {selectedAgentId && !isRunning && messages.length > 0 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 text-muted-foreground"
+            onClick={clearMessages}
+            aria-label="채팅 이력 삭제"
+            title="채팅 이력 삭제"
+          >
+            <Trash2 className="h-5 w-5" />
+          </Button>
+        )}
+      </header>
+
+      {/* 검색 바 (헤더 아래 슬라이드다운) */}
+      <div
+        className={cn(
+          'overflow-hidden border-b bg-background transition-[height] duration-200',
+          searchOpen ? 'h-12' : 'h-0',
+        )}
+      >
+        <div className="flex h-12 items-center gap-2 px-3">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <Input
+            ref={searchInputRef}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="메시지 검색..."
+            className="h-9 border-0 bg-transparent text-sm shadow-none focus-visible:ring-0"
+          />
+          {searchQuery && (
+            <span className="shrink-0 text-[11px] text-muted-foreground">
+              {filteredMessages.length}건
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* 메시지 목록 */}
+      <MessageList
+        messages={filteredMessages}
+        loading={messagesLoading}
+        onRetry={handleRetry}
+      />
+
+      {/* 입력 영역 */}
+      <div className="border-t bg-background shrink-0">
+        {selectedAgentId && (
+          <div className="mx-auto max-w-3xl">
+            <HarnessSelector
+              agentId={selectedAgentId}
+              selectedId={selectedHarnessId}
+              onSelect={setSelectedHarnessId}
+            />
+          </div>
+        )}
+        <div className="mx-auto max-w-3xl px-3">
+          <TemplateMenu
+            onSelect={setInputValue}
+            agentId={selectedAgentId}
+            currentInput={inputValue}
+          />
+        </div>
+        <MessageInput
+          onSend={handleSend}
+          disabled={!selectedAgentId}
+          continueMode={continueMode}
+          onToggleContinue={handleToggleContinue}
+          value={inputValue}
+          onValueChange={setInputValue}
+        />
+      </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div className="h-dvh bg-background" />}>
+      <ChatPageInner />
+    </Suspense>
   );
 }

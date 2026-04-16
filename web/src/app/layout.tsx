@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { AuthProvider } from '@/components/AuthProvider';
+import { BottomNav } from '@/components/BottomNav';
 import './globals.css';
 
 const geistSans = Geist({
@@ -43,7 +44,18 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <div className="md:pl-16">{children}</div>
+          <BottomNav />
+        </AuthProvider>
+        <style>{`
+          :root {
+            --bottom-nav-h: 3.5rem;
+          }
+          @media (min-width: 768px) {
+            :root { --bottom-nav-h: 0px; }
+          }
+        `}</style>
       </body>
     </html>
   );

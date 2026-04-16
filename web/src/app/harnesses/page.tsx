@@ -7,10 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MarkdownRenderer } from '@/components/chat/MarkdownRenderer';
-import Link from 'next/link';
 import {
-  MessageSquare,
-  LayoutDashboard,
   FileCode,
   ChevronDown,
   ChevronRight,
@@ -19,6 +16,7 @@ import {
   Loader2,
   Wand2,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface HarnessWithAgent {
   id: string;
@@ -95,11 +93,18 @@ function HarnessCard({ harness, onImprove }: { harness: HarnessWithAgent; onImpr
           </div>
           {harness.agents && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Monitor className="h-3 w-3" />
+              <Monitor className="h-3.5 w-3.5" />
               <span>{harness.agents.name}</span>
-              <span className={`h-1.5 w-1.5 rounded-full ${
-                harness.agents.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
-              }`} />
+              <span
+                className={cn(
+                  'h-1.5 w-1.5 rounded-full',
+                  harness.agents.status === 'online'
+                    ? 'bg-emerald-500'
+                    : harness.agents.status === 'busy'
+                      ? 'bg-amber-500'
+                      : 'bg-zinc-500',
+                )}
+              />
             </div>
           )}
         </div>
@@ -126,20 +131,20 @@ function HarnessCard({ harness, onImprove }: { harness: HarnessWithAgent; onImpr
 
       {/* 경로 + 개선 버튼 */}
       <div className="flex items-center justify-between mt-3 gap-2">
-        <p className="text-[10px] text-muted-foreground font-mono truncate flex-1">
+        <p className="text-[11px] text-muted-foreground font-mono truncate flex-1">
           {harness.path}
         </p>
         <Button
           variant={harness.score >= 90 ? 'outline' : 'default'}
           size="sm"
-          className="shrink-0 h-7 text-xs gap-1"
+          className="shrink-0 h-8 text-xs gap-1"
           onClick={handleImprove}
           disabled={improving || harness.agents?.status === 'offline'}
         >
           {improving ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
-            <Wand2 className="h-3 w-3" />
+            <Wand2 className="h-3.5 w-3.5" />
           )}
           {improving ? '개선 중...' : harness.score >= 90 ? '추가 개선' : '개선하기'}
         </Button>
@@ -230,31 +235,28 @@ export default function HarnessesPage() {
   ))];
 
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-dvh bg-background pb-14 md:pb-0">
       {/* 헤더 */}
-      <header className="border-b px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto flex h-[52px] max-w-3xl items-center gap-2 px-4">
           <FileCode className="h-5 w-5" />
-          <h1 className="font-bold text-lg">하네스 분석</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={fetchData} title="새로고침">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Link href="/chat">
-            <Button variant="ghost" size="icon" title="채팅">
-              <MessageSquare className="h-4 w-4" />
+          <h1 className="text-base font-semibold">하네스 분석</h1>
+          <div className="ml-auto">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-11 w-11"
+              onClick={fetchData}
+              aria-label="새로고침"
+              title="새로고침"
+            >
+              <RefreshCw className="h-5 w-5" />
             </Button>
-          </Link>
-          <Link href="/dashboard">
-            <Button variant="ghost" size="icon" title="대시보드">
-              <LayoutDashboard className="h-4 w-4" />
-            </Button>
-          </Link>
+          </div>
         </div>
       </header>
 
-      <ScrollArea className="h-[calc(100dvh-57px)]">
+      <ScrollArea className="h-[calc(100dvh-52px-3.5rem)] md:h-[calc(100dvh-52px)]">
         <div className="max-w-3xl mx-auto p-4 space-y-4">
           {/* 전체 요약 카드 */}
           <div className="border rounded-xl p-4 bg-card">
@@ -277,7 +279,7 @@ export default function HarnessesPage() {
               <>
                 <Separator className="my-3" />
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
                     전체 기능 현황
                   </p>
                   <div className="flex flex-wrap gap-1.5">
@@ -286,7 +288,7 @@ export default function HarnessesPage() {
                         Array.isArray(h.features) && h.features.includes(f)
                       ).length;
                       return (
-                        <Badge key={f} variant="outline" className="text-[10px]">
+                        <Badge key={f} variant="outline" className="text-[11px]">
                           {f} ({count})
                         </Badge>
                       );
