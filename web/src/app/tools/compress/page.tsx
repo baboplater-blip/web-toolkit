@@ -62,9 +62,10 @@ export default function CompressPage() {
   const [imgFormat, setImgFormat] = useState<ImageOutputFormat>('jpeg');
 
   // PDF 옵션
-  const [pdfMode, setPdfMode] = useState<PdfCompressMode>('light');
+  const [pdfMode, setPdfMode] = useState<PdfCompressMode>('smart');
   const [pdfQuality, setPdfQuality] = useState(72);
   const [pdfScale, setPdfScale] = useState(150); // 1.0 ~ 2.0 범위 * 100
+  const [pdfMaxImageDim, setPdfMaxImageDim] = useState(1600);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -140,10 +141,13 @@ export default function CompressPage() {
           mode: pdfMode,
           quality: pdfQuality / 100,
           scale: pdfScale / 100,
+          maxImageDimension: pdfMaxImageDim,
         };
         const onProgress = (p: PdfCompressProgress) => {
           const stageMap: Record<PdfCompressProgress['stage'], string> = {
             preparing: 'PDF 분석 중',
+            scanning: '이미지 스캔 중',
+            recompressing: `이미지 재인코딩 ${p.current}/${p.total}`,
             rendering: `페이지 변환 중 ${p.current}/${p.total}`,
             assembling: 'PDF 재조립 중',
             done: '완료',
@@ -152,13 +156,23 @@ export default function CompressPage() {
         };
         const out = await compressPdf(file, opts, onProgress);
         const newName = renameWithSuffix(file.name, '-compressed', 'pdf');
+        const modeLabel =
+          pdfMode === 'light'
+            ? '가벼운 압축'
+            : pdfMode === 'smart'
+              ? '스마트 압축'
+              : '래스터화 압축';
+        const extraInfo =
+          pdfMode === 'smart' && out.imagesProcessed !== undefined
+            ? `${out.pageCount}페이지 · ${modeLabel} · 이미지 ${out.imagesProcessed}개 처리${out.imagesSkipped ? ` (${out.imagesSkipped}개 스킵)` : ''}`
+            : `${out.pageCount}페이지 · ${modeLabel}`;
         setResult({
           fileName: newName,
           originalSize: out.originalSize,
           compressedSize: out.compressedSize,
           url: URL.createObjectURL(out.blob),
           blob: out.blob,
-          extraInfo: `${out.pageCount}페이지 · ${pdfMode === 'light' ? '가벼운 압축' : '래스터화 압축'}`,
+          extraInfo,
         });
       }
     } catch (err) {
@@ -327,39 +341,106 @@ export default function CompressPage() {
               <div className="space-y-3">
                 <div>
                   <label className="text-xs font-medium mb-1.5 block">압축 모드</label>
-                  <div className="flex gap-1.5">
+                  <div className="grid grid-cols-3 gap-1.5">
                     <button
                       type="button"
                       onClick={() => setPdfMode('light')}
                       disabled={processing}
-                      className={`flex-1 h-auto py-2 px-2 text-xs rounded-md border transition-colors text-left ${
+                      className={`h-auto py-2 px-2 text-xs rounded-md border transition-colors text-left ${
                         pdfMode === 'light'
                           ? 'bg-primary text-primary-foreground border-primary'
                           : 'bg-background hover:bg-muted border-border'
                       } disabled:opacity-50`}
                     >
-                      <div className="font-medium">가벼운 압축</div>
+                      <div className="font-medium">가볍게</div>
                       <div className="text-[10px] opacity-80 mt-0.5">
-                        메타데이터 제거 · 벡터/텍스트 보존
+                        메타만 제거<br />5~15%↓
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPdfMode('smart')}
+                      disabled={processing}
+                      className={`h-auto py-2 px-2 text-xs rounded-md border transition-colors text-left ${
+                        pdfMode === 'smart'
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-background hover:bg-muted border-border'
+                      } disabled:opacity-50`}
+                    >
+                      <div className="font-medium">스마트 (권장)</div>
+                      <div className="text-[10px] opacity-80 mt-0.5">
+                        이미지만 재압축<br />텍스트·벡터 보존
                       </div>
                     </button>
                     <button
                       type="button"
                       onClick={() => setPdfMode('rasterize')}
                       disabled={processing}
-                      className={`flex-1 h-auto py-2 px-2 text-xs rounded-md border transition-colors text-left ${
+                      className={`h-auto py-2 px-2 text-xs rounded-md border transition-colors text-left ${
                         pdfMode === 'rasterize'
                           ? 'bg-primary text-primary-foreground border-primary'
                           : 'bg-background hover:bg-muted border-border'
                       } disabled:opacity-50`}
                     >
-                      <div className="font-medium">래스터화 압축</div>
+                      <div className="font-medium">래스터화</div>
                       <div className="text-[10px] opacity-80 mt-0.5">
-                        페이지를 JPEG로 · 큰 감소율
+                        페이지 전체 JPEG<br />최대 감소
                       </div>
                     </button>
                   </div>
+                  {pdfMode === 'smart' && (
+                    <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                      원본 PDF 구조를 그대로 유지하며 내부 이미지만 재인코딩합니다. 텍스트
+                      선택·북마크·폼 완전 보존.
+                    </p>
+                  )}
                 </div>
+
+                {pdfMode === 'smart' && (
+                  <>
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-medium">이미지 품질</label>
+                        <span className="text-xs text-muted-foreground">{pdfQuality}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={20}
+                        max={95}
+                        step={1}
+                        value={pdfQuality}
+                        onChange={(e) => setPdfQuality(Number(e.target.value))}
+                        disabled={processing}
+                        className="w-full accent-primary"
+                      />
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        낮출수록 감소율이 커지지만 이미지 화질이 떨어집니다. 텍스트에는 영향 없음.
+                      </p>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-medium">이미지 최대 크기 (긴 변)</label>
+                        <span className="text-xs text-muted-foreground">
+                          {pdfMaxImageDim === 0 ? '원본 유지' : `${pdfMaxImageDim}px`}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={3200}
+                        step={100}
+                        value={pdfMaxImageDim}
+                        onChange={(e) => setPdfMaxImageDim(Number(e.target.value))}
+                        disabled={processing}
+                        className="w-full accent-primary"
+                      />
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        고해상도 이미지를 다운샘플합니다. 인쇄용이 아니면 1200~1600px 권장.
+                      </p>
+                    </div>
+                  </>
+                )}
 
                 {pdfMode === 'rasterize' && (
                   <>
