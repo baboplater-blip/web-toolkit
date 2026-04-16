@@ -40,7 +40,7 @@ function calculateNextRun(cron: string): Date {
  * 실행 가능한 스케줄을 확인하고 메시지로 전환.
  * 기존 메시지 처리 플로우를 재사용한다.
  */
-async function checkAndRun(supabase: SupabaseClient, agentId: string): Promise<void> {
+async function checkAndRun(supabase: SupabaseClient, agentId: string, userId: string): Promise<void> {
   const now = new Date().toISOString();
 
   // enabled=true이고 next_run이 현재 시점 이전인 스케줄 조회
@@ -65,6 +65,7 @@ async function checkAndRun(supabase: SupabaseClient, agentId: string): Promise<v
     // status를 'completed'로 설정하여 agent의 Realtime 구독이 선점할 수 있게 함
     const { error: insertError } = await supabase.from('messages').insert({
       agent_id: agentId,
+      user_id: userId,
       role: 'user',
       content: `[예약] ${schedule.prompt}`,
       status: 'completed',
@@ -93,14 +94,14 @@ async function checkAndRun(supabase: SupabaseClient, agentId: string): Promise<v
  * 스케줄러를 시작한다. 1분 간격으로 대기 중인 스케줄을 확인한다.
  * 반환된 타이머 ID로 clearInterval로 중단 가능.
  */
-export function startScheduler(supabase: SupabaseClient, agentId: string): NodeJS.Timeout {
+export function startScheduler(supabase: SupabaseClient, agentId: string, userId: string): NodeJS.Timeout {
   log('스케줄러 시작');
 
   // 시작 직후 한 번 실행
-  checkAndRun(supabase, agentId);
+  checkAndRun(supabase, agentId, userId);
 
   const timer = setInterval(() => {
-    checkAndRun(supabase, agentId);
+    checkAndRun(supabase, agentId, userId);
   }, CHECK_INTERVAL_MS);
 
   return timer;

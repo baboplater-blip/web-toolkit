@@ -1,7 +1,49 @@
 import { spawn } from 'child_process';
-import { dirname } from 'path';
+import { dirname, resolve } from 'path';
 import { log } from './logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+/** 입력 길이 상한 (토큰 과소비·DoS 방지) */
+const MAX_PROMPT_LENGTH = 20_000;
+
+/**
+ * 프라이빗/루프백/메타데이터 대역 차단.
+ * webhook URL 이 내부 서비스를 공격하지 못하게 막는 최소 SSRF 방어.
+ */
+function isSafeWebhookUrl(raw: string): boolean {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return false;
+  }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+
+  const host = u.hostname.toLowerCase();
+
+  // 호스트 이름 기반 차단
+  const blockedHosts = ['localhost', '0.0.0.0', 'metadata.google.internal', 'metadata.goog'];
+  if (blockedHosts.includes(host)) return false;
+
+  // IPv4 리터럴이면 대역 확인
+  const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4) {
+    const [a, b] = ipv4.slice(1).map(Number);
+    if (a === 127) return false; // 루프백
+    if (a === 10) return false;   // 사설 A
+    if (a === 192 && b === 168) return false; // 사설 C
+    if (a === 172 && b >= 16 && b <= 31) return false; // 사설 B
+    if (a === 169 && b === 254) return false; // 링크로컬 (AWS/GCP 메타데이터 포함)
+    if (a === 0) return false;
+  }
+
+  // IPv6 루프백/링크로컬
+  if (host === '[::1]' || host.startsWith('[fe80:') || host.startsWith('[fc') || host.startsWith('[fd')) {
+    return false;
+  }
+
+  return true;
+}
 
 /**
  * 작업 완료 시 에이전트에 설정된 웹훅 URL로 알림 전송.
@@ -22,16 +64,26 @@ async function sendWebhook(
   const webhookUrl = (agent as Record<string, unknown>)?.webhook_url;
   if (!webhookUrl || typeof webhookUrl !== 'string') return;
 
+  if (!isSafeWebhookUrl(webhookUrl)) {
+    log(`웹훅 차단됨 (사설망/비HTTP)`, 'warn');
+    return;
+  }
+
   const agentName = (agent as Record<string, unknown>)?.name ?? 'Unknown';
 
   try {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 5000);
     await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         content: `**[ACP] ${agentName}** 작업 완료\n> ${prompt.substring(0, 100)}\n\`\`\`\n${result.substring(0, 300)}\n\`\`\``,
       }),
+      signal: ctrl.signal,
+      redirect: 'error',
     });
+    clearTimeout(timeout);
     log('웹훅 전송 완료');
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
@@ -42,6 +94,7 @@ async function sendWebhook(
 export async function executeClaudeCommand(
   supabase: SupabaseClient,
   agentId: string,
+  userId: string,
   userMessageId: string,
   content: string,
   harnessPath: string | null
@@ -51,6 +104,7 @@ export async function executeClaudeCommand(
     .from('messages')
     .insert({
       agent_id: agentId,
+      user_id: userId,
       role: 'assistant',
       content: '',
       status: 'streaming',
@@ -68,9 +122,26 @@ export async function executeClaudeCommand(
   try {
     // [CTX] 접두사 감지: 컨텍스트 유지 모드
     const isContinueMode = content.startsWith('[CTX]');
-    const actualContent = isContinueMode ? content.slice(5) : content;
+    let actualContent = isContinueMode ? content.slice(5) : content;
 
-    // 인자 구성
+    // 길이 제한 (DoS/토큰 과소비 방지)
+    if (actualContent.length > MAX_PROMPT_LENGTH) {
+      actualContent = actualContent.slice(0, MAX_PROMPT_LENGTH);
+      log(`입력이 ${MAX_PROMPT_LENGTH}자로 잘렸습니다`, 'warn');
+    }
+
+    // 제어 문자 제거 (탭·개행 허용)
+    actualContent = actualContent.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
+    if (!actualContent.trim()) {
+      await supabase
+        .from('messages')
+        .update({ content: '(빈 메시지)', status: 'error' })
+        .eq('id', responseId);
+      return;
+    }
+
+    // 인자 구성 (spawn shell:false 이므로 args 배열로 안전 전달)
     const args = ['--print', '--dangerously-skip-permissions'];
     if (isContinueMode) {
       args.push('--continue');
@@ -78,7 +149,15 @@ export async function executeClaudeCommand(
     args.push(actualContent);
 
     // 하네스 경로가 있으면 해당 디렉토리에서 실행 (CLAUDE.md 자동 로드)
-    const cwd = harnessPath ? dirname(harnessPath) : undefined;
+    // path traversal 방어: resolve 후 정상 경로인지 확인
+    let cwd: string | undefined;
+    if (harnessPath) {
+      const resolved = resolve(harnessPath);
+      // harnessPath가 상대경로 공격 패턴을 포함하지 않도록 확인
+      if (resolved === harnessPath || !harnessPath.includes('..')) {
+        cwd = dirname(resolved);
+      }
+    }
 
     log(`실행: "${actualContent.substring(0, 60)}..."${cwd ? ` (${cwd})` : ''}${isContinueMode ? ' [컨텍스트]' : ''}`);
 

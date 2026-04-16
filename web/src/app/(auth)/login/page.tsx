@@ -1,19 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Monitor, Loader2 } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams?.get('redirect') ?? '/chat';
   const supabase = createClient();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -32,7 +35,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/chat');
+    router.push(redirectTo);
   };
 
   return (
@@ -84,7 +87,33 @@ export default function LoginPage() {
             )}
           </Button>
         </form>
+
+        <p className="text-center text-xs text-muted-foreground">
+          아직 계정이 없으신가요?{' '}
+          <Link
+            href="/signup"
+            className="text-primary font-medium hover:underline"
+          >
+            회원가입
+          </Link>
+        </p>
+
+        <p className="text-center text-[11px] text-muted-foreground">
+          로그인 없이{' '}
+          <Link href="/tools" className="hover:underline">
+            도구 57종
+          </Link>{' '}
+          은 바로 사용 가능합니다
+        </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-dvh bg-background" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

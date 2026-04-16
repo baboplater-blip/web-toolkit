@@ -83,13 +83,17 @@ export function useMessages(agentId: string | null) {
         ? `[CTX]${content.trim()}`
         : content.trim();
 
+      const { data: { user } } = await supabaseRef.current.auth.getUser();
+      if (!user) return false;
+
       const { error } = await supabaseRef.current.from('messages').insert({
         agent_id: agentId,
         harness_id: harnessId,
         role: 'user' as const,
         content: finalContent,
         status: 'completed' as const,
-      });
+        user_id: user.id,
+      } as never);
 
       return !error;
     },

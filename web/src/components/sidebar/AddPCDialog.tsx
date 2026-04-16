@@ -51,6 +51,11 @@ export function AddPCDialog() {
 
     setSaving(true);
     const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setSaving(false);
+      return;
+    }
     const apiKey = `acp_${crypto.randomUUID().replace(/-/g, '')}`;
     const token = crypto.randomUUID().replace(/-/g, '').substring(0, 16);
 
@@ -59,12 +64,13 @@ export function AddPCDialog() {
       token,
       pc_name: trimmedName,
       api_key: apiKey,
-    });
+      user_id: user.id,
+    } as never);
 
     // 2. agents에 PC 등록
     const { data, error } = await supabase
       .from('agents')
-      .insert({ name: trimmedName, api_key: apiKey })
+      .insert({ name: trimmedName, api_key: apiKey, user_id: user.id } as never)
       .select('id')
       .single();
 

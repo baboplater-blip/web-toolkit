@@ -71,12 +71,16 @@ export function TemplateMenu({ onSelect, agentId, currentInput }: TemplateMenuPr
     const prompt = currentInput?.trim();
     if (!name || !prompt) return;
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     await supabase.from('templates').insert({
       name,
       prompt,
       category: '',
       sort_order: templates.length,
-    });
+      user_id: user.id,
+    } as never);
 
     setNewName('');
     setAddMode(false);

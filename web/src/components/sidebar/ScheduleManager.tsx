@@ -134,13 +134,20 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
 
     setSaving(true);
 
+    const { data: { user } } = await supabaseRef.current.auth.getUser();
+    if (!user) {
+      setSaving(false);
+      return;
+    }
+
     const { error } = await supabaseRef.current.from('schedules').insert({
       agent_id: agentId,
       prompt: newPrompt.trim(),
       cron_expression: cronValue,
       enabled: true,
       next_run: calculateNextRun(cronValue),
-    });
+      user_id: user.id,
+    } as never);
 
     setSaving(false);
 

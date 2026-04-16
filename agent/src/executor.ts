@@ -94,6 +94,7 @@ async function sendWebhook(
 export async function executeClaudeCommand(
   supabase: SupabaseClient,
   agentId: string,
+  userId: string,
   userMessageId: string,
   content: string,
   harnessPath: string | null
@@ -103,6 +104,7 @@ export async function executeClaudeCommand(
     .from('messages')
     .insert({
       agent_id: agentId,
+      user_id: userId,
       role: 'assistant',
       content: '',
       status: 'streaming',

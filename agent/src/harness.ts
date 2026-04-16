@@ -142,7 +142,7 @@ function findHarnesses(searchPath: string, depth = 0, maxDepth = 2): HarnessInfo
   return results;
 }
 
-export async function syncHarnesses(supabase: SupabaseClient, agentId: string) {
+export async function syncHarnesses(supabase: SupabaseClient, agentId: string, userId: string) {
   console.log('[하네스] 스캔 시작...');
 
   const allHarnesses: HarnessInfo[] = [];
@@ -166,6 +166,7 @@ export async function syncHarnesses(supabase: SupabaseClient, agentId: string) {
   if (uniqueHarnesses.length > 0) {
     const rows = uniqueHarnesses.map((h) => ({
       agent_id: agentId,
+      user_id: userId,
       name: h.name,
       path: h.path,
       description: h.description,

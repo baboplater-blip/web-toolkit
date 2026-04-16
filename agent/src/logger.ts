@@ -2,12 +2,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 let _supabase: SupabaseClient | null = null;
 let _agentId: string | null = null;
+let _userId: string | null = null;
 const _buffer: { level: string; message: string }[] = [];
 let _flushTimer: NodeJS.Timeout | null = null;
 
-export function initLogger(supabase: SupabaseClient, agentId: string) {
+export function initLogger(supabase: SupabaseClient, agentId: string, userId: string) {
   _supabase = supabase;
   _agentId = agentId;
+  _userId = userId;
 }
 
 /**
@@ -53,10 +55,11 @@ function scheduleFlush() {
 
 async function flush() {
   _flushTimer = null;
-  if (!_supabase || !_agentId || _buffer.length === 0) return;
+  if (!_supabase || !_agentId || !_userId || _buffer.length === 0) return;
 
   const rows = _buffer.splice(0, _buffer.length).map((entry) => ({
     agent_id: _agentId,
+    user_id: _userId,
     level: entry.level,
     message: entry.message,
   }));

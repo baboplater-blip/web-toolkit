@@ -217,13 +217,17 @@ export default function HarnessesPage() {
 프로젝트 코드를 먼저 탐색한 후 CLAUDE.md를 수정해주세요.`;
 
     // 해당 agent에게 메시지 전송
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     await supabase.from('messages').insert({
       agent_id: h.agent_id,
       harness_id: h.id,
       role: 'user',
       content: prompt,
       status: 'completed',
-    });
+      user_id: user.id,
+    } as never);
   };
 
   const avgScore = harnesses.length > 0

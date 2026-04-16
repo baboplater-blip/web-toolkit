@@ -12,6 +12,7 @@ import { startScheduler } from './scheduler';
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!;
 const AGENT_API_KEY = process.env.AGENT_API_KEY!;
+const AGENT_USER_ID = process.env.AGENT_USER_ID;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !AGENT_API_KEY) {
   console.error('필수 환경변수: SUPABASE_URL, SUPABASE_SERVICE_KEY, AGENT_API_KEY');
@@ -46,14 +47,14 @@ interface QueueItem {
 const messageQueue: QueueItem[] = [];
 let processing = false;
 
-async function processQueue(client: SupabaseClient, agentId: string): Promise<void> {
+async function processQueue(client: SupabaseClient, agentId: string, userId: string): Promise<void> {
   if (processing || messageQueue.length === 0) return;
   processing = true;
 
   while (messageQueue.length > 0) {
     const item = messageQueue.shift()!;
     await client.from('agents').update({ status: 'busy' }).eq('id', agentId);
-    await executeClaudeCommand(client, agentId, item.msgId, item.content, item.harnessPath);
+    await executeClaudeCommand(client, agentId, userId, item.msgId, item.content, item.harnessPath);
     if (messageQueue.length > 0) {
       log(`큐 남은 작업: ${messageQueue.length}개`);
     }
@@ -63,7 +64,7 @@ async function processQueue(client: SupabaseClient, agentId: string): Promise<vo
   processing = false;
 }
 
-function subscribeMessages(client: SupabaseClient, agentId: string): RealtimeChannel {
+function subscribeMessages(client: SupabaseClient, agentId: string, userId: string): RealtimeChannel {
   const channel = client
     .channel(`agent-${agentId}-${Date.now()}`)
     .on(
@@ -110,7 +111,7 @@ function subscribeMessages(client: SupabaseClient, agentId: string): RealtimeCha
 
         // 큐에 추가하고 순차 처리
         messageQueue.push({ msgId: msg.id, content: msg.content, harnessPath });
-        processQueue(client, agentId);
+        processQueue(client, agentId, userId);
       }
     )
     .subscribe((status, err) => {
@@ -123,7 +124,7 @@ function subscribeMessages(client: SupabaseClient, agentId: string): RealtimeCha
         log(`Realtime 오류 (${status}). ${delay / 1000}초 후 재연결...`, 'warn');
         client.removeChannel(channel);
         setTimeout(() => {
-          currentChannel = subscribeMessages(client, agentId);
+          currentChannel = subscribeMessages(client, agentId, userId);
         }, delay);
       }
     });
@@ -167,8 +168,16 @@ async function main() {
     process.exit(1);
   }
 
+  // 소유자 user_id 확정 (DB 값 우선, 없으면 .env 폴백)
+  const userId = (agent as { user_id?: string }).user_id ?? AGENT_USER_ID;
+  if (!userId) {
+    console.error('Agent 소유자(user_id) 를 확인할 수 없습니다. .env 의 AGENT_USER_ID 를 설정하거나 agents.user_id 를 DB 에 기록하세요.');
+    releaseLock();
+    process.exit(1);
+  }
+
   // 로거 초기화
-  initLogger(supabase, agent.id);
+  initLogger(supabase, agent.id, userId);
 
   log(`"${agent.name}" 시작 (PID: ${process.pid})`);
 
@@ -178,11 +187,11 @@ async function main() {
     .eq('id', agent.id);
 
   startHeartbeat(supabase, agent.id);
-  await syncHarnesses(supabase, agent.id);
+  await syncHarnesses(supabase, agent.id, userId);
 
-  currentChannel = subscribeMessages(supabase, agent.id);
+  currentChannel = subscribeMessages(supabase, agent.id, userId);
   watchRestart(supabase, agent.id);
-  startScheduler(supabase, agent.id);
+  startScheduler(supabase, agent.id, userId);
 
   log('메시지 대기 중...');
 

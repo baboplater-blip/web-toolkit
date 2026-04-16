@@ -58,6 +58,13 @@ export async function GET(
 
   const pcName = String(tokenData.pc_name).replace(/[^\w가-힣\-_ ]/g, '').slice(0, 40);
   const apiKey = String(tokenData.api_key);
+  const userId = String(tokenData.user_id ?? '');
+  if (!/^[a-f0-9-]{36}$/i.test(userId)) {
+    return new NextResponse(
+      'Write-Host "ERROR: Token missing owner binding." -ForegroundColor Red\npause',
+      { status: 400, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+    );
+  }
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   // serviceKey는 위에서 env 존재 확인 완료
 
@@ -143,6 +150,7 @@ Write-Host "[4/5] Configuring..." -ForegroundColor Yellow
 SUPABASE_URL=${supabaseUrl}
 SUPABASE_SERVICE_KEY=${serviceKey}
 AGENT_API_KEY=${apiKey}
+AGENT_USER_ID=${userId}
 "@ | Out-File -FilePath "$agentDir\\.env" -Encoding utf8 -NoNewline
 
 # Register agent in DB
@@ -155,6 +163,7 @@ $headers = @{
 $body = @{
     name = "${pcName}"
     api_key = "${apiKey}"
+    user_id = "${userId}"
 } | ConvertTo-Json
 
 try {
