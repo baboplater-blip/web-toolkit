@@ -1,20 +1,20 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
-  Download,
   FileImage,
   FileText,
   Loader2,
   RotateCcw,
-  Upload,
   Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ResultCard } from '@/components/tools/ResultCard';
 import {
   compressImage,
   isImageFile,
@@ -28,7 +28,7 @@ import {
   type PdfCompressOptions,
   type PdfCompressProgress,
 } from '@/lib/compress/pdf';
-import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 
 type FileKind = 'image' | 'pdf' | 'unsupported';
 
@@ -54,7 +54,6 @@ export default function CompressPage() {
   const [progressText, setProgressText] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResultState | null>(null);
-  const [dragActive, setDragActive] = useState(false);
 
   // 이미지 옵션
   const [imgQuality, setImgQuality] = useState(75);
@@ -66,8 +65,6 @@ export default function CompressPage() {
   const [pdfQuality, setPdfQuality] = useState(72);
   const [pdfScale, setPdfScale] = useState(150); // 1.0 ~ 2.0 범위 * 100
   const [pdfMaxImageDim, setPdfMaxImageDim] = useState(1600);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const clearResult = useCallback(() => {
     if (result) URL.revokeObjectURL(result.url);
@@ -91,25 +88,12 @@ export default function CompressPage() {
     [clearResult],
   );
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (f) acceptFile(f);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    const f = e.dataTransfer.files?.[0];
-    if (f) acceptFile(f);
-  };
-
   const reset = () => {
     clearResult();
     setFile(null);
     setKind('unsupported');
     setError(null);
     setProgressText('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const runCompression = async () => {
@@ -183,18 +167,13 @@ export default function CompressPage() {
     }
   };
 
-  const ratio = useMemo(
-    () => (result ? compressionRatio(result.originalSize, result.compressedSize) : 0),
-    [result],
-  );
-
   return (
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
           <div className="flex items-center gap-2">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon" className="h-8 w-8" title="대시보드로">
+            <Link href="/tools">
+              <Button variant="ghost" size="icon" className="h-8 w-8" title="도구로">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
@@ -213,34 +192,11 @@ export default function CompressPage() {
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         {/* 파일 업로드 영역 */}
         {!file && (
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragActive(true);
-            }}
-            onDragLeave={() => setDragActive(false)}
-            onDrop={handleDrop}
-            className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors cursor-pointer ${
-              dragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
-            }`}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,application/pdf"
-              className="hidden"
-              onChange={handleFileInput}
-            />
-            <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-            <p className="text-sm font-medium">파일을 끌어다 놓거나 클릭하여 선택</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              이미지 (JPG/PNG/WebP) 또는 PDF 파일
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-3">
-              모든 처리는 브라우저 안에서 이루어집니다. 파일은 서버로 전송되지 않습니다.
-            </p>
-          </div>
+          <FileDropZone
+            accept="image/*,application/pdf"
+            description="이미지 (JPG/PNG/WebP) 또는 PDF 파일"
+            onFiles={(files) => acceptFile(files[0])}
+          />
         )}
 
         {error && (
@@ -507,49 +463,13 @@ export default function CompressPage() {
 
         {/* 결과 카드 */}
         {result && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              결과
-            </h2>
-
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <p className="text-[10px] text-muted-foreground">원본</p>
-                <p className="text-sm font-semibold mt-0.5">{formatBytes(result.originalSize)}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">압축 후</p>
-                <p className="text-sm font-semibold mt-0.5">{formatBytes(result.compressedSize)}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">감소율</p>
-                <p
-                  className={`text-sm font-semibold mt-0.5 ${
-                    ratio > 0 ? 'text-green-500' : 'text-yellow-500'
-                  }`}
-                >
-                  {ratio > 0 ? `-${ratio}%` : '0%'}
-                </p>
-              </div>
-            </div>
-
-            {result.extraInfo && (
-              <p className="text-[10px] text-muted-foreground text-center">{result.extraInfo}</p>
-            )}
-
-            {ratio === 0 && (
-              <p className="text-[10px] text-yellow-500/90 text-center">
-                용량이 줄어들지 않았습니다. 다른 옵션을 시도해보세요.
-              </p>
-            )}
-
-            <a href={result.url} download={result.fileName} className="block">
-              <Button className="w-full" variant="default">
-                <Download className="h-4 w-4" />
-                {result.fileName} 다운로드
-              </Button>
-            </a>
-          </div>
+          <ResultCard
+            fileName={result.fileName}
+            originalSize={result.originalSize}
+            compressedSize={result.compressedSize}
+            blobUrl={result.url}
+            extraInfo={result.extraInfo}
+          />
         )}
       </main>
     </div>
