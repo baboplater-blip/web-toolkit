@@ -13,6 +13,7 @@ import {
   Braces,
   Clapperboard,
   Crop,
+  Diff,
   Eraser,
   FastForward,
   FileImage,
@@ -25,14 +26,20 @@ import {
   Film,
   Fingerprint,
   FileCode,
+  Hash as HashIcon,
+  Hexagon,
   Images,
+  Key,
+  KeyRound,
   Layers,
+  Link2,
   Maximize2,
   Merge,
   Music,
   Palette,
   PenTool,
   QrCode,
+  Regex,
   RotateCw,
   ScanText,
   Scissors,
@@ -40,6 +47,7 @@ import {
   Shuffle,
   SplitSquareHorizontal,
   Stamp,
+  Table,
   Type,
   Volume2,
   Wand2,
@@ -53,7 +61,10 @@ export type ToolCategory =
   | 'video'
   | 'gif'
   | 'audio'
-  | 'util';
+  | 'util'
+  | 'docs'
+  | 'text'
+  | 'dev';
 export type ToolStatus = 'ready' | 'planned';
 
 export interface ToolMeta {
@@ -65,7 +76,7 @@ export interface ToolMeta {
   icon: LucideIcon;
   status: ToolStatus;
   /** 구현 Phase 로 정렬. 1 = 우선순위 최상위. */
-  phase: 1 | 2 | 3 | 4 | 5 | 6;
+  phase: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   /** 검색에서 매칭될 추가 키워드 (한/영) */
   keywords?: string[];
 }
@@ -77,6 +88,9 @@ export const CATEGORY_LABELS: Record<ToolCategory | 'all', string> = {
   video: '비디오',
   gif: 'GIF',
   audio: '오디오',
+  docs: '문서 변환',
+  text: '텍스트',
+  dev: '개발자',
   util: '유틸',
   security: '보안',
   ai: 'AI',
@@ -614,6 +628,120 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 6,
     keywords: ['base64', 'encode', 'decode'],
+  },
+
+  // ---- Phase 7: 문서 변환 / 텍스트 / 개발자 도구 ----
+  {
+    id: 'md-html',
+    title: 'Markdown ↔ HTML',
+    description: 'Markdown 과 HTML 상호 변환, 미리보기 포함.',
+    href: '/tools/docs/md-html',
+    category: 'docs',
+    icon: FileText,
+    status: 'ready',
+    phase: 7,
+    keywords: ['markdown', 'md', 'html', 'convert'],
+  },
+  {
+    id: 'csv-json',
+    title: 'CSV ↔ JSON',
+    description: '스프레드시트 데이터를 JSON 으로 변환하거나 반대로.',
+    href: '/tools/docs/csv-json',
+    category: 'docs',
+    icon: Table,
+    status: 'ready',
+    phase: 7,
+    keywords: ['csv', 'json', 'tsv', '스프레드시트'],
+  },
+  {
+    id: 'yaml-json',
+    title: 'YAML ↔ JSON',
+    description: 'YAML 과 JSON 상호 변환.',
+    href: '/tools/docs/yaml-json',
+    category: 'docs',
+    icon: FileCode,
+    status: 'ready',
+    phase: 7,
+    keywords: ['yaml', 'json', 'convert'],
+  },
+
+  {
+    id: 'regex-tester',
+    title: '정규식 테스터',
+    description: '정규식을 실시간으로 테스트하고 매칭 결과를 확인.',
+    href: '/tools/text/regex',
+    category: 'text',
+    icon: Regex,
+    status: 'ready',
+    phase: 7,
+    keywords: ['regex', 'regexp', '정규식', 'pattern'],
+  },
+  {
+    id: 'text-diff',
+    title: '텍스트 비교 (Diff)',
+    description: '두 텍스트의 차이를 줄 단위로 비교합니다.',
+    href: '/tools/text/diff',
+    category: 'text',
+    icon: Diff,
+    status: 'ready',
+    phase: 7,
+    keywords: ['diff', 'compare', '비교'],
+  },
+  {
+    id: 'text-count',
+    title: '단어·문자 카운트',
+    description: '단어/문자/줄/바이트 수를 실시간 집계합니다.',
+    href: '/tools/text/count',
+    category: 'text',
+    icon: HashIcon,
+    status: 'ready',
+    phase: 7,
+    keywords: ['word', 'count', '단어', '문자', '통계'],
+  },
+
+  {
+    id: 'jwt-decoder',
+    title: 'JWT 디코더',
+    description: 'JWT 토큰을 헤더·페이로드·시그니처로 분해합니다.',
+    href: '/tools/dev/jwt',
+    category: 'dev',
+    icon: Key,
+    status: 'ready',
+    phase: 7,
+    keywords: ['jwt', 'token', '토큰'],
+  },
+  {
+    id: 'uuid-gen',
+    title: 'UUID 생성',
+    description: 'UUID v4 를 단일·대량 생성합니다.',
+    href: '/tools/dev/uuid',
+    category: 'dev',
+    icon: Hexagon,
+    status: 'ready',
+    phase: 7,
+    keywords: ['uuid', 'guid', '고유식별자'],
+  },
+  {
+    id: 'password-gen',
+    title: '비밀번호 생성',
+    description: '안전한 랜덤 비밀번호를 생성하고 강도를 평가합니다.',
+    href: '/tools/dev/password',
+    category: 'dev',
+    icon: KeyRound,
+    status: 'ready',
+    phase: 7,
+    keywords: ['password', 'random', '비밀번호'],
+  },
+  {
+    id: 'url-encoder',
+    title: 'URL 인코더/디코더',
+    description: 'URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.',
+    href: '/tools/dev/url',
+    category: 'dev',
+    icon: Link2,
+    status: 'ready',
+    phase: 7,
+    keywords: ['url', 'encode', 'decode', 'query'],
   },
 ];
 
