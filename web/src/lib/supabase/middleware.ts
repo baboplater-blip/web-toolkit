@@ -25,7 +25,13 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  let user: { id: string } | null = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) user = data.user;
+  } catch (err) {
+    console.error('[middleware] getUser 실패:', err);
+  }
   const path = request.nextUrl.pathname;
 
   // 인증이 필요한 영역: /chat, /dashboard, /settings, /harnesses
