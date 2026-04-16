@@ -333,14 +333,14 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     id: 'image-upscale',
-    title: '이미지 확대',
-    description: '저해상도 이미지를 2x/4x 로 업스케일.',
+    title: 'AI 이미지 업스케일',
+    description: 'ESRGAN 초해상도로 2x/3x/4x 확대. 1MP 이하 권장.',
     href: '/tools/image/upscale',
     category: 'ai',
     icon: FileMinus,
-    status: 'planned',
+    status: 'ready',
     phase: 4,
-    keywords: ['upscale', 'enlarge', '확대', '업스케일'],
+    keywords: ['upscale', 'enlarge', '확대', '업스케일', 'esrgan', 'sr'],
   },
 ];
 
