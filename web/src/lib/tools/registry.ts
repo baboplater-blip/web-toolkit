@@ -9,14 +9,18 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   Archive,
+  Clapperboard,
   Crop,
   Eraser,
+  FastForward,
   FileImage,
   FileLock,
   FileMinus,
   FilePlus,
   FileSearch,
   FileText,
+  FileVideo,
+  Film,
   Images,
   Layers,
   Maximize2,
@@ -29,10 +33,11 @@ import {
   Shuffle,
   SplitSquareHorizontal,
   Stamp,
+  Type,
   Wand2,
 } from 'lucide-react';
 
-export type ToolCategory = 'image' | 'pdf' | 'security' | 'ai';
+export type ToolCategory = 'image' | 'pdf' | 'security' | 'ai' | 'video' | 'gif';
 export type ToolStatus = 'ready' | 'planned';
 
 export interface ToolMeta {
@@ -44,7 +49,7 @@ export interface ToolMeta {
   icon: LucideIcon;
   status: ToolStatus;
   /** 구현 Phase 로 정렬. 1 = 우선순위 최상위. */
-  phase: 1 | 2 | 3 | 4;
+  phase: 1 | 2 | 3 | 4 | 5;
   /** 검색에서 매칭될 추가 키워드 (한/영) */
   keywords?: string[];
 }
@@ -53,6 +58,8 @@ export const CATEGORY_LABELS: Record<ToolCategory | 'all', string> = {
   all: '전체',
   image: '이미지',
   pdf: 'PDF',
+  video: '비디오',
+  gif: 'GIF',
   security: '보안',
   ai: 'AI',
 };
@@ -341,6 +348,141 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 4,
     keywords: ['upscale', 'enlarge', '확대', '업스케일', 'esrgan', 'sr'],
+  },
+
+  // ---- Phase 5: 비디오 & GIF (FFmpeg.wasm) ----
+  {
+    id: 'video-to-gif',
+    title: '비디오 → GIF',
+    description: '비디오의 구간을 GIF 애니메이션으로 변환합니다.',
+    href: '/tools/video/to-gif',
+    category: 'video',
+    icon: Clapperboard,
+    status: 'ready',
+    phase: 5,
+    keywords: ['gif', 'animation', 'ffmpeg', 'video', 'mp4'],
+  },
+  {
+    id: 'video-convert',
+    title: '비디오 포맷 변환',
+    description: 'MP4 / WebM / MOV / AVI / MKV 상호 변환.',
+    href: '/tools/video/convert',
+    category: 'video',
+    icon: FileVideo,
+    status: 'planned',
+    phase: 5,
+    keywords: ['convert', 'format', 'mp4', 'webm', 'avi'],
+  },
+  {
+    id: 'video-trim',
+    title: '비디오 자르기',
+    description: '구간 지정으로 비디오를 잘라냅니다.',
+    href: '/tools/video/trim',
+    category: 'video',
+    icon: Scissors,
+    status: 'planned',
+    phase: 5,
+    keywords: ['trim', 'cut', '자르기'],
+  },
+  {
+    id: 'video-compress',
+    title: '비디오 압축',
+    description: '해상도·비트레이트 조정으로 용량을 줄입니다.',
+    href: '/tools/video/compress',
+    category: 'video',
+    icon: Archive,
+    status: 'planned',
+    phase: 5,
+    keywords: ['compress', 'shrink', '압축', '용량'],
+  },
+  {
+    id: 'video-extract-frames',
+    title: '비디오 → 프레임 추출',
+    description: '각 프레임을 이미지로 추출합니다.',
+    href: '/tools/video/extract-frames',
+    category: 'video',
+    icon: Film,
+    status: 'planned',
+    phase: 5,
+    keywords: ['frames', 'extract', '프레임', '스틸'],
+  },
+
+  {
+    id: 'gif-maker',
+    title: 'GIF 만들기',
+    description: '여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.',
+    href: '/tools/gif/maker',
+    category: 'gif',
+    icon: Images,
+    status: 'planned',
+    phase: 5,
+    keywords: ['gif', 'animate', 'maker', '만들기'],
+  },
+  {
+    id: 'gif-resize',
+    title: 'GIF 리사이즈',
+    description: 'GIF 크기를 조정합니다.',
+    href: '/tools/gif/resize',
+    category: 'gif',
+    icon: Maximize2,
+    status: 'planned',
+    phase: 5,
+    keywords: ['resize', '크기'],
+  },
+  {
+    id: 'gif-optimize',
+    title: 'GIF 최적화',
+    description: '팔레트·프레임 드롭으로 용량을 줄입니다.',
+    href: '/tools/gif/optimize',
+    category: 'gif',
+    icon: Archive,
+    status: 'planned',
+    phase: 5,
+    keywords: ['optimize', 'compress', '최적화', '용량'],
+  },
+  {
+    id: 'gif-crop',
+    title: 'GIF 영역 자르기',
+    description: 'GIF 의 특정 영역만 잘라냅니다.',
+    href: '/tools/gif/crop',
+    category: 'gif',
+    icon: Crop,
+    status: 'planned',
+    phase: 5,
+    keywords: ['crop', '자르기'],
+  },
+  {
+    id: 'gif-trim',
+    title: 'GIF 구간 자르기',
+    description: '시작·끝 시간을 지정하여 GIF 를 자릅니다.',
+    href: '/tools/gif/trim',
+    category: 'gif',
+    icon: Scissors,
+    status: 'planned',
+    phase: 5,
+    keywords: ['trim', 'cut', '구간'],
+  },
+  {
+    id: 'gif-effects',
+    title: 'GIF 효과',
+    description: '역재생 · 배속 · 핑퐁 반복 효과를 적용합니다.',
+    href: '/tools/gif/effects',
+    category: 'gif',
+    icon: FastForward,
+    status: 'planned',
+    phase: 5,
+    keywords: ['reverse', 'speed', '역재생', '배속', 'pingpong'],
+  },
+  {
+    id: 'gif-text',
+    title: 'GIF 텍스트 삽입',
+    description: 'GIF 전체에 표시될 텍스트·자막을 추가합니다.',
+    href: '/tools/gif/text',
+    category: 'gif',
+    icon: Type,
+    status: 'planned',
+    phase: 5,
+    keywords: ['text', 'caption', '자막'],
   },
 ];
 
