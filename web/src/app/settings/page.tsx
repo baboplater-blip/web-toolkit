@@ -13,6 +13,7 @@ import {
   RotateCw,
   ExternalLink,
   ChevronRight,
+  UserCircle,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -20,17 +21,19 @@ import { AddPCDialog } from '@/components/sidebar/AddPCDialog';
 import { ScheduleManager } from '@/components/sidebar/ScheduleManager';
 import { WebhookSetting } from '@/components/sidebar/WebhookSetting';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { AccountTab } from '@/components/settings/AccountTab';
 import { useAgents } from '@/lib/hooks/useAgents';
 import { cn } from '@/lib/utils';
 import type { Agent } from '@/lib/supabase/types';
 
-type TabKey = 'pcs' | 'schedule' | 'webhook' | 'harness';
+type TabKey = 'pcs' | 'schedule' | 'webhook' | 'harness' | 'account';
 
 const TABS: { key: TabKey; label: string; icon: typeof Monitor }[] = [
-  { key: 'pcs', label: 'PC 관리', icon: Monitor },
+  { key: 'pcs', label: 'PC', icon: Monitor },
   { key: 'schedule', label: '예약', icon: CalendarClock },
   { key: 'webhook', label: '웹훅', icon: Webhook },
   { key: 'harness', label: '하네스', icon: FileCode },
+  { key: 'account', label: '계정', icon: UserCircle },
 ];
 
 const STATUS_DOT = {
@@ -193,7 +196,7 @@ export default function SettingsPage() {
 
       <main className="mx-auto max-w-3xl space-y-4 p-4">
         {/* 탭 */}
-        <div className="grid grid-cols-4 gap-1 rounded-lg bg-muted p-1">
+        <div className="grid grid-cols-5 gap-1 rounded-lg bg-muted p-1">
           {TABS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -246,6 +249,8 @@ export default function SettingsPage() {
         )}
 
         {tab === 'harness' && <HarnessTab />}
+
+        {tab === 'account' && <AccountTab />}
 
         {/* 앱 설정 */}
         <section className="space-y-2 pt-2">
