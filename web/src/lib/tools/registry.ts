@@ -9,6 +9,8 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   Archive,
+  Barcode,
+  Braces,
   Clapperboard,
   Crop,
   Eraser,
@@ -21,11 +23,16 @@ import {
   FileText,
   FileVideo,
   Film,
+  Fingerprint,
+  FileCode,
   Images,
   Layers,
   Maximize2,
   Merge,
+  Music,
+  Palette,
   PenTool,
+  QrCode,
   RotateCw,
   ScanText,
   Scissors,
@@ -34,10 +41,19 @@ import {
   SplitSquareHorizontal,
   Stamp,
   Type,
+  Volume2,
   Wand2,
 } from 'lucide-react';
 
-export type ToolCategory = 'image' | 'pdf' | 'security' | 'ai' | 'video' | 'gif';
+export type ToolCategory =
+  | 'image'
+  | 'pdf'
+  | 'security'
+  | 'ai'
+  | 'video'
+  | 'gif'
+  | 'audio'
+  | 'util';
 export type ToolStatus = 'ready' | 'planned';
 
 export interface ToolMeta {
@@ -49,7 +65,7 @@ export interface ToolMeta {
   icon: LucideIcon;
   status: ToolStatus;
   /** 구현 Phase 로 정렬. 1 = 우선순위 최상위. */
-  phase: 1 | 2 | 3 | 4 | 5;
+  phase: 1 | 2 | 3 | 4 | 5 | 6;
   /** 검색에서 매칭될 추가 키워드 (한/영) */
   keywords?: string[];
 }
@@ -60,6 +76,8 @@ export const CATEGORY_LABELS: Record<ToolCategory | 'all', string> = {
   pdf: 'PDF',
   video: '비디오',
   gif: 'GIF',
+  audio: '오디오',
+  util: '유틸',
   security: '보안',
   ai: 'AI',
 };
@@ -483,6 +501,119 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 5,
     keywords: ['text', 'caption', '자막'],
+  },
+
+  // ---- Phase 6: 오디오 & 유틸리티 ----
+  {
+    id: 'video-to-audio',
+    title: '비디오 → MP3 (오디오 추출)',
+    description: '비디오 파일에서 오디오 트랙을 추출하여 MP3/WAV 로 저장.',
+    href: '/tools/audio/from-video',
+    category: 'audio',
+    icon: Music,
+    status: 'ready',
+    phase: 6,
+    keywords: ['audio', 'extract', 'mp3', '오디오추출', '음원'],
+  },
+  {
+    id: 'audio-convert',
+    title: '오디오 포맷 변환',
+    description: 'MP3 / WAV / OGG / AAC / M4A / FLAC 상호 변환.',
+    href: '/tools/audio/convert',
+    category: 'audio',
+    icon: Volume2,
+    status: 'ready',
+    phase: 6,
+    keywords: ['convert', 'mp3', 'wav', 'flac', '변환'],
+  },
+  {
+    id: 'audio-trim',
+    title: '오디오 자르기',
+    description: '구간 지정으로 오디오를 잘라냅니다.',
+    href: '/tools/audio/trim',
+    category: 'audio',
+    icon: Scissors,
+    status: 'ready',
+    phase: 6,
+    keywords: ['trim', 'cut', '자르기'],
+  },
+  {
+    id: 'audio-compress',
+    title: '오디오 압축',
+    description: '비트레이트를 낮춰 오디오 용량을 줄입니다.',
+    href: '/tools/audio/compress',
+    category: 'audio',
+    icon: Archive,
+    status: 'ready',
+    phase: 6,
+    keywords: ['compress', 'bitrate', '압축', '용량'],
+  },
+
+  {
+    id: 'qr-code',
+    title: 'QR 코드 생성/읽기',
+    description: '텍스트·URL → QR 생성, 이미지 → QR 해독.',
+    href: '/tools/util/qr',
+    category: 'util',
+    icon: QrCode,
+    status: 'planned',
+    phase: 6,
+    keywords: ['qr', 'qrcode', '큐알'],
+  },
+  {
+    id: 'barcode',
+    title: '바코드 생성',
+    description: 'Code128 / EAN / UPC 바코드를 생성합니다.',
+    href: '/tools/util/barcode',
+    category: 'util',
+    icon: Barcode,
+    status: 'planned',
+    phase: 6,
+    keywords: ['barcode', '바코드'],
+  },
+  {
+    id: 'color-palette',
+    title: '이미지 색상 팔레트',
+    description: '이미지에서 주요 색상을 추출합니다.',
+    href: '/tools/util/palette',
+    category: 'util',
+    icon: Palette,
+    status: 'planned',
+    phase: 6,
+    keywords: ['color', 'palette', '색상', '팔레트'],
+  },
+  {
+    id: 'file-hash',
+    title: '파일 해시',
+    description: 'SHA-1/256/512 · MD5 해시를 계산합니다.',
+    href: '/tools/util/hash',
+    category: 'util',
+    icon: Fingerprint,
+    status: 'planned',
+    phase: 6,
+    keywords: ['hash', 'sha', 'md5', '해시', '체크섬'],
+  },
+  {
+    id: 'json-format',
+    title: 'JSON 포맷터',
+    description: 'JSON 포맷팅·압축·검증·트리 뷰.',
+    href: '/tools/util/json',
+    category: 'util',
+    icon: Braces,
+    status: 'planned',
+    phase: 6,
+    keywords: ['json', 'format', 'validate', '포맷팅'],
+  },
+  {
+    id: 'base64',
+    title: 'Base64 인코딩',
+    description: '텍스트·파일을 Base64 로 변환 (양방향).',
+    href: '/tools/util/base64',
+    category: 'util',
+    icon: FileCode,
+    status: 'planned',
+    phase: 6,
+    keywords: ['base64', 'encode', 'decode'],
   },
 ];
 

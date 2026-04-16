@@ -128,3 +128,19 @@ export async function probeVideo(
     URL.revokeObjectURL(url);
   }
 }
+
+/** 오디오 파일의 길이를 읽기 */
+export async function probeAudio(file: File): Promise<{ duration: number }> {
+  const url = URL.createObjectURL(file);
+  try {
+    return await new Promise((resolve, reject) => {
+      const a = document.createElement('audio');
+      a.preload = 'metadata';
+      a.onloadedmetadata = () => resolve({ duration: a.duration });
+      a.onerror = () => reject(new Error('오디오 메타데이터 로드 실패'));
+      a.src = url;
+    });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
