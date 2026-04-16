@@ -13,6 +13,22 @@ export async function GET(
 ) {
   const { token } = await params;
 
+  // 토큰 형식 검증 (32자 16진수만 허용 — 인젝션 방지)
+  if (!/^[a-f0-9]{16,64}$/i.test(token)) {
+    return new NextResponse('Write-Host "ERROR: Invalid token format." -ForegroundColor Red\npause', {
+      status: 400,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
+
+  const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+  if (!serviceKey) {
+    return new NextResponse(
+      'Write-Host "ERROR: Server configuration missing." -ForegroundColor Red\npause',
+      { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+    );
+  }
+
   // 토큰 유효성 확인
   const { data: tokenData, error } = await supabase
     .from('install_tokens')
@@ -40,10 +56,10 @@ export async function GET(
     );
   }
 
-  const pcName = tokenData.pc_name;
-  const apiKey = tokenData.api_key;
+  const pcName = String(tokenData.pc_name).replace(/[^\w가-힣\-_ ]/g, '').slice(0, 40);
+  const apiKey = String(tokenData.api_key);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBycm1kZHdzZHVpYnlwbHNpamZxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTgwNzA3MSwiZXhwIjoyMDkxMzgzMDcxfQ.MNjp5Cfoge2ooboU-A8zarupOx0pNMjRCIokWuOn1lw';
+  // serviceKey는 위에서 env 존재 확인 완료
 
   // 토큰을 사용 완료로 마킹
   await supabase
