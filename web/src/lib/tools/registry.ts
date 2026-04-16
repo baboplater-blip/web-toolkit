@@ -266,11 +266,11 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'pdf-protect',
     title: 'PDF 암호 설정',
-    description: '(준비 중) 암호화는 추가 WASM 라이브러리 필요.',
+    description: '열람·권한 암호와 세부 권한(인쇄·편집·복사 등) 설정.',
     href: '/tools/pdf/protect',
     category: 'security',
     icon: FileLock,
-    status: 'planned',
+    status: 'ready',
     phase: 3,
     keywords: ['protect', 'encrypt', 'password', '암호설정'],
   },
