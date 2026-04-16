@@ -323,13 +323,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'blur-face',
     title: '얼굴 블러',
-    description: '이미지의 얼굴을 자동 감지하여 블러 처리합니다.',
+    description: 'AI 로 얼굴 자동 감지 + 블러/모자이크. 수동 박스 추가 가능.',
     href: '/tools/image/blur-face',
     category: 'ai',
     icon: FileSearch,
-    status: 'planned',
+    status: 'ready',
     phase: 4,
-    keywords: ['face', 'blur', 'privacy', '모자이크'],
+    keywords: ['face', 'blur', 'privacy', '모자이크', 'mosaic'],
   },
   {
     id: 'image-upscale',
