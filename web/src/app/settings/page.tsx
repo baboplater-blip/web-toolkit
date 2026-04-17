@@ -14,6 +14,7 @@ import {
   ExternalLink,
   ChevronRight,
   UserCircle,
+  HelpCircle,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -22,11 +23,12 @@ import { ScheduleManager } from '@/components/sidebar/ScheduleManager';
 import { WebhookSetting } from '@/components/sidebar/WebhookSetting';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { AccountTab } from '@/components/settings/AccountTab';
+import { UsageGuide } from '@/components/settings/UsageGuide';
 import { useAgents } from '@/lib/hooks/useAgents';
 import { cn } from '@/lib/utils';
 import type { Agent } from '@/lib/supabase/types';
 
-type TabKey = 'pcs' | 'schedule' | 'webhook' | 'harness' | 'account';
+type TabKey = 'pcs' | 'schedule' | 'webhook' | 'harness' | 'account' | 'guide';
 
 const TABS: { key: TabKey; label: string; icon: typeof Monitor }[] = [
   { key: 'pcs', label: 'PC', icon: Monitor },
@@ -34,6 +36,7 @@ const TABS: { key: TabKey; label: string; icon: typeof Monitor }[] = [
   { key: 'webhook', label: '웹훅', icon: Webhook },
   { key: 'harness', label: '하네스', icon: FileCode },
   { key: 'account', label: '계정', icon: UserCircle },
+  { key: 'guide', label: '가이드', icon: HelpCircle },
 ];
 
 const STATUS_DOT = {
@@ -196,7 +199,7 @@ export default function SettingsPage() {
 
       <main className="mx-auto max-w-3xl space-y-4 p-4">
         {/* 탭 */}
-        <div className="grid grid-cols-5 gap-1 rounded-lg bg-muted p-1">
+        <div className="grid grid-cols-6 gap-1 rounded-lg bg-muted p-1">
           {TABS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -251,6 +254,8 @@ export default function SettingsPage() {
         {tab === 'harness' && <HarnessTab />}
 
         {tab === 'account' && <AccountTab />}
+
+        {tab === 'guide' && <UsageGuide />}
 
         {/* 앱 설정 */}
         <section className="space-y-2 pt-2">
