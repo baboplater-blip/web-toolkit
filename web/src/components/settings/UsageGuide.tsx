@@ -40,6 +40,25 @@ interface Section {
 
 const SECTIONS: Section[] = [
   {
+    key: 'prerequisites',
+    icon: Terminal,
+    title: '사전 요구사항',
+    steps: [
+      {
+        text: 'Claude Code가 대상 PC에 설치되어 있어야 합니다.',
+        note: 'npm install -g @anthropic-ai/claude-code 또는 공식 설치 방법 사용',
+      },
+      {
+        text: 'Claude Code가 정상 동작하는지 확인합니다.',
+        note: '터미널에서 claude --version 실행하여 확인',
+      },
+      {
+        text: 'Node.js 18 이상이 필요합니다.',
+        note: '없으면 설치 스크립트가 자동으로 설치합니다',
+      },
+    ],
+  },
+  {
     key: 'register',
     icon: Monitor,
     title: 'PC 등록 (새 컴퓨터 추가)',
@@ -50,7 +69,7 @@ const SECTIONS: Section[] = [
       { text: '대상 PC에서 PowerShell을 관리자 권한으로 실행합니다.' },
       {
         text: '명령어를 붙여넣고 실행합니다.',
-        note: '자동으로 Node.js 설치, 에이전트 파일 다운로드, 시작',
+        note: 'Claude Code는 건드리지 않습니다. ACP 에이전트만 설치되며, 기존 환경에 영향 없음',
       },
       { text: '설치가 완료되면 PC가 "온라인" 상태로 표시됩니다.' },
     ],
@@ -110,6 +129,11 @@ const SECTIONS: Section[] = [
         question: '명령이 실행되지 않을 때는?',
         answer:
           'PC가 온라인 상태인지 확인하세요. 문제가 지속되면 PC 관리 탭의 재시작 버튼을 사용하세요.',
+      },
+      {
+        question: '이미 Claude Code를 쓰고 있는 PC도 등록해야 하나요?',
+        answer:
+          '네. 이 시스템은 Claude Code 자체가 아닌 원격 제어용 "ACP 에이전트"를 설치합니다. Claude Code는 그대로 유지되며, 에이전트가 웹 명령을 받아 Claude Code를 대신 실행합니다. PC 등록 절차를 동일하게 따르되, Claude Code 재설치는 불필요합니다.',
       },
       {
         question: '여러 PC에 동시에 명령을 보낼 수 있나요?',
