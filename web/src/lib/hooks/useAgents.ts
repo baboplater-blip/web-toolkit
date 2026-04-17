@@ -20,10 +20,22 @@ function applyStaleCheck(agent: Agent): Agent {
   return agent;
 }
 
+/** online/busy → offline 전환 시 브라우저 알림 */
+function notifyOffline(agent: Agent) {
+  if (typeof window === 'undefined' || !('Notification' in window)) return;
+  if (Notification.permission !== 'granted') return;
+  new Notification(`${agent.name} 오프라인`, {
+    body: `PC "${agent.name}"이(가) 오프라인 상태로 전환되었습니다.`,
+    icon: '/favicon.ico',
+    tag: `offline-${agent.id}`,
+  });
+}
+
 export function useAgents() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const prevStatusRef = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     const supabase = createClient();
@@ -45,7 +57,14 @@ export function useAgents() {
       if (error) {
         console.error('[useAgents] 쿼리 실패:', error.message);
       }
-      if (data) setAgents((data as Agent[]).map(applyStaleCheck));
+      if (data) {
+        const checked = (data as Agent[]).map(applyStaleCheck);
+        setAgents(checked);
+        // 초기 상태 스냅샷 저장 (오프라인 전환 감지용)
+        for (const a of checked) {
+          prevStatusRef.current.set(a.id, a.status);
+        }
+      }
       setLoading(false);
     }
 
@@ -64,6 +83,16 @@ export function useAgents() {
         (payload) => {
           if (payload.eventType === 'UPDATE') {
             const updated = applyStaleCheck(payload.new as Agent);
+            // 오프라인 전환 감지
+            const prevStatus = prevStatusRef.current.get(updated.id);
+            if (
+              prevStatus &&
+              prevStatus !== 'offline' &&
+              updated.status === 'offline'
+            ) {
+              notifyOffline(updated);
+            }
+            prevStatusRef.current.set(updated.id, updated.status);
             setAgents((prev) =>
               prev.map((a) => (a.id === updated.id ? updated : a))
             );

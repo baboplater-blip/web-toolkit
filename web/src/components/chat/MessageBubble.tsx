@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react';
+import { Loader2, AlertCircle, MessageSquare, RefreshCw, Copy, Check } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import type { Message } from '@/lib/supabase/types';
 
@@ -55,6 +55,10 @@ export function MessageBubble({ message, onRetry, retryContent }: MessageBubbleP
   const isLongContent = !isUser && message.content.length > COLLAPSE_THRESHOLD;
   const [contentExpanded, setContentExpanded] = useState(false);
 
+  // 복사 버튼 상태
+  const [copied, setCopied] = useState(false);
+  const canCopy = !isUser && message.content.length > 0 && !isStreaming;
+
   // Feature 4: 응답 소요시간
   const duration =
     isAssistant && isCompleted
@@ -98,6 +102,26 @@ export function MessageBubble({ message, onRetry, retryContent }: MessageBubbleP
             <span className="text-xs font-medium text-muted-foreground">
               {isSystem ? '시스템' : 'Claude'}
             </span>
+            {canCopy && (
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(message.content);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  } catch {}
+                }}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                title="응답 복사"
+              >
+                {copied ? (
+                  <Check className="h-3 w-3 text-green-500" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+              </button>
+            )}
             {isStreaming && (
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
                 <Loader2 className="h-2.5 w-2.5 animate-spin mr-1" />

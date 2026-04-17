@@ -1,7 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { hostname, platform, cpus, totalmem } from 'os';
+import { log } from './logger';
 
 const HEARTBEAT_INTERVAL = 30_000; // 30초
+const MAX_CONSECUTIVE_FAILURES = 3;
 
 export function startHeartbeat(supabase: SupabaseClient, agentId: string) {
   const systemInfo = {
@@ -17,7 +19,9 @@ export function startHeartbeat(supabase: SupabaseClient, agentId: string) {
     .from('agents')
     .update({ system_info: systemInfo })
     .eq('id', agentId)
-    .then(() => console.log('[하트비트] 시스템 정보 등록 완료'));
+    .then(() => log('시스템 정보 등록 완료'));
+
+  let consecutiveFailures = 0;
 
   // 주기적 하트비트
   const timer = setInterval(async () => {
@@ -27,7 +31,32 @@ export function startHeartbeat(supabase: SupabaseClient, agentId: string) {
       .eq('id', agentId);
 
     if (error) {
-      console.error('[하트비트] 업데이트 실패:', error.message);
+      consecutiveFailures++;
+      log(`하트비트 실패 (${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES}): ${error.message}`, 'warn');
+
+      if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+        log('하트비트 연속 실패 — 연결 복구 시도', 'warn');
+        // 상태를 online으로 강제 재설정 시도
+        const { error: recoveryError } = await supabase
+          .from('agents')
+          .update({
+            status: 'online',
+            last_heartbeat: new Date().toISOString(),
+          })
+          .eq('id', agentId);
+
+        if (!recoveryError) {
+          log('하트비트 복구 성공');
+          consecutiveFailures = 0;
+        } else {
+          log(`하트비트 복구 실패: ${recoveryError.message}`, 'error');
+        }
+      }
+    } else {
+      if (consecutiveFailures > 0) {
+        log(`하트비트 정상 복귀 (${consecutiveFailures}회 실패 후)`);
+      }
+      consecutiveFailures = 0;
     }
   }, HEARTBEAT_INTERVAL);
 
@@ -35,5 +64,5 @@ export function startHeartbeat(supabase: SupabaseClient, agentId: string) {
   process.on('SIGINT', () => clearInterval(timer));
   process.on('SIGTERM', () => clearInterval(timer));
 
-  console.log(`[하트비트] ${HEARTBEAT_INTERVAL / 1000}초 간격 시작`);
+  log(`하트비트 ${HEARTBEAT_INTERVAL / 1000}초 간격 시작`);
 }

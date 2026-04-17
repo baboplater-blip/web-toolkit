@@ -6,6 +6,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 /** 입력 길이 상한 (토큰 과소비·DoS 방지) */
 const MAX_PROMPT_LENGTH = 20_000;
 
+/** 작업 타임아웃 (기본 5분, 환경변수로 조정 가능) */
+const TASK_TIMEOUT_MS = parseInt(process.env.TASK_TIMEOUT_MS || '300000', 10);
+
+/** 출력 버퍼 상한 (1MB) — 초과 시 잘림 표시 */
+const MAX_OUTPUT_BYTES = 1_024 * 1_024;
+
 /**
  * 프라이빗/루프백/메타데이터 대역 차단.
  * webhook URL 이 내부 서비스를 공격하지 못하게 막는 최소 SSRF 방어.
@@ -175,8 +181,19 @@ export async function executeClaudeCommand(
     });
 
     let fullOutput = '';
+    let outputBytes = 0;
+    let outputTruncated = false;
     let updateTimer: NodeJS.Timeout | null = null;
     let cancelled = false;
+
+    // 작업 타임아웃: 기본 5분, TASK_TIMEOUT_MS 환경변수로 조정
+    const taskTimeout = setTimeout(() => {
+      if (!cancelled) {
+        cancelled = true;
+        child.kill();
+        log(`작업 타임아웃 (${TASK_TIMEOUT_MS / 1000}초 초과)`, 'warn');
+      }
+    }, TASK_TIMEOUT_MS);
 
     // 취소 감지: 1.5초마다 상태 확인
     const cancelCheck = setInterval(async () => {
@@ -207,29 +224,47 @@ export async function executeClaudeCommand(
     };
 
     child.stdout.on('data', (data: Buffer) => {
-      fullOutput += data.toString();
+      if (outputTruncated) return;
+      outputBytes += data.length;
+      if (outputBytes > MAX_OUTPUT_BYTES) {
+        fullOutput += '\n\n⚠️ 출력이 1MB를 초과하여 잘렸습니다.';
+        outputTruncated = true;
+      } else {
+        fullOutput += data.toString();
+      }
       scheduleUpdate();
     });
 
     child.stderr.on('data', (data: Buffer) => {
+      if (outputTruncated) return;
       const text = data.toString();
       // Warning/Deprecation은 무시
       if (!text.includes('Warning:') && !text.includes('DeprecationWarning')) {
-        fullOutput += text;
+        outputBytes += data.length;
+        if (outputBytes > MAX_OUTPUT_BYTES) {
+          fullOutput += '\n\n⚠️ 출력이 1MB를 초과하여 잘렸습니다.';
+          outputTruncated = true;
+        } else {
+          fullOutput += text;
+        }
         scheduleUpdate();
       }
     });
 
     await new Promise<void>((resolve) => {
       child.on('close', async (code) => {
+        clearTimeout(taskTimeout);
         clearInterval(cancelCheck);
         if (updateTimer) { clearTimeout(updateTimer); updateTimer = null; }
 
         if (cancelled) {
+          const reason = code === null
+            ? '(타임아웃으로 자동 종료됨)'
+            : '(사용자에 의해 취소됨)';
           await supabase
             .from('messages')
             .update({
-              content: fullOutput + '\n\n(사용자에 의해 취소됨)',
+              content: fullOutput + '\n\n' + reason,
               status: 'cancelled',
             })
             .eq('id', responseId);
@@ -254,6 +289,7 @@ export async function executeClaudeCommand(
       });
 
       child.on('error', async (err) => {
+        clearTimeout(taskTimeout);
         clearInterval(cancelCheck);
         log(`프로세스 오류: ${err.message}`, 'error');
         await supabase

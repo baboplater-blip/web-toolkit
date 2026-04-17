@@ -98,6 +98,12 @@ export default function DashboardPage() {
   const [errorMessages, setErrorMessages] = useState<
     (Message & { agent_name?: string })[]
   >([]);
+  const [todayStats, setTodayStats] = useState({
+    total: 0,
+    completed: 0,
+    errors: 0,
+    cancelled: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState<TabKey>('recent');
@@ -153,6 +159,25 @@ export default function DashboardPage() {
           agent_name: agentMap.get(m.agent_id) ?? '알 수 없음',
         })),
       );
+    }
+
+    // 오늘 작업 통계 (assistant 메시지 기준)
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const { data: todayData } = await supabase
+      .from('messages')
+      .select('status')
+      .eq('role', 'assistant')
+      .gte('created_at', todayStart.toISOString());
+
+    if (todayData) {
+      const msgs = todayData as { status: string }[];
+      setTodayStats({
+        total: msgs.length,
+        completed: msgs.filter((m) => m.status === 'completed').length,
+        errors: msgs.filter((m) => m.status === 'error').length,
+        cancelled: msgs.filter((m) => m.status === 'cancelled').length,
+      });
     }
 
     setLoading(false);
@@ -226,6 +251,46 @@ export default function DashboardPage() {
               <p className="mt-1 text-xs text-muted-foreground">오프라인</p>
             </div>
           </div>
+        </section>
+
+        {/* 오늘 작업 통계 */}
+        <section className="rounded-xl border bg-card p-4">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            오늘 작업
+          </h2>
+          <div className="grid grid-cols-4 gap-3 text-center">
+            <div>
+              <p className="text-2xl font-bold">{todayStats.total}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">총 작업</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-emerald-400">{todayStats.completed}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">완료</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-red-400">{todayStats.errors}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">오류</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-zinc-400">{todayStats.cancelled}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">취소</p>
+            </div>
+          </div>
+          {todayStats.total > 0 && (
+            <div className="mt-3 flex items-center gap-2">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-emerald-500 transition-all"
+                  style={{
+                    width: `${Math.round((todayStats.completed / todayStats.total) * 100)}%`,
+                  }}
+                />
+              </div>
+              <span className="shrink-0 text-xs font-medium text-emerald-400">
+                {Math.round((todayStats.completed / todayStats.total) * 100)}%
+              </span>
+            </div>
+          )}
         </section>
 
         {/* PC 상태 */}

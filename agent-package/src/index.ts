@@ -44,6 +44,7 @@ interface QueueItem {
   harnessPath: string | null;
 }
 
+const MAX_QUEUE_DEPTH = 20;
 const messageQueue: QueueItem[] = [];
 let processing = false;
 
@@ -107,6 +108,20 @@ function subscribeMessages(client: SupabaseClient, agentId: string, userId: stri
             .eq('id', msg.harness_id)
             .single();
           if (h) harnessPath = h.path;
+        }
+
+        // 큐 상한 체크
+        if (messageQueue.length >= MAX_QUEUE_DEPTH) {
+          log(`큐 가득 참 (${MAX_QUEUE_DEPTH}개) — 메시지 거부`, 'warn');
+          // 거부 응답 메시지 생성
+          await client.from('messages').insert({
+            agent_id: agentId,
+            user_id: userId,
+            role: 'system',
+            content: `⚠️ 작업 큐가 가득 찼습니다 (${MAX_QUEUE_DEPTH}개). 현재 작업이 완료된 후 다시 시도해주세요.`,
+            status: 'completed',
+          });
+          return;
         }
 
         // 큐에 추가하고 순차 처리
