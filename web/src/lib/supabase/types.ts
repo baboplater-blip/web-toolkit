@@ -1,6 +1,7 @@
 export type AgentStatus = 'online' | 'offline' | 'busy';
 export type MessageRole = 'user' | 'assistant' | 'system';
-export type MessageStatus = 'pending' | 'streaming' | 'completed' | 'error' | 'cancelled';
+export type MessageStatus = 'pending' | 'streaming' | 'completed' | 'error' | 'cancelled' | 'processing';
+export type LogLevel = 'info' | 'warn' | 'error';
 
 export interface Agent {
   id: string;
@@ -9,12 +10,16 @@ export interface Agent {
   status: AgentStatus;
   last_heartbeat: string | null;
   system_info: Record<string, unknown>;
+  user_id: string;
+  restart_requested: boolean;
+  webhook_url: string | null;
   created_at: string;
 }
 
 export interface Harness {
   id: string;
   agent_id: string;
+  user_id: string;
   name: string;
   path: string;
   description: string;
@@ -24,6 +29,7 @@ export interface Harness {
 export interface Message {
   id: string;
   agent_id: string;
+  user_id: string;
   harness_id: string | null;
   role: MessageRole;
   content: string;
@@ -31,6 +37,55 @@ export interface Message {
   error_message: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  prompt: string;
+  category: string;
+  sort_order: number;
+  user_id: string;
+  created_at: string;
+}
+
+export interface Schedule {
+  id: string;
+  agent_id: string;
+  user_id: string;
+  prompt: string;
+  cron_expression: string;
+  enabled: boolean;
+  next_run: string | null;
+  last_run: string | null;
+  created_at: string;
+}
+
+export interface AgentLog {
+  id: string;
+  agent_id: string;
+  user_id: string;
+  level: LogLevel;
+  message: string;
+  created_at: string;
+}
+
+export interface InstallToken {
+  id: string;
+  token: string;
+  pc_name: string;
+  api_key: string;
+  user_id: string;
+  used: boolean;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface UserProfile {
+  id: string;
+  display_name: string | null;
+  role: 'user' | 'admin';
+  created_at: string;
 }
 
 export interface Database {
@@ -45,6 +100,9 @@ export interface Database {
           status?: AgentStatus;
           last_heartbeat?: string | null;
           system_info?: Record<string, unknown>;
+          user_id: string;
+          restart_requested?: boolean;
+          webhook_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -54,6 +112,9 @@ export interface Database {
           status?: AgentStatus;
           last_heartbeat?: string | null;
           system_info?: Record<string, unknown>;
+          user_id?: string;
+          restart_requested?: boolean;
+          webhook_url?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -63,6 +124,7 @@ export interface Database {
         Insert: {
           id?: string;
           agent_id: string;
+          user_id: string;
           name: string;
           path: string;
           description?: string;
@@ -71,6 +133,7 @@ export interface Database {
         Update: {
           id?: string;
           agent_id?: string;
+          user_id?: string;
           name?: string;
           path?: string;
           description?: string;
@@ -91,6 +154,7 @@ export interface Database {
         Insert: {
           id?: string;
           agent_id: string;
+          user_id: string;
           harness_id?: string | null;
           role: MessageRole;
           content: string;
@@ -102,6 +166,7 @@ export interface Database {
         Update: {
           id?: string;
           agent_id?: string;
+          user_id?: string;
           harness_id?: string | null;
           role?: MessageRole;
           content?: string;
@@ -126,6 +191,130 @@ export interface Database {
             referencedColumns: ['id'];
           },
         ];
+      };
+      templates: {
+        Row: Template;
+        Insert: {
+          id?: string;
+          name: string;
+          prompt: string;
+          category?: string;
+          sort_order?: number;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          prompt?: string;
+          category?: string;
+          sort_order?: number;
+          user_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      schedules: {
+        Row: Schedule;
+        Insert: {
+          id?: string;
+          agent_id: string;
+          user_id: string;
+          prompt: string;
+          cron_expression: string;
+          enabled?: boolean;
+          next_run?: string | null;
+          last_run?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          agent_id?: string;
+          user_id?: string;
+          prompt?: string;
+          cron_expression?: string;
+          enabled?: boolean;
+          next_run?: string | null;
+          last_run?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'schedules_agent_id_fkey';
+            columns: ['agent_id'];
+            isOneToOne: false;
+            referencedRelation: 'agents';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      agent_logs: {
+        Row: AgentLog;
+        Insert: {
+          id?: string;
+          agent_id: string;
+          user_id: string;
+          level?: LogLevel;
+          message: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          agent_id?: string;
+          user_id?: string;
+          level?: LogLevel;
+          message?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'agent_logs_agent_id_fkey';
+            columns: ['agent_id'];
+            isOneToOne: false;
+            referencedRelation: 'agents';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      install_tokens: {
+        Row: InstallToken;
+        Insert: {
+          id?: string;
+          token: string;
+          pc_name: string;
+          api_key: string;
+          user_id: string;
+          used?: boolean;
+          expires_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          token?: string;
+          pc_name?: string;
+          api_key?: string;
+          user_id?: string;
+          used?: boolean;
+          expires_at?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      user_profiles: {
+        Row: UserProfile;
+        Insert: {
+          id: string;
+          display_name?: string | null;
+          role?: 'user' | 'admin';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          display_name?: string | null;
+          role?: 'user' | 'admin';
+          created_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

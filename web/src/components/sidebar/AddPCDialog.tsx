@@ -65,12 +65,12 @@ export function AddPCDialog() {
       pc_name: trimmedName,
       api_key: apiKey,
       user_id: user.id,
-    } as never);
+    });
 
     // 2. agents에 PC 등록
     const { data, error } = await supabase
       .from('agents')
-      .insert({ name: trimmedName, api_key: apiKey, user_id: user.id } as never)
+      .insert({ name: trimmedName, api_key: apiKey, user_id: user.id })
       .select('id')
       .single();
 

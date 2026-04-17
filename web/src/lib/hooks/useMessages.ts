@@ -28,12 +28,15 @@ export function useMessages(agentId: string | null) {
     setLoading(true);
 
     async function fetchMessages() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .select('*')
         .eq('agent_id', agentId!)
         .order('created_at', { ascending: true })
         .limit(100);
+      if (error) {
+        console.error('[useMessages] 쿼리 실패:', error.message);
+      }
       if (data) setMessages(data as Message[]);
       setLoading(false);
     }
@@ -93,7 +96,7 @@ export function useMessages(agentId: string | null) {
         content: finalContent,
         status: 'completed' as const,
         user_id: user.id,
-      } as never);
+      });
 
       return !error;
     },
@@ -111,13 +114,13 @@ export function useMessages(agentId: string | null) {
     if (!agentId) return;
     await supabaseRef.current
       .from('messages')
-      .update({ status: 'cancelled' as any })
+      .update({ status: 'cancelled' })
       .eq('agent_id', agentId)
       .in('status', ['streaming', 'processing', 'pending']);
   }, [agentId]);
 
   const isRunning = messages.some(
-    (m) => m.status === 'streaming' || m.status === ('processing' as any)
+    (m) => m.status === 'streaming' || m.status === 'processing'
   );
 
   return { messages, loading, sendMessage, clearMessages, cancelRunning, isRunning };

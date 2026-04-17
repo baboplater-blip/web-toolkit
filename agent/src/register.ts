@@ -8,6 +8,7 @@ import { randomBytes } from 'crypto';
 
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!;
+const AGENT_USER_ID = process.env.AGENT_USER_ID;
 const PC_NAME = process.argv[2];
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
@@ -20,6 +21,12 @@ if (!PC_NAME) {
   process.exit(1);
 }
 
+if (!AGENT_USER_ID) {
+  console.error('환경변수 AGENT_USER_ID 가 필요합니다.');
+  console.error('.env 파일에 AGENT_USER_ID=<소유자 UUID> 를 추가하세요.');
+  process.exit(1);
+}
+
 async function register() {
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
   const apiKey = `acp_${randomBytes(24).toString('hex')}`;
@@ -29,6 +36,7 @@ async function register() {
     .insert({
       name: PC_NAME,
       api_key: apiKey,
+      user_id: AGENT_USER_ID,
     })
     .select()
     .single();

@@ -147,7 +147,7 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
       enabled: true,
       next_run: calculateNextRun(cronValue),
       user_id: user.id,
-    } as never);
+    });
 
     setSaving(false);
 

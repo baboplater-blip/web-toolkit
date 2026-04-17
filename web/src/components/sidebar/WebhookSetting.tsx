@@ -39,8 +39,7 @@ export function WebhookSetting({ agentId }: WebhookSettingProps) {
       .eq('id', agentId)
       .single();
 
-    const url = (data as Record<string, unknown>)?.webhook_url;
-    const urlStr = typeof url === 'string' ? url : '';
+    const urlStr = data?.webhook_url ?? '';
     setWebhookUrl(urlStr);
     setSavedUrl(urlStr);
   }, [agentId]);
@@ -57,7 +56,7 @@ export function WebhookSetting({ agentId }: WebhookSettingProps) {
 
     await supabaseRef.current
       .from('agents')
-      .update({ webhook_url: webhookUrl.trim() || null } as Record<string, unknown>)
+      .update({ webhook_url: webhookUrl.trim() || null })
       .eq('id', agentId);
 
     setSaving(false);

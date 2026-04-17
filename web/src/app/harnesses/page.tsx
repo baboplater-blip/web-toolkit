@@ -227,7 +227,7 @@ export default function HarnessesPage() {
       content: prompt,
       status: 'completed',
       user_id: user.id,
-    } as never);
+    });
   };
 
   const avgScore = harnesses.length > 0

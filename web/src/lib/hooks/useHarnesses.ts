@@ -18,11 +18,14 @@ export function useHarnesses(agentId: string | null) {
     setLoading(true);
 
     async function fetchHarnesses() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('harnesses')
         .select('*')
         .eq('agent_id', agentId!)
         .order('name');
+      if (error) {
+        console.error('[useHarnesses] 쿼리 실패:', error.message);
+      }
       if (data) setHarnesses(data as Harness[]);
       setLoading(false);
     }

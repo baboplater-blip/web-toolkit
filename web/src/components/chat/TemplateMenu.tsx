@@ -80,7 +80,7 @@ export function TemplateMenu({ onSelect, agentId, currentInput }: TemplateMenuPr
       category: '',
       sort_order: templates.length,
       user_id: user.id,
-    } as never);
+    });
 
     setNewName('');
     setAddMode(false);
