@@ -223,9 +223,9 @@ export default function HarnessesPage() {
     await supabase.from('messages').insert({
       agent_id: h.agent_id,
       harness_id: h.id,
-      role: 'user',
+      role: 'user' as const,
       content: prompt,
-      status: 'completed',
+      status: 'completed' as const,
       user_id: user.id,
     });
   };

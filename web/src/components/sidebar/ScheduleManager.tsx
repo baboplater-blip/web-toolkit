@@ -16,16 +16,7 @@ import {
   Loader2,
 } from 'lucide-react';
 
-interface Schedule {
-  id: string;
-  agent_id: string;
-  prompt: string;
-  cron_expression: string;
-  enabled: boolean;
-  last_run: string | null;
-  next_run: string | null;
-  created_at: string;
-}
+import type { Schedule } from '@/lib/supabase/types';
 
 interface ScheduleManagerProps {
   agentId: string | null;
