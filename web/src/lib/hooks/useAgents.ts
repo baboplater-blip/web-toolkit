@@ -29,10 +29,22 @@ export function useAgents() {
     const supabase = createClient();
 
     async function fetchAgents() {
-      const { data } = await supabase
+      // 세션이 유효한지 먼저 확인 — 만료된 토큰을 자동 갱신
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.warn('[useAgents] 세션 없음 — 로그인 필요');
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
         .from('agents')
         .select('*')
         .order('name');
+
+      if (error) {
+        console.error('[useAgents] 쿼리 실패:', error.message);
+      }
       if (data) setAgents((data as Agent[]).map(applyStaleCheck));
       setLoading(false);
     }
