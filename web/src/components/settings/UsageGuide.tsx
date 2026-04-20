@@ -12,9 +12,9 @@ import {
   FileCode,
   Terminal,
   Zap,
+  Keyboard,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -32,6 +32,7 @@ interface Section {
   steps?: Step[];
   items?: { icon: typeof Monitor; title: string; description: string }[];
   faqs?: { question: string; answer: string }[];
+  shortcuts?: { keys: string; action: string }[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -113,6 +114,41 @@ const SECTIONS: Section[] = [
         description:
           '설정 > 하네스 탭에서 CLAUDE.md 품질을 분석하고 개선할 수 있습니다.',
       },
+      {
+        icon: Zap,
+        title: '메시지 반응',
+        description:
+          '응답에 👍👎💡 표시로 품질 피드백을 남기고, 좋은 템플릿이 자동으로 상위에 뜨게 할 수 있습니다.',
+      },
+      {
+        icon: HelpCircle,
+        title: '대화 Pin · 자동 요약',
+        description:
+          '자주 보는 대화는 상단 고정(Cmd/Ctrl+B), 긴 대화는 "요약 만들기" 로 압축 저장할 수 있습니다.',
+      },
+      {
+        icon: Terminal,
+        title: '오프라인 지원',
+        description:
+          '네트워크가 끊겨도 캐시된 대화 열람 + 오프라인 큐로 메시지 전송이 가능합니다. 복귀 시 자동 전송.',
+      },
+    ],
+  },
+  {
+    key: 'shortcuts',
+    icon: Keyboard,
+    title: '키보드 단축키',
+    shortcuts: [
+      { keys: 'Ctrl/⌘ + K', action: '현재 대화 내 메시지 검색 토글' },
+      { keys: 'Ctrl/⌘ + Shift + N', action: '새 대화 시작' },
+      { keys: 'Ctrl/⌘ + B', action: '현재 대화 상단 고정 토글' },
+      { keys: 'Ctrl/⌘ + Shift + B', action: '현재 대화 보관' },
+      { keys: 'Ctrl/⌘ + ↑ / ↓', action: '프롬프트 히스토리 이전/다음' },
+      { keys: 'Enter / Shift + Enter', action: '전송 / 줄바꿈 (입력창)' },
+      { keys: 'Ctrl/⌘ + Enter', action: '편집 중 분기하며 저장 (user 메시지 편집)' },
+      { keys: 'Enter / Shift + Enter', action: '검색 결과 이동 다음/이전 (검색 모드)' },
+      { keys: 'Esc', action: '검색·편집·핀 팝업 닫기' },
+      { keys: '?', action: '단축키 요약 토스트 (입력창 바깥)' },
     ],
   },
   {
@@ -139,6 +175,21 @@ const SECTIONS: Section[] = [
         question: '여러 PC에 동시에 명령을 보낼 수 있나요?',
         answer:
           '현재는 각 PC에 개별적으로 명령을 전송해야 합니다. 채팅 탭에서 PC를 전환하며 보내세요.',
+      },
+      {
+        question: '실시간 연결이 끊겼을 때 메시지가 사라지나요?',
+        answer:
+          '서버 저장된 메시지는 그대로 유지됩니다. 복귀 시 자동으로 갭필(누락분 보완) 쿼리가 실행됩니다. 설정 > 진단에서 수동 재연결도 가능합니다.',
+      },
+      {
+        question: 'Claude 컨텍스트 경고가 뜨면 어떻게 해야 하나요?',
+        answer:
+          '대화 상단 "요약 만들기" 로 압축하거나, 메시지 우측의 "분기" 버튼으로 새 대화로 이어가세요. 70% 이상이면 응답 품질이 떨어질 수 있습니다.',
+      },
+      {
+        question: 'PC 를 집 밖에서 깨우려면?',
+        answer:
+          '같은 LAN 에 있는 다른 온라인 PC가 Wake-on-LAN 매직 패킷을 대신 전송합니다. MAC 주소가 등록된 오프라인 PC 옆의 Power 버튼으로 가능합니다. 공유기에서 WoL 허용이 필요합니다.',
       },
     ],
   },
@@ -198,6 +249,24 @@ function FeatureList({
   );
 }
 
+function ShortcutList({ shortcuts }: { shortcuts: NonNullable<Section['shortcuts']> }) {
+  return (
+    <div className="space-y-1.5">
+      {shortcuts.map((s) => (
+        <div
+          key={s.keys + s.action}
+          className="flex items-center justify-between gap-3 rounded-md border bg-background/50 px-3 py-2"
+        >
+          <span className="text-xs text-muted-foreground">{s.action}</span>
+          <kbd className="shrink-0 font-mono text-[10px] px-2 py-0.5 rounded border bg-muted text-foreground tracking-tight">
+            {s.keys}
+          </kbd>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function FAQList({ faqs }: { faqs: NonNullable<Section['faqs']> }) {
   return (
     <div className="space-y-2.5">
@@ -240,6 +309,7 @@ function CollapsibleSection({ section }: { section: Section }) {
           {section.steps && <StepList steps={section.steps} />}
           {section.items && <FeatureList items={section.items} />}
           {section.faqs && <FAQList faqs={section.faqs} />}
+          {section.shortcuts && <ShortcutList shortcuts={section.shortcuts} />}
         </div>
       )}
     </div>

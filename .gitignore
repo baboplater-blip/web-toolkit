@@ -10,3 +10,6 @@ supabase/.temp/
 package-lock.json
 
 .vercel
+agent/agent.pid
+agent-package/agent.pid
+web/public/_agent/

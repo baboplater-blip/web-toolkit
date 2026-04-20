@@ -30,6 +30,7 @@ export function HarnessEditor({ harness, onUpdated }: HarnessEditorProps) {
   // 다이얼로그 열 때마다 최신 값으로 리셋
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDescription(harness.description);
     }
   }, [open, harness.description]);

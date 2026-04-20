@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { Monitor, Wifi, WifiOff, Loader2, RotateCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRef } from 'react';

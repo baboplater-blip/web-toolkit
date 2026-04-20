@@ -123,8 +123,74 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* iOS Safari 에서 상단 pull-to-refresh 제거 — PWA 에선 새로고침이 의도치 않게 발생 */
+    overscroll-behavior-y: contain;
+    /* 테마 전환 시 배경/글자색을 짧게 crossfade. transition 은 CSS 변수가 아닌 resolved 색에 걸어야 동작. */
+    transition: background-color 160ms ease, color 160ms ease;
   }
   html {
     @apply font-sans;
+    /* iOS PWA 에서 상단/하단 safe area 에 배경색이 이어지도록 */
+    background-color: var(--background);
+    transition: background-color 160ms ease;
+  }
+  /* 테마 전환 애니메이션이 끝난 뒤엔 일반 인터랙션에서 색상 transition 을 유발하지 않도록
+     reduced-motion 사용자에 대한 대응도 포함. */
+  @media (prefers-reduced-motion: reduce) {
+    body, html {
+      transition: none;
+    }
   }
 }
+
+/* iOS notch/home indicator 안전 영역 — standalone(설치형) 에서만 의미있음 */
+@layer utilities {
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* focus-visible 일관성 — 키보드 탐색 시 명확한 링. mouse/touch 시엔 기본 스타일 유지. */
+  button:focus-visible,
+  a:focus-visible,
+  [role='button']:focus-visible,
+  [tabindex='0']:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+/* 사무실 현황 캐릭터 애니메이션 */
+@keyframes office-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-1px, 1px) rotate(-2deg); }
+  50% { transform: translate(1px, -1px) rotate(2deg); }
+  75% { transform: translate(-1px, 0) rotate(-1deg); }
+}
+
+@keyframes office-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes office-wave {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[office-shake_0\.6s_ease-in-out_infinite\],
+  .animate-\[office-bob_2\.4s_ease-in-out_infinite\],
+  .animate-\[office-wave_1\.6s_linear_infinite\] {
+    animation: none !important;
+  }
+}
+

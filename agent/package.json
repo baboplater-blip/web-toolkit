@@ -1,6 +1,6 @@
 {
   "name": "agent-control-panel-agent",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "PC Agent for Agent Control Panel - Claude Code 원격 실행 데몬",
   "main": "dist/index.js",
   "scripts": {

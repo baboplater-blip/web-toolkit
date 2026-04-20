@@ -1,58 +1,20 @@
 /**
- * 새 PC를 Agent로 등록하는 유틸리티 스크립트
- * 사용법: SUPABASE_URL=... SUPABASE_SERVICE_KEY=... npx tsx src/register.ts "PC 이름"
+ * 구형 수동 등록 스크립트 — Service Role Key 의존성 때문에 제거되었습니다.
+ * `npx tsx src/setup.ts` 또는 install.bat 을 사용하세요.
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { randomBytes } from 'crypto';
-
-const SUPABASE_URL = process.env.SUPABASE_URL!;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!;
-const AGENT_USER_ID = process.env.AGENT_USER_ID;
-const PC_NAME = process.argv[2];
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-  console.error('환경변수를 설정하세요: SUPABASE_URL, SUPABASE_SERVICE_KEY');
-  process.exit(1);
-}
-
-if (!PC_NAME) {
-  console.error('사용법: npx tsx src/register.ts "PC 이름"');
-  process.exit(1);
-}
-
-if (!AGENT_USER_ID) {
-  console.error('환경변수 AGENT_USER_ID 가 필요합니다.');
-  console.error('.env 파일에 AGENT_USER_ID=<소유자 UUID> 를 추가하세요.');
-  process.exit(1);
-}
-
-async function register() {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-  const apiKey = `acp_${randomBytes(24).toString('hex')}`;
-
-  const { data, error } = await supabase
-    .from('agents')
-    .insert({
-      name: PC_NAME,
-      api_key: apiKey,
-      user_id: AGENT_USER_ID,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('등록 실패:', error.message);
-    process.exit(1);
-  }
-
-  console.log('=== PC 등록 완료 ===');
-  console.log(`이름: ${data.name}`);
-  console.log(`ID: ${data.id}`);
-  console.log(`API 키: ${apiKey}`);
-  console.log('');
-  console.log('이 API 키를 해당 PC의 .env 파일에 설정하세요:');
-  console.log(`AGENT_API_KEY=${apiKey}`);
-}
-
-register();
+console.error(
+  [
+    '',
+    '[폐지됨] src/register.ts 는 더 이상 사용되지 않습니다.',
+    '',
+    '새 등록 절차:',
+    '  1) 웹 UI > "PC 추가" 로 설치 토큰을 발급받으세요.',
+    '  2) 원클릭: PowerShell 에 표시된 명령 (irm ... | iex) 을 실행하세요.',
+    '  3) 또는 수동: 이 폴더에서 `npx tsx src/setup.ts` 실행.',
+    '',
+    'Service Role Key 는 더는 PC 에 저장하지 않습니다.',
+    '',
+  ].join('\n'),
+);
+process.exit(1);

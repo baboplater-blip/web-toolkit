@@ -1,7 +1,15 @@
 import { spawn } from 'child_process';
 import { dirname, resolve } from 'path';
 import { log } from './logger';
+import { pushNotify } from './push-notify';
 import type { SupabaseClient } from '@supabase/supabase-js';
+
+/** executor 가 완료·에러 시점에 Web Push 를 보낼 때 필요한 문맥 */
+export interface PushCtx {
+  apiBase: string;
+  getAccessToken: () => Promise<string>;
+  agentName: string;
+}
 
 /** 입력 길이 상한 (토큰 과소비·DoS 방지) */
 const MAX_PROMPT_LENGTH = 20_000;
@@ -103,14 +111,31 @@ export async function executeClaudeCommand(
   userId: string,
   userMessageId: string,
   content: string,
-  harnessPath: string | null
+  harnessPath: string | null,
+  conversationId: string,
+  pushCtx?: PushCtx,
 ): Promise<void> {
+  // 같은 대화에 이전 user 메시지가 있었으면 자동 --continue.
+  // (CLI 의 --continue 는 cwd 의 마지막 Claude 세션을 이어간다. 동일 harness 내에서만 의미 있음.)
+  let priorUserCount = 0;
+  {
+    const { count } = await supabase
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('conversation_id', conversationId)
+      .eq('role', 'user')
+      .neq('id', userMessageId);
+    priorUserCount = count ?? 0;
+  }
+  const isContinueMode = priorUserCount > 0;
+
   // assistant 응답 메시지를 미리 생성 (streaming 상태)
   const { data: responseMsg, error: insertError } = await supabase
     .from('messages')
     .insert({
       agent_id: agentId,
       user_id: userId,
+      conversation_id: conversationId,
       role: 'assistant',
       content: '',
       status: 'streaming',
@@ -126,9 +151,7 @@ export async function executeClaudeCommand(
   const responseId = responseMsg.id;
 
   try {
-    // [CTX] 접두사 감지: 컨텍스트 유지 모드
-    const isContinueMode = content.startsWith('[CTX]');
-    let actualContent = isContinueMode ? content.slice(5) : content;
+    let actualContent = content;
 
     // 길이 제한 (DoS/토큰 과소비 방지)
     if (actualContent.length > MAX_PROMPT_LENGTH) {
@@ -148,7 +171,12 @@ export async function executeClaudeCommand(
     }
 
     // 인자 구성 (spawn shell:false 이므로 args 배열로 안전 전달)
-    const args = ['--print', '--dangerously-skip-permissions'];
+    // --dangerously-skip-permissions 는 기본 해제 — 사용자 PC 에서 마음대로 권한 승인
+    // 을 우회하면 안전 책임을 사용자가 인지하기 어려움. 필요 시 env 로 명시적 opt-in.
+    const args = ['--print'];
+    if (process.env.DANGEROUSLY_SKIP_PERMISSIONS === '1') {
+      args.push('--dangerously-skip-permissions');
+    }
     if (isContinueMode) {
       args.push('--continue');
     }
@@ -269,6 +297,19 @@ export async function executeClaudeCommand(
             })
             .eq('id', responseId);
           log('취소 완료');
+
+          if (pushCtx) {
+            pushNotify({
+              apiBase: pushCtx.apiBase,
+              getAccessToken: pushCtx.getAccessToken,
+              agentId,
+              conversationId,
+              title: `${pushCtx.agentName} 작업 중단`,
+              body: reason + ' — ' + content.slice(0, 80),
+              variant: 'warning',
+              tag: `conv-${conversationId}`,
+            });
+          }
         } else {
           await supabase
             .from('messages')
@@ -283,6 +324,24 @@ export async function executeClaudeCommand(
           // 완료 시 웹훅 알림 전송
           if (code === 0) {
             sendWebhook(supabase, agentId, content, fullOutput);
+          }
+
+          // Web Push 알림
+          if (pushCtx) {
+            const summary = (fullOutput || '(응답 없음)').replace(/\s+/g, ' ').slice(0, 140);
+            pushNotify({
+              apiBase: pushCtx.apiBase,
+              getAccessToken: pushCtx.getAccessToken,
+              agentId,
+              conversationId,
+              title:
+                code === 0
+                  ? `${pushCtx.agentName} 작업 완료`
+                  : `${pushCtx.agentName} 작업 실패 (코드 ${code})`,
+              body: summary,
+              variant: code === 0 ? 'success' : 'error',
+              tag: `conv-${conversationId}`,
+            });
           }
         }
         resolve();

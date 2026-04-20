@@ -1,39 +1,21 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { log } from './logger';
+import { nextCronRun } from './cron-parser';
 
 const CHECK_INTERVAL_MS = 60_000; // 1분마다 확인
 
 /**
- * 다음 실행 시간을 cron 표현식으로부터 계산.
- * 지원 형식: 분/시/요일 기반 (매시간, 매일, 매주)
+ * cron 표현식에서 다음 실행 시각 계산.
+ * 파싱 실패 시 1시간 뒤로 폴백 (스케줄러가 계속 살아있도록).
  */
 function calculateNextRun(cron: string): Date {
-  const [min, hour, , , weekday] = cron.split(' ');
-  const now = new Date();
-  const next = new Date();
-
-  if (hour === '*' && min !== '*') {
-    // 매시간 N분: 다음 정각+N분
-    next.setMinutes(parseInt(min), 0, 0);
-    if (next <= now) next.setHours(next.getHours() + 1);
-  } else if (hour !== '*' && weekday === '*') {
-    // 매일 N시 M분
-    next.setHours(parseInt(hour), parseInt(min), 0, 0);
-    if (next <= now) next.setDate(next.getDate() + 1);
-  } else if (weekday !== '*') {
-    // 매주 N요일
-    const targetDay = parseInt(weekday);
-    next.setHours(parseInt(hour), parseInt(min), 0, 0);
-    while (next.getDay() !== targetDay || next <= now) {
-      next.setDate(next.getDate() + 1);
-    }
-    next.setHours(parseInt(hour), parseInt(min), 0, 0);
-  } else {
-    // 기본: 1시간 후
-    next.setTime(now.getTime() + 60 * 60 * 1000);
+  try {
+    return nextCronRun(cron);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    log(`cron 파싱 실패 ("${cron}"): ${msg} — 1시간 뒤로 폴백`, 'warn');
+    return new Date(Date.now() + 60 * 60 * 1000);
   }
-
-  return next;
 }
 
 /**
@@ -61,13 +43,27 @@ async function checkAndRun(supabase: SupabaseClient, agentId: string, userId: st
   for (const schedule of dueSchedules) {
     log(`예약 실행: "${schedule.prompt.substring(0, 50)}..." (cron: ${schedule.cron_expression})`);
 
+    // 매 실행마다 전용 대화를 하나 새로 만들어 그 안에 메시지를 넣는다 (이전 실행과 섞이지 않도록).
+    const title = `[예약] ${schedule.prompt.replace(/\s+/g, ' ').slice(0, 40)}`;
+    const { data: conv, error: convErr } = await supabase
+      .from('conversations')
+      .insert({ agent_id: agentId, user_id: userId, title })
+      .select('id')
+      .single();
+
+    if (convErr || !conv) {
+      log(`예약 대화 생성 실패: ${convErr?.message}`, 'error');
+      continue;
+    }
+
     // 메시지 INSERT (기존 메시지 처리 플로우 재사용)
     // status를 'completed'로 설정하여 agent의 Realtime 구독이 선점할 수 있게 함
     const { error: insertError } = await supabase.from('messages').insert({
       agent_id: agentId,
       user_id: userId,
+      conversation_id: conv.id,
       role: 'user',
-      content: `[예약] ${schedule.prompt}`,
+      content: schedule.prompt,
       status: 'completed',
     });
 

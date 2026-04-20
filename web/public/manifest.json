@@ -1,22 +1,63 @@
 {
   "name": "Agent Control Panel",
   "short_name": "ACP",
-  "description": "Claude Code 원격 제어 시스템",
+  "description": "Claude Code 원격 제어 시스템 — 여러 PC 에서 실행되는 Claude Code 를 한 화면으로 관리",
   "start_url": "/chat",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
   "orientation": "portrait",
+  "categories": ["productivity", "developer", "utilities"],
+  "lang": "ko",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icon-192.svg",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.svg",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "채팅",
+      "short_name": "Chat",
+      "description": "PC 원격 제어 채팅",
+      "url": "/chat",
+      "icons": [
+        { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }
+      ]
+    },
+    {
+      "name": "현황",
+      "short_name": "Dashboard",
+      "description": "PC 상태·통계 대시보드",
+      "url": "/dashboard",
+      "icons": [
+        { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }
+      ]
+    },
+    {
+      "name": "설정",
+      "short_name": "Settings",
+      "description": "PC·예약·웹훅 설정",
+      "url": "/settings",
+      "icons": [
+        { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }
+      ]
     }
   ]
 }

@@ -84,14 +84,22 @@ agent-control-panel/
 ## 핵심 데이터 플로우
 
 ```
-1. 웹에서 PC 선택 + 하네스 선택 + 메시지 입력
-2. Supabase messages 테이블에 INSERT (role: 'user')
+1. 웹에서 PC 선택 + 대화(conversation) 선택 + 하네스 선택 + 메시지 입력
+   └─ 대화가 없으면 첫 메시지 전송 시 대화가 자동 생성되고, 첫 사용자 메시지로 제목 자동 세팅
+2. Supabase messages 테이블에 INSERT (role: 'user', conversation_id 포함)
 3. 해당 PC의 Agent가 Realtime subscription으로 새 메시지 감지
-4. Agent가 claude --print --harness {path} "{message}" 실행
-5. stdout를 chunk 단위로 읽어 messages 테이블에 스트리밍 업데이트
-6. 웹 UI가 Realtime subscription으로 응답 실시간 표시
-7. 실행 완료 시 메시지 상태를 'completed'로 업데이트
+4. Agent가 conversation_id 기준으로 같은 대화에 이전 user 메시지가 있으면 claude --continue 를 자동 적용
+   - claude --print 로 실행 (hardened: --dangerously-skip-permissions 는 env 옵션)
+5. stdout 을 chunk 단위로 messages 테이블에 스트리밍 업데이트 (500ms 디바운스)
+6. 웹 UI 가 Realtime subscription 으로 응답 실시간 표시
+7. 완료/에러/취소 시: 메시지 상태 업데이트 + 웹훅(옵션) + Web Push 알림 전송
 ```
+
+## 인증 & 보안 플로우
+
+- 웹 UI: Supabase Auth (이메일+비밀번호). JWT 는 브라우저에 저장.
+- PC Agent: Service Role Key 를 저장하지 않음. 부팅 시 `/api/agent/auth` 로 자신의 AGENT_API_KEY 를 HS256 JWT(sub=user_id, role=authenticated, ttl=1h)로 교환해 Supabase 접근. 서버만 `SUPABASE_JWT_SECRET` 을 알고 있다.
+- 설치: 웹 "PC 추가" → install_token 발급 → PowerShell 원라인(`irm .../api/install/<token> | iex`). 설치 시 PC 에 저장되는 값은 공개 anon key + 이 PC 용 api_key 뿐.
 
 ## DB 스키마 설계
 
@@ -143,10 +151,20 @@ CREATE TABLE messages (
 
 ## 제약사항
 
-- Claude Max 구독만 사용 (API 비용 0, claude CLI 직접 호출)
+- Claude Max 구독 기반 (API 비용 0, claude CLI 직접 호출). 향후 BYOK 모드 확장 가능.
 - Supabase 무료 tier: 500MB DB, 2GB bandwidth, 50MB file storage
 - Vercel 무료 tier: 100GB bandwidth, serverless function 10초 제한
-- 단일 사용자 시스템 (본인만 사용)
+- 다중 사용자 가능 (RLS 소유자 기반). 단, 기존 admin@acp.local 계정은 레거시 데이터 소유자이므로 **삭제 금지** — 새 사용자는 자기 이메일로 가입해 사용하면 된다.
+
+## 최근 반영된 변경 (Phase 2)
+
+- `conversations` 테이블 + `messages.conversation_id`: 대화 단위 스레드.
+- `--dangerously-skip-permissions` 기본 해제 (env `DANGEROUSLY_SKIP_PERMISSIONS=1` 로 opt-in).
+- Realtime 재연결 지수 백오프 + 토스트 피드백.
+- 템플릿 갤러리: 시스템 템플릿 시드 + 하네스 feature 기반 추천.
+- 대화 메시지 페이지네이션 (100개 단위 더 불러오기).
+- Web Push 알림: 설정 페이지에서 켜기, 작업 완료/에러/취소 시 모바일·데스크탑 푸시.
+- Cron 파서 확장: 표준 5-필드 (`*`, `,`, `-`, `*/N` 지원).
 
 ## 명령어
 

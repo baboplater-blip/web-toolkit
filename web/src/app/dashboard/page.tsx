@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AgentLogs } from '@/components/sidebar/AgentLogs';
+import { PullToRefresh } from '@/components/chat/PullToRefresh';
+import { OfficeView } from '@/components/dashboard/OfficeView';
 import {
   LayoutDashboard,
   Monitor,
@@ -18,10 +20,13 @@ import {
   Wifi,
   WifiOff,
   Play,
+  CalendarClock,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import type { Agent, Message } from '@/lib/supabase/types';
+import { isVersionOutdated, RECOMMENDED_AGENT_VERSION } from '@/lib/agent-version';
+import { classifyError, type ErrorCategory } from '@/lib/error-classify';
+import type { Agent, Message, Schedule } from '@/lib/supabase/types';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -72,6 +77,48 @@ const STATUS = {
   },
 } as const;
 
+/**
+ * 최근 7일 일간 완료량 시각화. 오늘은 가장 오른쪽 칸.
+ * 값 전부 0 이면 옅은 회색 바로 렌더. 최댓값 기준 정규화.
+ */
+function Sparkline({
+  values,
+  tone = 'success',
+  labelPrefix = '최근 7일 완료',
+}: {
+  values: number[];
+  tone?: 'success' | 'danger';
+  labelPrefix?: string;
+}) {
+  const padded = values.length === 7 ? values : [0, 0, 0, 0, 0, 0, 0];
+  const max = Math.max(1, ...padded);
+  const total = padded.reduce((a, b) => a + b, 0);
+  const colorFull = tone === 'danger' ? 'bg-rose-500' : 'bg-emerald-500';
+  const colorDim = tone === 'danger' ? 'bg-rose-500/60' : 'bg-emerald-500/60';
+  return (
+    <span
+      className="inline-flex items-end gap-[1px] h-3 shrink-0"
+      title={`${labelPrefix}: 총 ${total} · 일별 [${padded.join(', ')}]`}
+      aria-label={`${labelPrefix} ${padded.join(', ')}`}
+    >
+      {padded.map((v, i) => {
+        const h = Math.max(1, Math.round((v / max) * 10));
+        const isToday = i === padded.length - 1;
+        return (
+          <span
+            key={i}
+            className={cn(
+              'w-[3px] rounded-sm',
+              v === 0 ? 'bg-muted' : isToday ? colorFull : colorDim,
+            )}
+            style={{ height: `${h}px` }}
+          />
+        );
+      })}
+    </span>
+  );
+}
+
 function StatusPill({ status }: { status: keyof typeof STATUS }) {
   const s = STATUS[status];
   return (
@@ -106,8 +153,58 @@ export default function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastFetchedAt, setLastFetchedAt] = useState<number>(0);
   const [tab, setTab] = useState<TabKey>('recent');
   const [logAgentId, setLogAgentId] = useState<string | null>(null);
+
+  /** 에이전트별 오늘 처리 결과 count — PC 카드 배지에 표시 */
+  const [perAgentToday, setPerAgentToday] = useState<
+    Record<string, { completed: number; error: number }>
+  >({});
+
+  /**
+   * 에이전트별 최근 7일 일간 완료량 (가장 오래된 날 → 오늘 순 7칸).
+   * 스파크라인 높이 스케일링에 사용.
+   */
+  const [perAgentWeekly, setPerAgentWeekly] = useState<Record<string, number[]>>(
+    {},
+  );
+
+  /** 에이전트별 최근 7일 에러 일간 분포 — 빨간 스파크라인. */
+  const [perAgentWeeklyErrors, setPerAgentWeeklyErrors] = useState<
+    Record<string, number[]>
+  >({});
+
+  /** 최근 7일 에러 메시지 카테고리별 카운트 */
+  const [errorCategories, setErrorCategories] = useState<Record<ErrorCategory, number>>(
+    {} as Record<ErrorCategory, number>,
+  );
+  const [selectedErrorCategory, setSelectedErrorCategory] = useState<ErrorCategory | null>(
+    null,
+  );
+
+  const [schedules, setSchedules] = useState<Array<Schedule & { agent_name?: string }>>([]);
+
+  /** 이번 달 👍 받은 메시지 Top 3 + 월간 요약. */
+  const [monthlyReport, setMonthlyReport] = useState<{
+    totalUp: number;
+    totalDown: number;
+    totalCompleted: number;
+    totalError: number;
+    avgDurationSec: number | null;
+    mostActiveAgent: { id: string; name: string; count: number } | null;
+    topUp: Array<{ id: string; agent_id: string; conversation_id: string; content: string; created_at: string; agent_name: string }>;
+    monthLabel: string;
+  } | null>(null);
+
+  /**
+   * BYOK 에이전트별 이번 달 사용량 집계.
+   * 응답(assistant, completed) 문자 수 합계 → 대략적 토큰 추정(chars/4).
+   * 정밀 요금 추적이 아니라 "이 달에 얼마나 썼는지" 가늠용 지표.
+   */
+  const [byokUsage, setByokUsage] = useState<
+    Record<string, { calls: number; chars: number }>
+  >({});
 
   const supabase = createClient();
 
@@ -161,31 +258,237 @@ export default function DashboardPage() {
       );
     }
 
-    // 오늘 작업 통계 (assistant 메시지 기준)
+    // 오늘 작업 통계 (assistant 메시지 기준). agent_id 까지 함께 집계해서 PC 카드 배지에도 쓴다.
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const { data: todayData } = await supabase
       .from('messages')
-      .select('status')
+      .select('status, agent_id')
       .eq('role', 'assistant')
       .gte('created_at', todayStart.toISOString());
 
     if (todayData) {
-      const msgs = todayData as { status: string }[];
+      const msgs = todayData as { status: string; agent_id: string }[];
       setTodayStats({
         total: msgs.length,
         completed: msgs.filter((m) => m.status === 'completed').length,
         errors: msgs.filter((m) => m.status === 'error').length,
         cancelled: msgs.filter((m) => m.status === 'cancelled').length,
       });
+
+      const perAgent: Record<string, { completed: number; error: number }> = {};
+      for (const m of msgs) {
+        if (!m.agent_id) continue;
+        const bucket = perAgent[m.agent_id] ?? { completed: 0, error: 0 };
+        if (m.status === 'completed') bucket.completed += 1;
+        else if (m.status === 'error') bucket.error += 1;
+        perAgent[m.agent_id] = bucket;
+      }
+      setPerAgentToday(perAgent);
+    }
+
+    // 최근 7일 일간 완료량/에러량 (agent별) — 스파크라인용. 오늘 포함 정확히 7칸.
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - 6);
+    weekStart.setHours(0, 0, 0, 0);
+    const { data: weekData } = await supabase
+      .from('messages')
+      .select('agent_id, created_at, status, error_message, content')
+      .eq('role', 'assistant')
+      .in('status', ['completed', 'error'])
+      .gte('created_at', weekStart.toISOString())
+      .limit(10000);
+
+    if (weekData) {
+      const weekly: Record<string, number[]> = {};
+      const weeklyErrors: Record<string, number[]> = {};
+      const categoryCounts: Record<ErrorCategory, number> = {} as Record<
+        ErrorCategory,
+        number
+      >;
+      for (const row of weekData as {
+        agent_id: string;
+        created_at: string;
+        status: string;
+        error_message: string | null;
+        content: string | null;
+      }[]) {
+        if (!row.agent_id) continue;
+        const when = new Date(row.created_at);
+        when.setHours(0, 0, 0, 0);
+        const dayIndex = Math.floor(
+          (when.getTime() - weekStart.getTime()) / 86_400_000,
+        );
+        if (dayIndex < 0 || dayIndex > 6) continue;
+        if (row.status === 'completed') {
+          const bucket = weekly[row.agent_id] ?? [0, 0, 0, 0, 0, 0, 0];
+          bucket[dayIndex] += 1;
+          weekly[row.agent_id] = bucket;
+        } else if (row.status === 'error') {
+          const bucket = weeklyErrors[row.agent_id] ?? [0, 0, 0, 0, 0, 0, 0];
+          bucket[dayIndex] += 1;
+          weeklyErrors[row.agent_id] = bucket;
+          const { category } = classifyError(row.error_message, row.content);
+          categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
+        }
+      }
+      setPerAgentWeekly(weekly);
+      setPerAgentWeeklyErrors(weeklyErrors);
+      setErrorCategories(categoryCounts);
+    }
+
+    // 월간 반응 리포트 — 이번 달 메시지 집계 (리액션·완료·에러·평균시간·가장 활발한 PC).
+    {
+      const monthStartR = new Date();
+      monthStartR.setDate(1);
+      monthStartR.setHours(0, 0, 0, 0);
+      const [reactRes, perfRes] = await Promise.all([
+        supabase
+          .from('messages')
+          .select('id, agent_id, conversation_id, content, created_at, reaction')
+          .not('reaction', 'is', null)
+          .gte('created_at', monthStartR.toISOString())
+          .order('created_at', { ascending: false })
+          .limit(200),
+        supabase
+          .from('messages')
+          .select('agent_id, status, created_at, updated_at')
+          .eq('role', 'assistant')
+          .gte('created_at', monthStartR.toISOString())
+          .limit(20_000),
+      ]);
+      const reactionRows = (reactRes.data ?? []) as Array<{
+        id: string;
+        agent_id: string;
+        conversation_id: string;
+        content: string;
+        created_at: string;
+        reaction: 'up' | 'down' | 'curious' | null;
+      }>;
+      const perfRows = (perfRes.data ?? []) as Array<{
+        agent_id: string;
+        status: string;
+        created_at: string;
+        updated_at: string;
+      }>;
+
+      const ups = reactionRows.filter((r) => r.reaction === 'up');
+      const downs = reactionRows.filter((r) => r.reaction === 'down');
+      const topUp = ups.slice(0, 3).map((r) => ({
+        id: r.id,
+        agent_id: r.agent_id,
+        conversation_id: r.conversation_id,
+        content: r.content,
+        created_at: r.created_at,
+        agent_name: agentMap.get(r.agent_id) ?? '알 수 없음',
+      }));
+
+      let totalCompleted = 0;
+      let totalError = 0;
+      let durSum = 0;
+      let durN = 0;
+      const perAgentCount = new Map<string, number>();
+      for (const r of perfRows) {
+        if (r.status === 'completed') {
+          totalCompleted += 1;
+          const dur =
+            new Date(r.updated_at).getTime() - new Date(r.created_at).getTime();
+          if (dur > 0 && dur < 10 * 60 * 1000) {
+            // 10분 넘는 건 타임아웃/비정상으로 간주하고 평균에서 제외.
+            durSum += dur;
+            durN += 1;
+          }
+        } else if (r.status === 'error') {
+          totalError += 1;
+        }
+        perAgentCount.set(r.agent_id, (perAgentCount.get(r.agent_id) ?? 0) + 1);
+      }
+      let mostActive: { id: string; name: string; count: number } | null = null;
+      for (const [id, count] of perAgentCount) {
+        if (!mostActive || count > mostActive.count) {
+          mostActive = { id, name: agentMap.get(id) ?? '알 수 없음', count };
+        }
+      }
+      setMonthlyReport({
+        totalUp: ups.length,
+        totalDown: downs.length,
+        totalCompleted,
+        totalError,
+        avgDurationSec: durN > 0 ? Math.round(durSum / durN / 1000) : null,
+        mostActiveAgent: mostActive,
+        topUp,
+        monthLabel: `${monthStartR.getFullYear()}년 ${monthStartR.getMonth() + 1}월`,
+      });
+    }
+
+    // 예약 스케줄 현황 — enabled 위주, 최근 실행 순.
+    {
+      const { data: schedData } = await supabase
+        .from('schedules')
+        .select('*')
+        .eq('enabled', true)
+        .order('next_run', { ascending: true, nullsFirst: false })
+        .limit(10);
+      if (schedData) {
+        setSchedules(
+          (schedData as Schedule[]).map((s) => ({
+            ...s,
+            agent_name: agentMap.get(s.agent_id) ?? '알 수 없음',
+          })),
+        );
+      }
+    }
+
+    // BYOK 사용량 — 이번 달 BYOK 에이전트들의 완료된 응답만 집계.
+    const byokIds = agentList.filter((a) => a.api_mode === 'byok').map((a) => a.id);
+    if (byokIds.length > 0) {
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+      const { data: usageData } = await supabase
+        .from('messages')
+        .select('agent_id, content')
+        .in('agent_id', byokIds)
+        .eq('role', 'assistant')
+        .eq('status', 'completed')
+        .gte('created_at', monthStart.toISOString())
+        .limit(5000);
+      if (usageData) {
+        const agg: Record<string, { calls: number; chars: number }> = {};
+        for (const row of usageData as { agent_id: string; content: string | null }[]) {
+          if (!row.agent_id) continue;
+          const bucket = agg[row.agent_id] ?? { calls: 0, chars: 0 };
+          bucket.calls += 1;
+          bucket.chars += (row.content ?? '').length;
+          agg[row.agent_id] = bucket;
+        }
+        setByokUsage(agg);
+      }
+    } else {
+      setByokUsage({});
     }
 
     setLoading(false);
+    setLastFetchedAt(Date.now());
   }, [supabase, logAgentId]);
 
   useEffect(() => {
+    // 최초 마운트 시 + 탭 복귀 시 + 60초 주기 자동 refresh.
     fetchData();
-
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        fetchData();
+      }
+    }, 60_000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') fetchData();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRefresh = async () => {
@@ -209,11 +512,20 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-dvh bg-background pb-14 md:pb-0">
+      <PullToRefresh onRefresh={handleRefresh} />
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-[52px] max-w-5xl items-center gap-2 px-4">
           <LayoutDashboard className="h-5 w-5" />
           <h1 className="text-base font-semibold">현황</h1>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            {lastFetchedAt > 0 && (
+              <span
+                className="hidden sm:inline text-[10px] text-muted-foreground"
+                title={new Date(lastFetchedAt).toLocaleString('ko-KR')}
+              >
+                {timeAgo(new Date(lastFetchedAt).toISOString())} 갱신
+              </span>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -231,7 +543,10 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-4 p-4">
+      {/* 사무실 뷰 — PC 별 캐릭터 + 현재 작업 */}
+      <OfficeView agents={agents} />
+
+      <main id="main-content" className="mx-auto max-w-5xl space-y-4 p-4">
         {/* 전체 현황 */}
         <section className="rounded-xl border bg-card p-4">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -293,6 +608,303 @@ export default function DashboardPage() {
           )}
         </section>
 
+        {/* BYOK 사용량 — BYOK 모드 에이전트가 있을 때만 노출 */}
+        {(() => {
+          const byokAgents = agents.filter((a) => a.api_mode === 'byok');
+          if (byokAgents.length === 0) return null;
+          const totalCalls = Object.values(byokUsage).reduce((s, v) => s + v.calls, 0);
+          const totalChars = Object.values(byokUsage).reduce((s, v) => s + v.chars, 0);
+          const estTokens = Math.round(totalChars / 4);
+          const monthName = new Date().toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+          });
+          return (
+            <section className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  BYOK 사용량
+                </h2>
+                <span className="text-[10px] text-muted-foreground">· {monthName}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-violet-300">{totalCalls.toLocaleString('ko-KR')}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">응답 수</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-violet-300">
+                    {totalChars > 0 ? (totalChars / 1000).toFixed(1) + 'k' : '0'}
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">총 문자</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-violet-300">
+                    {estTokens > 0 ? (estTokens / 1000).toFixed(1) + 'k' : '0'}
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">대략 토큰*</p>
+                </div>
+              </div>
+              {byokAgents.length > 1 && (
+                <div className="mt-3 space-y-1">
+                  {byokAgents.map((a) => {
+                    const u = byokUsage[a.id];
+                    if (!u || u.calls === 0) return null;
+                    return (
+                      <div key={a.id} className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground truncate">{a.name}</span>
+                        <span className="text-violet-300 font-medium">
+                          {u.calls} · {(u.chars / 1000).toFixed(1)}k자
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="mt-3 text-[10px] text-muted-foreground">
+                * 문자 수 ÷ 4 기준 대략 추정. 한국어는 실제 토큰 수가 더 많을 수 있음.
+              </p>
+            </section>
+          );
+        })()}
+
+        {/* 최근 7일 에러 분류 — 총 에러가 있을 때만 렌더 */}
+        {(() => {
+          const entries = Object.entries(errorCategories).filter(([, n]) => n > 0);
+          const total = entries.reduce((a, [, n]) => a + n, 0);
+          if (total === 0) return null;
+          const labels: Record<ErrorCategory, string> = {
+            token_limit: '토큰 한도',
+            rate_limit_tpm: 'Rate limit (TPM)',
+            rate_limit_rpm: 'Rate limit (RPM)',
+            rate_limit: 'Rate limit',
+            timeout: '타임아웃',
+            permission_windows: 'Windows 권한',
+            permission: '권한 거부',
+            network: '네트워크',
+            auth: '인증 실패',
+            cancelled: '사용자 중단',
+            cli_missing: 'CLI 누락',
+            cli_error: 'CLI 실행 오류',
+            disk_full: '디스크 가득참',
+            unknown: '기타',
+          };
+          const colors: Record<ErrorCategory, string> = {
+            token_limit: 'bg-violet-500/15 border-violet-500/40 text-violet-300',
+            rate_limit_tpm: 'bg-amber-500/15 border-amber-500/40 text-amber-300',
+            rate_limit_rpm: 'bg-amber-500/15 border-amber-500/40 text-amber-300',
+            rate_limit: 'bg-amber-500/15 border-amber-500/40 text-amber-300',
+            timeout: 'bg-orange-500/15 border-orange-500/40 text-orange-300',
+            permission_windows: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
+            permission: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
+            network: 'bg-sky-500/15 border-sky-500/40 text-sky-300',
+            auth: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
+            cancelled: 'bg-zinc-500/15 border-zinc-500/40 text-zinc-300',
+            cli_missing: 'bg-fuchsia-500/15 border-fuchsia-500/40 text-fuchsia-300',
+            cli_error: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
+            disk_full: 'bg-orange-500/15 border-orange-500/40 text-orange-300',
+            unknown: 'bg-muted border-border text-muted-foreground',
+          };
+          const sorted = entries.sort((a, b) => b[1] - a[1]);
+          return (
+            <section className="rounded-xl border bg-card p-4">
+              <div className="mb-3 flex items-baseline justify-between">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  최근 7일 에러 원인
+                </h2>
+                <span className="text-xs text-muted-foreground">총 {total}건</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {sorted.map(([cat, count]) => {
+                  const active = selectedErrorCategory === cat;
+                  return (
+                    <button
+                      type="button"
+                      key={cat}
+                      onClick={() =>
+                        setSelectedErrorCategory(active ? null : (cat as ErrorCategory))
+                      }
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-transform',
+                        colors[cat as ErrorCategory],
+                        active && 'ring-2 ring-offset-2 ring-offset-card ring-primary scale-105',
+                      )}
+                      title={
+                        active
+                          ? '선택 해제 (에러 목록 필터 해제)'
+                          : '에러 목록을 이 카테고리로 필터'
+                      }
+                    >
+                      <span>{labels[cat as ErrorCategory]}</span>
+                      <span className="font-mono text-[11px] opacity-90">{count}</span>
+                    </button>
+                  );
+                })}
+                {selectedErrorCategory && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedErrorCategory(null)}
+                    className="text-[11px] underline text-muted-foreground ml-auto"
+                  >
+                    필터 해제
+                  </button>
+                )}
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* 예약 스케줄 현황 */}
+        {schedules.length > 0 && (
+          <section className="rounded-xl border bg-card p-4">
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <CalendarClock className="h-3.5 w-3.5" />
+                다음 예약 실행
+              </h2>
+              <Link
+                href="/settings?tab=schedule"
+                className="text-[11px] text-muted-foreground hover:text-foreground underline"
+              >
+                전체 보기
+              </Link>
+            </div>
+            <div className="space-y-1.5">
+              {schedules.slice(0, 5).map((s) => {
+                const next = s.next_run ? new Date(s.next_run) : null;
+                const overdue = next && next.getTime() < Date.now();
+                return (
+                  <div
+                    key={s.id}
+                    className="flex items-center gap-2 rounded-md border bg-background p-2"
+                  >
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium">
+                      {s.agent_name}
+                    </span>
+                    <p className="flex-1 min-w-0 truncate text-xs">{s.prompt}</p>
+                    <span
+                      className={cn(
+                        'shrink-0 font-mono text-[10px]',
+                        overdue ? 'text-rose-400' : 'text-muted-foreground',
+                      )}
+                      title={next ? next.toLocaleString('ko-KR') : ''}
+                    >
+                      {next
+                        ? overdue
+                          ? '대기 중'
+                          : next.toLocaleTimeString('ko-KR', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                        : '—'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('schedules')
+                          .update({ enabled: false })
+                          .eq('id', s.id);
+                        if (!error) {
+                          setSchedules((prev) => prev.filter((x) => x.id !== s.id));
+                        }
+                      }}
+                      className="shrink-0 rounded text-muted-foreground hover:text-rose-400 px-1 py-0.5 text-[10px]"
+                      title="이 예약 일시중지"
+                      aria-label="예약 일시중지"
+                    >
+                      일시중지
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* 이번 달 리포트 — 완료/에러/평균시간/가장 활발한 PC/반응 */}
+        {monthlyReport && (monthlyReport.totalCompleted + monthlyReport.totalError) > 0 && (
+          <section className="rounded-xl border bg-card p-4">
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {monthlyReport.monthLabel} 월간 리포트
+              </h2>
+              <span className="text-xs text-muted-foreground">
+                👍 {monthlyReport.totalUp} · 👎 {monthlyReport.totalDown}
+              </span>
+            </div>
+
+            {/* 월간 KPI — 2x2 그리드 */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="rounded-lg border bg-background p-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">완료</p>
+                <p className="text-lg font-bold text-emerald-400">
+                  {monthlyReport.totalCompleted.toLocaleString('ko-KR')}
+                </p>
+              </div>
+              <div className="rounded-lg border bg-background p-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">에러</p>
+                <p className={cn(
+                  'text-lg font-bold',
+                  monthlyReport.totalError > 0 ? 'text-rose-400' : 'text-muted-foreground',
+                )}>
+                  {monthlyReport.totalError.toLocaleString('ko-KR')}
+                </p>
+              </div>
+              <div className="rounded-lg border bg-background p-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">평균 응답</p>
+                <p className="text-lg font-bold">
+                  {monthlyReport.avgDurationSec !== null
+                    ? monthlyReport.avgDurationSec < 60
+                      ? `${monthlyReport.avgDurationSec}초`
+                      : `${Math.round(monthlyReport.avgDurationSec / 6) / 10}분`
+                    : '—'}
+                </p>
+              </div>
+              <div className="rounded-lg border bg-background p-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">가장 활발한 PC</p>
+                <p className="text-sm font-bold truncate" title={monthlyReport.mostActiveAgent?.name}>
+                  {monthlyReport.mostActiveAgent?.name ?? '—'}
+                </p>
+                {monthlyReport.mostActiveAgent && (
+                  <p className="text-[10px] text-muted-foreground">
+                    {monthlyReport.mostActiveAgent.count.toLocaleString('ko-KR')} 건
+                  </p>
+                )}
+              </div>
+            </div>
+            {monthlyReport.topUp.length > 0 ? (
+              <div className="space-y-2">
+                <p className="text-[11px] text-muted-foreground">
+                  이번 달 가장 마음에 든 응답 Top 3
+                </p>
+                {monthlyReport.topUp.map((r, i) => (
+                  <Link
+                    key={r.id}
+                    href={`/chat?agent=${r.agent_id}&conversation=${r.conversation_id}&message=${r.id}`}
+                    className="block rounded-lg border bg-background p-3 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                  >
+                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-1">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 font-bold">
+                        {i + 1}
+                      </span>
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                        {r.agent_name}
+                      </span>
+                      <span className="ml-auto">{timeAgo(r.created_at)}</span>
+                    </div>
+                    <p className="line-clamp-2 text-xs">{r.content.slice(0, 200)}</p>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-muted-foreground">
+                아직 이번 달 👍 반응이 없습니다.
+              </p>
+            )}
+          </section>
+        )}
+
         {/* PC 상태 */}
         <section className="rounded-xl border bg-card p-4">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -317,8 +929,33 @@ export default function DashboardPage() {
                         {agent.name}
                       </p>
                       <StatusPill status={agent.status} />
+                      <Sparkline values={perAgentWeekly[agent.id] ?? [0, 0, 0, 0, 0, 0, 0]} />
+                      {(perAgentWeeklyErrors[agent.id]?.reduce((a, b) => a + b, 0) ?? 0) > 0 && (
+                        <Sparkline
+                          values={perAgentWeeklyErrors[agent.id] ?? [0, 0, 0, 0, 0, 0, 0]}
+                          tone="danger"
+                          labelPrefix="최근 7일 에러"
+                        />
+                      )}
+                      {(() => {
+                        const w = perAgentWeekly[agent.id] ?? [0, 0, 0, 0, 0, 0, 0];
+                        const we = perAgentWeeklyErrors[agent.id] ?? [0, 0, 0, 0, 0, 0, 0];
+                        const totalW = w.reduce((a, b) => a + b, 0);
+                        const totalE = we.reduce((a, b) => a + b, 0);
+                        const denom = totalW + totalE;
+                        if (denom < 3 || totalE === 0) return null;
+                        const pct = Math.round((totalE / denom) * 100);
+                        return (
+                          <span
+                            className="text-[10px] font-semibold text-rose-400"
+                            title={`최근 7일 에러율 ${totalE}/${denom}`}
+                          >
+                            {pct}% 에러
+                          </span>
+                        );
+                      })()}
                     </div>
-                    <div className="mt-0.5 flex items-center gap-2">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
                       {agent.last_heartbeat && (
                         <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
                           <Clock className="h-3 w-3" />
@@ -334,6 +971,46 @@ export default function DashboardPage() {
                             </span>
                           </>
                         )}
+                      {(() => {
+                        const today = perAgentToday[agent.id];
+                        if (!today || (today.completed === 0 && today.error === 0)) return null;
+                        return (
+                          <>
+                            <Separator orientation="vertical" className="h-3" />
+                            <span className="text-[11px] text-emerald-400">
+                              ✓ {today.completed}
+                            </span>
+                            {today.error > 0 && (
+                              <span className="text-[11px] text-red-400">
+                                ✗ {today.error}
+                              </span>
+                            )}
+                            <span className="text-[10px] text-muted-foreground">오늘</span>
+                          </>
+                        );
+                      })()}
+                      {agent.api_mode === 'byok' && (
+                        <>
+                          <Separator orientation="vertical" className="h-3" />
+                          <span
+                            className="rounded-sm border border-violet-500/40 bg-violet-500/10 px-1 py-[1px] text-[9px] font-semibold text-violet-400 uppercase tracking-wider"
+                            title="Anthropic API 키로 동작 (BYOK)"
+                          >
+                            API
+                          </span>
+                        </>
+                      )}
+                      {isVersionOutdated(agent.agent_version) && (
+                        <>
+                          <Separator orientation="vertical" className="h-3" />
+                          <span
+                            className="rounded-sm border border-amber-500/40 bg-amber-500/10 px-1 py-[1px] text-[9px] font-semibold text-amber-400 uppercase tracking-wider"
+                            title={`현재 v${agent.agent_version} · 권장 v${RECOMMENDED_AGENT_VERSION}`}
+                          >
+                            업데이트
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
@@ -387,55 +1064,77 @@ export default function DashboardPage() {
             ) : (
               <ScrollArea className="max-h-80">
                 <div className="space-y-2">
-                  {recentMessages.map((msg) => (
-                    <div
+                  {recentMessages.map((msg) => {
+                    const href = `/chat?agent=${msg.agent_id}&conversation=${msg.conversation_id}&message=${msg.id}`;
+                    return (
+                      <Link
+                        key={msg.id}
+                        href={href}
+                        className="block space-y-1 rounded-lg border p-2.5 transition-colors hover:bg-muted/50 hover:border-primary/40"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                            {msg.agent_name}
+                          </span>
+                          <span className="shrink-0 text-[11px] text-muted-foreground">
+                            {timeAgo(msg.created_at)}
+                          </span>
+                        </div>
+                        <p className="line-clamp-2 text-xs text-muted-foreground">
+                          {msg.content.substring(0, 140)}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            )
+          ) : (() => {
+            const filtered = selectedErrorCategory
+              ? errorMessages.filter(
+                  (m) =>
+                    classifyError(m.error_message, m.content).category ===
+                    selectedErrorCategory,
+                )
+              : errorMessages;
+            if (filtered.length === 0) {
+              return (
+                <p className="py-4 text-center text-sm text-muted-foreground">
+                  {selectedErrorCategory
+                    ? '이 카테고리 에러가 없습니다'
+                    : '에러가 없습니다'}
+                </p>
+              );
+            }
+            return (
+            <ScrollArea className="max-h-80">
+              <div className="space-y-2">
+                {filtered.map((msg) => {
+                  const href = `/chat?agent=${msg.agent_id}&conversation=${msg.conversation_id}&message=${msg.id}`;
+                  return (
+                    <Link
                       key={msg.id}
-                      className="space-y-1 rounded-lg border p-2.5"
+                      href={href}
+                      className="block space-y-1 rounded-lg border border-red-500/20 bg-red-500/5 p-2.5 transition-colors hover:bg-red-500/10 hover:border-red-500/40"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                        <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] font-medium text-red-400">
                           {msg.agent_name}
                         </span>
                         <span className="shrink-0 text-[11px] text-muted-foreground">
                           {timeAgo(msg.created_at)}
                         </span>
                       </div>
-                      <p className="line-clamp-2 text-xs text-muted-foreground">
-                        {msg.content.substring(0, 140)}
+                      <p className="line-clamp-2 text-xs text-red-400">
+                        {msg.error_message ?? msg.content.substring(0, 140)}
                       </p>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            )
-          ) : errorMessages.length === 0 ? (
-            <p className="py-4 text-center text-sm text-muted-foreground">
-              에러가 없습니다
-            </p>
-          ) : (
-            <ScrollArea className="max-h-80">
-              <div className="space-y-2">
-                {errorMessages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className="space-y-1 rounded-lg border border-red-500/20 bg-red-500/5 p-2.5"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] font-medium text-red-400">
-                        {msg.agent_name}
-                      </span>
-                      <span className="shrink-0 text-[11px] text-muted-foreground">
-                        {timeAgo(msg.created_at)}
-                      </span>
-                    </div>
-                    <p className="line-clamp-2 text-xs text-red-400">
-                      {msg.error_message ?? msg.content.substring(0, 140)}
-                    </p>
-                  </div>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </ScrollArea>
-          )}
+            );
+          })()}
         </section>
 
         {/* 에이전트 로그 */}

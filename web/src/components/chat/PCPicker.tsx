@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Monitor, RotateCw, Loader2, Wifi, WifiOff } from 'lucide-react';
+import { ChevronDown, Monitor, RotateCw, Loader2, Wifi, WifiOff, Power, Pencil } from 'lucide-react';
+import { toast } from '@/components/ui/toast';
 import {
   Sheet,
   SheetContent,
@@ -11,6 +12,8 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
+import { isVersionOutdated, RECOMMENDED_AGENT_VERSION } from '@/lib/agent-version';
+import { formatOfflineDuration, formatIdleDuration } from '@/lib/format-time';
 import type { Agent } from '@/lib/supabase/types';
 
 interface PCPickerProps {
@@ -56,15 +59,80 @@ function formatSystemInfo(info: Record<string, unknown> | null | undefined): str
 
 export function PCPicker({ agents, selectedId, onSelect, loading }: PCPickerProps) {
   const [open, setOpen] = useState(false);
+  const [wakingId, setWakingId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState('');
   const supabase = createClient();
   const selected = agents.find((a) => a.id === selectedId) ?? null;
 
+  const startRename = (e: React.MouseEvent, agent: Agent) => {
+    e.stopPropagation();
+    setRenamingId(agent.id);
+    setRenameDraft(agent.name);
+  };
+
+  const commitRename = async (agentId: string) => {
+    const next = renameDraft.trim().slice(0, 40);
+    if (!next) {
+      setRenamingId(null);
+      return;
+    }
+    const { error } = await supabase
+      .from('agents')
+      .update({ name: next })
+      .eq('id', agentId);
+    if (error) {
+      toast(`이름 변경 실패: ${error.message}`, { variant: 'error' });
+      return;
+    }
+    setRenamingId(null);
+    setRenameDraft('');
+  };
+
   const handleRestart = async (e: React.MouseEvent, agentId: string) => {
     e.stopPropagation();
-    await supabase
+    const { error } = await supabase
       .from('agents')
       .update({ restart_requested: true })
       .eq('id', agentId);
+    if (error) {
+      toast(`재시작 요청 실패: ${error.message}`, { variant: 'error' });
+      return;
+    }
+    toast('재시작 요청을 보냈습니다', { variant: 'info', duration: 4000 });
+  };
+
+  const handleWake = async (e: React.MouseEvent, agentId: string) => {
+    e.stopPropagation();
+    setWakingId(agentId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast('로그인이 필요합니다', { variant: 'warning' });
+        return;
+      }
+      const res = await fetch('/api/agent/wake', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ agent_id: agentId }),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        helper?: string;
+        details?: string;
+        error?: string;
+      };
+      if (!res.ok || !data.ok) {
+        toast(data.details ?? data.error ?? '깨우기 실패', { variant: 'error', duration: 6000 });
+        return;
+      }
+      toast(`"${data.helper}" 가 매직 패킷 전송 중...`, { variant: 'info', duration: 6000 });
+    } finally {
+      setWakingId(null);
+    }
   };
 
   const handleSelect = (id: string) => {
@@ -145,7 +213,7 @@ export function PCPicker({ agents, selectedId, onSelect, loading }: PCPickerProp
                       type="button"
                       onClick={() => handleSelect(agent.id)}
                       className={cn(
-                        'flex w-full items-center gap-3 rounded-lg px-3 text-left transition-colors',
+                        'group flex w-full items-center gap-3 rounded-lg px-3 text-left transition-colors',
                         'min-h-[56px]',
                         isSelected
                           ? 'bg-primary/10'
@@ -160,23 +228,112 @@ export function PCPicker({ agents, selectedId, onSelect, loading }: PCPickerProp
                         aria-label={status.label}
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {agent.name}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          {renamingId === agent.id ? (
+                            <input
+                              autoFocus
+                              value={renameDraft}
+                              onChange={(e) => setRenameDraft(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                e.stopPropagation();
+                                if (e.key === 'Enter') commitRename(agent.id);
+                                if (e.key === 'Escape') setRenamingId(null);
+                              }}
+                              onBlur={() => commitRename(agent.id)}
+                              className="truncate text-sm font-medium bg-background border rounded px-1 py-0.5 flex-1 min-w-0"
+                            />
+                          ) : (
+                            <>
+                              <p className="truncate text-sm font-medium">{agent.name}</p>
+                              <button
+                                type="button"
+                                onClick={(e) => startRename(e, agent)}
+                                className="shrink-0 opacity-0 group-hover:opacity-100 hover:text-foreground text-muted-foreground transition-opacity"
+                                title="이름 변경"
+                                aria-label="이름 변경"
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </button>
+                            </>
+                          )}
+                          {agent.api_mode === 'byok' && (
+                            <span
+                              className="shrink-0 rounded-sm border border-violet-500/40 bg-violet-500/10 px-1 py-[1px] text-[9px] font-semibold text-violet-400 uppercase tracking-wider"
+                              title="Anthropic API 키로 동작 (BYOK)"
+                            >
+                              API
+                            </span>
+                          )}
+                          {isVersionOutdated(agent.agent_version) && (
+                            <span
+                              className="shrink-0 rounded-sm border border-amber-500/40 bg-amber-500/10 px-1 py-[1px] text-[9px] font-semibold text-amber-400 uppercase tracking-wider"
+                              title={`현재 v${agent.agent_version} · 권장 v${RECOMMENDED_AGENT_VERSION} — 재설치 권장`}
+                            >
+                              업데이트
+                            </span>
+                          )}
+                          {agent.status === 'online' && (() => {
+                            const idle = formatIdleDuration(agent.last_activity_at);
+                            return idle ? (
+                              <span
+                                className="shrink-0 rounded-sm border border-sky-500/40 bg-sky-500/10 px-1 py-[1px] text-[9px] font-semibold text-sky-400 uppercase tracking-wider"
+                                title={`마지막 활동 이후 ${idle} — 명령을 보내지 않은 지 오래됐습니다`}
+                              >
+                                유휴
+                              </span>
+                            ) : null;
+                          })()}
+                          {agent.restart_requested && (
+                            <span
+                              className="shrink-0 rounded-sm border border-amber-500/40 bg-amber-500/10 px-1 py-[1px] text-[9px] font-semibold text-amber-400 uppercase tracking-wider animate-pulse"
+                              title="재시작 요청이 전송되었고 에이전트가 아직 처리하지 않았습니다"
+                            >
+                              재시작중
+                            </span>
+                          )}
+                        </div>
                         {sysInfo && (
                           <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
                             {sysInfo}
+                            {agent.agent_version && (
+                              <span className="ml-1 opacity-60">· v{agent.agent_version}</span>
+                            )}
                           </p>
                         )}
                       </div>
                       <span
                         className={cn(
-                          'shrink-0 text-[11px] font-medium',
+                          'shrink-0 text-right text-[11px] font-medium',
                           status.text,
                         )}
                       >
-                        {status.label}
+                        <span>{status.label}</span>
+                        {agent.status === 'offline' && (() => {
+                          const dur = formatOfflineDuration(agent.last_heartbeat);
+                          return dur ? (
+                            <span className="block text-[10px] font-normal text-muted-foreground mt-0.5">
+                              {dur}
+                            </span>
+                          ) : null;
+                        })()}
                       </span>
+                      {agent.status === 'offline' && agent.mac_address && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleWake(e, agent.id)}
+                          disabled={wakingId === agent.id}
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-amber-400 hover:bg-amber-500/10 disabled:opacity-50 transition-colors"
+                          title="깨우기 (Wake-on-LAN)"
+                          aria-label="깨우기"
+                        >
+                          {wakingId === agent.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Power className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={(e) => handleRestart(e, agent.id)}

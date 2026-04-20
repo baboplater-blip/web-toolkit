@@ -188,6 +188,7 @@ export default function HarnessesPage() {
     setLoading(false);
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => { fetchData(); }, []);
 
   /** 하네스 개선 명령을 해당 PC Agent에게 전송 */
@@ -216,12 +217,24 @@ export default function HarnessesPage() {
 
 프로젝트 코드를 먼저 탐색한 후 CLAUDE.md를 수정해주세요.`;
 
-    // 해당 agent에게 메시지 전송
+    // 해당 agent에게 메시지 전송 — 전용 대화 하나를 새로 만들어 그 안에 넣는다.
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    const { data: conv, error: convErr } = await supabase
+      .from('conversations')
+      .insert({
+        agent_id: h.agent_id,
+        user_id: user.id,
+        title: `하네스 분석: ${h.name}`,
+      })
+      .select('id')
+      .single();
+    if (convErr || !conv) return;
+
     await supabase.from('messages').insert({
       agent_id: h.agent_id,
+      conversation_id: conv.id,
       harness_id: h.id,
       role: 'user' as const,
       content: prompt,

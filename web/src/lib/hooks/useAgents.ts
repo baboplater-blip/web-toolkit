@@ -2,13 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { subscribeWithRetry, type RealtimeRetryHandle } from '@/lib/realtime-retry';
+import { toast } from '@/components/ui/toast';
 import type { Agent } from '@/lib/supabase/types';
-import type { RealtimeChannel } from '@supabase/supabase-js';
 
-/** 하트비트가 이 시간(ms) 이상 지나면 오프라인으로 판정 */
 const HEARTBEAT_STALE_MS = 2 * 60 * 1000;
 
-/** last_heartbeat 기반으로 stale agent의 status를 'offline'으로 보정 */
 function applyStaleCheck(agent: Agent): Agent {
   if (
     agent.status !== 'offline' &&
@@ -20,7 +19,6 @@ function applyStaleCheck(agent: Agent): Agent {
   return agent;
 }
 
-/** online/busy → offline 전환 시 브라우저 알림 */
 function notifyOffline(agent: Agent) {
   if (typeof window === 'undefined' || !('Notification' in window)) return;
   if (Notification.permission !== 'granted') return;
@@ -34,33 +32,51 @@ function notifyOffline(agent: Agent) {
 export function useAgents() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
-  const channelRef = useRef<RealtimeChannel | null>(null);
+  const retryRef = useRef<RealtimeRetryHandle | null>(null);
+  const activityRetryRef = useRef<RealtimeRetryHandle | null>(null);
   const prevStatusRef = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     const supabase = createClient();
+    let cancelled = false;
 
     async function fetchAgents() {
-      // 세션이 유효한지 먼저 확인 — 만료된 토큰을 자동 갱신
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         console.warn('[useAgents] 세션 없음 — 로그인 필요');
-        setLoading(false);
+        if (!cancelled) setLoading(false);
         return;
       }
 
-      const { data, error } = await supabase
-        .from('agents')
-        .select('*')
-        .order('name');
+      const [agentRes, convRes] = await Promise.all([
+        supabase.from('agents').select('*').order('name'),
+        supabase
+          .from('conversations')
+          .select('agent_id, last_message_at')
+          .order('last_message_at', { ascending: false }),
+      ]);
 
-      if (error) {
-        console.error('[useAgents] 쿼리 실패:', error.message);
+      if (cancelled) return;
+      if (agentRes.error) {
+        console.error('[useAgents] 쿼리 실패:', agentRes.error.message);
+        toast(`PC 목록을 불러오지 못했습니다: ${agentRes.error.message}`, { variant: 'error' });
       }
-      if (data) {
-        const checked = (data as Agent[]).map(applyStaleCheck);
+
+      const latestByAgent = new Map<string, string>();
+      for (const row of (convRes.data ?? []) as { agent_id: string; last_message_at: string }[]) {
+        if (!latestByAgent.has(row.agent_id)) {
+          latestByAgent.set(row.agent_id, row.last_message_at);
+        }
+      }
+
+      if (agentRes.data) {
+        const checked = (agentRes.data as Agent[]).map((a) => ({
+          ...applyStaleCheck(a),
+          last_activity_at: latestByAgent.get(a.id) ?? null,
+        }));
         setAgents(checked);
-        // 초기 상태 스냅샷 저장 (오프라인 전환 감지용)
         for (const a of checked) {
           prevStatusRef.current.set(a.id, a.status);
         }
@@ -70,48 +86,107 @@ export function useAgents() {
 
     fetchAgents();
 
-    // 기존 채널 정리
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-    }
+    activityRetryRef.current = subscribeWithRetry({
+      key: 'agents-activity',
+      label: 'PC 활동',
+      rebuild: () =>
+        supabase
+          .channel(`agents-activity-${Date.now()}`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'conversations' },
+            (payload) => {
+              // INSERT/UPDATE 시 last_message_at 이 최신화되므로 그에 맞춰 agent.last_activity_at 을 bump.
+              if (payload.eventType === 'DELETE') return;
+              const row = payload.new as { agent_id?: string; last_message_at?: string };
+              if (!row?.agent_id || !row?.last_message_at) return;
+              setAgents((prev) =>
+                prev.map((a) => {
+                  if (a.id !== row.agent_id) return a;
+                  const cur = a.last_activity_at;
+                  if (cur && new Date(cur).getTime() >= new Date(row.last_message_at!).getTime()) {
+                    return a;
+                  }
+                  return { ...a, last_activity_at: row.last_message_at! };
+                }),
+              );
+            },
+          ),
+      cleanup: (ch) => {
+        supabase.removeChannel(ch);
+      },
+    });
 
-    const channel = supabase
-      .channel(`agents-status-${Date.now()}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'agents' },
-        (payload) => {
-          if (payload.eventType === 'UPDATE') {
-            const updated = applyStaleCheck(payload.new as Agent);
-            // 오프라인 전환 감지
-            const prevStatus = prevStatusRef.current.get(updated.id);
-            if (
-              prevStatus &&
-              prevStatus !== 'offline' &&
-              updated.status === 'offline'
-            ) {
-              notifyOffline(updated);
+    retryRef.current = subscribeWithRetry({
+      key: 'agents-status',
+      label: 'PC 상태',
+      rebuild: () =>
+        supabase
+          .channel(`agents-status-${Date.now()}`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'agents' },
+            (payload) => {
+              if (payload.eventType === 'UPDATE') {
+                const updated = applyStaleCheck(payload.new as Agent);
+                const prevStatus = prevStatusRef.current.get(updated.id);
+                if (
+                  prevStatus &&
+                  prevStatus !== 'offline' &&
+                  updated.status === 'offline'
+                ) {
+                  notifyOffline(updated);
+                }
+                prevStatusRef.current.set(updated.id, updated.status);
+                setAgents((prev) =>
+                  prev.map((a) => (a.id === updated.id ? updated : a)),
+                );
+              } else if (payload.eventType === 'INSERT') {
+                setAgents((prev) => [...prev, applyStaleCheck(payload.new as Agent)]);
+              } else if (payload.eventType === 'DELETE') {
+                setAgents((prev) =>
+                  prev.filter((a) => a.id !== (payload.old as Agent).id),
+                );
+              }
+            },
+          ),
+      cleanup: (ch) => {
+        supabase.removeChannel(ch);
+      },
+    });
+
+    // UPDATE 이벤트가 뜸할 때도 heartbeat 신선도를 UI 에서 정기적으로 재평가.
+    // 크래시/전원차단으로 agents.status 가 DB 에서 'online' 인 채 남아도 2분 임계로 offline 처리된다.
+    const staleRecheck = setInterval(() => {
+      setAgents((prev) => {
+        let changed = false;
+        const next = prev.map((a) => {
+          const checked = applyStaleCheck(a);
+          if (checked.status !== a.status) {
+            changed = true;
+            const prevStatus = prevStatusRef.current.get(a.id);
+            if (prevStatus && prevStatus !== 'offline' && checked.status === 'offline') {
+              notifyOffline(checked);
             }
-            prevStatusRef.current.set(updated.id, updated.status);
-            setAgents((prev) =>
-              prev.map((a) => (a.id === updated.id ? updated : a))
-            );
-          } else if (payload.eventType === 'INSERT') {
-            setAgents((prev) => [...prev, applyStaleCheck(payload.new as Agent)]);
-          } else if (payload.eventType === 'DELETE') {
-            setAgents((prev) =>
-              prev.filter((a) => a.id !== (payload.old as Agent).id)
-            );
+            prevStatusRef.current.set(a.id, checked.status);
           }
-        }
-      )
-      .subscribe();
-
-    channelRef.current = channel;
+          return checked;
+        });
+        return changed ? next : prev;
+      });
+    }, 30_000);
 
     return () => {
-      supabase.removeChannel(channel);
-      channelRef.current = null;
+      cancelled = true;
+      if (retryRef.current) {
+        retryRef.current.stop();
+        retryRef.current = null;
+      }
+      if (activityRetryRef.current) {
+        activityRetryRef.current.stop();
+        activityRetryRef.current = null;
+      }
+      clearInterval(staleRecheck);
     };
   }, []);
 

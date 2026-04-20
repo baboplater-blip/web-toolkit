@@ -161,10 +161,28 @@ export async function syncHarnesses(supabase: SupabaseClient, agentId: string, u
 
   console.log(`[하네스] ${uniqueHarnesses.length}개 발견`);
 
-  await supabase.from('harnesses').delete().eq('agent_id', agentId);
+  // 기존에 웹에서 사용자가 수동 추가한 하네스 경로는 보존한다.
+  // 스캔으로 등록됐던 것만 삭제 후 재삽입한다.
+  const { data: manualRows } = await supabase
+    .from('harnesses')
+    .select('path')
+    .eq('agent_id', agentId)
+    .eq('source', 'manual');
+  const manualPaths = new Set(
+    ((manualRows as { path: string }[] | null) ?? []).map((r) => r.path),
+  );
 
-  if (uniqueHarnesses.length > 0) {
-    const rows = uniqueHarnesses.map((h) => ({
+  await supabase
+    .from('harnesses')
+    .delete()
+    .eq('agent_id', agentId)
+    .eq('source', 'scan');
+
+  // 스캔 결과 중 수동 등록과 경로가 겹치는 것은 스킵 (수동이 우선).
+  const toInsert = uniqueHarnesses.filter((h) => !manualPaths.has(h.path));
+
+  if (toInsert.length > 0) {
+    const rows = toInsert.map((h) => ({
       agent_id: agentId,
       user_id: userId,
       name: h.name,
@@ -173,15 +191,20 @@ export async function syncHarnesses(supabase: SupabaseClient, agentId: string, u
       content: h.content,
       score: h.score,
       features: h.features,
+      source: 'scan',
     }));
 
     const { error } = await supabase.from('harnesses').insert(rows);
     if (error) {
       console.error('[하네스] 등록 실패:', error.message);
     } else {
-      uniqueHarnesses.forEach((h) =>
+      toInsert.forEach((h) =>
         console.log(`  - ${h.name}: ${h.score}점 [${h.features.join(', ')}]`)
       );
     }
+  }
+
+  if (manualPaths.size > 0) {
+    console.log(`[하네스] 수동 등록 ${manualPaths.size}개 보존됨`);
   }
 }

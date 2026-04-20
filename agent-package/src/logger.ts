@@ -3,13 +3,36 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 let _supabase: SupabaseClient | null = null;
 let _agentId: string | null = null;
 let _userId: string | null = null;
-const _buffer: { level: string; message: string }[] = [];
+const _buffer: {
+  level: string;
+  message: string;
+  conversationId: string | null;
+  messageId: string | null;
+}[] = [];
 let _flushTimer: NodeJS.Timeout | null = null;
+
+/**
+ * 현재 실행 중인 작업의 컨텍스트.
+ * executor 는 큐로 직렬 실행되므로 모듈 레벨 단일 변수로 안전.
+ * setLogContext 후 발생하는 log() 호출이 이 컨텍스트로 태깅된다.
+ */
+let _currentConversationId: string | null = null;
+let _currentMessageId: string | null = null;
 
 export function initLogger(supabase: SupabaseClient, agentId: string, userId: string) {
   _supabase = supabase;
   _agentId = agentId;
   _userId = userId;
+}
+
+export function setLogContext(ctx: { conversationId?: string | null; messageId?: string | null }) {
+  _currentConversationId = ctx.conversationId ?? null;
+  _currentMessageId = ctx.messageId ?? null;
+}
+
+export function clearLogContext() {
+  _currentConversationId = null;
+  _currentMessageId = null;
 }
 
 /**
@@ -43,7 +66,12 @@ export function log(message: string, level: 'info' | 'warn' | 'error' = 'info') 
   console.log(`${prefix} ${message}`);
 
   if (_supabase && _agentId) {
-    _buffer.push({ level, message: redact(message) });
+    _buffer.push({
+      level,
+      message: redact(message),
+      conversationId: _currentConversationId,
+      messageId: _currentMessageId,
+    });
     scheduleFlush();
   }
 }
@@ -62,6 +90,8 @@ async function flush() {
     user_id: _userId,
     level: entry.level,
     message: entry.message,
+    conversation_id: entry.conversationId,
+    message_id: entry.messageId,
   }));
 
   await _supabase.from('agent_logs').insert(rows).then(({ error }) => {

@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import {
   ChevronDown,
   ChevronRight,
@@ -14,9 +13,16 @@ import {
   Trash2,
   X,
   Loader2,
+  Play,
 } from 'lucide-react';
+import { toast } from '@/components/ui/toast';
 
 import type { Schedule } from '@/lib/supabase/types';
+import {
+  describeCron as describeCronShared,
+  isValidCron,
+  nextCronRun,
+} from '@/lib/cron-parser';
 
 interface ScheduleManagerProps {
   agentId: string | null;
@@ -24,62 +30,41 @@ interface ScheduleManagerProps {
 
 /** cron 프리셋 옵션 */
 const CRON_PRESETS = [
+  { label: '5분마다', value: '*/5 * * * *' },
+  { label: '15분마다', value: '*/15 * * * *' },
   { label: '매시간', value: '0 * * * *' },
   { label: '매일 오전 9시', value: '0 9 * * *' },
   { label: '매일 오후 6시', value: '0 18 * * *' },
+  { label: '평일 오전 9시', value: '0 9 * * 1-5' },
   { label: '매주 월요일 9시', value: '0 9 * * 1' },
+  { label: '매주 금요일 6시', value: '0 18 * * 5' },
+  { label: '매월 1일 자정', value: '0 0 1 * *' },
   { label: '커스텀', value: 'custom' },
 ] as const;
+
+/** cron 표현식 도움말 예시 */
+const CRON_HELP_EXAMPLES: { cron: string; desc: string }[] = [
+  { cron: '*/10 * * * *', desc: '10분마다' },
+  { cron: '0 9,18 * * *', desc: '매일 9시·18시' },
+  { cron: '30 9 * * 1-5', desc: '평일 9:30' },
+  { cron: '0 */3 * * *', desc: '3시간마다 정각' },
+  { cron: '0 9 1,15 * *', desc: '매월 1·15일 9시' },
+];
 
 /** cron 표현식을 사람이 읽을 수 있는 한국어로 변환 */
 function describeCron(cron: string): string {
   const preset = CRON_PRESETS.find((p) => p.value === cron);
   if (preset && preset.value !== 'custom') return preset.label;
-
-  const parts = cron.split(' ');
-  if (parts.length !== 5) return cron;
-
-  const [min, hour, , , weekday] = parts;
-
-  if (hour === '*' && min !== '*') {
-    return `매시간 ${min}분`;
-  }
-  if (weekday !== '*' && hour !== '*') {
-    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-    const dayName = dayNames[parseInt(weekday)] ?? weekday;
-    return `매주 ${dayName}요일 ${hour}:${min.padStart(2, '0')}`;
-  }
-  if (hour !== '*') {
-    return `매일 ${hour}:${min.padStart(2, '0')}`;
-  }
-
-  return cron;
+  return describeCronShared(cron);
 }
 
-/** 다음 실행 시간을 계산 */
+/** 다음 실행 시간을 계산 (표준 5필드 cron 지원). 실패 시 빈 문자열. */
 function calculateNextRun(cron: string): string {
-  const [min, hour, , , weekday] = cron.split(' ');
-  const now = new Date();
-  const next = new Date();
-
-  if (hour === '*' && min !== '*') {
-    next.setMinutes(parseInt(min), 0, 0);
-    if (next <= now) next.setHours(next.getHours() + 1);
-  } else if (hour !== '*' && weekday === '*') {
-    next.setHours(parseInt(hour), parseInt(min), 0, 0);
-    if (next <= now) next.setDate(next.getDate() + 1);
-  } else if (weekday !== '*') {
-    const targetDay = parseInt(weekday);
-    next.setHours(parseInt(hour), parseInt(min), 0, 0);
-    while (next.getDay() !== targetDay || next <= now) {
-      next.setDate(next.getDate() + 1);
-    }
-    next.setHours(parseInt(hour), parseInt(min), 0, 0);
-  } else {
-    next.setTime(now.getTime() + 60 * 60 * 1000);
+  try {
+    return nextCronRun(cron).toISOString();
+  } catch {
+    return '';
   }
-
-  return next.toISOString();
 }
 
 export function ScheduleManager({ agentId }: ScheduleManagerProps) {
@@ -109,6 +94,7 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
   }, [agentId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSchedules();
     setExpanded(false);
     setAdding(false);
@@ -119,9 +105,7 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
 
     const cronValue = selectedPreset === 'custom' ? customCron.trim() : selectedPreset;
     if (!cronValue) return;
-
-    // cron 형식 기본 검증 (5개 필드)
-    if (cronValue.split(' ').length !== 5) return;
+    if (!isValidCron(cronValue)) return;
 
     setSaving(true);
 
@@ -171,6 +155,49 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
   const handleDelete = async (scheduleId: string) => {
     await supabaseRef.current.from('schedules').delete().eq('id', scheduleId);
     fetchSchedules();
+  };
+
+  /** 스케줄을 지금 1회 즉시 실행 — 새 대화를 만들고 해당 prompt 를 user 메시지로 insert */
+  const handleRunNow = async (scheduleId: string) => {
+    if (!agentId) return;
+    const schedule = schedules.find((s) => s.id === scheduleId);
+    if (!schedule) return;
+    const supabase = supabaseRef.current;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      toast('로그인이 필요합니다', { variant: 'warning' });
+      return;
+    }
+
+    const title = `[수동 실행] ${schedule.prompt.replace(/\s+/g, ' ').slice(0, 40)}`;
+    const { data: conv, error: convErr } = await supabase
+      .from('conversations')
+      .insert({ agent_id: agentId, user_id: user.id, title })
+      .select('id')
+      .single();
+    if (convErr || !conv) {
+      toast(`대화 생성 실패: ${convErr?.message ?? '알 수 없음'}`, { variant: 'error' });
+      return;
+    }
+
+    const { error } = await supabase.from('messages').insert({
+      agent_id: agentId,
+      user_id: user.id,
+      conversation_id: conv.id,
+      role: 'user',
+      content: schedule.prompt,
+      status: 'completed',
+    });
+    if (error) {
+      toast(`메시지 전송 실패: ${error.message}`, { variant: 'error' });
+      return;
+    }
+    toast('지금 한 번 실행했습니다 — 새 대화로 확인하세요', {
+      variant: 'success',
+      duration: 6000,
+    });
   };
 
   const handleCancelAdd = () => {
@@ -237,12 +264,47 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
                 ))}
               </select>
               {selectedPreset === 'custom' && (
-                <Input
-                  value={customCron}
-                  onChange={(e) => setCustomCron(e.target.value)}
-                  placeholder="분 시 일 월 요일 (예: 30 9 * * *)"
-                  className="text-xs h-7"
-                />
+                <div className="space-y-1">
+                  <Input
+                    value={customCron}
+                    onChange={(e) => setCustomCron(e.target.value)}
+                    placeholder="분 시 일 월 요일 (예: 30 9 * * 1-5)"
+                    className="text-xs h-7 font-mono"
+                  />
+                  {customCron.trim() && (
+                    <p
+                      className={
+                        isValidCron(customCron.trim())
+                          ? 'text-[10px] text-emerald-400'
+                          : 'text-[10px] text-rose-400'
+                      }
+                    >
+                      {isValidCron(customCron.trim())
+                        ? describeCronShared(customCron.trim())
+                        : 'cron 형식이 올바르지 않습니다'}
+                    </p>
+                  )}
+                  <details className="text-[10px] text-muted-foreground">
+                    <summary className="cursor-pointer hover:text-foreground">
+                      cron 문법 예시
+                    </summary>
+                    <ul className="mt-1 space-y-0.5 pl-3">
+                      <li>• <code className="font-mono">*</code> 모든 값</li>
+                      <li>• <code className="font-mono">a,b,c</code> 목록 (예: <code>0,30</code> — 0분·30분)</li>
+                      <li>• <code className="font-mono">a-b</code> 범위 (예: <code>1-5</code> — 월~금)</li>
+                      <li>• <code className="font-mono">*/N</code> 주기 (예: <code>*/10</code> — 10분마다)</li>
+                    </ul>
+                    <p className="mt-1.5 text-[10px]">자주 쓰이는 예:</p>
+                    <ul className="mt-0.5 pl-3 space-y-0.5">
+                      {CRON_HELP_EXAMPLES.map((ex) => (
+                        <li key={ex.cron} className="flex gap-2">
+                          <code className="font-mono text-foreground">{ex.cron}</code>
+                          <span>→ {ex.desc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </div>
               )}
               <div className="flex justify-end gap-1">
                 <Button
@@ -258,7 +320,11 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
                   size="sm"
                   className="h-6 text-[10px] px-2"
                   onClick={handleAdd}
-                  disabled={!newPrompt.trim() || saving || (selectedPreset === 'custom' && !customCron.trim())}
+                  disabled={
+                    !newPrompt.trim() ||
+                    saving ||
+                    (selectedPreset === 'custom' && (!customCron.trim() || !isValidCron(customCron.trim())))
+                  }
                 >
                   {saving ? (
                     <Loader2 className="h-2.5 w-2.5 animate-spin mr-0.5" />
@@ -304,6 +370,14 @@ export function ScheduleManager({ agentId }: ScheduleManagerProps) {
                     {describeCron(schedule.cron_expression)}
                   </p>
                 </div>
+                <button
+                  onClick={() => handleRunNow(schedule.id)}
+                  className="p-0.5 rounded hover:bg-emerald-500/10 text-muted-foreground hover:text-emerald-500 transition-colors shrink-0"
+                  title="지금 한 번 실행"
+                  aria-label="지금 한 번 실행"
+                >
+                  <Play className="h-2.5 w-2.5" />
+                </button>
                 <button
                   onClick={() => handleDelete(schedule.id)}
                   className="p-0.5 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors shrink-0"
