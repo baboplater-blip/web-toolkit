@@ -15,23 +15,17 @@ import { MessageList } from '@/components/chat/MessageList';
 import { MessageInput } from '@/components/chat/MessageInput';
 import { PCPicker } from '@/components/chat/PCPicker';
 import { ConversationPicker } from '@/components/chat/ConversationPicker';
+import { ConversationOptionsMenu } from '@/components/chat/ConversationOptionsMenu';
 import { SummaryCard } from '@/components/chat/SummaryCard';
 import { HarnessSelector } from '@/components/sidebar/HarnessSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateMenu } from '@/components/chat/TemplateMenu';
-import { Trash2, Square, Search, X, MessageSquarePlus, SlidersHorizontal, Download, MoreHorizontal, Share2, GitFork, Pin, ChevronUp, ChevronDown, WifiOff, Clock, Timer } from 'lucide-react';
+import { Square, Search, X, MessageSquarePlus, SlidersHorizontal, Download, Pin, ChevronUp, ChevronDown, WifiOff, Clock } from 'lucide-react';
 import { formatOfflineDuration } from '@/lib/format-time';
 import { toast } from '@/components/ui/toast';
 import { createClient } from '@/lib/supabase/client';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import { exportConversation, copyConversationToClipboard } from '@/lib/export-conversation';
+import { exportConversation } from '@/lib/export-conversation';
 import { refineTitle } from '@/lib/refine-title';
 import { safeUuidParam } from '@/lib/validators';
 import {
@@ -811,136 +805,17 @@ function ChatPageInner() {
           </Button>
         )}
         {selectedConversationId && messages.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-11 w-11 text-muted-foreground"
-                  aria-label="대화 옵션"
-                  title="대화 옵션"
-                />
-              }
-            >
-              <MoreHorizontal className="h-5 w-5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-44">
-              <DropdownMenuItem
-                onClick={async () => {
-                  if (!selectedConversationId) return;
-                  const supabase = createClient();
-                  const { data: conv } = await supabase
-                    .from('conversations')
-                    .select('timeout_override_minutes')
-                    .eq('id', selectedConversationId)
-                    .maybeSingle();
-                  const current = (conv as { timeout_override_minutes: number | null } | null)
-                    ?.timeout_override_minutes ?? null;
-                  const input = prompt(
-                    '이 대화의 타임아웃 (분)\n\n비워두면 PC 기본값 사용.\n1~720 분 (최대 12시간).',
-                    current ? String(current) : '',
-                  );
-                  if (input === null) return; // 취소
-                  const raw = input.trim();
-                  const parsed = raw === '' ? null : parseInt(raw, 10);
-                  if (parsed !== null && (isNaN(parsed) || parsed < 1 || parsed > 720)) {
-                    toast('1~720 분 사이 숫자로 입력해주세요', { variant: 'warning' });
-                    return;
-                  }
-                  const { error } = await supabase
-                    .from('conversations')
-                    .update({ timeout_override_minutes: parsed })
-                    .eq('id', selectedConversationId);
-                  if (error) {
-                    toast(`저장 실패: ${error.message}`, { variant: 'error' });
-                    return;
-                  }
-                  toast(
-                    parsed === null
-                      ? '대화 타임아웃 해제 — PC 기본값 사용'
-                      : `대화 타임아웃 ${parsed}분 설정됨`,
-                    { variant: 'success' },
-                  );
-                }}
-              >
-                <Timer className="h-4 w-4" />
-                대화 타임아웃 설정
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleCreateShareLink}>
-                <Share2 className="h-4 w-4" />
-                공유 링크 만들기
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleRevokeShareLinks}>
-                <X className="h-4 w-4" />
-                공유 링크 모두 해제
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={async () => {
-                  if (!selectedConversationId) return;
-                  const forked = await forkConversation(selectedConversationId);
-                  if (forked) {
-                    setSelectedConversationId(forked.id);
-                    toast(`"${forked.title}" 로 복제했습니다`, { variant: 'success', duration: 6000 });
-                  }
-                }}
-              >
-                <GitFork className="h-4 w-4" />
-                대화 포크 (복제)
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={async () => {
-                  const conv = conversations.find((c) => c.id === selectedConversationId);
-                  if (!conv) return;
-                  const ok = await copyConversationToClipboard(conv, messages);
-                  toast(
-                    ok ? 'Markdown 을 클립보드에 복사했습니다' : '클립보드 복사 실패',
-                    { variant: ok ? 'success' : 'error' },
-                  );
-                }}
-              >
-                <Download className="h-4 w-4" />
-                Markdown 복사 (클립보드)
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  const conv = conversations.find((c) => c.id === selectedConversationId);
-                  if (conv) exportConversation(conv, messages, 'markdown');
-                }}
-              >
-                <Download className="h-4 w-4" />
-                Markdown 파일로 내보내기
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  const conv = conversations.find((c) => c.id === selectedConversationId);
-                  if (conv) exportConversation(conv, messages, 'json');
-                }}
-              >
-                <Download className="h-4 w-4" />
-                JSON 으로 내보내기
-              </DropdownMenuItem>
-              {!isRunning && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      if (confirm('이 대화의 메시지를 모두 삭제할까요?')) {
-                        clearMessages();
-                      }
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    메시지 삭제
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ConversationOptionsMenu
+            conversationId={selectedConversationId}
+            conversations={conversations}
+            messages={messages}
+            isRunning={isRunning}
+            onCreateShareLink={handleCreateShareLink}
+            onRevokeShareLinks={handleRevokeShareLinks}
+            onFork={forkConversation}
+            onSelectConversation={setSelectedConversationId}
+            onClearMessages={clearMessages}
+          />
         )}
       </header>
 

@@ -232,7 +232,9 @@ export function ConversationPicker({
       const raw = localStorage.getItem('acp:search-history');
       if (raw) {
         const list = JSON.parse(raw);
-        if (Array.isArray(list)) setSearchHistory(list.filter((v) => typeof v === 'string'));
+        if (Array.isArray(list))
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setSearchHistory(list.filter((v) => typeof v === 'string'));
       }
     } catch {}
   }, [open]);

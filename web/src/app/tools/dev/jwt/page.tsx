@@ -36,6 +36,7 @@ export default function JwtPage() {
 
       let expStatus: string | null = null;
       if (typeof payload.exp === 'number') {
+        // eslint-disable-next-line react-hooks/purity
         const now = Math.floor(Date.now() / 1000);
         expStatus = payload.exp < now ? 'expired' : 'valid';
       }

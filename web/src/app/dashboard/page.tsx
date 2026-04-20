@@ -8,6 +8,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { AgentLogs } from '@/components/sidebar/AgentLogs';
 import { PullToRefresh } from '@/components/chat/PullToRefresh';
 import { OfficeView } from '@/components/dashboard/OfficeView';
+import { OverallStatusCard } from '@/components/dashboard/OverallStatusCard';
+import { TodayStatsCard } from '@/components/dashboard/TodayStatsCard';
+import { ByokUsageCard } from '@/components/dashboard/ByokUsageCard';
+import { ErrorCategoriesCard } from '@/components/dashboard/ErrorCategoriesCard';
 import {
   LayoutDashboard,
   Monitor,
@@ -547,212 +551,21 @@ export default function DashboardPage() {
       <OfficeView agents={agents} />
 
       <main id="main-content" className="mx-auto max-w-5xl space-y-4 p-4">
-        {/* 전체 현황 */}
-        <section className="rounded-xl border bg-card p-4">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            전체 현황
-          </h2>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-3xl font-bold">{agents.length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">총 PC</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-emerald-400">{onlineCount}</p>
-              <p className="mt-1 text-xs text-muted-foreground">온라인</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-zinc-400">{offlineCount}</p>
-              <p className="mt-1 text-xs text-muted-foreground">오프라인</p>
-            </div>
-          </div>
-        </section>
+        <OverallStatusCard
+          total={agents.length}
+          online={onlineCount}
+          offline={offlineCount}
+        />
 
-        {/* 오늘 작업 통계 */}
-        <section className="rounded-xl border bg-card p-4">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            오늘 작업
-          </h2>
-          <div className="grid grid-cols-4 gap-3 text-center">
-            <div>
-              <p className="text-2xl font-bold">{todayStats.total}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">총 작업</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-emerald-400">{todayStats.completed}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">완료</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-red-400">{todayStats.errors}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">오류</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-zinc-400">{todayStats.cancelled}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">취소</p>
-            </div>
-          </div>
-          {todayStats.total > 0 && (
-            <div className="mt-3 flex items-center gap-2">
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-emerald-500 transition-all"
-                  style={{
-                    width: `${Math.round((todayStats.completed / todayStats.total) * 100)}%`,
-                  }}
-                />
-              </div>
-              <span className="shrink-0 text-xs font-medium text-emerald-400">
-                {Math.round((todayStats.completed / todayStats.total) * 100)}%
-              </span>
-            </div>
-          )}
-        </section>
+        <TodayStatsCard stats={todayStats} />
 
-        {/* BYOK 사용량 — BYOK 모드 에이전트가 있을 때만 노출 */}
-        {(() => {
-          const byokAgents = agents.filter((a) => a.api_mode === 'byok');
-          if (byokAgents.length === 0) return null;
-          const totalCalls = Object.values(byokUsage).reduce((s, v) => s + v.calls, 0);
-          const totalChars = Object.values(byokUsage).reduce((s, v) => s + v.chars, 0);
-          const estTokens = Math.round(totalChars / 4);
-          const monthName = new Date().toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-          });
-          return (
-            <section className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  BYOK 사용량
-                </h2>
-                <span className="text-[10px] text-muted-foreground">· {monthName}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div>
-                  <p className="text-2xl font-bold text-violet-300">{totalCalls.toLocaleString('ko-KR')}</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">응답 수</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-violet-300">
-                    {totalChars > 0 ? (totalChars / 1000).toFixed(1) + 'k' : '0'}
-                  </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">총 문자</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-violet-300">
-                    {estTokens > 0 ? (estTokens / 1000).toFixed(1) + 'k' : '0'}
-                  </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">대략 토큰*</p>
-                </div>
-              </div>
-              {byokAgents.length > 1 && (
-                <div className="mt-3 space-y-1">
-                  {byokAgents.map((a) => {
-                    const u = byokUsage[a.id];
-                    if (!u || u.calls === 0) return null;
-                    return (
-                      <div key={a.id} className="flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground truncate">{a.name}</span>
-                        <span className="text-violet-300 font-medium">
-                          {u.calls} · {(u.chars / 1000).toFixed(1)}k자
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              <p className="mt-3 text-[10px] text-muted-foreground">
-                * 문자 수 ÷ 4 기준 대략 추정. 한국어는 실제 토큰 수가 더 많을 수 있음.
-              </p>
-            </section>
-          );
-        })()}
+        <ByokUsageCard agents={agents} usage={byokUsage} />
 
-        {/* 최근 7일 에러 분류 — 총 에러가 있을 때만 렌더 */}
-        {(() => {
-          const entries = Object.entries(errorCategories).filter(([, n]) => n > 0);
-          const total = entries.reduce((a, [, n]) => a + n, 0);
-          if (total === 0) return null;
-          const labels: Record<ErrorCategory, string> = {
-            token_limit: '토큰 한도',
-            rate_limit_tpm: 'Rate limit (TPM)',
-            rate_limit_rpm: 'Rate limit (RPM)',
-            rate_limit: 'Rate limit',
-            timeout: '타임아웃',
-            permission_windows: 'Windows 권한',
-            permission: '권한 거부',
-            network: '네트워크',
-            auth: '인증 실패',
-            cancelled: '사용자 중단',
-            cli_missing: 'CLI 누락',
-            cli_error: 'CLI 실행 오류',
-            disk_full: '디스크 가득참',
-            unknown: '기타',
-          };
-          const colors: Record<ErrorCategory, string> = {
-            token_limit: 'bg-violet-500/15 border-violet-500/40 text-violet-300',
-            rate_limit_tpm: 'bg-amber-500/15 border-amber-500/40 text-amber-300',
-            rate_limit_rpm: 'bg-amber-500/15 border-amber-500/40 text-amber-300',
-            rate_limit: 'bg-amber-500/15 border-amber-500/40 text-amber-300',
-            timeout: 'bg-orange-500/15 border-orange-500/40 text-orange-300',
-            permission_windows: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
-            permission: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
-            network: 'bg-sky-500/15 border-sky-500/40 text-sky-300',
-            auth: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
-            cancelled: 'bg-zinc-500/15 border-zinc-500/40 text-zinc-300',
-            cli_missing: 'bg-fuchsia-500/15 border-fuchsia-500/40 text-fuchsia-300',
-            cli_error: 'bg-rose-500/15 border-rose-500/40 text-rose-300',
-            disk_full: 'bg-orange-500/15 border-orange-500/40 text-orange-300',
-            unknown: 'bg-muted border-border text-muted-foreground',
-          };
-          const sorted = entries.sort((a, b) => b[1] - a[1]);
-          return (
-            <section className="rounded-xl border bg-card p-4">
-              <div className="mb-3 flex items-baseline justify-between">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  최근 7일 에러 원인
-                </h2>
-                <span className="text-xs text-muted-foreground">총 {total}건</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {sorted.map(([cat, count]) => {
-                  const active = selectedErrorCategory === cat;
-                  return (
-                    <button
-                      type="button"
-                      key={cat}
-                      onClick={() =>
-                        setSelectedErrorCategory(active ? null : (cat as ErrorCategory))
-                      }
-                      className={cn(
-                        'inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-transform',
-                        colors[cat as ErrorCategory],
-                        active && 'ring-2 ring-offset-2 ring-offset-card ring-primary scale-105',
-                      )}
-                      title={
-                        active
-                          ? '선택 해제 (에러 목록 필터 해제)'
-                          : '에러 목록을 이 카테고리로 필터'
-                      }
-                    >
-                      <span>{labels[cat as ErrorCategory]}</span>
-                      <span className="font-mono text-[11px] opacity-90">{count}</span>
-                    </button>
-                  );
-                })}
-                {selectedErrorCategory && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedErrorCategory(null)}
-                    className="text-[11px] underline text-muted-foreground ml-auto"
-                  >
-                    필터 해제
-                  </button>
-                )}
-              </div>
-            </section>
-          );
-        })()}
+        <ErrorCategoriesCard
+          categories={errorCategories}
+          selected={selectedErrorCategory}
+          onSelect={setSelectedErrorCategory}
+        />
 
         {/* 예약 스케줄 현황 */}
         {schedules.length > 0 && (
