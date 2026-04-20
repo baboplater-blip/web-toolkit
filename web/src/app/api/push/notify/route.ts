@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { verifyAgentJwt } from '@/lib/verify-agent-jwt';
+import { rateLimit, clientIp, rateLimitedResponse } from '@/lib/rate-limit';
 import type { PushSubscriptionRow } from '@/lib/supabase/types';
 
 /**
@@ -33,6 +34,15 @@ interface NotifyBody {
 }
 
 export async function POST(req: NextRequest) {
+  // Push 남발 방어 — IP 당 분당 120회 (정상 에이전트는 작업 완료 시에만 호출).
+  const rl = rateLimit({
+    key: clientIp(req),
+    limit: 120,
+    windowMs: 60_000,
+    namespace: 'push-notify',
+  });
+  if (!rl.ok) return rateLimitedResponse(rl.retryAfter);
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_KEY;
   const jwtSecret = process.env.SUPABASE_JWT_SECRET;

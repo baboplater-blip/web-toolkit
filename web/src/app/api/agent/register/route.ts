@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, clientIp, rateLimitedResponse } from '@/lib/rate-limit';
 
 /**
  * POST /api/agent/register
@@ -18,6 +19,15 @@ function err(status: number, code: string) {
 }
 
 export async function POST(req: NextRequest) {
+  // install_token 연타/무차별 대입 방어 — IP 당 분당 10회.
+  const rl = rateLimit({
+    key: clientIp(req),
+    limit: 10,
+    windowMs: 60_000,
+    namespace: 'agent-register',
+  });
+  if (!rl.ok) return rateLimitedResponse(rl.retryAfter);
+
   const serviceKey = process.env.SUPABASE_SERVICE_KEY;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!serviceKey || !supabaseUrl) {

@@ -10,6 +10,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 외부 벤더 워커·서비스 워커·에이전트 패키지 복사본 — lint 대상 아님
+    "public/**",
   ]),
   {
     // /tools/* 유틸리티 페이지는 외부 기여·실험 범위 — 엄격 규칙 완화.

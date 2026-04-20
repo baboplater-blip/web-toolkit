@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { signAgentJwt } from '@/lib/agent-jwt';
+import { rateLimit, clientIp, rateLimitedResponse } from '@/lib/rate-limit';
 
 /**
  * POST /api/agent/auth
@@ -20,6 +21,15 @@ function errorResponse(status: number, code: string) {
 }
 
 export async function POST(req: NextRequest) {
+  // API 키 무차별 대입 방어 — IP 당 분당 30회 (정상 에이전트는 5분마다 교환).
+  const rl = rateLimit({
+    key: clientIp(req),
+    limit: 30,
+    windowMs: 60_000,
+    namespace: 'agent-auth',
+  });
+  if (!rl.ok) return rateLimitedResponse(rl.retryAfter);
+
   const serviceKey = process.env.SUPABASE_SERVICE_KEY;
   const jwtSecret = process.env.SUPABASE_JWT_SECRET;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

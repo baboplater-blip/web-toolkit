@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, clientIp, rateLimitedResponse } from '@/lib/rate-limit';
 
 /**
  * POST /api/install
@@ -166,6 +167,15 @@ npx tsx src/index.ts
 }
 
 export async function POST(req: NextRequest) {
+  // 설치 스크립트 다운로드 연타 방어 — IP 당 분당 20회.
+  const rl = rateLimit({
+    key: clientIp(req),
+    limit: 20,
+    windowMs: 60_000,
+    namespace: 'install',
+  });
+  if (!rl.ok) return rateLimitedResponse(rl.retryAfter);
+
   // Authorization: Bearer <token> 우선, 없으면 요청 body { token } 도 허용.
   const authHeader = req.headers.get('authorization') ?? '';
   let token = '';

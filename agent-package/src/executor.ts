@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { dirname, resolve } from 'path';
 import { log, setLogContext, clearLogContext } from './logger';
 import { pushNotify } from './push-notify';
+import { computeTaskTimeoutMs } from './timeout';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 /** executor 가 완료·에러 시점에 Web Push 를 보낼 때 필요한 문맥 */
@@ -18,14 +19,8 @@ const MAX_PROMPT_LENGTH = 20_000;
 const TASK_TIMEOUT_DEFAULT_MS = parseInt(process.env.TASK_TIMEOUT_MS || '1800000', 10);
 
 /**
- * 메시지별 유효 타임아웃 계산.
- * 우선순위:
- *   1. messages.timeout_extended = true  → 아래 해상도의 2배
- *   2. conversations.timeout_override_minutes (NULL 아님)
- *   3. agents.task_timeout_minutes        (NULL 아님)
- *   4. 환경변수 TASK_TIMEOUT_MS
- *   5. 기본 30 분
- * 상한: 12 시간.
+ * 메시지별 유효 타임아웃 계산 — DB 조회 + 순수 계산으로 분리.
+ * 순수 결정 로직은 timeout.ts 의 computeTaskTimeoutMs 로 이동.
  */
 async function resolveTaskTimeoutMs(
   supabase: SupabaseClient,
@@ -33,7 +28,6 @@ async function resolveTaskTimeoutMs(
   conversationId: string,
   userMessageId: string,
 ): Promise<{ timeoutMs: number; source: string }> {
-  const MAX = 12 * 60 * 60 * 1000;
   const results = await Promise.all([
     supabase.from('messages').select('timeout_extended').eq('id', userMessageId).maybeSingle(),
     supabase.from('conversations').select('timeout_override_minutes').eq('id', conversationId).maybeSingle(),
@@ -43,23 +37,12 @@ async function resolveTaskTimeoutMs(
   const conv = results[1].data as { timeout_override_minutes?: number | null } | null;
   const ag = results[2].data as { task_timeout_minutes?: number | null } | null;
 
-  let base: number;
-  let source: string;
-  if (conv?.timeout_override_minutes) {
-    base = conv.timeout_override_minutes * 60_000;
-    source = '대화 설정';
-  } else if (ag?.task_timeout_minutes) {
-    base = ag.task_timeout_minutes * 60_000;
-    source = 'PC 설정';
-  } else {
-    base = TASK_TIMEOUT_DEFAULT_MS;
-    source = '기본값';
-  }
-  if (msg?.timeout_extended) {
-    base = Math.min(MAX, base * 2);
-    source += ' ×2 (연장)';
-  }
-  return { timeoutMs: Math.min(MAX, base), source };
+  return computeTaskTimeoutMs({
+    messageExtended: !!msg?.timeout_extended,
+    conversationOverrideMin: conv?.timeout_override_minutes ?? null,
+    agentDefaultMin: ag?.task_timeout_minutes ?? null,
+    envDefaultMs: TASK_TIMEOUT_DEFAULT_MS,
+  });
 }
 
 /** 출력 버퍼 상한 (1MB) — 초과 시 잘림 표시 */

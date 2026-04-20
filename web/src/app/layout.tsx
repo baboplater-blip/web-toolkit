@@ -8,6 +8,7 @@ import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { RealtimeStatusBadge } from '@/components/RealtimeStatusBadge';
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
+import { ErrorReporter } from '@/components/ErrorReporter';
 import { ThemeWatcher } from '@/components/ThemeWatcher';
 import { ToastHost } from '@/components/ui/toast';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
@@ -77,6 +78,7 @@ export default function RootLayout({
           <ToastHost />
           <SessionRecovery />
           <ServiceWorkerRegister />
+          <ErrorReporter />
         </AuthProvider>
         <style>{`
           :root {
