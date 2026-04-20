@@ -73,9 +73,14 @@ export function subscribeWithRetry(opts: RealtimeRetryOptions): RealtimeRetryHan
   };
 
   const wire = (channel: RealtimeChannel) => {
+    // 채널별 종료 처리 가드 — supabase-js 는 removeChannel 시 CLOSED 를 다시 발화할 수 있어
+    // subscribe 콜백이 재진입하면서 재연결 시도가 중복 스케줄되고 백오프가 과도하게 증가한다.
+    // 한 채널이 정상 SUBSCRIBED 이후 첫 종료 이벤트만 재연결로 이어주고 나머지는 무시.
+    let handledTermination = false;
     channel.subscribe((status: `${REALTIME_SUBSCRIBE_STATES}`) => {
       if (stopped) return;
       if (status === 'SUBSCRIBED') {
+        handledTermination = false;
         if (attempts > 0) {
           toast(`${opts.label ?? opts.key} 실시간 연결이 복구되었습니다`, {
             variant: 'success',
@@ -92,6 +97,8 @@ export function subscribeWithRetry(opts: RealtimeRetryOptions): RealtimeRetryHan
         return;
       }
       if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        if (handledTermination) return;
+        handledTermination = true;
         // 동일 key 는 5초에 한 번만 토스트
         const now = Date.now();
         if (now - lastErrorToastAt > 5000) {

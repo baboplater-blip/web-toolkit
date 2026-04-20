@@ -20,7 +20,7 @@ import { HarnessSelector } from '@/components/sidebar/HarnessSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateMenu } from '@/components/chat/TemplateMenu';
-import { Trash2, Square, Search, X, MessageSquarePlus, SlidersHorizontal, Download, MoreHorizontal, Share2, GitFork, Pin, ChevronUp, ChevronDown, WifiOff, Clock } from 'lucide-react';
+import { Trash2, Square, Search, X, MessageSquarePlus, SlidersHorizontal, Download, MoreHorizontal, Share2, GitFork, Pin, ChevronUp, ChevronDown, WifiOff, Clock, Timer } from 'lucide-react';
 import { formatOfflineDuration } from '@/lib/format-time';
 import { toast } from '@/components/ui/toast';
 import { createClient } from '@/lib/supabase/client';
@@ -96,6 +96,7 @@ function ChatPageInner() {
     if (!inputDraftKey) return;
     try {
       const saved = sessionStorage.getItem(inputDraftKey);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved && saved.length >= 50) setInputValue(saved);
     } catch {}
     // 의존성은 대화 변경 시에만 복원.
@@ -825,6 +826,48 @@ function ChatPageInner() {
               <MoreHorizontal className="h-5 w-5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-44">
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (!selectedConversationId) return;
+                  const supabase = createClient();
+                  const { data: conv } = await supabase
+                    .from('conversations')
+                    .select('timeout_override_minutes')
+                    .eq('id', selectedConversationId)
+                    .maybeSingle();
+                  const current = (conv as { timeout_override_minutes: number | null } | null)
+                    ?.timeout_override_minutes ?? null;
+                  const input = prompt(
+                    '이 대화의 타임아웃 (분)\n\n비워두면 PC 기본값 사용.\n1~720 분 (최대 12시간).',
+                    current ? String(current) : '',
+                  );
+                  if (input === null) return; // 취소
+                  const raw = input.trim();
+                  const parsed = raw === '' ? null : parseInt(raw, 10);
+                  if (parsed !== null && (isNaN(parsed) || parsed < 1 || parsed > 720)) {
+                    toast('1~720 분 사이 숫자로 입력해주세요', { variant: 'warning' });
+                    return;
+                  }
+                  const { error } = await supabase
+                    .from('conversations')
+                    .update({ timeout_override_minutes: parsed })
+                    .eq('id', selectedConversationId);
+                  if (error) {
+                    toast(`저장 실패: ${error.message}`, { variant: 'error' });
+                    return;
+                  }
+                  toast(
+                    parsed === null
+                      ? '대화 타임아웃 해제 — PC 기본값 사용'
+                      : `대화 타임아웃 ${parsed}분 설정됨`,
+                    { variant: 'success' },
+                  );
+                }}
+              >
+                <Timer className="h-4 w-4" />
+                대화 타임아웃 설정
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleCreateShareLink}>
                 <Share2 className="h-4 w-4" />
                 공유 링크 만들기

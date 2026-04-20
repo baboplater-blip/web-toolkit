@@ -4,7 +4,7 @@
  *
  * 업데이트 규칙: agent-package/package.json 과 함께 올린다.
  */
-export const RECOMMENDED_AGENT_VERSION = '1.2.1';
+export const RECOMMENDED_AGENT_VERSION = '1.2.5';
 
 function toNums(v: string | null | undefined): number[] {
   if (!v) return [];

@@ -78,7 +78,11 @@ export function AddPCDialog() {
 
     if (!error && data) {
       const baseUrl = window.location.origin;
-      const installCmd = `irm ${baseUrl}/api/install/${token} | iex`;
+      // 헤더 기반 POST 사용 — 토큰이 URL 에 남아 브라우저 히스토리·서버 로그에 기록되는 걸 방지.
+      // 구형 GET 경로도 백워드 호환으로 유지되지만 UI 에서는 POST 버전을 권장한다.
+      const installCmd =
+        `iwr -Method POST -Headers @{Authorization='Bearer ${token}'} ` +
+        `-UseBasicParsing -Uri ${baseUrl}/api/install | Select-Object -Expand Content | iex`;
 
       setResult({ id: data.id, apiKey, token, installCmd });
     }
