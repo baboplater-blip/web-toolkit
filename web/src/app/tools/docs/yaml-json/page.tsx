@@ -9,7 +9,7 @@ import { triggerDownload } from '@/lib/tools/pdf-common';
 
 type Direction = 'yaml-to-json' | 'json-to-yaml';
 
-const SAMPLE_YAML = `name: agent-control-panel
+const SAMPLE_YAML = `name: web-toolkit
 version: 1.0.0
 authors:
   - alice
