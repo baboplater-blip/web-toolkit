@@ -1,32 +1,24 @@
 /**
- * Agent Control Panel — Service Worker
+ * Web Toolkit — Service Worker
  *
  * 담당:
- *   1) Web Push 수신 + 알림 표시
- *   2) PWA 홈화면 설치 스코프 확보
- *   3) 오프라인 첫 로딩 캐시 — stale-while-revalidate 전략으로 "앱처럼 즉시 뜨는" 경험
+ *   1) PWA 홈화면 설치 스코프 확보
+ *   2) 오프라인 첫 로딩 캐시 — 도구 페이지의 즉시 진입 경험
+ *   3) 옛 ACP 시절 캐시(채팅·대시보드·하네스) 정리
  *
- * 캐시 전략:
- *   - /_next/static/*   (해시 포함 정적 자산): CacheFirst  — 영구적
- *   - / /chat /dashboard /settings 등 페이지 HTML: NetworkFirst (오프라인이면 캐시로 폴백)
- *   - 이미지·아이콘: CacheFirst
- *   - Supabase · /api/*: 건드리지 않음 (SW 우회 = 브라우저 기본 동작)
- *
- * 버전:
- *   SW_VERSION 이 바뀌면 기존 캐시는 activate 단계에서 삭제된다.
- *   새 배포마다 이 값을 올려야 구 캐시 청소가 된다.
+ * 미션 변경(2026-05-22): agent-control-panel(채팅 시스템) → web-toolkit(도구 모음).
+ * Web Push / Supabase / 채팅 라우트는 제거되었으니 본 SW 도 단순화.
  */
 /* eslint-disable */
 
-const SW_VERSION = 'acp-sw-v3-20260418b';
+const SW_VERSION = 'webtoolkit-sw-v1-20260522';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 
-/** 첫 설치 시 미리 받아둘 핵심 페이지 · 자산 목록. 이 경로들이 오프라인 진입점이 된다. */
+/** 첫 설치 시 미리 받아둘 핵심 경로. 도구 사이트라 허브 + 설정 + 오프라인만. */
 const PRECACHE_URLS = [
   '/',
-  '/chat',
-  '/dashboard',
+  '/tools',
   '/settings',
   '/offline',
   '/manifest.json',
@@ -38,7 +30,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(STATIC_CACHE);
-      // 개별 실패해도 install 이 중단되지 않도록 allSettled.
       await Promise.allSettled(
         PRECACHE_URLS.map((url) => cache.add(url).catch(() => {})),
       );
@@ -50,11 +41,11 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // 우리 접두사로 시작하지만 현재 버전 이외의 캐시는 전부 삭제.
+      // 옛 ACP 캐시(`acp-sw-*`) 와 이전 버전의 webtoolkit 캐시 모두 청소.
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k.startsWith('acp-sw-') && !k.startsWith(SW_VERSION))
+          .filter((k) => k.startsWith('acp-sw-') || (k.startsWith('webtoolkit-sw-') && !k.startsWith(SW_VERSION)))
           .map((k) => caches.delete(k)),
       );
       await self.clients.claim();
@@ -62,7 +53,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/** URL 이 우리가 건드리는 오리진인지 */
 function isSameOrigin(url) {
   try {
     return new URL(url).origin === self.location.origin;
@@ -83,7 +73,21 @@ function isStaticAsset(url) {
   );
 }
 
-/** 네비게이션(HTML) 요청: 네트워크 우선, 실패 시 캐시 */
+/** 옛 라우트(`/chat`, `/dashboard`, `/harnesses`, `/share`, `/api/*`)는 곧장 /tools 로 리다이렉트. */
+function isLegacyRoute(pathname) {
+  return (
+    pathname === '/chat' ||
+    pathname.startsWith('/chat/') ||
+    pathname === '/dashboard' ||
+    pathname.startsWith('/dashboard/') ||
+    pathname === '/harnesses' ||
+    pathname.startsWith('/harnesses/') ||
+    pathname === '/share' ||
+    pathname.startsWith('/share/') ||
+    pathname.startsWith('/api/')
+  );
+}
+
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
@@ -95,21 +99,18 @@ async function networkFirst(request) {
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
-    // 마지막 수단: /offline 전용 페이지 (완전 오프라인 폴백)
     const offline = await caches.match('/offline');
     if (offline) return offline;
-    const fallback = await caches.match('/chat');
+    const fallback = await caches.match('/tools');
     if (fallback) return fallback;
     return new Response('오프라인', { status: 503, headers: { 'Content-Type': 'text/plain' } });
   }
 }
 
-/** 정적 자산: 캐시 우선, 백그라운드 갱신 */
 async function cacheFirst(request) {
   const cache = await caches.open(STATIC_CACHE);
   const cached = await cache.match(request);
   if (cached) {
-    // 백그라운드 갱신 — 다음 로드부터 최신.
     fetch(request)
       .then((res) => {
         if (res.ok) cache.put(request, res.clone()).catch(() => {});
@@ -133,9 +134,16 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  if (!isSameOrigin(request.url)) return; // Supabase, 외부 도메인은 건드리지 않음
-  if (url.pathname.startsWith('/api/')) return; // API 응답은 브라우저 기본 경로
-  if (url.pathname.startsWith('/_next/data/')) return; // RSC 데이터는 캐시하지 않음
+  if (!isSameOrigin(request.url)) return;
+
+  // RSC 페이로드(`?_rsc=...`) 요청은 SW 가 건드리지 않고 브라우저 기본 경로로.
+  if (url.searchParams.has('_rsc')) return;
+
+  // 옛 라우트 → /tools 로 즉시 리다이렉트 (옛 홈 화면 PWA 사용자 보호).
+  if (isLegacyRoute(url.pathname)) {
+    event.respondWith(Response.redirect('/tools', 302));
+    return;
+  }
 
   if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith(networkFirst(request));
@@ -146,65 +154,8 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(cacheFirst(request));
     return;
   }
-
-  // 나머지는 기본 동작 (stale-while-revalidate 대신 브라우저 캐시 따름).
 });
 
-// Push 이벤트 — 서버에서 Web Push 전송 시 발화.
-self.addEventListener('push', (event) => {
-  let data = {};
-  try {
-    data = event.data ? event.data.json() : {};
-  } catch {
-    data = { title: 'Agent Control Panel', body: event.data ? event.data.text() : '' };
-  }
-
-  const title = data.title || 'Agent Control Panel';
-  const options = {
-    body: data.body || '',
-    icon: data.icon || '/icon-192.svg',
-    badge: '/icon-192.svg',
-    tag: data.tag || 'acp-notification',
-    renotify: true,
-    data: {
-      url: data.url || '/chat',
-      agentId: data.agentId,
-      conversationId: data.conversationId,
-    },
-    requireInteraction: data.variant === 'error',
-  };
-
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || '/chat';
-  const agentId = event.notification.data && event.notification.data.agentId;
-  const targetUrl = agentId ? `${url}?agent=${agentId}` : url;
-
-  event.waitUntil(
-    (async () => {
-      const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-      for (const client of clientList) {
-        if ('focus' in client) {
-          try {
-            await client.focus();
-            if ('navigate' in client) {
-              await client.navigate(targetUrl);
-            }
-            return;
-          } catch {}
-        }
-      }
-      if (self.clients.openWindow) {
-        await self.clients.openWindow(targetUrl);
-      }
-    })(),
-  );
-});
-
-// 웹 앱이 수동으로 활성화를 유도할 수 있도록 message 핸들러.
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
