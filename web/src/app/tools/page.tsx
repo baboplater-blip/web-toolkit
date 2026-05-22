@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { LayoutGrid, Search, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { LayoutGrid, Search, Star, Clock, X, Keyboard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { ToolCard } from '@/components/tools/ToolCard';
 import {
   CATEGORY_LABELS,
   filterTools,
@@ -11,6 +11,7 @@ import {
   type ToolCategory,
   type ToolMeta,
 } from '@/lib/tools/registry';
+import { useFavorites, useRecent } from '@/lib/hooks/useUsage';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES: (ToolCategory | 'all')[] = [
@@ -42,46 +43,16 @@ const CATEGORY_ORDER: ToolCategory[] = [
   'ai',
 ];
 
-function ToolCard({ tool }: { tool: ToolMeta }) {
-  const Icon = tool.icon;
-  const isPlanned = tool.status === 'planned';
-
-  const inner = (
-    <div
-      className={cn(
-        'group relative flex h-full flex-col gap-2 rounded-xl border bg-card p-4 transition-all',
-        isPlanned
-          ? 'cursor-not-allowed opacity-60'
-          : 'cursor-pointer hover:-translate-y-0.5 hover:border-primary hover:shadow-md',
-      )}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Icon className="h-5 w-5" />
-        </div>
-        {isPlanned && (
-          <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
-            준비 중
-          </span>
-        )}
-      </div>
-      <h3 className="text-sm font-semibold leading-tight">{tool.title}</h3>
-      <p className="line-clamp-2 flex-1 text-[11px] leading-relaxed text-muted-foreground">
-        {tool.description}
-      </p>
-      <span className="mt-auto text-[11px] text-muted-foreground">
-        {CATEGORY_LABELS[tool.category]}
-      </span>
-    </div>
-  );
-
-  if (isPlanned) return inner;
-  return <Link href={tool.href}>{inner}</Link>;
-}
-
 export default function ToolsHubPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ToolCategory | 'all'>('all');
+  const [showHelp, setShowHelp] = useState(false);
+
+  const { favorites, toggle, isFavorite } = useFavorites();
+  const recent = useRecent();
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  const categoryRailRef = useRef<HTMLDivElement>(null);
 
   const tools = useMemo(() => filterTools(query, category), [query, category]);
   const readyCount = tools.filter((t) => t.status === 'ready').length;
@@ -90,7 +61,29 @@ export default function ToolsHubPage() {
   const isSearching = query.trim().length > 0;
   const isFiltered = category !== 'all';
 
-  // 검색/필터 미적용 시에만 카테고리 섹션 그루핑 사용
+  /* 즐겨찾기 도구 (검색·필터 없을 때만 노출) */
+  const favoriteTools = useMemo<ToolMeta[]>(() => {
+    if (isSearching || isFiltered) return [];
+    if (favorites.size === 0) return [];
+    const map = new Map(TOOLS.map((t) => [t.id, t]));
+    return [...favorites]
+      .map((id) => map.get(id))
+      .filter((t): t is ToolMeta => t !== undefined && t.status === 'ready');
+  }, [favorites, isSearching, isFiltered]);
+
+  /* 최근 사용 도구 (즐겨찾기와 중복 제외) */
+  const recentTools = useMemo<ToolMeta[]>(() => {
+    if (isSearching || isFiltered) return [];
+    if (recent.length === 0) return [];
+    const map = new Map(TOOLS.map((t) => [t.id, t]));
+    return recent
+      .filter((e) => !favorites.has(e.id))
+      .map((e) => map.get(e.id))
+      .filter((t): t is ToolMeta => t !== undefined && t.status === 'ready')
+      .slice(0, 8);
+  }, [recent, favorites, isSearching, isFiltered]);
+
+  /* 카테고리 그루핑 (검색·필터 없을 때만) */
   const grouped = useMemo(() => {
     if (isSearching || isFiltered) return null;
     const map = new Map<ToolCategory, ToolMeta[]>();
@@ -99,7 +92,6 @@ export default function ToolsHubPage() {
       arr.push(t);
       map.set(t.category, arr);
     }
-    // 각 카테고리 내 ready 우선 정렬
     for (const [, list] of map) {
       list.sort((a, b) => {
         if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
@@ -111,6 +103,58 @@ export default function ToolsHubPage() {
     );
   }, [isSearching, isFiltered]);
 
+  /* 키보드 단축키 */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const inEditable =
+        !!target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+
+      if (e.key === '/' && !inEditable) {
+        e.preventDefault();
+        searchRef.current?.focus();
+        return;
+      }
+      if (e.key === 'Escape') {
+        if (inEditable && document.activeElement === searchRef.current) {
+          if (query) setQuery('');
+          else searchRef.current?.blur();
+          e.preventDefault();
+        }
+        if (showHelp) setShowHelp(false);
+        return;
+      }
+      if (e.key === 'g' && !inEditable) {
+        e.preventDefault();
+        const idx = CATEGORIES.indexOf(category);
+        const next = CATEGORIES[(idx + 1) % CATEGORIES.length];
+        setCategory(next);
+        requestAnimationFrame(() => {
+          const rail = categoryRailRef.current;
+          if (!rail) return;
+          const activeBtn = rail.querySelector<HTMLButtonElement>(
+            `button[data-cat="${next}"]`,
+          );
+          activeBtn?.scrollIntoView({
+            inline: 'center',
+            block: 'nearest',
+            behavior: 'smooth',
+          });
+        });
+        return;
+      }
+      if (e.key === '?' && !inEditable) {
+        e.preventDefault();
+        setShowHelp((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [category, query, showHelp]);
+
   return (
     <div className="min-h-dvh bg-background pb-14 md:pb-0">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -120,6 +164,15 @@ export default function ToolsHubPage() {
           <span className="ml-auto text-[11px] text-muted-foreground">
             {readyCount}개 사용 가능
           </span>
+          <button
+            type="button"
+            onClick={() => setShowHelp((v) => !v)}
+            aria-label="키보드 단축키"
+            title="키보드 단축키 (?)"
+            className="hidden md:inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <Keyboard className="h-4 w-4" />
+          </button>
         </div>
       </header>
 
@@ -128,8 +181,9 @@ export default function ToolsHubPage() {
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              ref={searchRef}
               type="search"
-              placeholder="도구 검색 (압축, 합치기, OCR…)"
+              placeholder="도구 검색 — / 키로 빠르게 포커스"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="h-10 pl-9 pr-9"
@@ -147,11 +201,15 @@ export default function ToolsHubPage() {
             )}
           </div>
 
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          <div
+            ref={categoryRailRef}
+            className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
+          >
             {CATEGORIES.map((c) => (
               <button
                 key={c}
                 type="button"
+                data-cat={c}
                 onClick={() => setCategory(c)}
                 className={cn(
                   'h-8 shrink-0 rounded-full border px-3 text-xs transition-colors',
@@ -165,6 +223,78 @@ export default function ToolsHubPage() {
             ))}
           </div>
         </div>
+
+        {showHelp && (
+          <div className="rounded-xl border bg-card p-3 text-xs leading-relaxed text-muted-foreground md:max-w-md">
+            <p className="mb-1.5 text-foreground font-medium">키보드 단축키</p>
+            <ul className="space-y-1">
+              <li>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">/</kbd>
+                <span className="ml-2">검색 박스로 포커스</span>
+              </li>
+              <li>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">g</kbd>
+                <span className="ml-2">다음 카테고리로 점프</span>
+              </li>
+              <li>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd>
+                <span className="ml-2">검색 비우기 / 도움말 닫기</span>
+              </li>
+              <li>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">?</kbd>
+                <span className="ml-2">이 도움말 토글</span>
+              </li>
+            </ul>
+          </div>
+        )}
+
+        {favoriteTools.length > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                즐겨찾기
+              </h2>
+              <span className="text-[11px] text-muted-foreground">
+                {favoriteTools.length}개
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {favoriteTools.map((tool) => (
+                <ToolCard
+                  key={`fav-${tool.id}`}
+                  tool={tool}
+                  favorite={isFavorite(tool.id)}
+                  onToggleFavorite={toggle}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {recentTools.length > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                최근 사용
+              </h2>
+              <span className="text-[11px] text-muted-foreground">
+                {recentTools.length}개
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {recentTools.map((tool) => (
+                <ToolCard
+                  key={`recent-${tool.id}`}
+                  tool={tool}
+                  favorite={isFavorite(tool.id)}
+                  onToggleFavorite={toggle}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {tools.length === 0 ? (
           <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
@@ -184,7 +314,12 @@ export default function ToolsHubPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {list.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
+                    <ToolCard
+                      key={tool.id}
+                      tool={tool}
+                      favorite={isFavorite(tool.id)}
+                      onToggleFavorite={toggle}
+                    />
                   ))}
                 </div>
               </section>
@@ -193,7 +328,12 @@ export default function ToolsHubPage() {
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {tools.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} />
+              <ToolCard
+                key={tool.id}
+                tool={tool}
+                favorite={isFavorite(tool.id)}
+                onToggleFavorite={toggle}
+              />
             ))}
           </div>
         )}

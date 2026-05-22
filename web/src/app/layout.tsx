@@ -5,6 +5,7 @@ import { InstallPrompt } from '@/components/InstallPrompt';
 import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
+import { RecentTracker } from '@/components/tools/RecentTracker';
 import { ThemeWatcher } from '@/components/ThemeWatcher';
 import { ToastHost } from '@/components/ui/toast';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
@@ -63,6 +64,7 @@ export default function RootLayout({
         <ThemeWatcher />
         <KeyboardInsetTracker />
         <OfflineIndicator />
+        <RecentTracker />
         <div className="md:pl-16">{children}</div>
         <BottomNav />
         <InstallPrompt />
