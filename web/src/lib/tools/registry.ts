@@ -10,6 +10,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Archive,
   Barcode,
+  BookOpen,
   Braces,
   Clapperboard,
   Crop,
@@ -663,6 +664,17 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['yaml', 'json', 'convert'],
+  },
+  {
+    id: 'epub-to-pdf',
+    title: 'EPUB → PDF',
+    description: 'EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.',
+    href: '/tools/docs/epub-to-pdf',
+    category: 'docs',
+    icon: BookOpen,
+    status: 'ready',
+    phase: 7,
+    keywords: ['epub', 'pdf', '전자책', 'ebook', 'convert', '변환', '책'],
   },
 
   {
