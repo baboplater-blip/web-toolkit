@@ -18,10 +18,10 @@ export default function NotFound() {
         </div>
         <div className="mt-5 flex justify-end">
           <Link
-            href="/chat"
+            href="/tools"
             className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            채팅으로 이동
+            도구 허브로 이동
           </Link>
         </div>
       </div>

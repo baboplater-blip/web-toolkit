@@ -44,7 +44,7 @@ export default function RouteError({
             variant="outline"
             size="sm"
             onClick={() => {
-              window.location.href = '/chat';
+              window.location.href = '/tools';
             }}
             className="h-9"
           >

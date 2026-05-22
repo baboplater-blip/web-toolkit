@@ -3,6 +3,8 @@
   "framework": null,
   "buildCommand": "npm install && npm run build",
   "outputDirectory": "out",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
@@ -17,5 +19,14 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    { "source": "/chat",                "destination": "/tools", "permanent": true },
+    { "source": "/chat/:path*",         "destination": "/tools", "permanent": true },
+    { "source": "/dashboard",           "destination": "/tools", "permanent": true },
+    { "source": "/dashboard/:path*",    "destination": "/tools", "permanent": true },
+    { "source": "/harnesses",           "destination": "/tools", "permanent": true },
+    { "source": "/harnesses/:path*",    "destination": "/tools", "permanent": true },
+    { "source": "/share/:path*",        "destination": "/tools", "permanent": true }
   ]
 }

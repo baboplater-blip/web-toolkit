@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { WifiOff, RefreshCw, Inbox, Archive } from 'lucide-react';
+import { WifiOff, RefreshCw, LayoutGrid } from 'lucide-react';
 
 /**
- * 완전 오프라인 상태에서 Service Worker 가 네비게이션 요청에 실패했을 때 fallback 으로 보여주는 페이지.
- * 이미 캐시된 대화는 채팅 탭이 IDB 스냅샷으로 그대로 노출되므로, 여기서는 "무엇을 할 수 있는지" 안내.
+ * 완전 오프라인 상태에서 Service Worker 가 네비게이션 요청에 실패했을 때
+ * 보여주는 fallback. 도구 사이트는 모든 처리가 브라우저 안에서 수행되므로,
+ * 한 번 로드된 도구 페이지는 오프라인에서도 사용 가능하다.
  */
 export default function OfflinePage() {
   return (
@@ -17,35 +18,21 @@ export default function OfflinePage() {
         <div>
           <h1 className="text-lg font-semibold">오프라인 상태입니다</h1>
           <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-            네트워크 연결이 끊어진 것 같아요. 연결이 돌아오면 이 화면은 자동으로 사라집니다.
+            네트워크 연결이 끊어진 것 같아요. 한 번 열어본 도구는 오프라인에서도
+            그대로 사용할 수 있습니다.
           </p>
         </div>
 
         <div className="space-y-2 text-left">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-            지금 할 수 있는 것
-          </p>
           <Link
-            href="/chat"
+            href="/tools"
             className="flex items-center gap-3 rounded-lg border bg-background p-3 transition-colors hover:bg-muted"
           >
-            <Archive className="h-4 w-4 text-muted-foreground" />
+            <LayoutGrid className="h-4 w-4 text-muted-foreground" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium">최근 대화 열람</p>
+              <p className="text-sm font-medium">도구 허브 열기</p>
               <p className="text-[11px] text-muted-foreground">
-                캐시된 대화는 오프라인에서도 읽을 수 있습니다.
-              </p>
-            </div>
-          </Link>
-          <Link
-            href="/settings?tab=outbox"
-            className="flex items-center gap-3 rounded-lg border bg-background p-3 transition-colors hover:bg-muted"
-          >
-            <Inbox className="h-4 w-4 text-muted-foreground" />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium">대기 중인 메시지 확인</p>
-              <p className="text-[11px] text-muted-foreground">
-                복귀 시 자동 전송되는 오프라인 큐를 살펴보세요.
+                캐시된 도구는 오프라인에서도 동작합니다.
               </p>
             </div>
           </Link>
