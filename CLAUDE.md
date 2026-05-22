@@ -1,184 +1,156 @@
-# Agent Control Panel
+# Web Toolkit Harness
 
-여러 PC에서 실행 중인 Claude Code를 하나의 웹 채팅 UI로 원격 통제하는 시스템.
+브라우저 안에서 완결되는 도구 모음 사이트. 모든 처리는 클라이언트(Web Worker + WASM)에서 수행하고 사용자 파일은 서버로 전송되지 않는다. 본 하네스는 신규 도구 추가·기존 도구 고도화·배포를 자동화한다.
 
-## 시스템 구성
+## 미션 (1원칙)
 
-### 1. 채팅 웹앱 (`/web`)
-- Next.js 14 App Router + Tailwind CSS + shadcn/ui
-- Vercel 무료 tier 배포
-- 디스코드 스타일 채팅 UI (PC별 채널/탭 분리)
-- 하네스 선택 드롭다운
-- 실시간 스트리밍 응답 표시
-- PC 온라인/오프라인 상태 표시
-- 채팅 이력 저장 및 검색
-- 모바일 우선 반응형 디자인 (핸드폰에서 주로 사용)
-- 한국어 UI
+> **사용자가 올린 파일은 절대 서버로 전송하지 않는다.** 모든 변환·압축·OCR·AI 추론은 브라우저 안에서 처리한다.
 
-### 2. Supabase 백엔드
-- **messages**: 채팅 메시지 저장 (user/assistant/system, 스트리밍 chunk 포함)
-- **agents**: 등록된 PC 목록, 온라인 상태, 마지막 하트비트
-- **harnesses**: PC별 사용 가능한 하네스 경로 목록
-- Realtime 채널: 명령 전달 및 응답 수신
-- Row Level Security: Supabase Auth 인증 사용자만 접근
-- 무료 tier 범위 내 운용
+이 원칙에서 다음 결정이 파생된다:
+- API Route (`web/src/app/api/**`) 사용 금지 (인증·푸시 같은 옛 채팅 시스템 잔재 외에는 추가 금지)
+- Node 전용 모듈(`fs`, `path`, `child_process`) 금지 — 도구 코드는 모두 클라이언트 컴포넌트
+- 무거운 처리는 Web Worker, UI 스레드 차단 금지
+- 큰 WASM(ffmpeg / tesseract / esrgan) 은 dynamic import 로 lazy load
 
-### 3. PC Agent 스크립트 (`/agent`)
-- Node.js 경량 데몬 + @supabase/supabase-js
-- Supabase Realtime으로 명령 수신 대기
-- `claude --print --harness {path} "{message}"` 또는 Claude Code SDK로 실행
-- 하네스 경로 자동 감지 및 적용
-- 실행 결과를 chunk 단위로 Supabase에 스트리밍 전송
-- 하트비트로 온라인 상태 주기적 보고
-- pm2로 시스템 시작 시 자동 실행
+## 트리거 규칙
 
-### 4. 인증/보안
-- Supabase Auth (이메일+비밀번호, 단일 사용자)
-- API 키 기반 PC 등록
-- 환경변수로 민감정보 관리 (.env 파일 절대 커밋 금지)
+| 키워드 | 호출 에이전트 |
+|--------|-------------|
+| "도구 추가", "새 도구", "{X} 도구 만들어" | `tool-architect` → `tool-builder` |
+| "PDF/이미지/비디오/오디오/OCR/AI 압축/변환…" 기능 요청 | `tool-architect` |
+| "느려요", "용량 큼", "번들", "Lighthouse" | `perf-profiler` |
+| "키보드 안 됨", "접근성", "스크린리더" | `a11y-auditor` |
+| "registry 정리", "키워드", "카테고리" | `registry-curator` |
+| "테스트", "큰 파일", "엣지케이스" | `qa-tester` |
+| "메타", "OG", "SEO" | `seo-writer` |
+| "배포", "릴리즈", "프로덕션" | `release-captain` |
+| FFmpeg/PDF.js/pdf-lib/Tesseract/ESRGAN 작업 | `wasm-engineer` |
+| "버튼", "드롭존", "진행률", "모바일 UX" | `ui-polisher` |
+
+## 파이프라인 (신규 도구 추가)
+
+```
+1. tool-architect    스펙 → 라이브러리·워커·UI 결정 → 설계 문서
+2. tool-builder      page.tsx + worker.ts + registry 항목 작성 (template-page 스킬 사용)
+3. wasm-engineer     무거운 처리 워커화 + 메모리·취소 처리
+4. ui-polisher       FileDropZone·진행률·결과 카드 표준 적용
+5. a11y-auditor      키보드·ARIA·스크린리더 검증
+6. perf-profiler     번들 크기·LCP·WASM lazy load 검증
+7. qa-tester         큰 파일·손상 입력·모바일 제스처 회귀
+8. seo-writer        도구 페이지 메타·OG 추가
+9. registry-curator  키워드·카테고리·정렬 최종 정리
+10. release-captain  체크리스트 → main 머지
+```
+
+수정 작업은 해당 단계 에이전트만 재호출.
+
+## 디렉터리 구조
+
+```
+web-toolkit/
+├── .claude/
+│   ├── settings.json
+│   ├── agents/           # 10 에이전트
+│   ├── skills/           # 11 스킬
+│   └── commands/         # 5 슬래시 커맨드
+├── web/                  # Next.js App Router 도구 사이트 (메인)
+│   ├── src/
+│   │   ├── app/tools/    # 도구 페이지 (카테고리별 폴더)
+│   │   ├── components/tools/  # 공통 컴포넌트 (FileDropZone, ResultCard)
+│   │   ├── lib/tools/    # registry.ts, 공통 워커 유틸
+│   │   └── workers/      # Web Worker 엔트리
+│   └── public/           # WASM 자산 (ffmpeg-core.wasm 등)
+├── _legacy/              # 옛 채팅·에이전트 시스템 (제거 예정)
+│   ├── agent/            # PC 데몬
+│   ├── agent-package/    # 배포용 패키지
+│   └── supabase/         # 옛 DB 마이그레이션
+├── CLAUDE.md             # 이 파일
+└── README.md
+```
+
+> **주의:** `agent/`, `agent-package/`, `supabase/` 는 다음 라운드에서 `_legacy/` 로 이동·삭제 예정. 현재는 권한 deny 로 보호.
+
+## 도구 카테고리 (11종)
+
+`image · pdf · video · gif · audio · docs · text · dev · util · security · ai`
+
+전체 정의: [`web/src/lib/tools/registry.ts`](web/src/lib/tools/registry.ts). 현재 ~56 개 도구 등록.
+
+## 도구 추가 체크리스트
+
+신규 도구 = **두 곳 동시 작업**:
+
+1. `web/src/app/tools/{category}/{slug}/page.tsx` — UI + 워커 호출
+2. `web/src/lib/tools/registry.ts` — `ToolMeta` 항목 추가 (`status: 'ready'`)
+
+추가 시:
+- 카테고리 ↔ URL 일치 (`category: 'pdf'` → `/tools/pdf/...`)
+- 키워드는 **한·영 둘 다** (`['압축', 'compress', '용량']`)
+- 아이콘은 `lucide-react` 에서 선택, 의미 직관적
+- 페이지는 `'use client'` 필수
+- 큰 라이브러리는 `dynamic(() => import(...), { ssr: false })`
+- 모바일 브레이크포인트(`sm:`/`md:`) 항상 고려
+
+상세는 `registry-add` 스킬, 페이지 보일러플레이트는 `tool-page-template` 스킬 참조.
 
 ## 기술 스택
 
-| 영역 | 스택 |
+| 영역 | 선택 |
 |------|------|
-| Frontend | Next.js 14 App Router, Tailwind CSS, shadcn/ui |
-| Backend | Supabase (PostgreSQL + Realtime + Auth) |
-| PC Agent | Node.js + @supabase/supabase-js |
-| 배포 | Vercel (무료) |
-| 프로세스 관리 | pm2 |
-
-## 프로젝트 구조
-
-```
-agent-control-panel/
-├── web/                    # Next.js 채팅 웹앱
-│   ├── app/                # App Router 페이지
-│   │   ├── (auth)/         # 로그인/회원가입
-│   │   ├── chat/           # 채팅 메인 페이지
-│   │   └── layout.tsx
-│   ├── components/         # React 컴포넌트
-│   │   ├── chat/           # 채팅 관련 (MessageList, MessageInput, StreamingMessage)
-│   │   ├── sidebar/        # 사이드바 (PCList, HarnessSelector)
-│   │   └── ui/             # shadcn/ui 컴포넌트
-│   ├── lib/                # 유틸리티
-│   │   ├── supabase/       # Supabase 클라이언트, 타입
-│   │   └── hooks/          # 커스텀 훅 (useMessages, useAgents, useRealtime)
-│   ├── public/
-│   ├── .env.local          # 환경변수 (gitignore됨)
-│   └── package.json
-├── agent/                  # PC Agent 스크립트
-│   ├── src/
-│   │   ├── index.ts        # 메인 데몬 진입점
-│   │   ├── executor.ts     # Claude Code 실행 및 스트리밍
-│   │   ├── heartbeat.ts    # 하트비트 관리
-│   │   └── harness.ts      # 하네스 감지/관리
-│   ├── ecosystem.config.js # pm2 설정
-│   ├── .env                # 환경변수 (gitignore됨)
-│   └── package.json
-├── supabase/               # Supabase 설정
-│   ├── migrations/         # DB 마이그레이션 SQL
-│   └── seed.sql            # 초기 데이터
-└── CLAUDE.md               # 이 파일
-```
-
-## 핵심 데이터 플로우
-
-```
-1. 웹에서 PC 선택 + 대화(conversation) 선택 + 하네스 선택 + 메시지 입력
-   └─ 대화가 없으면 첫 메시지 전송 시 대화가 자동 생성되고, 첫 사용자 메시지로 제목 자동 세팅
-2. Supabase messages 테이블에 INSERT (role: 'user', conversation_id 포함)
-3. 해당 PC의 Agent가 Realtime subscription으로 새 메시지 감지
-4. Agent가 conversation_id 기준으로 같은 대화에 이전 user 메시지가 있으면 claude --continue 를 자동 적용
-   - claude --print 로 실행 (hardened: --dangerously-skip-permissions 는 env 옵션)
-5. stdout 을 chunk 단위로 messages 테이블에 스트리밍 업데이트 (500ms 디바운스)
-6. 웹 UI 가 Realtime subscription 으로 응답 실시간 표시
-7. 완료/에러/취소 시: 메시지 상태 업데이트 + 웹훅(옵션) + Web Push 알림 전송
-```
-
-## 인증 & 보안 플로우
-
-- 웹 UI: Supabase Auth (이메일+비밀번호). JWT 는 브라우저에 저장.
-- PC Agent: Service Role Key 를 저장하지 않음. 부팅 시 `/api/agent/auth` 로 자신의 AGENT_API_KEY 를 HS256 JWT(sub=user_id, role=authenticated, ttl=1h)로 교환해 Supabase 접근. 서버만 `SUPABASE_JWT_SECRET` 을 알고 있다.
-- 설치: 웹 "PC 추가" → install_token 발급 → PowerShell 원라인(`irm .../api/install/<token> | iex`). 설치 시 PC 에 저장되는 값은 공개 anon key + 이 PC 용 api_key 뿐.
-
-## DB 스키마 설계
-
-```sql
--- agents: PC 목록 및 상태
-CREATE TABLE agents (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,                    -- PC 표시 이름
-  api_key TEXT UNIQUE NOT NULL,          -- PC 인증용 API 키
-  status TEXT DEFAULT 'offline',         -- online/offline/busy
-  last_heartbeat TIMESTAMPTZ,
-  system_info JSONB,                     -- OS, CPU 등
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- harnesses: PC별 하네스 목록
-CREATE TABLE harnesses (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  agent_id UUID REFERENCES agents(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,                    -- 하네스 표시 이름
-  path TEXT NOT NULL,                    -- 하네스 파일 경로
-  description TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- messages: 채팅 메시지
-CREATE TABLE messages (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  agent_id UUID REFERENCES agents(id) ON DELETE CASCADE,
-  harness_id UUID REFERENCES harnesses(id),
-  role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
-  content TEXT NOT NULL DEFAULT '',
-  status TEXT DEFAULT 'pending',         -- pending/streaming/completed/error
-  error_message TEXT,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-```
+| 프레임워크 | Next.js App Router (정적 export 지향) |
+| 스타일 | Tailwind CSS + shadcn/ui |
+| PDF | pdf-lib (편집) + PDF.js (렌더링·OCR 입력) |
+| 이미지 | Canvas API + browser-image-compression + Squoosh 의 mozjpeg |
+| 비디오/오디오/GIF | FFmpeg.wasm (Web Worker) |
+| OCR | Tesseract.js (한국어 + 영어 lang pack) |
+| AI 배경제거 | @imgly/background-removal (ONNX) |
+| AI 업스케일 | ESRGAN.wasm |
+| 얼굴감지 | face-api.js 또는 MediaPipe Tasks |
+| QR | qrcode + jsqr |
+| 워커 | 전용 `web/src/workers/*` 디렉터리 |
 
 ## 개발 컨벤션
 
-- **언어**: TypeScript 사용, strict 모드
-- **스타일**: Prettier + ESLint 기본 설정
-- **컴포넌트**: 함수형 컴포넌트 + hooks 패턴
-- **상태관리**: Supabase Realtime 직접 사용 (별도 상태관리 라이브러리 불필요)
-- **에러처리**: try/catch + 사용자 친화적 한국어 에러 메시지
-- **환경변수**: NEXT_PUBLIC_ 접두사는 클라이언트용, 나머지는 서버용
-- **커밋**: 한국어 커밋 메시지, conventional commits 형식
+- **언어:** TypeScript strict, 클라이언트 컴포넌트 우선
+- **명명:** 도구 슬러그는 `kebab-case`, 카테고리 prefix 포함 (`pdf-merge`, `image-resize`)
+- **에러:** 한국어 메시지 + 콘솔 영문 로그. 도구 실패 시 ResultCard 에 표시
+- **취소:** 모든 워커는 `AbortSignal` 또는 `worker.terminate()` 로 취소 가능해야 함
+- **메모리:** 큰 파일(>50MB) 처리 시 진행률 + 경고 표시
+- **커밋:** 한국어 메시지, conventional commits (`feat(tools/pdf): ...`)
 
-## 제약사항
+## Next.js 참조 규칙
 
-- Claude Max 구독 기반 (API 비용 0, claude CLI 직접 호출). 향후 BYOK 모드 확장 가능.
-- Supabase 무료 tier: 500MB DB, 2GB bandwidth, 50MB file storage
-- Vercel 무료 tier: 100GB bandwidth, serverless function 10초 제한
-- 다중 사용자 가능 (RLS 소유자 기반). 단, 기존 admin@acp.local 계정은 레거시 데이터 소유자이므로 **삭제 금지** — 새 사용자는 자기 이메일로 가입해 사용하면 된다.
+옆 파일 [`web/AGENTS.md`](web/AGENTS.md) 의 경고를 항상 지킨다:
 
-## 최근 반영된 변경 (Phase 2)
+> 이 Next.js 는 학습데이터의 것과 다르다. API·관례·파일구조가 다를 수 있다. 코드 작성 전에 `node_modules/next/dist/docs/` 의 관련 가이드를 먼저 읽어라.
 
-- `conversations` 테이블 + `messages.conversation_id`: 대화 단위 스레드.
-- `--dangerously-skip-permissions` 기본 해제 (env `DANGEROUSLY_SKIP_PERMISSIONS=1` 로 opt-in).
-- Realtime 재연결 지수 백오프 + 토스트 피드백.
-- 템플릿 갤러리: 시스템 템플릿 시드 + 하네스 feature 기반 추천.
-- 대화 메시지 페이지네이션 (100개 단위 더 불러오기).
-- Web Push 알림: 설정 페이지에서 켜기, 작업 완료/에러/취소 시 모바일·데스크탑 푸시.
-- Cron 파서 확장: 표준 5-필드 (`*`, `,`, `-`, `*/N` 지원).
+해당 docs 우선 참조는 `nextjs-app-router-current` 스킬에 절차로 정리.
 
-## 명령어
+## 품질 게이트
 
-```bash
-# 웹앱 개발
-cd web && npm run dev          # 로컬 개발 서버
-cd web && npm run build        # 프로덕션 빌드
+- TypeScript: `tsc --noEmit` 무경고
+- 빌드: `npm run build` 성공
+- 페이지 번들: 초기 JS < 200KB (WASM 제외)
+- LCP < 2.5s (도구 페이지 모바일 4G 시뮬레이션)
+- 접근성: 모든 인터랙티브 요소 키보드 도달 가능
+- 모든 도구: 빈 입력·잘못된 포맷·큰 파일(100MB) 시 명확한 에러
 
-# Agent 개발
-cd agent && npm run dev        # 개발 모드 실행
-cd agent && npm run build      # 빌드
-cd agent && pm2 start ecosystem.config.js  # 프로덕션 실행
+## 슬래시 커맨드
 
-# Supabase
-npx supabase db push           # 마이그레이션 적용
-npx supabase gen types typescript --local > web/lib/supabase/types.ts  # 타입 생성
-```
+- `/new-tool <category>/<slug>` — 도구 스캐폴드 + registry 항목 자동 추가
+- `/audit-tools` — registry vs 실제 페이지 정합성·404·키워드 누락 점검
+- `/perf-check [slug]` — Lighthouse + 번들 크기 + WASM lazy 검증
+- `/a11y [slug]` — 접근성 점검
+- `/wasm-update` — FFmpeg/PDF.js/Tesseract 버전 동기화
+
+## 옛 채팅 시스템 (참고용)
+
+`agent/`, `agent-package/`, `supabase/`, `web/src/app/chat`, `web/src/app/dashboard`, `web/src/app/harnesses`, `web/src/app/api/agent|install|cron|push|webhook|share` 는 제거 예정. settings.json 의 deny 규칙으로 수정·삭제를 임시 차단해 두었다. 본격 정리는 다음 라운드에서 진행.
+
+## 변경 이력
+
+- 2026-05-22: 폴더명 `agent-control-panel` → `web-toolkit`, 미션 재정의(원격 통제 → 브라우저 도구 모음). 하네스 신규 구성 — 11 에이전트 + 11 스킬 + 5 슬래시 커맨드.
+- 2026-05-22: **legacy-pruner 1차** — 옛 채팅·에이전트 시스템 `_legacy/` 이전 완료. `agent/`, `agent-package/`, `supabase/`, `middleware.ts`, web 의 `chat|dashboard|harnesses|share|(auth)|api/*` 라우트, `components/chat|dashboard|sidebar|settings`, `AuthProvider|SessionRecovery|RealtimeStatusBadge|ErrorReporter`, `lib/supabase|hooks|agent-*|outbox|realtime-*|...` 모두 이동. 루트 redirect `/chat` → `/tools`, BottomNav 2탭(도구·설정)으로 단순화, settings 페이지 테마+안내만 유지. 빌드 OK.
+- 2026-05-22: **의존성 청소** — Supabase(2), web-push(2), pako(2), react-markdown 계열(3) 등 9개 패키지 + 125 transitive 제거. `prebuild` 스크립트(copy-agent-package.mjs) 와 `public/_agent/` 산출물도 정리.
+- 2026-05-22: **정적 export 모드 전환** — `next.config.ts` 에 `output: 'export'`. 빌드 산출물은 `web/out/` 37MB. 어떤 정적 호스팅(Cloudflare Pages·GitHub Pages·S3·Vercel 정적)에서도 동작. 보안 헤더는 `vercel.json` + `web/public/_headers` 양쪽 배치(호스팅별 호환). `/` 루트는 클라이언트 redirect (`useRouter().replace('/tools')`) + meta refresh 폴백.
+- 2026-05-22: **`_legacy/` 완전 삭제** — 435MB / tracked 149개 파일 git rm + 디렉터리 통째 제거. git history 에는 그대로 보존되어 `git log` 거슬러 옛 시스템 복원 가능. 빌드 회귀 없음(5.3초 통과). 작업 디렉터리 루트가 `.claude / .git / .github / .vercel / .gitignore / CLAUDE.md / vercel.json / web/` 단 8개 항목으로 정리.

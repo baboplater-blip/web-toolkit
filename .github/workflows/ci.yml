@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web (Next.js) — typecheck + lint + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci || npm install
+      - name: Prebuild — copy agent-package to public/_agent
+        run: node scripts/copy-agent-package.mjs
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: npx eslint
+      - name: Next.js build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          SUPABASE_SERVICE_KEY: placeholder
+        run: npx next build
+
+  agent:
+    name: Agent package — typecheck + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-package
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: agent-package/package-lock.json
+      - name: Install
+        run: npm ci || npm install
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      - name: Compile (dist/)
+        run: npx tsc
