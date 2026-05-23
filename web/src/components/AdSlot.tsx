@@ -35,38 +35,52 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
   const image = config?.image;
   const html = config?.html ?? '';
 
+  const hasImage = !!(image && image.src);
+
+  // 이미지가 있으면 컨테이너 높이를 이미지 비율로 자동 늘림 (잘리지 않음 + 빈 공간 없음).
+  // placeholder/HTML 모드는 기본 사이즈 유지 (970×90 / 160×600).
   const containerCls = cn(
-    'flex items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground overflow-hidden',
-    isTop
-      ? 'mx-auto w-full max-w-[970px] h-[90px] min-h-[60px]'
-      : 'w-[160px] h-[600px]',
+    'rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground overflow-hidden',
+    hasImage
+      ? isTop
+        ? 'mx-auto w-full max-w-[970px]'
+        : 'w-[160px]'
+      : isTop
+        ? 'mx-auto flex items-center justify-center w-full max-w-[970px] h-[90px] min-h-[60px]'
+        : 'flex items-center justify-center w-[160px] h-[600px]',
     className,
   );
 
   return (
     <div className={containerCls} data-ad-slot={slotKey} aria-label="광고 영역">
-      {image && image.src ? (
-        image.href ? (
+      {hasImage ? (
+        image!.href ? (
           <a
-            href={image.href}
+            href={image!.href}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="block w-full h-full"
+            className="block w-full"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={image.src}
-              alt={image.alt ?? '광고'}
-              className="w-full h-full object-contain"
+              src={image!.src}
+              alt={image!.alt ?? '광고'}
+              className={cn(
+                'block w-full h-auto',
+                isTop ? 'max-h-[250px] object-contain' : 'max-h-[600px] object-contain',
+              )}
               loading="lazy"
             />
           </a>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={image.src}
-            alt={image.alt ?? '광고'}
-            className="w-full h-full object-contain"
+            src={image!.src}
+            alt={image!.alt ?? '광고'}
+            className={cn(
+              'block w-full h-auto',
+              isTop ? 'max-h-[250px] object-contain' : 'max-h-[600px] object-contain',
+            )}
             loading="lazy"
           />
         )

@@ -25,9 +25,10 @@ export const AD_SLOT_SIZES: Record<AdSlotKey, { width: number; height: number }>
  * 잘리지 않게 함.
  */
 const AD_MAX_DIMENSIONS: Record<AdSlotKey, { maxW: number; maxH: number }> = {
-  top: { maxW: 1940, maxH: 600 },          // 슬롯 970×90 의 2× 너비, 높이는 6.6× 까지
-  sidebarLeft: { maxW: 600, maxH: 1200 },  // 슬롯 160×600 의 3.75× 너비
-  sidebarRight: { maxW: 600, maxH: 1200 },
+  // 슬롯 표시 영역의 1.5~2× 까지 허용 — DPR 2× 화질 + 페이지가 너무 크지 않게
+  top: { maxW: 1940, maxH: 500 },
+  sidebarLeft: { maxW: 320, maxH: 1200 },
+  sidebarRight: { maxW: 320, maxH: 1200 },
 };
 
 const WEBP_QUALITY = 0.85;
