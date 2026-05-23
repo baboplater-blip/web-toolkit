@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generate-tool-metadata.mjs",
     "build": "tsc --noEmit && next build",
     "start": "next start",
     "lint": "eslint",
     "check": "tsc --noEmit && eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "metadata:gen": "node scripts/generate-tool-metadata.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

@@ -6,16 +6,23 @@
  *   2) 오프라인 첫 로딩 캐시 — 도구 페이지의 즉시 진입 경험
  *   3) 옛 ACP 시절 캐시(채팅·대시보드·하네스) 정리
  *
- * 미션 변경(2026-05-22): agent-control-panel(채팅 시스템) → web-toolkit(도구 모음).
- * Web Push / Supabase / 채팅 라우트는 제거되었으니 본 SW 도 단순화.
+ * 전략:
+ *   - 페이지(navigate): network-first → 실패 시 캐시 → 오프라인 페이지
+ *   - 정적 자산(_next/static): cache-first + 백그라운드 갱신 (SWR)
+ *   - 아이콘·매니페스트: cache-first
+ *   - RUNTIME 캐시는 최대 80개 항목 (LRU)
+ *
+ * 미션 변경(2026-05-22): agent-control-panel → web-toolkit.
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-v1-20260522';
+const SW_VERSION = 'webtoolkit-sw-v2-20260523';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
+const ASSET_CACHE = `${SW_VERSION}-asset`;
 
-/** 첫 설치 시 미리 받아둘 핵심 경로. 도구 사이트라 허브 + 설정 + 오프라인만. */
+const RUNTIME_MAX_ENTRIES = 80;
+
 const PRECACHE_URLS = [
   '/',
   '/tools',
@@ -41,11 +48,14 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // 옛 ACP 캐시(`acp-sw-*`) 와 이전 버전의 webtoolkit 캐시 모두 청소.
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k.startsWith('acp-sw-') || (k.startsWith('webtoolkit-sw-') && !k.startsWith(SW_VERSION)))
+          .filter(
+            (k) =>
+              k.startsWith('acp-sw-') ||
+              (k.startsWith('webtoolkit-sw-') && !k.startsWith(SW_VERSION)),
+          )
           .map((k) => caches.delete(k)),
       );
       await self.clients.claim();
@@ -61,19 +71,23 @@ function isSameOrigin(url) {
   }
 }
 
+function isNextStatic(path) {
+  return path.startsWith('/_next/static/');
+}
+
 function isStaticAsset(url) {
   const path = url.pathname;
   return (
-    path.startsWith('/_next/static/') ||
     path.startsWith('/icon-') ||
     path.endsWith('.svg') ||
     path.endsWith('.png') ||
     path.endsWith('.ico') ||
-    path === '/manifest.json'
+    path === '/manifest.json' ||
+    path.endsWith('.woff') ||
+    path.endsWith('.woff2')
   );
 }
 
-/** 옛 라우트(`/chat`, `/dashboard`, `/harnesses`, `/share`, `/api/*`)는 곧장 /tools 로 리다이렉트. */
 function isLegacyRoute(pathname) {
   return (
     pathname === '/chat' ||
@@ -88,12 +102,24 @@ function isLegacyRoute(pathname) {
   );
 }
 
+/** RUNTIME 캐시 크기 제한 — 오래된 항목 제거 (단순 FIFO) */
+async function trimCache(cacheName, maxEntries) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  if (keys.length <= maxEntries) return;
+  const excess = keys.length - maxEntries;
+  for (let i = 0; i < excess; i++) {
+    await cache.delete(keys[i]);
+  }
+}
+
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (response.ok && response.status < 400) {
       const cache = await caches.open(RUNTIME_CACHE);
       cache.put(request, response.clone()).catch(() => {});
+      trimCache(RUNTIME_CACHE, RUNTIME_MAX_ENTRIES).catch(() => {});
     }
     return response;
   } catch {
@@ -103,26 +129,33 @@ async function networkFirst(request) {
     if (offline) return offline;
     const fallback = await caches.match('/tools');
     if (fallback) return fallback;
-    return new Response('오프라인', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+    return new Response('오프라인', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
   }
 }
 
-async function cacheFirst(request) {
-  const cache = await caches.open(STATIC_CACHE);
+/** _next/static 자산: 캐시 우선 + 백그라운드 갱신 (SWR) */
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  if (cached) {
-    fetch(request)
-      .then((res) => {
-        if (res.ok) cache.put(request, res.clone()).catch(() => {});
-      })
-      .catch(() => {});
-    return cached;
-  }
+  const fetchPromise = fetch(request)
+    .then((res) => {
+      if (res.ok) cache.put(request, res.clone()).catch(() => {});
+      return res;
+    })
+    .catch(() => cached);
+  return cached || fetchPromise;
+}
+
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  if (cached) return cached;
   try {
     const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone()).catch(() => {});
-    }
+    if (response.ok) cache.put(request, response.clone()).catch(() => {});
     return response;
   } catch {
     return new Response('', { status: 504 });
@@ -136,23 +169,30 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (!isSameOrigin(request.url)) return;
 
-  // RSC 페이로드(`?_rsc=...`) 요청은 SW 가 건드리지 않고 브라우저 기본 경로로.
+  // RSC payload 는 SW 가 건드리지 않음
   if (url.searchParams.has('_rsc')) return;
 
-  // 옛 라우트 → /tools 로 즉시 리다이렉트 (옛 홈 화면 PWA 사용자 보호).
+  // 옛 라우트 → /tools 리다이렉트 (옛 홈화면 PWA 사용자 보호)
   if (isLegacyRoute(url.pathname)) {
     event.respondWith(Response.redirect('/tools', 302));
     return;
   }
 
+  // _next/static: SWR (immutable hash 자산이라 안전)
+  if (isNextStatic(url.pathname)) {
+    event.respondWith(staleWhileRevalidate(request, ASSET_CACHE));
+    return;
+  }
+
+  // 페이지 네비게이션: network-first
   if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith(networkFirst(request));
     return;
   }
 
+  // 정적 아이콘·매니페스트·폰트: cache-first
   if (isStaticAsset(url)) {
-    event.respondWith(cacheFirst(request));
-    return;
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
   }
 });
 

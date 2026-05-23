@@ -21,10 +21,50 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+  'https://web-toolkit.vercel.app';
+
 export const metadata: Metadata = {
-  title: 'Web Toolkit — 브라우저 도구 모음',
-  description: '브라우저에서 완결되는 PDF·이미지·비디오·OCR 도구. 파일이 서버로 전송되지 않습니다.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Web Toolkit — 브라우저 도구 모음',
+    template: '%s · Web Toolkit',
+  },
+  description:
+    '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 80여 종. 파일이 서버로 전송되지 않습니다.',
+  keywords: [
+    'PDF',
+    '이미지 변환',
+    '오디오 편집',
+    'OCR',
+    'AI 도구',
+    'web tools',
+    'browser tools',
+    'no upload',
+    '무설치',
+    '온라인 도구',
+  ],
+  authors: [{ name: 'Web Toolkit' }],
   manifest: '/manifest.json',
+  alternates: {
+    canonical: '/tools',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Web Toolkit',
+    title: 'Web Toolkit — 브라우저 도구 모음',
+    description:
+      '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 80여 종. 파일이 서버로 전송되지 않습니다.',
+    locale: 'ko_KR',
+    url: '/tools',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Web Toolkit — 브라우저 도구 모음',
+    description:
+      '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구. 업로드 없음.',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

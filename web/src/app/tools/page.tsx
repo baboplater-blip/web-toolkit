@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { LayoutGrid, Search, Star, Clock, X, Keyboard } from 'lucide-react';
+import {
+  ArrowDownAZ,
+  Clock,
+  Keyboard,
+  LayoutGrid,
+  ListOrdered,
+  Search,
+  Star,
+  X,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ToolCard } from '@/components/tools/ToolCard';
 import {
@@ -43,10 +52,20 @@ const CATEGORY_ORDER: ToolCategory[] = [
   'ai',
 ];
 
+type SortKey = 'relevance' | 'name' | 'phase';
+const SORT_LABELS: Record<SortKey, string> = {
+  relevance: '기본',
+  name: '이름순',
+  phase: '신규순',
+};
+
+const SORT_STORAGE_KEY = 'webtoolkit:hub:sort';
+
 export default function ToolsHubPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ToolCategory | 'all'>('all');
   const [showHelp, setShowHelp] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey>('relevance');
 
   const { favorites, toggle, isFavorite } = useFavorites();
   const recent = useRecent();
@@ -54,7 +73,49 @@ export default function ToolsHubPage() {
   const searchRef = useRef<HTMLInputElement>(null);
   const categoryRailRef = useRef<HTMLDivElement>(null);
 
-  const tools = useMemo(() => filterTools(query, category), [query, category]);
+  /* 카테고리별 ready 도구 개수 (배지에 표시) */
+  const categoryCounts = useMemo(() => {
+    const m = new Map<ToolCategory | 'all', number>();
+    let total = 0;
+    for (const t of TOOLS) {
+      if (t.status !== 'ready') continue;
+      total++;
+      m.set(t.category, (m.get(t.category) ?? 0) + 1);
+    }
+    m.set('all', total);
+    return m;
+  }, []);
+
+  /* 정렬 키 로드/저장 */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = window.localStorage.getItem(SORT_STORAGE_KEY);
+    if (saved === 'relevance' || saved === 'name' || saved === 'phase') {
+      setSortKey(saved);
+    }
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(SORT_STORAGE_KEY, sortKey);
+  }, [sortKey]);
+
+  const tools = useMemo(() => {
+    const result = filterTools(query, category);
+    if (sortKey === 'name') {
+      const c = new Intl.Collator('ko');
+      return [...result].sort((a, b) => {
+        if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+        return c.compare(a.title, b.title);
+      });
+    }
+    if (sortKey === 'phase') {
+      return [...result].sort((a, b) => {
+        if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+        return b.phase - a.phase;
+      });
+    }
+    return result;
+  }, [query, category, sortKey]);
   const readyCount = tools.filter((t) => t.status === 'ready').length;
   const plannedCount = tools.length - readyCount;
 
@@ -93,15 +154,28 @@ export default function ToolsHubPage() {
       map.set(t.category, arr);
     }
     for (const [, list] of map) {
-      list.sort((a, b) => {
-        if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-        return a.phase - b.phase;
-      });
+      if (sortKey === 'name') {
+        const c = new Intl.Collator('ko');
+        list.sort((a, b) => {
+          if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+          return c.compare(a.title, b.title);
+        });
+      } else if (sortKey === 'phase') {
+        list.sort((a, b) => {
+          if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+          return b.phase - a.phase;
+        });
+      } else {
+        list.sort((a, b) => {
+          if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+          return a.phase - b.phase;
+        });
+      }
     }
     return CATEGORY_ORDER.filter((c) => map.has(c)).map(
       (c) => [c, map.get(c)!] as const,
     );
-  }, [isSearching, isFiltered]);
+  }, [isSearching, isFiltered, sortKey]);
 
   /* 키보드 단축키 */
   useEffect(() => {
@@ -149,6 +223,15 @@ export default function ToolsHubPage() {
       if (e.key === '?' && !inEditable) {
         e.preventDefault();
         setShowHelp((v) => !v);
+        return;
+      }
+      // 1-9: 카테고리 점프
+      if (!inEditable && /^[1-9]$/.test(e.key)) {
+        const idx = Number(e.key);
+        if (idx < CATEGORIES.length) {
+          e.preventDefault();
+          setCategory(CATEGORIES[idx]);
+        }
       }
     };
     window.addEventListener('keydown', handler);
@@ -205,22 +288,59 @@ export default function ToolsHubPage() {
             ref={categoryRailRef}
             className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
           >
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                type="button"
-                data-cat={c}
-                onClick={() => setCategory(c)}
-                className={cn(
-                  'h-8 shrink-0 rounded-full border px-3 text-xs transition-colors',
-                  category === c
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border bg-background hover:bg-muted',
-                )}
-              >
-                {CATEGORY_LABELS[c]}
-              </button>
-            ))}
+            {CATEGORIES.map((c) => {
+              const count = categoryCounts.get(c) ?? 0;
+              const active = category === c;
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  data-cat={c}
+                  onClick={() => setCategory(c)}
+                  className={cn(
+                    'h-8 shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 text-xs transition-colors',
+                    active
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background hover:bg-muted',
+                  )}
+                >
+                  <span>{CATEGORY_LABELS[c]}</span>
+                  <span
+                    className={cn(
+                      'text-[10px] tabular-nums rounded-full px-1.5 py-px',
+                      active
+                        ? 'bg-primary-foreground/20 text-primary-foreground'
+                        : 'bg-muted text-muted-foreground',
+                    )}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <ListOrdered className="h-3.5 w-3.5" />
+              정렬:
+              {(['relevance', 'name', 'phase'] as SortKey[]).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => setSortKey(k)}
+                  className={cn(
+                    'h-6 px-2 rounded-md border',
+                    sortKey === k
+                      ? 'bg-primary/10 border-primary/40 text-foreground'
+                      : 'bg-background hover:bg-muted border-border',
+                  )}
+                >
+                  {k === 'name' && <ArrowDownAZ className="inline h-3 w-3 mr-1" />}
+                  {SORT_LABELS[k]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -235,6 +355,12 @@ export default function ToolsHubPage() {
               <li>
                 <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">g</kbd>
                 <span className="ml-2">다음 카테고리로 점프</span>
+              </li>
+              <li>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">1</kbd>
+                <span className="mx-1">~</span>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">9</kbd>
+                <span className="ml-2">카테고리 직접 선택</span>
               </li>
               <li>
                 <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd>
@@ -259,7 +385,7 @@ export default function ToolsHubPage() {
                 {favoriteTools.length}개
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {favoriteTools.map((tool) => (
                 <ToolCard
                   key={`fav-${tool.id}`}
@@ -283,7 +409,7 @@ export default function ToolsHubPage() {
                 {recentTools.length}개
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {recentTools.map((tool) => (
                 <ToolCard
                   key={`recent-${tool.id}`}
@@ -297,8 +423,23 @@ export default function ToolsHubPage() {
         )}
 
         {tools.length === 0 ? (
-          <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-            검색 결과가 없습니다
+          <div className="rounded-xl border bg-card p-8 text-center space-y-2">
+            <p className="text-sm font-medium">검색 결과가 없습니다</p>
+            <p className="text-[11px] text-muted-foreground">
+              다른 키워드를 시도하거나, 카테고리 필터를 해제해 보세요. 한글·영문 모두 검색 가능합니다.
+            </p>
+            {(isSearching || isFiltered) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  setCategory('all');
+                }}
+                className="mt-2 inline-flex h-8 items-center rounded-md border bg-background px-3 text-xs hover:bg-muted"
+              >
+                필터 초기화
+              </button>
+            )}
           </div>
         ) : grouped ? (
           <div className="space-y-6">
@@ -312,7 +453,7 @@ export default function ToolsHubPage() {
                     {list.filter((t) => t.status === 'ready').length}개 사용 가능
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {list.map((tool) => (
                     <ToolCard
                       key={tool.id}
@@ -326,19 +467,20 @@ export default function ToolsHubPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {tools.map((tool) => (
               <ToolCard
                 key={tool.id}
                 tool={tool}
                 favorite={isFavorite(tool.id)}
                 onToggleFavorite={toggle}
+                query={isSearching ? query : ''}
               />
             ))}
           </div>
         )}
 
-        {(isSearching || isFiltered) && (
+        {(isSearching || isFiltered) && tools.length > 0 && (
           <p className="text-[11px] text-muted-foreground">
             사용 가능 {readyCount}개 · 준비 중 {plannedCount}개
           </p>

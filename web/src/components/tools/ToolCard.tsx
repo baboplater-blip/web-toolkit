@@ -10,6 +10,35 @@ interface ToolCardProps {
   favorite: boolean;
   onToggleFavorite: (id: string) => void;
   showCategory?: boolean;
+  /** 검색어 — 카드 안 매치 부분을 강조 표시 */
+  query?: string;
+}
+
+function highlight(text: string, query: string): React.ReactNode {
+  const q = query.trim();
+  if (!q) return text;
+  const lower = text.toLowerCase();
+  const qLower = q.toLowerCase();
+  const parts: React.ReactNode[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const idx = lower.indexOf(qLower, i);
+    if (idx === -1) {
+      parts.push(text.slice(i));
+      break;
+    }
+    if (idx > i) parts.push(text.slice(i, idx));
+    parts.push(
+      <mark
+        key={idx}
+        className="rounded-sm bg-amber-200/70 text-foreground dark:bg-amber-400/30"
+      >
+        {text.slice(idx, idx + q.length)}
+      </mark>,
+    );
+    i = idx + q.length;
+  }
+  return parts;
 }
 
 export function ToolCard({
@@ -17,6 +46,7 @@ export function ToolCard({
   favorite,
   onToggleFavorite,
   showCategory = true,
+  query = '',
 }: ToolCardProps) {
   const Icon = tool.icon;
   const isPlanned = tool.status === 'planned';
@@ -24,7 +54,7 @@ export function ToolCard({
   const inner = (
     <div
       className={cn(
-        'group relative flex h-full flex-col gap-2 rounded-xl border bg-card p-4 transition-all',
+        'group relative flex h-full flex-col gap-2 rounded-xl border bg-card p-3 sm:p-4 transition-all',
         isPlanned
           ? 'cursor-not-allowed opacity-60'
           : 'cursor-pointer hover:-translate-y-0.5 hover:border-primary hover:shadow-md',
@@ -65,9 +95,11 @@ export function ToolCard({
           )}
         </div>
       </div>
-      <h3 className="text-sm font-semibold leading-tight">{tool.title}</h3>
+      <h3 className="text-sm font-semibold leading-tight">
+        {highlight(tool.title, query)}
+      </h3>
       <p className="line-clamp-2 flex-1 text-[11px] leading-relaxed text-muted-foreground">
-        {tool.description}
+        {highlight(tool.description, query)}
       </p>
       {showCategory && (
         <span className="mt-auto text-[11px] text-muted-foreground">
