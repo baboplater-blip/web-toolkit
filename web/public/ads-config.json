@@ -1,0 +1,19 @@
+{
+  "$schema": "광고 설정 — /admin 페이지에서 GitHub API 로 커밋. 운영 시 직접 편집도 가능.",
+  "version": 1,
+  "updatedAt": "2026-05-23T00:00:00Z",
+  "slots": {
+    "top": {
+      "enabled": true,
+      "html": ""
+    },
+    "sidebarLeft": {
+      "enabled": true,
+      "html": ""
+    },
+    "sidebarRight": {
+      "enabled": true,
+      "html": ""
+    }
+  }
+}

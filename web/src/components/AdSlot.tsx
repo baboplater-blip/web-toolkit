@@ -1,47 +1,67 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { loadAdsConfig, type AdSlotKey } from '@/lib/ads-config';
 
 export type AdSlotSize = 'top' | 'sidebar';
 
 interface AdSlotProps {
   size: AdSlotSize;
-  /** 외부 컨테이너에 추가 클래스 */
+  /** ads-config.json 의 슬롯 키 — 위치별 다른 광고 코드 매핑 */
+  slotKey: AdSlotKey;
   className?: string;
-  /** AdSense 데이터 슬롯 id (미설정 시 placeholder) */
-  slotId?: string;
 }
 
 /**
- * 광고 슬롯 자리.
+ * 광고 슬롯.
  *
- * 현재는 placeholder. 운영 단계에서 AdSense 등 광고 네트워크 코드를
- * 이 컴포넌트 내부에서 dangerouslySetInnerHTML 또는 <ins> 태그로 삽입한다.
+ * 동작:
+ *   1. /ads-config.json 로드 (캐시됨)
+ *   2. slotKey 의 enabled=false 면 자리 자체 안 그림
+ *   3. html 이 있으면 dangerouslySetInnerHTML 로 렌더
+ *   4. html 비어 있으면 placeholder
  *
- *   size='top'      : 가로 배너 (모든 화면, ~728×90 / 970×90)
- *   size='sidebar'  : 세로 배너 (xl 화면만, 160×600 / 300×600)
- *
- * 미션 1원칙(사용자 파일 서버 미전송) 과는 무관 — 광고 스크립트는 외부 호출이
- * 허용되는 영역이므로 운영 시 명시적으로 추가.
+ *   size='top'      : 가로 배너 (모든 화면, max 970×90)
+ *   size='sidebar'  : 세로 배너 (xl 화면만, 160×600)
  */
-export function AdSlot({ size, className, slotId }: AdSlotProps) {
+export function AdSlot({ size, slotKey, className }: AdSlotProps) {
   const isTop = size === 'top';
+  const [config, setConfig] = useState<{ enabled: boolean; html: string } | null>(null);
+
+  useEffect(() => {
+    loadAdsConfig().then((cfg) => setConfig(cfg.slots[slotKey]));
+  }, [slotKey]);
+
+  if (config && !config.enabled) return null;
+
   const dims = isTop ? '728 × 90' : '160 × 600';
+  const html = config?.html ?? '';
 
   return (
     <div
       className={cn(
-        'flex items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground',
+        'flex items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground overflow-hidden',
         isTop
           ? 'mx-auto w-full max-w-[970px] h-[90px] min-h-[60px]'
           : 'w-[160px] h-[600px]',
         className,
       )}
-      data-ad-slot={slotId ?? 'placeholder'}
+      data-ad-slot={slotKey}
       aria-label="광고 영역"
     >
-      <div className="text-center text-[10px] leading-tight select-none">
-        <p className="font-medium">광고 영역</p>
-        <p className="opacity-60">{dims}</p>
-      </div>
+      {html ? (
+        <div
+          className="w-full h-full flex items-center justify-center"
+          // 광고 네트워크 HTML 은 admin 이 의도적으로 입력. XSS 위험은 admin 본인 책임.
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ) : (
+        <div className="text-center text-[10px] leading-tight select-none">
+          <p className="font-medium">광고 영역</p>
+          <p className="opacity-60">{dims}</p>
+        </div>
+      )}
     </div>
   );
 }

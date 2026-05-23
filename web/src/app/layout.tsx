@@ -108,7 +108,7 @@ export default function RootLayout({
         <RecentTracker />
         <div className="md:pl-16">
           <div className="px-4 pt-3">
-            <AdSlot size="top" slotId="top-banner" />
+            <AdSlot size="top" slotKey="top" />
           </div>
           <div className="relative mx-auto max-w-[1320px]">
             <aside
@@ -116,7 +116,7 @@ export default function RootLayout({
               aria-hidden="true"
             >
               <div className="pointer-events-auto sticky top-4 pl-2 pt-3">
-                <AdSlot size="sidebar" slotId="sidebar-left" />
+                <AdSlot size="sidebar" slotKey="sidebarLeft" />
               </div>
             </aside>
             <aside
@@ -124,7 +124,7 @@ export default function RootLayout({
               aria-hidden="true"
             >
               <div className="pointer-events-auto sticky top-4 pr-2 pt-3">
-                <AdSlot size="sidebar" slotId="sidebar-right" />
+                <AdSlot size="sidebar" slotKey="sidebarRight" />
               </div>
             </aside>
             <div className="xl:px-[180px]">{children}</div>
