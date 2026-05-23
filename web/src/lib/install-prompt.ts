@@ -23,6 +23,10 @@ function emit() {
 
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (e) => {
+    // 데스크탑은 브라우저 기본 설치 UI(주소창 옆 아이콘 등)를 살려두기 위해
+    // preventDefault 를 호출하지 않는다. 모바일에서만 우리 자동 배너로 가로챈다.
+    const ua = navigator.userAgent;
+    if (!/iPhone|iPad|iPod|Android/i.test(ua)) return;
     e.preventDefault();
     deferred = e as BeforeInstallPromptEvent;
     emit();
