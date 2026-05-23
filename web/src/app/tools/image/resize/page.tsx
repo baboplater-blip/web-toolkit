@@ -13,7 +13,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import {
   canvasToBlob,
   detectFormatFromFile,
@@ -25,12 +26,24 @@ import {
 } from '@/lib/tools/image-common';
 import { triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes, compressionRatio, renameWithSuffix } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
 
 type Mode = 'pixel' | 'percent' | 'target-kb';
 
 export default function ImageResizePage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
   const [loaded, setLoaded] = useState<LoadedImage | null>(null);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [mode, setMode] = useState<Mode>('pixel');
   const [targetW, setTargetW] = useState(1920);
   const [targetH, setTargetH] = useState(1080);
@@ -45,6 +58,7 @@ export default function ImageResizePage() {
   const [result, setResult] = useState<{ blob: Blob; fileName: string; w: number; h: number } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => {
     return () => {
@@ -59,6 +73,7 @@ export default function ImageResizePage() {
     }
     setError(null);
     setResult(null);
+    setBatchResults(null);
     loaded?.cleanup();
     try {
       const info = await loadImageFile(f);
@@ -73,11 +88,29 @@ export default function ImageResizePage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['image/'],
+      extensions: IMAGE_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 이미지가 없습니다.');
+      setFolderFiles([]);
+      return;
+    }
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     loaded?.cleanup();
     setFile(null);
     setLoaded(null);
+    setFolderFiles([]);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
@@ -92,7 +125,111 @@ export default function ImageResizePage() {
     if (keepRatio && loaded) setTargetW(Math.max(1, Math.round(v * ratio)));
   };
 
+  async function resizeOne(srcFile: File): Promise<{ blob: Blob; w: number; h: number }> {
+    const info = await loadImageFile(srcFile);
+    try {
+      let finalW: number;
+      let finalH: number;
+      if (mode === 'percent') {
+        finalW = Math.max(1, Math.round((info.width * percent) / 100));
+        finalH = Math.max(1, Math.round((info.height * percent) / 100));
+      } else if (mode === 'pixel') {
+        // 폴더 모드에서는 비율 유지 픽셀 모드 — targetW 만 적용, 세로는 자동
+        if (keepRatio) {
+          const ratio = info.width / info.height;
+          finalW = Math.max(1, targetW);
+          finalH = Math.max(1, Math.round(targetW / ratio));
+        } else {
+          finalW = Math.max(1, targetW);
+          finalH = Math.max(1, targetH);
+        }
+      } else {
+        finalW = info.width;
+        finalH = info.height;
+      }
+
+      if (mode === 'target-kb') {
+        const targetBytes = Math.max(1, targetKb) * 1024;
+        let bestBlob: Blob | null = null;
+        let lo = 20;
+        let hi = 95;
+        let curW = info.width;
+        let curH = info.height;
+        for (let iter = 0; iter < 12; iter++) {
+          const mid = Math.round((lo + hi) / 2);
+          const canvas = drawToCanvas(info.element, curW, curH, outputFormat);
+          const blob = await canvasToBlob(canvas, outputFormat, mid / 100);
+          if (blob.size <= targetBytes) {
+            bestBlob = blob;
+            lo = mid + 1;
+          } else {
+            hi = mid - 1;
+          }
+          if (lo > hi) break;
+        }
+        if (!bestBlob || bestBlob.size > targetBytes) {
+          for (let step = 0; step < 5; step++) {
+            curW = Math.max(100, Math.round(curW * 0.8));
+            curH = Math.max(100, Math.round(curH * 0.8));
+            const canvas = drawToCanvas(info.element, curW, curH, outputFormat);
+            const blob = await canvasToBlob(canvas, outputFormat, 0.75);
+            if (blob.size <= targetBytes) {
+              bestBlob = blob;
+              break;
+            }
+            bestBlob = blob;
+          }
+        }
+        if (!bestBlob) throw new Error('조건을 만족하는 결과를 찾지 못했습니다.');
+        return { blob: bestBlob, w: curW, h: curH };
+      }
+
+      const canvas = drawToCanvas(info.element, finalW, finalH, outputFormat);
+      const blob = await canvasToBlob(canvas, outputFormat, quality / 100);
+      return { blob, w: finalW, h: finalH };
+    } finally {
+      info.cleanup();
+    }
+  }
+
   const runResize = async () => {
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('폴더를 먼저 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setError(null);
+      setResult(null);
+      setBatchResults(null);
+      const ext = formatExtension(outputFormat);
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const { blob } = await resizeOne(rf.file);
+            return {
+              relativePath: replaceExtension(rf.relativePath, ext),
+              blob,
+            };
+          },
+          {
+            concurrency: 3,
+            onProgress: (done, total, path) => {
+              setProgressText(`리사이즈 중 ${done}/${total} — ${path}`);
+            },
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 리사이즈 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+      }
+      return;
+    }
+
     if (!file || !loaded) return;
     setProcessing(true);
     setError(null);
@@ -204,11 +341,24 @@ export default function ImageResizePage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="image/*"
-            description="JPG, PNG, WebP, AVIF 등"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && folderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'image/*',
+              description: 'JPG, PNG, WebP, AVIF 등',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'image/*',
+              description: '폴더 안의 모든 이미지를 같은 규칙으로 일괄 리사이즈합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
         )}
 
@@ -218,19 +368,35 @@ export default function ImageResizePage() {
           </div>
         )}
 
-        {file && loaded && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatBytes(file.size)} · {loaded.width}×{loaded.height}
-                </p>
-              </div>
-            </div>
+        {inputMode === 'folder' && folderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-2">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              폴더 — {folderFiles.length}개 이미지
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              루트: <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span> ·
+              비율 유지 픽셀 모드는 가로(targetW) 기준으로 모든 이미지에 적용됩니다.
+            </p>
+          </div>
+        )}
 
-            <Separator />
+        {((inputMode === 'files' && file && loaded) ||
+          (inputMode === 'folder' && folderFiles.length > 0)) && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            {inputMode === 'files' && file && loaded && (
+              <>
+                <div className="flex items-center gap-3">
+                  <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatBytes(file.size)} · {loaded.width}×{loaded.height}
+                    </p>
+                  </div>
+                </div>
+                <Separator />
+              </>
+            )}
 
             <div>
               <label className="text-xs font-medium mb-1.5 block">리사이즈 방식</label>
@@ -302,8 +468,14 @@ export default function ImageResizePage() {
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-medium">축소 비율</label>
                   <span className="text-xs text-muted-foreground">
-                    {percent}% → {Math.round((loaded.width * percent) / 100)}×
-                    {Math.round((loaded.height * percent) / 100)}
+                    {percent}%
+                    {loaded && (
+                      <>
+                        {' → '}
+                        {Math.round((loaded.width * percent) / 100)}×
+                        {Math.round((loaded.height * percent) / 100)}
+                      </>
+                    )}
                   </span>
                 </div>
                 <input
@@ -432,6 +604,15 @@ export default function ImageResizePage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'resized'}
+            zipFileName={`${commonRoot(folderFiles) || 'resized'}-resized.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

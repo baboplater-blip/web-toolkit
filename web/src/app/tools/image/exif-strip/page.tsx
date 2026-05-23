@@ -2,53 +2,119 @@
 
 import { useState } from 'react';
 import { Loader2, ShieldOff } from 'lucide-react';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import {
+  commonRoot,
+  filterFiles,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+type PiexifMod = {
+  default?: { remove: (jpegData: string) => string };
+  remove?: (jpegData: string) => string;
+};
+
+let piexifCache: { remove: (data: string) => string } | null = null;
+async function loadPiexif() {
+  if (piexifCache) return piexifCache;
+  const mod = (await import('piexifjs')) as unknown as PiexifMod;
+  const lib = mod.default ?? mod;
+  if (!lib.remove) throw new Error('piexifjs 로드 실패');
+  piexifCache = { remove: lib.remove };
+  return piexifCache;
+}
+
+async function stripExifOne(file: File): Promise<Blob> {
+  const piexif = await loadPiexif();
+  const buf = new Uint8Array(await file.arrayBuffer());
+  let bin = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < buf.length; i += CHUNK) {
+    bin += String.fromCharCode(...buf.subarray(i, i + CHUNK));
+  }
+  const dataUrl = `data:image/jpeg;base64,${btoa(bin)}`;
+  const stripped = piexif.remove(dataUrl);
+  const m = stripped.match(/^data:[^;]+;base64,(.+)$/);
+  if (!m) throw new Error('처리 결과가 비어있습니다.');
+  const binOut = atob(m[1]);
+  const outBuf = new Uint8Array(binOut.length);
+  for (let i = 0; i < binOut.length; i++) outBuf[i] = binOut.charCodeAt(i);
+  return new Blob([outBuf], { type: 'image/jpeg' });
+}
 
 export default function ExifStripPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [result, setResult] = useState<{
     blobUrl: string;
     filename: string;
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, { extensions: ['.jpg', '.jpeg'] });
+    if (filtered.length === 0) {
+      setError('폴더 안에 JPG 파일이 없습니다.');
+      setFolderFiles([]);
+      return;
+    }
+    setFolderFiles(filtered);
+  };
+
   async function handleStrip() {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('폴더를 먼저 선택하세요.');
+        return;
+      }
+      setBusy(true);
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await stripExifOne(rf.file);
+            return { relativePath: rf.relativePath, blob };
+          },
+          {
+            concurrency: 3,
+            onProgress: (d, t, p) => setProgress(`처리 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '일괄 처리 실패');
+      } finally {
+        setBusy(false);
+        setProgress('');
+      }
+      return;
+    }
+
     if (!file) {
       setError('JPG 파일을 선택해주세요.');
       return;
     }
-    setError(null);
-    setResult(null);
     setBusy(true);
     try {
-      const mod = (await import('piexifjs')) as unknown as {
-        default?: { remove: (jpegData: string) => string };
-        remove?: (jpegData: string) => string;
-      };
-      const piexif = mod.default ?? mod;
-      if (!piexif.remove) throw new Error('piexifjs 로드 실패');
-
-      // piexifjs 는 "binary string" 입력 받는다 (FileReader.readAsDataURL → 또는 직접 변환)
-      const buf = new Uint8Array(await file.arrayBuffer());
-      let bin = '';
-      for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
-      // piexif.remove 는 base64 data URL 도 받는다. 안전을 위해 data URL 로 감싼다.
-      const dataUrl = `data:image/jpeg;base64,${btoa(bin)}`;
-      const stripped = piexif.remove(dataUrl);
-
-      // stripped 는 base64 data URL → Blob 으로
-      const m = stripped.match(/^data:[^;]+;base64,(.+)$/);
-      if (!m) throw new Error('처리 결과가 비어있습니다.');
-      const binOut = atob(m[1]);
-      const outBuf = new Uint8Array(binOut.length);
-      for (let i = 0; i < binOut.length; i++) outBuf[i] = binOut.charCodeAt(i);
-      const blob = new Blob([outBuf], { type: 'image/jpeg' });
-
+      const blob = await stripExifOne(file);
       const baseName = file.name.replace(/\.(jpe?g)$/i, '');
       setResult({
         blobUrl: URL.createObjectURL(blob),
@@ -63,6 +129,8 @@ export default function ExifStripPage() {
     }
   }
 
+  const ready = inputMode === 'folder' ? folderFiles.length > 0 : !!file;
+
   return (
     <main className="mx-auto max-w-2xl space-y-4 p-4">
       <header className="space-y-1">
@@ -75,16 +143,35 @@ export default function ExifStripPage() {
         </p>
       </header>
 
-      <FileDropZone
-        accept="image/jpeg,.jpg,.jpeg"
-        onFiles={(files) => setFile(files[0] ?? null)}
-        title="JPG 파일을 끌어다 놓거나 클릭하여 선택"
-        hint="JPEG/JPG 만 지원 (HEIC 는 HEIC→JPG 로 먼저 변환)"
+      <DualDropZone
+        mode={inputMode}
+        onModeChange={(m) => {
+          setInputMode(m);
+          setError(null);
+        }}
+        fileProps={{
+          accept: 'image/jpeg,.jpg,.jpeg',
+          onFiles: (files) => setFile(files[0] ?? null),
+          title: 'JPG 파일을 끌어다 놓거나 클릭하여 선택',
+          hint: 'JPEG/JPG 만 지원 (HEIC 는 HEIC→JPG 로 먼저 변환)',
+        }}
+        folderProps={{
+          accept: 'image/jpeg',
+          description: '폴더 안 모든 JPG 의 EXIF 를 일괄 제거합니다.',
+          onFolder: onFolderPicked,
+        }}
       />
 
-      <Button onClick={handleStrip} disabled={busy || !file}>
+      {inputMode === 'folder' && folderFiles.length > 0 && (
+        <div className="rounded-xl border bg-card p-3 text-xs text-muted-foreground">
+          폴더 — {folderFiles.length}개 JPG · 루트:{' '}
+          <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
+        </div>
+      )}
+
+      <Button onClick={handleStrip} disabled={busy || !ready}>
         {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        EXIF 제거
+        {busy && progress ? progress : 'EXIF 제거'}
       </Button>
 
       {error && (
@@ -100,6 +187,15 @@ export default function ExifStripPage() {
           compressedSize={result.compressedSize}
           blobUrl={result.blobUrl}
           extraInfo="GPS · 촬영 정보 · 카메라 모델 제거됨"
+        />
+      )}
+
+      {batchResults && (
+        <BatchResultPanel
+          results={batchResults}
+          zipRootName={commonRoot(folderFiles) || 'no-exif'}
+          zipFileName={`${commonRoot(folderFiles) || 'images'}-no-exif.zip`}
+          totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
         />
       )}
 

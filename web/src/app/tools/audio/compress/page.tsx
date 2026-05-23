@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import {
   cleanupFiles,
   getFFmpeg,
@@ -22,6 +23,16 @@ import {
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
 import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+const AUDIO_EXTS = ['.mp3', '.wav', '.ogg', '.aac', '.m4a', '.flac', '.opus', '.wma'];
 
 type Preset = 'voice' | 'standard' | 'high' | 'custom';
 
@@ -33,7 +44,9 @@ const PRESETS: Record<Exclude<Preset, 'custom'>, { bitrate: number; sampleRate: 
   };
 
 export default function AudioCompressPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [preset, setPreset] = useState<Preset>('standard');
@@ -47,6 +60,7 @@ export default function AudioCompressPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => {
     return () => {
@@ -91,64 +105,108 @@ export default function AudioCompressPage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['audio/'],
+      extensions: AUDIO_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 오디오 파일이 없습니다.');
+      setFolderFiles([]);
+      return;
+    }
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
+    setFolderFiles([]);
     setPreviewUrl(null);
     setDuration(null);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function compressOne(srcFile: File): Promise<Blob> {
+    const inputName = `input.${srcFile.name.split('.').pop() ?? 'mp3'}`;
+    const outputName = 'output.mp3';
+    const ffmpeg = await getFFmpeg();
+    try {
+      await writeFile(ffmpeg, inputName, srcFile);
+      const args = [
+        '-i',
+        inputName,
+        '-vn',
+        '-c:a',
+        'libmp3lame',
+        '-b:a',
+        `${bitrate}k`,
+        '-ar',
+        String(sampleRate),
+      ];
+      if (mono) args.push('-ac', '1');
+      args.push('-y', outputName);
+      await ffmpeg.exec(args);
+      return await readOutput(ffmpeg, outputName, 'audio/mpeg');
+    } finally {
+      await cleanupFiles(ffmpeg, [inputName, outputName]);
+    }
+  }
+
   const runCompress = async () => {
-    if (!file) return;
     setProcessing(true);
     setError(null);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
+    setBatchResults(null);
     setProgress(0);
     setProgressText('FFmpeg 로드 중');
 
-    const inputName = `input.${file.name.split('.').pop() ?? 'mp3'}`;
-    const outputName = 'output.mp3'; // 압축은 MP3 로 통일
     try {
+      if (inputMode === 'folder') {
+        if (folderFiles.length === 0) {
+          setError('폴더를 먼저 선택하세요.');
+          return;
+        }
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await compressOne(rf.file);
+            return { relativePath: replaceExtension(rf.relativePath, 'mp3'), blob };
+          },
+          {
+            concurrency: 1,
+            onProgress: (d, t, p) => setProgressText(`압축 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+        return;
+      }
+
+      if (!file) return;
       const ffmpeg = await getFFmpeg();
-      const onProgress = ({ progress }: { progress: number }) => {
-        if (Number.isFinite(progress)) {
-          setProgress(Math.max(0, Math.min(100, Math.round(progress * 100))));
+      const onFfProgress = ({ progress: p }: { progress: number }) => {
+        if (Number.isFinite(p)) {
+          setProgress(Math.max(0, Math.min(100, Math.round(p * 100))));
         }
       };
-      ffmpeg.on('progress', onProgress);
+      ffmpeg.on('progress', onFfProgress);
       try {
-        await writeFile(ffmpeg, inputName, file);
-
-        const args = [
-          '-i',
-          inputName,
-          '-vn',
-          '-c:a',
-          'libmp3lame',
-          '-b:a',
-          `${bitrate}k`,
-          '-ar',
-          String(sampleRate),
-        ];
-        if (mono) args.push('-ac', '1');
-        args.push('-y', outputName);
-
         setProgressText('압축 중');
-        await ffmpeg.exec(args);
-
-        const blob = await readOutput(ffmpeg, outputName, 'audio/mpeg');
+        const blob = await compressOne(file);
         setResult({
           blob,
           url: URL.createObjectURL(blob),
           fileName: renameWithSuffix(`${stripExtension(file.name)}.mp3`, '-compressed', 'mp3'),
         });
       } finally {
-        ffmpeg.off('progress', onProgress);
-        await cleanupFiles(ffmpeg, [inputName, outputName]);
+        ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '압축 실패');
@@ -174,7 +232,7 @@ export default function AudioCompressPage() {
             <Archive className="h-5 w-5" />
             <h1 className="font-semibold text-base">오디오 압축</h1>
           </div>
-          {file && (
+          {(file || folderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -184,12 +242,77 @@ export default function AudioCompressPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="audio/*"
-            description="비트레이트를 낮춰 오디오 용량을 줄입니다"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && folderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'audio/*',
+              description: '비트레이트를 낮춰 오디오 용량을 줄입니다',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'audio/*',
+              description: '폴더 안 모든 오디오를 같은 프리셋으로 일괄 압축합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
+        )}
+
+        {inputMode === 'folder' && folderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              폴더 — {folderFiles.length}개 오디오 · 루트:{' '}
+              <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
+            </h2>
+
+            <div>
+              <label className="text-xs font-medium mb-1.5 block">프리셋</label>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['voice', 'standard', 'high', 'custom'] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => applyPreset(p)}
+                    disabled={processing}
+                    className={`h-9 text-xs rounded-md border ${
+                      preset === p
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background hover:bg-muted border-border'
+                    } disabled:opacity-50`}
+                  >
+                    {p === 'voice' && '음성'}
+                    {p === 'standard' && '표준'}
+                    {p === 'high' && '고음질'}
+                    {p === 'custom' && '사용자'}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {bitrate} kbps · {sampleRate / 1000} kHz {mono ? '· 모노' : ''}
+              </p>
+            </div>
+
+            <Separator />
+
+            <Button onClick={runCompress} disabled={processing} className="w-full">
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {progressText || '압축 중...'}
+                </>
+              ) : (
+                <>
+                  <Archive className="h-4 w-4" />
+                  폴더 일괄 압축 ({folderFiles.length}개)
+                </>
+              )}
+            </Button>
+          </div>
         )}
 
         {error && (
@@ -362,6 +485,15 @@ export default function AudioCompressPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'compressed'}
+            zipFileName={`${commonRoot(folderFiles) || 'audio'}-compressed-mp3.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

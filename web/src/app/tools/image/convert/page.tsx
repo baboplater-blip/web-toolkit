@@ -13,7 +13,8 @@ import {
 import JSZip from 'jszip';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import {
   canvasToBlob,
   drawToCanvas,
@@ -24,6 +25,16 @@ import {
 } from '@/lib/tools/image-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
 
 interface QueueItem {
   id: string;
@@ -31,7 +42,9 @@ interface QueueItem {
 }
 
 export default function ImageConvertPage() {
+  const { mode, setMode } = useBatchMode();
   const [items, setItems] = useState<QueueItem[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('webp');
   const [quality, setQuality] = useState(85);
   const [avifSupported, setAvifSupported] = useState<boolean | null>(null);
@@ -44,6 +57,7 @@ export default function ImageConvertPage() {
     count: number;
     totalSize: number;
   } | null>(null);
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => {
     supportsAvifEncode().then(setAvifSupported);
@@ -52,6 +66,7 @@ export default function ImageConvertPage() {
   const addFiles = (files: File[]) => {
     setError(null);
     setResult(null);
+    setBatchResults(null);
     const imgs = files.filter((f) => f.type.startsWith('image/'));
     if (imgs.length === 0) {
       setError('이미지 파일만 추가할 수 있습니다.');
@@ -66,14 +81,41 @@ export default function ImageConvertPage() {
 
   const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['image/'],
+      extensions: IMAGE_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 이미지가 없습니다.');
+      setFolderFiles([]);
+      return;
+    }
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     setItems([]);
+    setFolderFiles([]);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function convertOne(file: File): Promise<Blob> {
+    const info = await loadImageFile(file);
+    try {
+      const canvas = drawToCanvas(info.element, info.width, info.height, outputFormat);
+      return await canvasToBlob(canvas, outputFormat, quality / 100);
+    } finally {
+      info.cleanup();
+    }
+  }
+
   const runConvert = async () => {
-    if (items.length === 0) return;
     if (outputFormat === 'avif' && avifSupported === false) {
       setError('브라우저가 AVIF 인코딩을 지원하지 않습니다. 다른 포맷을 선택하세요.');
       return;
@@ -81,26 +123,49 @@ export default function ImageConvertPage() {
     setProcessing(true);
     setError(null);
     setResult(null);
+    setBatchResults(null);
+    const ext = formatExtension(outputFormat);
 
     try {
-      const ext = formatExtension(outputFormat);
-      const q = quality / 100;
+      if (mode === 'folder') {
+        if (folderFiles.length === 0) {
+          setError('폴더를 먼저 선택하세요.');
+          setProcessing(false);
+          return;
+        }
+        setProgressText(`변환 중 0/${folderFiles.length}`);
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await convertOne(rf.file);
+            return {
+              relativePath: replaceExtension(rf.relativePath, ext),
+              blob,
+            };
+          },
+          {
+            concurrency: 3,
+            onProgress: (done, total, path) => {
+              setProgressText(`변환 중 ${done}/${total} — ${path}`);
+            },
+          },
+        );
+        setBatchResults(results);
+        return;
+      }
+
+      // 파일 모드
+      if (items.length === 0) {
+        setError('파일을 먼저 추가하세요.');
+        setProcessing(false);
+        return;
+      }
 
       if (items.length === 1) {
         setProgressText('변환 중');
-        const info = await loadImageFile(items[0].file);
-        const canvas = drawToCanvas(info.element, info.width, info.height, outputFormat);
-        info.cleanup();
-        const blob = await canvasToBlob(canvas, outputFormat, q);
+        const blob = await convertOne(items[0].file);
         const fileName = `${stripExtension(items[0].file.name)}.${ext}`;
-        setResult({
-          blob,
-          fileName,
-          count: 1,
-          totalSize: blob.size,
-        });
-        setProcessing(false);
-        setProgressText('');
+        setResult({ blob, fileName, count: 1, totalSize: blob.size });
         return;
       }
 
@@ -108,15 +173,11 @@ export default function ImageConvertPage() {
       let totalSize = 0;
       for (let i = 0; i < items.length; i++) {
         setProgressText(`변환 중 ${i + 1}/${items.length}`);
-        const info = await loadImageFile(items[i].file);
-        const canvas = drawToCanvas(info.element, info.width, info.height, outputFormat);
-        info.cleanup();
-        const blob = await canvasToBlob(canvas, outputFormat, q);
+        const blob = await convertOne(items[i].file);
         totalSize += blob.size;
         const fileName = `${stripExtension(items[i].file.name)}.${ext}`;
         zip.file(fileName, await blob.arrayBuffer());
       }
-
       setProgressText('ZIP 압축 중');
       const zipBlob = await zip.generateAsync({ type: 'blob' });
       setResult({
@@ -133,6 +194,13 @@ export default function ImageConvertPage() {
     }
   };
 
+  const totalInputSize =
+    mode === 'folder'
+      ? folderFiles.reduce((s, f) => s + f.file.size, 0)
+      : items.reduce((s, i) => s + i.file.size, 0);
+
+  const ready = mode === 'folder' ? folderFiles.length > 0 : items.length > 0;
+
   return (
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -146,7 +214,7 @@ export default function ImageConvertPage() {
             <FileImage className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 포맷 변환</h1>
           </div>
-          {items.length > 0 && (
+          {ready && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -156,12 +224,24 @@ export default function ImageConvertPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        <FileDropZone
-          accept="image/*"
-          multiple
-          title="이미지를 끌어다 놓거나 클릭하여 추가"
-          description="여러 파일 선택 가능 (JPG / PNG / WebP / AVIF / BMP / GIF)"
-          onFiles={addFiles}
+        <DualDropZone
+          mode={mode}
+          onModeChange={(m) => {
+            setMode(m);
+            setError(null);
+          }}
+          fileProps={{
+            accept: 'image/*',
+            multiple: true,
+            title: '이미지를 끌어다 놓거나 클릭하여 추가',
+            description: '여러 파일 선택 가능 (JPG / PNG / WebP / AVIF / BMP / GIF)',
+            onFiles: addFiles,
+          }}
+          folderProps={{
+            accept: 'image/*',
+            description: '폴더 안의 모든 이미지를 일괄 변환합니다. 구조 유지.',
+            onFolder: onFolderPicked,
+          }}
         />
 
         {error && (
@@ -170,7 +250,7 @@ export default function ImageConvertPage() {
           </div>
         )}
 
-        {items.length > 0 && (
+        {mode === 'files' && items.length > 0 && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               대기열 ({items.length}장)
@@ -197,9 +277,37 @@ export default function ImageConvertPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
 
-            <Separator />
+        {mode === 'folder' && folderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-2">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              폴더 — {folderFiles.length}개 이미지 · {formatBytes(totalInputSize)}
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              루트: <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
+            </p>
+            <details className="text-[11px]">
+              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                파일 목록 보기
+              </summary>
+              <ul className="mt-2 max-h-40 overflow-y-auto space-y-0.5 text-[10px] font-mono text-muted-foreground">
+                {folderFiles.slice(0, 200).map((rf, i) => (
+                  <li key={i} className="truncate">
+                    {rf.relativePath}
+                  </li>
+                ))}
+                {folderFiles.length > 200 && (
+                  <li className="italic">… 외 {folderFiles.length - 200}개</li>
+                )}
+              </ul>
+            </details>
+          </div>
+        )}
 
+        {ready && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
             <div>
               <label className="text-xs font-medium mb-1.5 block">출력 포맷</label>
               <div className="grid grid-cols-4 gap-1.5">
@@ -298,6 +406,15 @@ export default function ImageConvertPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || `converted-${outputFormat}`}
+            zipFileName={`${commonRoot(folderFiles) || 'converted'}-${formatExtension(outputFormat)}.zip`}
+            totalInputSize={totalInputSize}
+          />
         )}
       </main>
     </div>

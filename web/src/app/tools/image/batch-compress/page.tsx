@@ -14,7 +14,8 @@ import {
 import JSZip from 'jszip';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import {
   canvasToBlob,
   computeResize,
@@ -25,6 +26,16 @@ import {
 } from '@/lib/tools/image-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
 import { compressionRatio, formatBytes } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
 
 interface QueueItem {
   id: string;
@@ -32,7 +43,9 @@ interface QueueItem {
 }
 
 export default function BatchCompressPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [items, setItems] = useState<QueueItem[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
   const [quality, setQuality] = useState(75);
   const [maxDim, setMaxDim] = useState(1920);
@@ -46,10 +59,12 @@ export default function BatchCompressPage() {
     totalOriginal: number;
     totalCompressed: number;
   } | null>(null);
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   const addFiles = (files: File[]) => {
     setError(null);
     setResult(null);
+    setBatchResults(null);
     const imgs = files.filter((f) => f.type.startsWith('image/'));
     if (imgs.length === 0) {
       setError('이미지 파일만 추가할 수 있습니다.');
@@ -64,31 +79,83 @@ export default function BatchCompressPage() {
 
   const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['image/'],
+      extensions: IMAGE_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 이미지가 없습니다.');
+      setFolderFiles([]);
+      return;
+    }
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     setItems([]);
+    setFolderFiles([]);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function compressOne(srcFile: File): Promise<Blob> {
+    const info = await loadImageFile(srcFile);
+    try {
+      const { width, height } = computeResize(info.width, info.height, maxDim);
+      const canvas = drawToCanvas(info.element, width, height, outputFormat);
+      return await canvasToBlob(canvas, outputFormat, quality / 100);
+    } finally {
+      info.cleanup();
+    }
+  }
+
   const runCompress = async () => {
-    if (items.length === 0) return;
     setProcessing(true);
     setError(null);
     setResult(null);
+    setBatchResults(null);
+
+    const ext = formatExtension(outputFormat);
 
     try {
-      const ext = formatExtension(outputFormat);
-      const q = quality / 100;
+      if (inputMode === 'folder') {
+        if (folderFiles.length === 0) {
+          setError('폴더를 먼저 선택하세요.');
+          setProcessing(false);
+          return;
+        }
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await compressOne(rf.file);
+            return { relativePath: replaceExtension(rf.relativePath, ext), blob };
+          },
+          {
+            concurrency: 3,
+            onProgress: (done, total, path) => {
+              setProgressText(`압축 중 ${done}/${total} — ${path}`);
+            },
+          },
+        );
+        setBatchResults(results);
+        return;
+      }
+
+      if (items.length === 0) {
+        setError('파일을 먼저 추가하세요.');
+        return;
+      }
 
       const totalOriginal = items.reduce((s, i) => s + i.file.size, 0);
 
       if (items.length === 1) {
         setProgressText('압축 중');
-        const info = await loadImageFile(items[0].file);
-        const { width, height } = computeResize(info.width, info.height, maxDim);
-        const canvas = drawToCanvas(info.element, width, height, outputFormat);
-        info.cleanup();
-        const blob = await canvasToBlob(canvas, outputFormat, q);
+        const blob = await compressOne(items[0].file);
         const fileName = `${stripExtension(items[0].file.name)}-compressed.${ext}`;
         setResult({
           blob,
@@ -97,8 +164,6 @@ export default function BatchCompressPage() {
           totalOriginal,
           totalCompressed: blob.size,
         });
-        setProcessing(false);
-        setProgressText('');
         return;
       }
 
@@ -106,11 +171,7 @@ export default function BatchCompressPage() {
       let totalCompressed = 0;
       for (let i = 0; i < items.length; i++) {
         setProgressText(`압축 중 ${i + 1}/${items.length}`);
-        const info = await loadImageFile(items[i].file);
-        const { width, height } = computeResize(info.width, info.height, maxDim);
-        const canvas = drawToCanvas(info.element, width, height, outputFormat);
-        info.cleanup();
-        const blob = await canvasToBlob(canvas, outputFormat, q);
+        const blob = await compressOne(items[i].file);
         totalCompressed += blob.size;
         const fileName = `${stripExtension(items[i].file.name)}.${ext}`;
         zip.file(fileName, await blob.arrayBuffer());
@@ -135,6 +196,9 @@ export default function BatchCompressPage() {
 
   const reduction = result ? compressionRatio(result.totalOriginal, result.totalCompressed) : 0;
 
+  const ready =
+    inputMode === 'folder' ? folderFiles.length > 0 : items.length > 0;
+
   return (
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -148,7 +212,7 @@ export default function BatchCompressPage() {
             <Archive className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 일괄 압축</h1>
           </div>
-          {items.length > 0 && (
+          {ready && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -158,12 +222,24 @@ export default function BatchCompressPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        <FileDropZone
-          accept="image/*"
-          multiple
-          title="이미지를 끌어다 놓거나 클릭하여 추가"
-          description="여러 장을 한 번에 압축"
-          onFiles={addFiles}
+        <DualDropZone
+          mode={inputMode}
+          onModeChange={(m) => {
+            setInputMode(m);
+            setError(null);
+          }}
+          fileProps={{
+            accept: 'image/*',
+            multiple: true,
+            title: '이미지를 끌어다 놓거나 클릭하여 추가',
+            description: '여러 장을 한 번에 압축',
+            onFiles: addFiles,
+          }}
+          folderProps={{
+            accept: 'image/*',
+            description: '폴더 안의 모든 이미지를 일괄 압축합니다. 구조 유지.',
+            onFolder: onFolderPicked,
+          }}
         />
 
         {error && (
@@ -172,7 +248,7 @@ export default function BatchCompressPage() {
           </div>
         )}
 
-        {items.length > 0 && (
+        {inputMode === 'files' && items.length > 0 && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -205,9 +281,23 @@ export default function BatchCompressPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
 
-            <Separator />
+        {inputMode === 'folder' && folderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-2">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              폴더 — {folderFiles.length}개 이미지 ·{' '}
+              {formatBytes(folderFiles.reduce((s, f) => s + f.file.size, 0))}
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              루트: <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
+            </p>
+          </div>
+        )}
 
+        {ready && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
             <div>
               <label className="text-xs font-medium mb-1.5 block">출력 포맷</label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -278,7 +368,9 @@ export default function BatchCompressPage() {
               ) : (
                 <>
                   <Archive className="h-4 w-4" />
-                  일괄 압축 ({items.length}장)
+                  {inputMode === 'folder'
+                    ? `폴더 일괄 압축 (${folderFiles.length}장)`
+                    : `일괄 압축 (${items.length}장)`}
                 </>
               )}
             </Button>
@@ -322,6 +414,15 @@ export default function BatchCompressPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'compressed'}
+            zipFileName={`${commonRoot(folderFiles) || 'compressed'}-${formatExtension(outputFormat)}.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

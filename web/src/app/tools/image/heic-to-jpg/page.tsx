@@ -2,14 +2,40 @@
 
 import { useState } from 'react';
 import { Loader2, FileImage } from 'lucide-react';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type OutputFormat = 'jpeg' | 'png';
 
+async function heicToBlob(
+  file: File,
+  format: OutputFormat,
+  quality: number,
+): Promise<Blob> {
+  const heic2anyMod = await import('heic2any');
+  const heic2any = heic2anyMod.default;
+  const out = await heic2any({
+    blob: file,
+    toType: format === 'jpeg' ? 'image/jpeg' : 'image/png',
+    quality: format === 'jpeg' ? quality : undefined,
+  });
+  return Array.isArray(out) ? out[0] : out;
+}
+
 export default function HeicToJpgPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [format, setFormat] = useState<OutputFormat>('jpeg');
   const [quality, setQuality] = useState(0.9);
   const [result, setResult] = useState<{
@@ -18,27 +44,66 @@ export default function HeicToJpgPage() {
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, { extensions: ['.heic', '.heif'] });
+    if (filtered.length === 0) {
+      setError('폴더 안에 HEIC/HEIF 파일이 없습니다.');
+      setFolderFiles([]);
+      return;
+    }
+    setFolderFiles(filtered);
+  };
+
   async function handleProcess() {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const ext = format === 'jpeg' ? 'jpg' : 'png';
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('폴더를 먼저 선택하세요.');
+        return;
+      }
+      setBusy(true);
+      try {
+        // HEIC 디코드는 메모리·CPU 비용이 큼 → 동시성 1
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await heicToBlob(rf.file, format, quality);
+            return { relativePath: replaceExtension(rf.relativePath, ext), blob };
+          },
+          {
+            concurrency: 1,
+            onProgress: (d, t, p) => setProgress(`변환 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '일괄 변환 실패');
+      } finally {
+        setBusy(false);
+        setProgress('');
+      }
+      return;
+    }
+
     if (!file) {
       setError('HEIC 파일을 선택해주세요.');
       return;
     }
-    setError(null);
-    setResult(null);
     setBusy(true);
     try {
-      const heic2anyMod = await import('heic2any');
-      const heic2any = heic2anyMod.default;
-      const out = await heic2any({
-        blob: file,
-        toType: format === 'jpeg' ? 'image/jpeg' : 'image/png',
-        quality: format === 'jpeg' ? quality : undefined,
-      });
-      const blob = Array.isArray(out) ? out[0] : out;
-      const ext = format === 'jpeg' ? 'jpg' : 'png';
+      const blob = await heicToBlob(file, format, quality);
       const baseName = file.name.replace(/\.(heic|heif)$/i, '');
       setResult({
         blobUrl: URL.createObjectURL(blob),
@@ -53,6 +118,8 @@ export default function HeicToJpgPage() {
     }
   }
 
+  const ready = inputMode === 'folder' ? folderFiles.length > 0 : !!file;
+
   return (
     <main className="mx-auto max-w-2xl space-y-4 p-4">
       <header className="space-y-1">
@@ -65,17 +132,36 @@ export default function HeicToJpgPage() {
         </p>
       </header>
 
-      <FileDropZone
-        accept=".heic,.heif,image/heic,image/heif"
-        onFiles={(files) => setFile(files[0] ?? null)}
-        title="HEIC 파일을 끌어다 놓거나 클릭하여 선택"
-        hint="iPhone 사진 (.heic / .heif)"
+      <DualDropZone
+        mode={inputMode}
+        onModeChange={(m) => {
+          setInputMode(m);
+          setError(null);
+        }}
+        fileProps={{
+          accept: '.heic,.heif,image/heic,image/heif',
+          onFiles: (files) => setFile(files[0] ?? null),
+          title: 'HEIC 파일을 끌어다 놓거나 클릭하여 선택',
+          hint: 'iPhone 사진 (.heic / .heif)',
+        }}
+        folderProps={{
+          accept: '.heic,.heif',
+          description: '폴더 안 모든 HEIC/HEIF 를 일괄 변환합니다.',
+          onFolder: onFolderPicked,
+        }}
       />
 
-      {file && (
+      {inputMode === 'files' && file && (
         <p className="text-xs text-muted-foreground">
           선택됨: <span className="font-medium text-foreground">{file.name}</span> ({(file.size / 1024 / 1024).toFixed(2)} MB)
         </p>
+      )}
+
+      {inputMode === 'folder' && folderFiles.length > 0 && (
+        <div className="rounded-xl border bg-card p-3 text-xs text-muted-foreground">
+          폴더 — {folderFiles.length}개 HEIC · 루트:{' '}
+          <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
+        </div>
       )}
 
       <div className="space-y-2 rounded-xl border bg-card p-4">
@@ -117,9 +203,9 @@ export default function HeicToJpgPage() {
         )}
       </div>
 
-      <Button onClick={handleProcess} disabled={busy || !file}>
+      <Button onClick={handleProcess} disabled={busy || !ready}>
         {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        변환하기
+        {busy && progress ? progress : '변환하기'}
       </Button>
 
       {error && (
@@ -134,6 +220,15 @@ export default function HeicToJpgPage() {
           originalSize={result.originalSize}
           compressedSize={result.compressedSize}
           blobUrl={result.blobUrl}
+        />
+      )}
+
+      {batchResults && (
+        <BatchResultPanel
+          results={batchResults}
+          zipRootName={commonRoot(folderFiles) || `converted-${format}`}
+          zipFileName={`${commonRoot(folderFiles) || 'converted'}-${format === 'jpeg' ? 'jpg' : 'png'}.zip`}
+          totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
         />
       )}
     </main>
