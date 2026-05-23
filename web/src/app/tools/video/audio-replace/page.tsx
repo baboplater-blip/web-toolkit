@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
 
 type Mode = 'replace' | 'mix';
 
@@ -80,7 +81,8 @@ export default function AudioReplacePage() {
       setProgress(100);
       await cleanupFiles(ffmpeg, ['video.bin', 'audio.bin', 'out.mp4']);
     } catch (e) {
-      setError(e instanceof Error ? e.message : '처리에 실패했습니다.');
+      const msg = e instanceof Error ? e.message : String(e);
+      setError(video ? explainFfmpegError(msg, video.size) : msg);
     } finally {
       setBusy(false);
     }
@@ -100,13 +102,27 @@ export default function AudioReplacePage() {
 
       <section className="space-y-2">
         <p className="text-xs font-semibold">1. 비디오</p>
-        <FileDropZone accept="video/*" onFiles={(f) => setVideo(f[0] ?? null)} title="비디오 드롭" />
+        <FileDropZone
+          accept="video/*,.mp4,.mov,.webm,.mkv,.avi"
+          onFiles={(f) => setVideo(f[0] ?? null)}
+          title="비디오 드롭"
+          hint={limitsHint()}
+          validate={(files) => validateMediaSize(files[0])}
+          onError={(m) => setError(m)}
+        />
         {video && <p className="text-xs text-muted-foreground truncate">{video.name}</p>}
       </section>
 
       <section className="space-y-2">
         <p className="text-xs font-semibold">2. 새 오디오</p>
-        <FileDropZone accept="audio/*" onFiles={(f) => setAudio(f[0] ?? null)} title="오디오 드롭" />
+        <FileDropZone
+          accept="audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac"
+          onFiles={(f) => setAudio(f[0] ?? null)}
+          title="오디오 드롭"
+          hint={limitsHint()}
+          validate={(files) => validateMediaSize(files[0])}
+          onError={(m) => setError(m)}
+        />
         {audio && <p className="text-xs text-muted-foreground truncate">{audio.name}</p>}
       </section>
 

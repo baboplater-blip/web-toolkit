@@ -6,18 +6,14 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
-
-/**
- * FFmpeg.wasm 은 32-bit WASM 메모리(2GB) 한계가 있어
- * 실용적으로 권장 ≤ 500MB, 절대 한도 1GB.
- */
-const SOFT_LIMIT_MB = 500;
-const HARD_LIMIT_MB = 1024;
-
-function fmtMB(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-}
+import {
+  explainFfmpegError,
+  fmtMB,
+  getMediaLimits,
+  isOversizedSoft,
+  limitsHint,
+  validateMediaSize,
+} from '@/lib/tools/media-limits';
 
 export default function SilenceTrimPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -35,8 +31,8 @@ export default function SilenceTrimPage() {
     compressedSize: number;
   } | null>(null);
 
-  const sizeMB = file ? file.size / 1024 / 1024 : 0;
-  const oversized = sizeMB > SOFT_LIMIT_MB;
+  const oversized = file ? isOversizedSoft(file) : false;
+  const limits = getMediaLimits();
 
   async function handleProcess() {
     if (!file) {
@@ -85,13 +81,7 @@ export default function SilenceTrimPage() {
       await cleanupFiles(ffmpeg, ['in.bin', outName]);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      const isMemory =
-        /out of memory|memory access|allocation|aborted/i.test(msg);
-      setError(
-        isMemory
-          ? `메모리 부족 — 파일이 너무 큽니다 (${fmtMB(file.size)}). 1GB 이하 권장, 500MB 이하 안정. 더 짧게 잘라서 시도해보세요.`
-          : msg,
-      );
+      setError(explainFfmpegError(msg, file.size));
     } finally {
       setBusy(false);
     }
@@ -113,16 +103,8 @@ export default function SilenceTrimPage() {
         accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.mov,.webm,.mkv,.avi"
         onFiles={(f) => setFile(f[0] ?? null)}
         title="오디오 또는 비디오 드롭"
-        hint={`MP3·WAV·MP4·MOV·WebM 등 · 권장 ${SOFT_LIMIT_MB}MB 이하 · 한도 ${HARD_LIMIT_MB}MB`}
-        validate={(files) => {
-          const f = files[0];
-          if (!f) return null;
-          const mb = f.size / 1024 / 1024;
-          if (mb > HARD_LIMIT_MB) {
-            return `파일이 너무 큽니다 (${fmtMB(f.size)}). FFmpeg.wasm 한계로 ${HARD_LIMIT_MB}MB 이하만 처리됩니다.`;
-          }
-          return null;
-        }}
+        hint={`MP3·WAV·MP4·MOV·WebM 등 · ${limitsHint()}`}
+        validate={(files) => validateMediaSize(files[0])}
         onError={(m) => setError(m)}
       />
 
@@ -134,10 +116,15 @@ export default function SilenceTrimPage() {
             {oversized && (
               <span className="ml-2 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="h-3 w-3" />
-                {SOFT_LIMIT_MB}MB 초과 — 메모리 부족 가능
+                권장 {limits.softMB}MB 초과 — 메모리 부족·느려질 수 있음
               </span>
             )}
           </p>
+          {oversized && (
+            <p className="text-[10px] text-muted-foreground">
+              실패하면 <a href="/tools/video/trim" className="underline">비디오 자르기</a> 도구로 5~10분씩 분할 후 처리해보세요.
+            </p>
+          )}
         </div>
       )}
 
@@ -191,7 +178,8 @@ export default function SilenceTrimPage() {
         <p className="mb-1 font-medium text-foreground">알아두실 점</p>
         <ul className="list-disc space-y-0.5 pl-4">
           <li>최초 사용 시 FFmpeg.wasm(~30MB) 을 한 번 다운로드합니다. 이후엔 캐시됩니다.</li>
-          <li>32-bit WASM 메모리(2GB) 한계로 큰 파일은 메모리 부족이 날 수 있어요. 권장 {SOFT_LIMIT_MB}MB 이하.</li>
+          <li>이 기기 권장 용량: <strong>{limits.softMB}MB</strong> · 한도: <strong>{limits.hardMB}MB</strong>{limits.isMobile ? ' (모바일)' : ' (데스크탑)'}.</li>
+          <li>큰 파일은 <a href="/tools/video/trim" className="underline">비디오 자르기</a> 로 5~10분씩 잘라 처리하면 안정적입니다.</li>
           <li>모든 처리는 브라우저 안에서 이뤄지고 파일은 서버로 전송되지 않습니다.</li>
         </ul>
       </div>

@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import { getFFmpeg } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, fmtMB, getMediaLimits } from '@/lib/tools/media-limits';
 
 export default function SlideshowPage() {
   const [files, setFiles] = useState<File[]>([]);
@@ -90,7 +91,9 @@ export default function SlideshowPage() {
       await ffmpeg.deleteFile('list.txt').catch(() => {});
       await ffmpeg.deleteFile('out.mp4').catch(() => {});
     } catch (e) {
-      setError(e instanceof Error ? e.message : '생성에 실패했습니다.');
+      const msg = e instanceof Error ? e.message : String(e);
+      const totalSize = files.reduce((s, f) => s + f.size, 0);
+      setError(explainFfmpegError(msg, totalSize));
     } finally {
       setBusy(false);
     }
@@ -108,7 +111,31 @@ export default function SlideshowPage() {
         </p>
       </header>
 
-      <FileDropZone accept="image/*" multiple onFiles={(arr) => setFiles((prev) => [...prev, ...arr])} title="이미지 여러 장 드롭" />
+      <FileDropZone
+        accept="image/*,.jpg,.jpeg,.png,.webp,.gif"
+        multiple
+        onFiles={(arr) => setFiles((prev) => [...prev, ...arr])}
+        title="이미지 여러 장 드롭"
+        hint={(() => {
+          const l = getMediaLimits();
+          return l.isMobile
+            ? `모바일 권장 총 ${l.softMB}MB · 한 장당 10MB 이하`
+            : `데스크탑 권장 총 ${l.softMB}MB · 한 장당 30MB 이하`;
+        })()}
+        validate={(arr) => {
+          const limits = getMediaLimits();
+          const totalMB = arr.reduce((s, f) => s + f.size, 0) / 1024 / 1024;
+          if (totalMB > limits.hardMB) {
+            return `합산 ${totalMB.toFixed(1)}MB — 한도 ${limits.hardMB}MB 초과. 일부를 빼고 다시 시도해주세요.`;
+          }
+          const overSingle = arr.find((f) => f.size > (limits.isMobile ? 10 : 30) * 1024 * 1024);
+          if (overSingle) {
+            return `${overSingle.name} 이 ${fmtMB(overSingle.size)} 로 너무 큽니다. 이미지 리사이즈 도구로 줄여주세요.`;
+          }
+          return null;
+        }}
+        onError={(m) => setError(m)}
+      />
 
       {files.length > 0 && (
         <ul className="rounded-xl border bg-card divide-y max-h-40 overflow-y-auto">

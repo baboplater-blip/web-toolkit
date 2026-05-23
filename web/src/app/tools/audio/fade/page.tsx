@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, probeAudio, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
 
 export default function FadePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -63,7 +64,8 @@ export default function FadePage() {
       setProgress(100);
       await cleanupFiles(ffmpeg, [inName, outName]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : '처리에 실패했습니다.');
+      const msg = e instanceof Error ? e.message : String(e);
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setBusy(false);
     }
@@ -81,7 +83,14 @@ export default function FadePage() {
         </p>
       </header>
 
-      <FileDropZone accept="audio/*" onFiles={(f) => setFile(f[0] ?? null)} title="오디오 드롭" />
+      <FileDropZone
+        accept="audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac"
+        onFiles={(f) => setFile(f[0] ?? null)}
+        title="오디오 드롭"
+        hint={limitsHint()}
+        validate={(files) => validateMediaSize(files[0])}
+        onError={(m) => setError(m)}
+      />
       {file && <p className="text-xs text-muted-foreground">{file.name} · {duration.toFixed(1)}s</p>}
 
       <div className="rounded-xl border bg-card p-3 space-y-3">
