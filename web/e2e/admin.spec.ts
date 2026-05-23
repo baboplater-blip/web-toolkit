@@ -2,7 +2,23 @@ import { test, expect } from '@playwright/test';
 
 test.use({ serviceWorkers: 'block' });
 
+const EMPTY_ADS_CONFIG = {
+  version: 1,
+  updatedAt: '1970-01-01T00:00:00Z',
+  slots: {
+    top: { enabled: true, html: '', image: null },
+    sidebarLeft: { enabled: true, html: '', image: null },
+    sidebarRight: { enabled: true, html: '', image: null },
+  },
+};
+
 test.describe('어드민 페이지', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/ads-config.json**', (route) =>
+      route.fulfill({ status: 200, body: JSON.stringify(EMPTY_ADS_CONFIG) }),
+    );
+  });
+
   test('잘못된 키 → 접근 불가 안내', async ({ page }) => {
     await page.goto('/admin?key=wrong-key');
     await expect(page.getByText('접근 불가')).toBeVisible();
@@ -47,9 +63,9 @@ test.describe('어드민 페이지', () => {
   test('이미지 파일 업로드 → WebP 자동 변환 + 슬롯 사이즈 적용', async ({ page }) => {
     await page.goto('/admin?key=test-key');
 
-    // 업로드 전: 슬롯 사이즈 안내 표시 확인
-    await expect(page.getByText(/970×90.*WebP/)).toBeVisible();
-    await expect(page.getByText(/160×600.*WebP/).first()).toBeVisible();
+    // 업로드 전: 슬롯 비율 안내 표시 확인 (잘리지 않음 명시)
+    await expect(page.getByText(/비율 유지/).first()).toBeVisible();
+    await expect(page.getByText(/970:90/)).toBeVisible();
 
     // 100x100 PNG 업로드 → 자동으로 970x90 WebP 변환
     const redPng100 = Buffer.from(

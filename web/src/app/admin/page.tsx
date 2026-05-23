@@ -368,7 +368,9 @@ export default function AdminPage() {
                           <p className="text-xs font-medium">이미지 업로드</p>
                           <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
                             PNG · JPG · WebP · GIF · SVG<br />
-                            자동으로 {AD_SLOT_SIZES[slot].width}×{AD_SLOT_SIZES[slot].height} WebP 로 변환 (중앙 crop)
+                            비율 유지 + WebP 자동 변환 (잘리지 않음).
+                            슬롯 비율 {AD_SLOT_SIZES[slot].width}:{AD_SLOT_SIZES[slot].height} 과 다르면
+                            슬롯 안에 fit 되어 빈 공간이 생길 수 있습니다.
                           </p>
                           <input
                             type="file"
