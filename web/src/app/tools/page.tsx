@@ -241,7 +241,7 @@ export default function ToolsHubPage() {
   return (
     <div className="min-h-dvh bg-background pb-14 md:pb-0">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-[52px] max-w-5xl items-center gap-2 px-4">
+        <div className="mx-auto flex h-[52px] max-w-7xl items-center gap-2 px-4">
           <LayoutGrid className="h-5 w-5" />
           <h1 className="text-base font-semibold">도구</h1>
           <span className="ml-auto text-[11px] text-muted-foreground">
@@ -259,7 +259,7 @@ export default function ToolsHubPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-4 p-4">
+      <main className="mx-auto max-w-7xl space-y-4 p-4">
         <div className="space-y-2">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -385,7 +385,7 @@ export default function ToolsHubPage() {
                 {favoriteTools.length}개
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {favoriteTools.map((tool) => (
                 <ToolCard
                   key={`fav-${tool.id}`}
@@ -409,7 +409,7 @@ export default function ToolsHubPage() {
                 {recentTools.length}개
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {recentTools.map((tool) => (
                 <ToolCard
                   key={`recent-${tool.id}`}
@@ -453,7 +453,7 @@ export default function ToolsHubPage() {
                     {list.filter((t) => t.status === 'ready').length}개 사용 가능
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                   {list.map((tool) => (
                     <ToolCard
                       key={tool.id}
@@ -467,7 +467,7 @@ export default function ToolsHubPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             {tools.map((tool) => (
               <ToolCard
                 key={tool.id}

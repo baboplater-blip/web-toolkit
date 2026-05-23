@@ -107,10 +107,10 @@ export default function RootLayout({
         <OfflineIndicator />
         <RecentTracker />
         <div className="md:pl-16">
-          <div className="px-4 pt-3">
+          <div className="mx-auto max-w-[1720px] px-4 pt-3">
             <AdSlot size="top" slotKey="top" />
           </div>
-          <div className="relative mx-auto max-w-[1320px]">
+          <div className="relative mx-auto max-w-[1720px]">
             <aside
               className="pointer-events-none absolute left-0 top-0 hidden h-full xl:block"
               aria-hidden="true"
