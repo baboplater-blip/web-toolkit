@@ -183,8 +183,10 @@ export default function AdminPage() {
     );
   }
 
+  const isDirty = !!config;
+
   return (
-    <div className="min-h-dvh bg-background pb-14 md:pb-0">
+    <div className="min-h-dvh bg-background pb-32 md:pb-24">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-[52px] max-w-3xl items-center justify-between gap-2 px-4">
           <div className="flex items-center gap-2">
@@ -409,36 +411,6 @@ export default function AdminPage() {
               })}
             </div>
 
-            {error && (
-              <div className="rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive inline-flex items-start gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                <span className="break-all">{error}</span>
-              </div>
-            )}
-            {success && (
-              <div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 p-2 text-xs text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                {success}
-              </div>
-            )}
-
-            <Button
-              onClick={saveToGithub}
-              disabled={saving || !token}
-              className="w-full"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  GitHub 커밋 중...
-                </>
-              ) : (
-                <>
-                  <GitCommit className="h-4 w-4" />
-                  GitHub 에 커밋 (Vercel 자동 배포)
-                </>
-              )}
-            </Button>
           </section>
         )}
 
@@ -479,6 +451,48 @@ export default function AdminPage() {
           </div>
         </section>
       </main>
+
+      {isDirty && (
+        <div className="fixed bottom-0 left-0 right-0 z-30 border-t bg-background/95 backdrop-blur md:left-16">
+          <div className="mx-auto max-w-3xl px-4 py-3">
+            {error && (
+              <div className="mb-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive inline-flex items-start gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <span className="break-all">{error}</span>
+              </div>
+            )}
+            {success && (
+              <div className="mb-2 rounded-md border border-emerald-500/40 bg-emerald-500/10 p-2 text-xs text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {success}
+              </div>
+            )}
+            <Button
+              onClick={saveToGithub}
+              disabled={saving || !token}
+              size="lg"
+              className="w-full h-11 text-sm font-semibold"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  GitHub 커밋 중...
+                </>
+              ) : (
+                <>
+                  <GitCommit className="h-4 w-4" />
+                  변경사항 저장 (GitHub 커밋 → 1~2분 후 사이트 반영)
+                </>
+              )}
+            </Button>
+            {!token && (
+              <p className="mt-1.5 text-[10px] text-muted-foreground text-center">
+                저장하려면 위에서 GitHub PAT 를 입력하세요.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

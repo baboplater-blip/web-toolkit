@@ -31,9 +31,9 @@ test.describe('어드민 페이지', () => {
     await expect(page.locator('[data-test="ad"]')).toBeVisible();
   });
 
-  test('GitHub 커밋 버튼은 토큰 없으면 비활성', async ({ page }) => {
+  test('저장 버튼은 토큰 없으면 비활성', async ({ page }) => {
     await page.goto('/admin?key=test-key');
-    const btn = page.getByRole('button', { name: /GitHub 에 커밋/ });
+    const btn = page.getByRole('button', { name: /변경사항 저장/ });
     await expect(btn).toBeDisabled();
   });
 
