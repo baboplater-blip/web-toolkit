@@ -13,7 +13,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   cleanupFiles,
   formatTime,
@@ -26,11 +29,115 @@ import {
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type Effect = 'none' | 'reverse' | 'pingpong';
 
+const VIDEO_EXTS = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v', '.3gp'];
+
+interface GifOptions {
+  start: number;
+  duration: number;
+  fps: number;
+  width: number;
+  effect: Effect;
+}
+
+/**
+ * FFmpeg 인스턴스를 받아 GIF 를 생성한다. 단일/폴더 모드 공통.
+ * 입력 파일을 FS 에 쓰고, 2-pass 팔레트 기법으로 GIF 인코딩.
+ * 임시 파일은 finally 에서 일괄 정리.
+ */
+async function generateGif(
+  ffmpeg: Awaited<ReturnType<typeof getFFmpeg>>,
+  srcFile: File,
+  opts: GifOptions,
+): Promise<Blob> {
+  const ext = (srcFile.name.split('.').pop() ?? 'mp4').toLowerCase();
+  const inputName = `input.${ext}`;
+  const outputName = 'output.gif';
+  const paletteName = 'palette.png';
+  const reversedName = 'reversed.gif';
+  const combinedName = 'combined.gif';
+  const created: string[] = [inputName, outputName, paletteName];
+
+  try {
+    await writeFile(ffmpeg, inputName, srcFile);
+
+    const vf: string[] = [];
+    vf.push(`fps=${opts.fps}`);
+    vf.push(`scale=${opts.width}:-1:flags=lanczos`);
+    if (opts.effect === 'reverse') vf.push('reverse');
+
+    // 1) 팔레트 생성
+    await ffmpeg.exec([
+      '-ss',
+      String(opts.start),
+      '-t',
+      String(opts.duration),
+      '-i',
+      inputName,
+      '-vf',
+      `${vf.join(',')},palettegen=stats_mode=diff`,
+      '-y',
+      paletteName,
+    ]);
+
+    // 2) GIF 인코딩
+    const finalFilter = `${vf.join(',')}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3`;
+    await ffmpeg.exec([
+      '-ss',
+      String(opts.start),
+      '-t',
+      String(opts.duration),
+      '-i',
+      inputName,
+      '-i',
+      paletteName,
+      '-lavfi',
+      finalFilter,
+      '-loop',
+      '0',
+      '-y',
+      outputName,
+    ]);
+
+    if (opts.effect === 'pingpong') {
+      created.push(reversedName, combinedName);
+      await ffmpeg.exec(['-i', outputName, '-vf', 'reverse', '-y', reversedName]);
+      await ffmpeg.exec([
+        '-i',
+        outputName,
+        '-i',
+        reversedName,
+        '-filter_complex',
+        '[0:v][1:v]concat=n=2:v=1:a=0,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3',
+        '-loop',
+        '0',
+        '-y',
+        combinedName,
+      ]);
+      return await readOutput(ffmpeg, combinedName, 'image/gif');
+    }
+
+    return await readOutput(ffmpeg, outputName, 'image/gif');
+  } finally {
+    await cleanupFiles(ffmpeg, created);
+  }
+}
+
 export default function VideoToGifPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [meta, setMeta] = useState<{ duration: number; width: number; height: number } | null>(
     null,
@@ -41,12 +148,18 @@ export default function VideoToGifPage() {
   const [width, setWidth] = useState(480);
   const [effect, setEffect] = useState<Effect>('none');
   const [processing, setProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [progressPct, setProgressPct] = useState(0);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(
+    null,
+  );
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -74,24 +187,45 @@ export default function VideoToGifPage() {
       setFile(f);
       setPreviewUrl(URL.createObjectURL(f));
       setMeta(info);
-      // 기본 구간: 처음 최대 3초
       const endSec = Math.min(info.duration, 3);
       setStartTime('00:00.00');
       setEndTime(formatTime(endSec));
-      // 기본 너비: 원본의 절반, 최대 480
       setWidth(Math.min(480, Math.round(info.width / 2)));
     } catch (err) {
       setError(err instanceof Error ? err.message : '비디오 메타 로드 실패');
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['video/'],
+      extensions: VIDEO_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 비디오가 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setPreviewUrl(null);
     setMeta(null);
     setResult(null);
+    setBatchResults(null);
+    setProgress(null);
+    setCancelling(false);
     setError(null);
   };
 
@@ -101,7 +235,7 @@ export default function VideoToGifPage() {
   };
 
   const runConvert = async () => {
-    if (!file || !meta) return;
+    setError(null);
     const start = parseTimeToSeconds(startTime);
     const end = parseTimeToSeconds(endTime);
     if (end <= start) {
@@ -109,21 +243,78 @@ export default function VideoToGifPage() {
       return;
     }
     const duration = end - start;
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setBatchResults(null);
+      setProgressText('FFmpeg 로드 중');
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
+      try {
+        const ffmpeg = await getFFmpeg();
+        const results = await runBatch(
+          folderFiles,
+          async (rf): Promise<BatchOutput> => {
+            try {
+              const probe = await probeVideo(rf.file);
+              if (probe.duration <= start) {
+                return {
+                  relativePath: rf.relativePath,
+                  blob: new Blob(),
+                  error: `비디오가 시작 시간(${formatTime(start)})보다 짧음`,
+                };
+              }
+            } catch {
+              // probe 실패 → ffmpeg 가 자체 오류 발생시키도록 진행
+            }
+            const blob = await generateGif(ffmpeg, rf.file, {
+              start,
+              duration,
+              fps,
+              width,
+              effect,
+            });
+            return {
+              relativePath: replaceExtension(rf.relativePath, 'gif'),
+              blob,
+            };
+          },
+          {
+            concurrency: 1,
+            signal: ctrl.signal,
+            onProgress: (done, total, path) => {
+              setProgress({ done, total, current: path });
+            },
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 GIF 변환 실패');
+      } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
+        setProcessing(false);
+        setProgressText('');
+      }
+      return;
+    }
+
+    if (!file || !meta) return;
     if (duration > 30) {
-      setError('구간이 너무 깁니다 (최대 30초 권장). 메모리 부족으로 실패할 수 있습니다.');
       // 경고만 하고 진행 (사용자 판단)
     }
 
     setProcessing(true);
-    setError(null);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
-    setProgress(0);
-
-    const inputName = `input.${file.name.split('.').pop() ?? 'mp4'}`;
-    const outputName = 'output.gif';
-    const paletteName = 'palette.png';
-    const createdFiles: string[] = [inputName, outputName, paletteName];
+    setProgressPct(0);
 
     try {
       setProgressText('FFmpeg 로드 중 (최초만 ~30MB)');
@@ -137,103 +328,43 @@ export default function VideoToGifPage() {
         setProgressText(stageMap[p.stage]);
       });
 
-      // 진행률 리스너 (한 번만 등록, 이후 계속 사용)
-      const onProgress = ({ progress }: { progress: number }) => {
-        if (Number.isFinite(progress)) {
-          setProgress(Math.max(0, Math.min(100, Math.round(progress * 100))));
+      const onFfProgress = ({ progress: p }: { progress: number }) => {
+        if (Number.isFinite(p)) {
+          setProgressPct(Math.max(0, Math.min(100, Math.round(p * 100))));
         }
       };
-      ffmpeg.on('progress', onProgress);
+      ffmpeg.on('progress', onFfProgress);
 
       try {
-        setProgressText('입력 파일 준비');
-        await writeFile(ffmpeg, inputName, file);
-
-        const vf: string[] = [];
-        vf.push(`fps=${fps}`);
-        vf.push(`scale=${width}:-1:flags=lanczos`);
-        if (effect === 'reverse') vf.push('reverse');
-
-        // 2-pass 팔레트 기법: 고품질 GIF 생성
-        // 1) palettegen 으로 최적 팔레트 생성
-        setProgressText('팔레트 생성 중');
-        await ffmpeg.exec([
-          '-ss',
-          String(start),
-          '-t',
-          String(duration),
-          '-i',
-          inputName,
-          '-vf',
-          `${vf.join(',')},palettegen=stats_mode=diff`,
-          '-y',
-          paletteName,
-        ]);
-
-        // 2) 팔레트를 사용하여 GIF 인코딩
         setProgressText('GIF 인코딩 중');
-        const finalFilter = `${vf.join(',')}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3`;
-        await ffmpeg.exec([
-          '-ss',
-          String(start),
-          '-t',
-          String(duration),
-          '-i',
-          inputName,
-          '-i',
-          paletteName,
-          '-lavfi',
-          finalFilter,
-          '-loop',
-          '0',
-          '-y',
-          outputName,
-        ]);
-
-        // 핑퐁 효과: 원본 GIF + 역재생 GIF 를 concat
-        if (effect === 'pingpong') {
-          setProgressText('핑퐁 효과 적용 중');
-          const reversedName = 'reversed.gif';
-          const combinedName = 'combined.gif';
-          createdFiles.push(reversedName, combinedName);
-          await ffmpeg.exec(['-i', outputName, '-vf', 'reverse', '-y', reversedName]);
-          await ffmpeg.exec([
-            '-i',
-            outputName,
-            '-i',
-            reversedName,
-            '-filter_complex',
-            '[0:v][1:v]concat=n=2:v=1:a=0,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3',
-            '-loop',
-            '0',
-            '-y',
-            combinedName,
-          ]);
-          const pingBlob = await readOutput(ffmpeg, combinedName, 'image/gif');
-          setResult({
-            blob: pingBlob,
-            url: URL.createObjectURL(pingBlob),
-            fileName: `${stripExtension(file.name)}.gif`,
-          });
-          return;
-        }
-
-        const blob = await readOutput(ffmpeg, outputName, 'image/gif');
+        const blob = await generateGif(ffmpeg, file, {
+          start,
+          duration,
+          fps,
+          width,
+          effect,
+        });
         setResult({
           blob,
           url: URL.createObjectURL(blob),
           fileName: `${stripExtension(file.name)}.gif`,
         });
       } finally {
-        ffmpeg.off('progress', onProgress);
-        await cleanupFiles(ffmpeg, createdFiles);
+        ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GIF 변환 실패');
     } finally {
       setProcessing(false);
-      setProgress(0);
+      setProgressPct(0);
       setProgressText('');
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -242,6 +373,131 @@ export default function VideoToGifPage() {
     const e = parseTimeToSeconds(endTime);
     return Math.max(0, e - s);
   })();
+
+  // 폴더 모드에서는 너비 슬라이더의 max 를 고정값으로 (개별 비디오 메타가 없으므로)
+  const widthMax =
+    inputMode === 'files' && meta ? Math.max(120, Math.min(1280, meta.width)) : 1280;
+
+  const optionsBlock = (
+    <>
+      <div>
+        <label className="text-xs font-medium mb-1.5 block">구간 선택</label>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[10px] text-muted-foreground">시작</label>
+              {inputMode === 'files' && (
+                <button
+                  type="button"
+                  onClick={() => useCurrentTime(setStartTime)}
+                  disabled={processing}
+                  className="text-[10px] text-primary hover:underline"
+                >
+                  현재 시점 사용
+                </button>
+              )}
+            </div>
+            <Input
+              type="text"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              placeholder="MM:SS.ms"
+              disabled={processing}
+              className="h-9 font-mono text-xs"
+            />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[10px] text-muted-foreground">종료</label>
+              {inputMode === 'files' && (
+                <button
+                  type="button"
+                  onClick={() => useCurrentTime(setEndTime)}
+                  disabled={processing}
+                  className="text-[10px] text-primary hover:underline"
+                >
+                  현재 시점 사용
+                </button>
+              )}
+            </div>
+            <Input
+              type="text"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              placeholder="MM:SS.ms"
+              disabled={processing}
+              className="h-9 font-mono text-xs"
+            />
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          구간 길이: {estimatedDuration.toFixed(2)}초
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-medium">프레임률 (FPS)</label>
+            <span className="text-xs text-muted-foreground">{fps}</span>
+          </div>
+          <input
+            type="range"
+            min={5}
+            max={30}
+            step={1}
+            value={fps}
+            onChange={(e) => setFps(Number(e.target.value))}
+            disabled={processing}
+            className="w-full accent-primary"
+          />
+        </div>
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-medium">너비 (px)</label>
+            <span className="text-xs text-muted-foreground">{width}</span>
+          </div>
+          <input
+            type="range"
+            min={120}
+            max={widthMax}
+            step={10}
+            value={Math.min(width, widthMax)}
+            onChange={(e) => setWidth(Number(e.target.value))}
+            disabled={processing}
+            className="w-full accent-primary"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs font-medium mb-1.5 block">효과</label>
+        <div className="grid grid-cols-3 gap-1.5">
+          {(
+            [
+              ['none', '기본'],
+              ['reverse', '역재생'],
+              ['pingpong', '핑퐁 (앞뒤반복)'],
+            ] as const
+          ).map(([v, label]) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setEffect(v)}
+              disabled={processing}
+              className={`h-9 text-xs rounded-md border ${
+                effect === v
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background hover:bg-muted border-border'
+              } disabled:opacity-50`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
 
   return (
     <div className="min-h-dvh bg-background">
@@ -256,7 +512,7 @@ export default function VideoToGifPage() {
             <Clapperboard className="h-5 w-5" />
             <h1 className="font-semibold text-base">비디오 → GIF</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -266,13 +522,61 @@ export default function VideoToGifPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="video/*"
-            description="MP4 / WebM / MOV / AVI / MKV 등 비디오"
-            hint="FFmpeg.wasm (~30MB) 을 최초 실행 시 다운로드합니다. 이후 캐시."
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'video/*',
+              description: 'MP4 / WebM / MOV / AVI / MKV 등 비디오',
+              hint: 'FFmpeg.wasm (~30MB) 을 최초 실행 시 다운로드합니다. 이후 캐시.',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'video/*',
+              description: '폴더 안 모든 비디오를 같은 구간·옵션으로 GIF 로 일괄 변환합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="비디오"
+          />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <p className="text-[11px] text-muted-foreground">
+              같은 옵션으로 모든 파일을 일괄 처리합니다. 시작 시간보다 짧은 비디오는 자동
+              건너뜀.
+            </p>
+
+            {optionsBlock}
+
+            <Separator />
+
+            <Button onClick={runConvert} disabled={processing} className="w-full">
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {progressText || '변환 중...'}
+                </>
+              ) : (
+                <>
+                  <Clapperboard className="h-4 w-4" />
+                  폴더 일괄 GIF 변환 ({folderFiles.length}개)
+                </>
+              )}
+            </Button>
+          </div>
         )}
 
         {error && (
@@ -281,7 +585,7 @@ export default function VideoToGifPage() {
           </div>
         )}
 
-        {file && previewUrl && meta && (
+        {inputMode === 'files' && file && previewUrl && meta && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center gap-3">
               <FileVideo className="h-6 w-6 text-muted-foreground shrink-0" />
@@ -303,129 +607,18 @@ export default function VideoToGifPage() {
 
             <Separator />
 
-            <div>
-              <label className="text-xs font-medium mb-1.5 block">구간 선택</label>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] text-muted-foreground">시작</label>
-                    <button
-                      type="button"
-                      onClick={() => useCurrentTime(setStartTime)}
-                      disabled={processing}
-                      className="text-[10px] text-primary hover:underline"
-                    >
-                      현재 시점 사용
-                    </button>
-                  </div>
-                  <Input
-                    type="text"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    placeholder="MM:SS.ms"
-                    disabled={processing}
-                    className="h-9 font-mono text-xs"
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] text-muted-foreground">종료</label>
-                    <button
-                      type="button"
-                      onClick={() => useCurrentTime(setEndTime)}
-                      disabled={processing}
-                      className="text-[10px] text-primary hover:underline"
-                    >
-                      현재 시점 사용
-                    </button>
-                  </div>
-                  <Input
-                    type="text"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    placeholder="MM:SS.ms"
-                    disabled={processing}
-                    className="h-9 font-mono text-xs"
-                  />
-                </div>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-1">
-                구간 길이: {estimatedDuration.toFixed(2)}초
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-medium">프레임률 (FPS)</label>
-                  <span className="text-xs text-muted-foreground">{fps}</span>
-                </div>
-                <input
-                  type="range"
-                  min={5}
-                  max={30}
-                  step={1}
-                  value={fps}
-                  onChange={(e) => setFps(Number(e.target.value))}
-                  disabled={processing}
-                  className="w-full accent-primary"
-                />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-medium">너비 (px)</label>
-                  <span className="text-xs text-muted-foreground">{width}</span>
-                </div>
-                <input
-                  type="range"
-                  min={120}
-                  max={Math.max(120, Math.min(1280, meta.width))}
-                  step={10}
-                  value={width}
-                  onChange={(e) => setWidth(Number(e.target.value))}
-                  disabled={processing}
-                  className="w-full accent-primary"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium mb-1.5 block">효과</label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {(
-                  [
-                    ['none', '기본'],
-                    ['reverse', '역재생'],
-                    ['pingpong', '핑퐁 (앞뒤반복)'],
-                  ] as const
-                ).map(([v, label]) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setEffect(v)}
-                    disabled={processing}
-                    className={`h-9 text-xs rounded-md border ${
-                      effect === v
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background hover:bg-muted border-border'
-                    } disabled:opacity-50`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {optionsBlock}
 
             {processing && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
-                  <span className="text-xs text-muted-foreground">{progress}%</span>
+                  <span className="text-xs text-muted-foreground">{progressPct}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all"
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${progressPct}%` }}
                   />
                 </div>
               </div>
@@ -477,6 +670,26 @@ export default function VideoToGifPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="GIF 변환 중"
+            cancelling={cancelling}
+          />
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'gif'}
+            zipFileName={`${commonRoot(folderFiles) || 'video'}-gif.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
 
         <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
