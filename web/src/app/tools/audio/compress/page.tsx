@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Archive,
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   cleanupFiles,
@@ -56,8 +57,11 @@ export default function AudioCompressPage() {
   const [sampleRate, setSampleRate] = useState(44100);
   const [mono, setMono] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [progressPct, setProgressPct] = useState(0);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
@@ -170,7 +174,7 @@ export default function AudioCompressPage() {
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setBatchResults(null);
-    setProgress(0);
+    setProgressPct(0);
     setProgressText('FFmpeg 로드 중');
 
     try {
@@ -179,18 +183,31 @@ export default function AudioCompressPage() {
           setError('처리할 파일을 선택하세요.');
           return;
         }
-        const results = await runBatch(
-          folderFiles,
-          async (rf) => {
-            const blob = await compressOne(rf.file);
-            return { relativePath: replaceExtension(rf.relativePath, 'mp3'), blob };
-          },
-          {
-            concurrency: 1,
-            onProgress: (d, t, p) => setProgressText(`압축 중 ${d}/${t} — ${p}`),
-          },
-        );
-        setBatchResults(results);
+        const ctrl = new AbortController();
+        abortRef.current = ctrl;
+        setCancelling(false);
+        setProgress({ done: 0, total: folderFiles.length, current: '' });
+        try {
+          const results = await runBatch(
+            folderFiles,
+            async (rf) => {
+              const blob = await compressOne(rf.file);
+              return { relativePath: replaceExtension(rf.relativePath, 'mp3'), blob };
+            },
+            {
+              concurrency: 1,
+              signal: ctrl.signal,
+              onProgress: (done, total, path) => {
+                setProgress({ done, total, current: path });
+              },
+            },
+          );
+          setBatchResults(results);
+        } finally {
+          abortRef.current = null;
+          setProgress(null);
+          setCancelling(false);
+        }
         return;
       }
 
@@ -198,7 +215,7 @@ export default function AudioCompressPage() {
       const ffmpeg = await getFFmpeg();
       const onFfProgress = ({ progress: p }: { progress: number }) => {
         if (Number.isFinite(p)) {
-          setProgress(Math.max(0, Math.min(100, Math.round(p * 100))));
+          setProgressPct(Math.max(0, Math.min(100, Math.round(p * 100))));
         }
       };
       ffmpeg.on('progress', onFfProgress);
@@ -218,7 +235,14 @@ export default function AudioCompressPage() {
     } finally {
       setProcessing(false);
       setProgressText('');
-      setProgress(0);
+      setProgressPct(0);
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -433,10 +457,10 @@ export default function AudioCompressPage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
-                  <span className="text-xs text-muted-foreground">{progress}%</span>
+                  <span className="text-xs text-muted-foreground">{progressPct}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+                  <div className="h-full bg-primary transition-all" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
             )}
@@ -493,6 +517,17 @@ export default function AudioCompressPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="압축 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Loader2, FileImage } from 'lucide-react';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -64,7 +65,10 @@ export default function SvgToPngPage() {
   } | null>(null);
   const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
   const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState('');
+  const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const onFolderPicked = (files: RelativeFile[]) => {
@@ -93,6 +97,10 @@ export default function SvgToPngPage() {
         return;
       }
       setBusy(true);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       try {
         const results = await runBatch(
           folderFiles,
@@ -102,15 +110,19 @@ export default function SvgToPngPage() {
           },
           {
             concurrency: 3,
-            onProgress: (d, t, p) => setProgress(`변환 중 ${d}/${t} — ${p}`),
+            signal: ctrl.signal,
+            onProgress: (d, t, p) => setProgress({ done: d, total: t, current: p }),
           },
         );
         setBatchResults(results);
       } catch (e) {
         setError(e instanceof Error ? e.message : '일괄 변환 실패');
       } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setBusy(false);
-        setProgress('');
+        setProgressText('');
       }
       return;
     }
@@ -135,6 +147,13 @@ export default function SvgToPngPage() {
       setBusy(false);
     }
   }
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
+    }
+  };
 
   const ready = inputMode === 'folder' ? folderFiles.length > 0 : !!file;
 
@@ -220,7 +239,7 @@ export default function SvgToPngPage() {
 
       <Button onClick={handleProcess} disabled={busy || !ready}>
         {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        {busy && progress ? progress : 'PNG 로 변환'}
+        {busy && progressText ? progressText : 'PNG 로 변환'}
       </Button>
 
       {error && (
@@ -235,6 +254,17 @@ export default function SvgToPngPage() {
           originalSize={result.originalSize}
           compressedSize={result.compressedSize}
           blobUrl={result.blobUrl}
+        />
+      )}
+
+      {progress && (
+        <BatchProgressPanel
+          done={progress.done}
+          total={progress.total}
+          current={progress.current}
+          onCancel={cancelRun}
+          label="변환 중"
+          cancelling={cancelling}
         />
       )}
 

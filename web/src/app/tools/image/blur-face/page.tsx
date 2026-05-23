@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
@@ -203,6 +204,9 @@ export default function BlurFacePage() {
   const [detectStatus, setDetectStatus] = useState('');
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
@@ -411,6 +415,10 @@ export default function BlurFacePage() {
         return;
       }
       setProcessing(true);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       let detector: FaceDetectorLike | null = null;
       try {
         detector = await createFaceDetector((s) => setProgressText(s));
@@ -460,7 +468,11 @@ export default function BlurFacePage() {
           },
           {
             concurrency: 1,
-            onProgress: (d, t, p) => setProgressText(`처리 중 ${d}/${t} — ${p}`),
+            signal: ctrl.signal,
+            onProgress: (done, total, path) => {
+              setProgress({ done, total, current: path });
+              setProgressText(`처리 중 ${done}/${total} — ${path}`);
+            },
           },
         );
         setBatchResults(results);
@@ -468,6 +480,9 @@ export default function BlurFacePage() {
         setError(err instanceof Error ? err.message : '일괄 처리 실패');
       } finally {
         detector?.close();
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setProcessing(false);
         setProgressText('');
       }
@@ -506,6 +521,13 @@ export default function BlurFacePage() {
       setError(err instanceof Error ? err.message : '블러 적용 실패');
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -875,6 +897,17 @@ export default function BlurFacePage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="얼굴 흐림 처리 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (

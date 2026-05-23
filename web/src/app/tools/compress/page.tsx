@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import {
@@ -65,6 +66,9 @@ export default function CompressPage() {
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState<string>('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResultState | null>(null);
   const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
@@ -162,6 +166,10 @@ export default function CompressPage() {
       setError(null);
       clearResult();
       setBatchResults(null);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       try {
         const results = await runBatch(
           folderFiles,
@@ -183,13 +191,19 @@ export default function CompressPage() {
           },
           {
             concurrency: 1, // PDF 처리는 메모리 비용이 큼 → 직렬
-            onProgress: (d, t, p) => setProgressText(`압축 중 ${d}/${t} — ${p}`),
+            signal: ctrl.signal,
+            onProgress: (done, total, path) => {
+              setProgress({ done, total, current: path });
+            },
           },
         );
         setBatchResults(results);
       } catch (err) {
         setError(err instanceof Error ? err.message : '일괄 압축 실패');
       } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setProcessing(false);
         setProgressText('');
       }
@@ -263,6 +277,13 @@ export default function CompressPage() {
     } finally {
       setProcessing(false);
       setProgressText('');
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -724,6 +745,17 @@ export default function CompressPage() {
             compressedSize={result.compressedSize}
             blobUrl={result.url}
             extraInfo={result.extraInfo}
+          />
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="압축 중"
+            cancelling={cancelling}
           />
         )}
 

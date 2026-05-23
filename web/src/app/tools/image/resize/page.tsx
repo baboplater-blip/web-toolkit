@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
@@ -56,6 +57,9 @@ export default function ImageResizePage() {
   const [quality, setQuality] = useState(85);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; fileName: string; w: number; h: number } | null>(
     null,
@@ -208,6 +212,10 @@ export default function ImageResizePage() {
       setResult(null);
       setBatchResults(null);
       const ext = formatExtension(outputFormat);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       try {
         const results = await runBatch(
           folderFiles,
@@ -220,8 +228,9 @@ export default function ImageResizePage() {
           },
           {
             concurrency: 3,
+            signal: ctrl.signal,
             onProgress: (done, total, path) => {
-              setProgressText(`리사이즈 중 ${done}/${total} — ${path}`);
+              setProgress({ done, total, current: path });
             },
           },
         );
@@ -229,6 +238,9 @@ export default function ImageResizePage() {
       } catch (err) {
         setError(err instanceof Error ? err.message : '일괄 리사이즈 실패');
       } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setProcessing(false);
         setProgressText('');
       }
@@ -318,6 +330,13 @@ export default function ImageResizePage() {
     } finally {
       setProcessing(false);
       setProgressText('');
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -605,6 +624,17 @@ export default function ImageResizePage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="리사이즈 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (

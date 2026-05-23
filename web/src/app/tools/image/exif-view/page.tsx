@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Loader2, Info, Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   commonRoot,
@@ -123,6 +124,9 @@ export default function ExifViewPage() {
   } | null>(null);
   const [busy, setBusy] = useState(false);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const onFolderPicked = (files: RelativeFile[]) => {
@@ -151,6 +155,10 @@ export default function ExifViewPage() {
         return;
       }
       setBusy(true);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       try {
         const rows: string[] = [CSV_HEADER.join(',')];
         let errorCount = 0;
@@ -164,7 +172,11 @@ export default function ExifViewPage() {
           },
           {
             concurrency: 3,
-            onProgress: (d, t, p) => setProgressText(`EXIF 추출 ${d}/${t} — ${p}`),
+            signal: ctrl.signal,
+            onProgress: (done, total, path) => {
+              setProgress({ done, total, current: path });
+              setProgressText(`EXIF 추출 ${done}/${total} — ${path}`);
+            },
           },
         );
         // 결과를 순서대로 CSV 본문 구성. runBatch 는 input 순서를 보장하므로 그대로 사용.
@@ -196,6 +208,9 @@ export default function ExifViewPage() {
       } catch (e) {
         setError(e instanceof Error ? e.message : '일괄 EXIF 추출 실패');
       } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setBusy(false);
         setProgressText('');
       }
@@ -273,6 +288,13 @@ export default function ExifViewPage() {
     }
   }
 
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
+    }
+  };
+
   const ready = inputMode === 'folder' ? folderFiles.length > 0 : !!file;
 
   return (
@@ -340,6 +362,17 @@ export default function ExifViewPage() {
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
+      )}
+
+      {progress && (
+        <BatchProgressPanel
+          done={progress.done}
+          total={progress.total}
+          current={progress.current}
+          onCancel={cancelRun}
+          label="EXIF 추출 중"
+          cancelling={cancelling}
+        />
       )}
 
       {csvResult && (

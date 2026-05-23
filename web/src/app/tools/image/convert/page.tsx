@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
@@ -52,6 +53,9 @@ export default function ImageConvertPage() {
   const [avifSupported, setAvifSupported] = useState<boolean | null>(null);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
     blob: Blob;
@@ -138,24 +142,34 @@ export default function ImageConvertPage() {
           setProcessing(false);
           return;
         }
-        setProgressText(`변환 중 0/${folderFiles.length}`);
-        const results = await runBatch(
-          folderFiles,
-          async (rf) => {
-            const blob = await convertOne(rf.file);
-            return {
-              relativePath: replaceExtension(rf.relativePath, ext),
-              blob,
-            };
-          },
-          {
-            concurrency: 3,
-            onProgress: (done, total, path) => {
-              setProgressText(`변환 중 ${done}/${total} — ${path}`);
+        const ctrl = new AbortController();
+        abortRef.current = ctrl;
+        setCancelling(false);
+        setProgress({ done: 0, total: folderFiles.length, current: '' });
+        try {
+          const results = await runBatch(
+            folderFiles,
+            async (rf) => {
+              const blob = await convertOne(rf.file);
+              return {
+                relativePath: replaceExtension(rf.relativePath, ext),
+                blob,
+              };
             },
-          },
-        );
-        setBatchResults(results);
+            {
+              concurrency: 3,
+              signal: ctrl.signal,
+              onProgress: (done, total, path) => {
+                setProgress({ done, total, current: path });
+              },
+            },
+          );
+          setBatchResults(results);
+        } finally {
+          abortRef.current = null;
+          setProgress(null);
+          setCancelling(false);
+        }
         return;
       }
 
@@ -174,28 +188,50 @@ export default function ImageConvertPage() {
         return;
       }
 
-      const zip = new JSZip();
-      let totalSize = 0;
-      for (let i = 0; i < items.length; i++) {
-        setProgressText(`변환 중 ${i + 1}/${items.length}`);
-        const blob = await convertOne(items[i].file);
-        totalSize += blob.size;
-        const fileName = `${stripExtension(items[i].file.name)}.${ext}`;
-        zip.file(fileName, await blob.arrayBuffer());
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: items.length, current: '' });
+      try {
+        const zip = new JSZip();
+        let totalSize = 0;
+        for (let i = 0; i < items.length; i++) {
+          if (ctrl.signal.aborted) {
+            setError('사용자가 취소했습니다.');
+            return;
+          }
+          setProgress({ done: i, total: items.length, current: items[i].file.name });
+          const blob = await convertOne(items[i].file);
+          totalSize += blob.size;
+          const fileName = `${stripExtension(items[i].file.name)}.${ext}`;
+          zip.file(fileName, await blob.arrayBuffer());
+        }
+        setProgressText('ZIP 압축 중');
+        setProgress(null);
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        setResult({
+          blob: zipBlob,
+          fileName: `converted-${ext}.zip`,
+          count: items.length,
+          totalSize,
+        });
+      } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
       }
-      setProgressText('ZIP 압축 중');
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      setResult({
-        blob: zipBlob,
-        fileName: `converted-${ext}.zip`,
-        count: items.length,
-        totalSize,
-      });
     } catch (err) {
       setError(err instanceof Error ? err.message : '변환 중 오류가 발생했습니다');
     } finally {
       setProcessing(false);
       setProgressText('');
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -394,6 +430,17 @@ export default function ImageConvertPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="변환 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (

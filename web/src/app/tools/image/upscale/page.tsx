@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
@@ -145,7 +146,10 @@ export default function ImageUpscalePage() {
   const [quality, setQuality] = useState(95);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
-  const [progress, setProgress] = useState(0);
+  const [progressPct, setProgressPct] = useState(0);
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -249,7 +253,9 @@ export default function ImageUpscalePage() {
     setError(null);
     setWarning(null);
     setProgressText('');
-    setProgress(0);
+    setProgressPct(0);
+    setProgress(null);
+    setCancelling(false);
   };
 
   const runUpscale = async () => {
@@ -262,6 +268,10 @@ export default function ImageUpscalePage() {
         return;
       }
       setProcessing(true);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       let runtime: UpscalerRuntime | null = null;
       try {
         runtime = await initUpscalerRuntime(flavor, scale, (s) => setProgressText(s));
@@ -287,7 +297,11 @@ export default function ImageUpscalePage() {
           },
           {
             concurrency: 1,
-            onProgress: (d, t, p) => setProgressText(`업스케일 ${d}/${t} — ${p}`),
+            signal: ctrl.signal,
+            onProgress: (done, total, path) => {
+              setProgress({ done, total, current: path });
+              setProgressText(`업스케일 ${done}/${total} — ${path}`);
+            },
           },
         );
         setBatchResults(results);
@@ -295,9 +309,12 @@ export default function ImageUpscalePage() {
         setError(err instanceof Error ? `업스케일 실패: ${err.message}` : '일괄 처리 실패');
       } finally {
         runtime?.disposeAll();
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setProcessing(false);
         setProgressText('');
-        setProgress(0);
+        setProgressPct(0);
       }
       return;
     }
@@ -306,7 +323,7 @@ export default function ImageUpscalePage() {
     setProcessing(true);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
-    setProgress(0);
+    setProgressPct(0);
     let runtime: UpscalerRuntime | null = null;
     try {
       runtime = await initUpscalerRuntime(flavor, scale, (s) => setProgressText(s));
@@ -316,7 +333,7 @@ export default function ImageUpscalePage() {
         padding: 2,
         output: 'base64',
         progress: (rate: number) => {
-          setProgress(Math.round(rate * 100));
+          setProgressPct(Math.round(rate * 100));
           setProgressText(`업스케일 처리 중 ${Math.round(rate * 100)}%`);
         },
       });
@@ -344,7 +361,14 @@ export default function ImageUpscalePage() {
       runtime?.disposeAll();
       setProcessing(false);
       setProgressText('');
-      setProgress(0);
+      setProgressPct(0);
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -542,18 +566,18 @@ export default function ImageUpscalePage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
-                  <span className="text-xs text-muted-foreground">{progress}%</span>
+                  <span className="text-xs text-muted-foreground">{progressPct}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all"
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${progressPct}%` }}
                   />
                 </div>
               </div>
             )}
 
-            {processing && inputMode === 'folder' && progressText && (
+            {processing && inputMode === 'folder' && progressText && !progress && (
               <p className="text-xs text-muted-foreground truncate">{progressText}</p>
             )}
 
@@ -610,6 +634,17 @@ export default function ImageUpscalePage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="업스케일 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (

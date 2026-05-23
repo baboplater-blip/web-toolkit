@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   allPages,
@@ -70,6 +71,9 @@ export default function PdfWatermarkPage() {
   const [rangeSpec, setRangeSpec] = useState('');
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; fileName: string; size: number } | null>(
     null,
@@ -219,6 +223,10 @@ export default function PdfWatermarkPage() {
       setProcessing(true);
       setError(null);
       setBatchResults(null);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
       try {
         const results = await runBatch(
           folderFiles,
@@ -228,13 +236,20 @@ export default function PdfWatermarkPage() {
           },
           {
             concurrency: 2,
-            onProgress: (d, t, p) => setProgressText(`처리 중 ${d}/${t} — ${p}`),
+            signal: ctrl.signal,
+            onProgress: (done, total, path) => {
+              setProgress({ done, total, current: path });
+              setProgressText(`처리 중 ${done}/${total} — ${path}`);
+            },
           },
         );
         setBatchResults(results);
       } catch (err) {
         setError(err instanceof Error ? err.message : '일괄 처리 실패');
       } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
         setProcessing(false);
         setProgressText('');
       }
@@ -258,6 +273,13 @@ export default function PdfWatermarkPage() {
       setError(err instanceof Error ? err.message : '워터마크 적용 중 오류가 발생했습니다');
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -599,6 +621,17 @@ export default function PdfWatermarkPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="워터마크 추가 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (

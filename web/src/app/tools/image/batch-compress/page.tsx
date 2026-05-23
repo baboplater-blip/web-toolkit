@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Archive,
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
@@ -53,6 +54,9 @@ export default function BatchCompressPage() {
   const [maxDim, setMaxDim] = useState(1920);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
     blob: Blob;
@@ -134,20 +138,31 @@ export default function BatchCompressPage() {
           setProcessing(false);
           return;
         }
-        const results = await runBatch(
-          folderFiles,
-          async (rf) => {
-            const blob = await compressOne(rf.file);
-            return { relativePath: replaceExtension(rf.relativePath, ext), blob };
-          },
-          {
-            concurrency: 3,
-            onProgress: (done, total, path) => {
-              setProgressText(`압축 중 ${done}/${total} — ${path}`);
+        const ctrl = new AbortController();
+        abortRef.current = ctrl;
+        setCancelling(false);
+        setProgress({ done: 0, total: folderFiles.length, current: '' });
+        try {
+          const results = await runBatch(
+            folderFiles,
+            async (rf) => {
+              const blob = await compressOne(rf.file);
+              return { relativePath: replaceExtension(rf.relativePath, ext), blob };
             },
-          },
-        );
-        setBatchResults(results);
+            {
+              concurrency: 3,
+              signal: ctrl.signal,
+              onProgress: (done, total, path) => {
+                setProgress({ done, total, current: path });
+              },
+            },
+          );
+          setBatchResults(results);
+        } finally {
+          abortRef.current = null;
+          setProgress(null);
+          setCancelling(false);
+        }
         return;
       }
 
@@ -196,6 +211,13 @@ export default function BatchCompressPage() {
     } finally {
       setProcessing(false);
       setProgressText('');
+    }
+  };
+
+  const cancelRun = () => {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
     }
   };
 
@@ -415,6 +437,17 @@ export default function BatchCompressPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {progress && (
+          <BatchProgressPanel
+            done={progress.done}
+            total={progress.total}
+            current={progress.current}
+            onCancel={cancelRun}
+            label="압축 중"
+            cancelling={cancelling}
+          />
         )}
 
         {batchResults && (
