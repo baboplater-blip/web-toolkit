@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { AdSlot } from '@/components/AdSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
@@ -105,7 +106,30 @@ export default function RootLayout({
         <KeyboardInsetTracker />
         <OfflineIndicator />
         <RecentTracker />
-        <div className="md:pl-16">{children}</div>
+        <div className="md:pl-16">
+          <div className="px-4 pt-3">
+            <AdSlot size="top" slotId="top-banner" />
+          </div>
+          <div className="relative mx-auto max-w-[1320px]">
+            <aside
+              className="pointer-events-none absolute left-0 top-0 hidden h-full xl:block"
+              aria-hidden="true"
+            >
+              <div className="pointer-events-auto sticky top-4 pl-2 pt-3">
+                <AdSlot size="sidebar" slotId="sidebar-left" />
+              </div>
+            </aside>
+            <aside
+              className="pointer-events-none absolute right-0 top-0 hidden h-full xl:block"
+              aria-hidden="true"
+            >
+              <div className="pointer-events-auto sticky top-4 pr-2 pt-3">
+                <AdSlot size="sidebar" slotId="sidebar-right" />
+              </div>
+            </aside>
+            <div className="xl:px-[180px]">{children}</div>
+          </div>
+        </div>
         <BottomNav />
         <InstallPrompt />
         <ToastHost />
