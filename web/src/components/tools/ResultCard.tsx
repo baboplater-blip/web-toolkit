@@ -1,7 +1,7 @@
 'use client';
 
 import { Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { compressionRatio, formatBytes } from '@/lib/compress/format';
 
 export interface ResultCardProps {
@@ -58,11 +58,13 @@ export function ResultCard({
         </p>
       )}
 
-      <a href={blobUrl} download={fileName} className="block">
-        <Button className="w-full" variant="default">
-          <Download className="h-4 w-4" />
-          {fileName} 다운로드
-        </Button>
+      <a
+        href={blobUrl}
+        download={fileName}
+        className={buttonVariants({ variant: 'default', className: 'w-full' })}
+      >
+        <Download className="h-4 w-4" />
+        {fileName} 다운로드
       </a>
     </div>
   );

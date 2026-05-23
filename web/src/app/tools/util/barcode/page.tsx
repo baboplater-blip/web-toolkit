@@ -8,7 +8,7 @@ import {
   Download,
   RotateCcw,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { triggerDownload } from '@/lib/tools/pdf-common';
@@ -117,10 +117,13 @@ export default function BarcodePage() {
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
           <div className="flex items-center gap-2">
-            <Link href="/tools">
-              <Button variant="ghost" size="icon" className="h-8 w-8" title="도구로">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
+            <Link
+              href="/tools"
+              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
+              title="도구로"
+              aria-label="도구 목록으로"
+            >
+              <ArrowLeft className="h-4 w-4" />
             </Link>
             <BarcodeIcon className="h-5 w-5" />
             <h1 className="font-semibold text-base">바코드 생성</h1>
