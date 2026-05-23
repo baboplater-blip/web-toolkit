@@ -118,22 +118,36 @@ export default function AdminPage() {
         Authorization: `Bearer ${token}`,
         'X-GitHub-Api-Version': '2022-11-28',
       };
-      const getRes = await fetch(
-        `https://api.github.com/repos/${REPO_ENV}/contents/${CONFIG_PATH}?ref=master`,
-        { headers },
-      );
-      if (!getRes.ok) throw new Error(`현재 파일 조회 실패 (${getRes.status})`);
-      const current = (await getRes.json()) as { sha: string };
-      const body = {
-        message: `chore(ads): 광고 설정 업데이트 ${next.updatedAt}`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(next, null, 2) + '\n'))),
-        sha: current.sha,
-        branch: 'master',
+      const fetchSha = async (): Promise<string> => {
+        const r = await fetch(
+          `https://api.github.com/repos/${REPO_ENV}/contents/${CONFIG_PATH}?ref=master&t=${Date.now()}`,
+          { headers, cache: 'no-store' },
+        );
+        if (!r.ok) throw new Error(`현재 파일 조회 실패 (${r.status})`);
+        const data = (await r.json()) as { sha: string };
+        return data.sha;
       };
-      const putRes = await fetch(
-        `https://api.github.com/repos/${REPO_ENV}/contents/${CONFIG_PATH}`,
-        { method: 'PUT', headers, body: JSON.stringify(body) },
-      );
+      const tryPut = async (sha: string) => {
+        return fetch(`https://api.github.com/repos/${REPO_ENV}/contents/${CONFIG_PATH}`, {
+          method: 'PUT',
+          headers,
+          cache: 'no-store',
+          body: JSON.stringify({
+            message: `chore(ads): 광고 설정 업데이트 ${next.updatedAt}`,
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(next, null, 2) + '\n'))),
+            sha,
+            branch: 'master',
+          }),
+        });
+      };
+
+      let sha = await fetchSha();
+      let putRes = await tryPut(sha);
+      // 409 = SHA mismatch (다른 push 가 끼었거나 캐시된 SHA). 한 번 재조회 후 재시도.
+      if (putRes.status === 409) {
+        sha = await fetchSha();
+        putRes = await tryPut(sha);
+      }
       if (!putRes.ok) {
         const txt = await putRes.text();
         throw new Error(`커밋 실패 (${putRes.status}): ${txt.slice(0, 200)}`);
