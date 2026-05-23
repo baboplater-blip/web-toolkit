@@ -20,7 +20,7 @@ async function loadPdfJs() {
 export async function openPdfDoc(file: File | Blob | ArrayBuffer): Promise<PDFDocumentProxy> {
   const pdfjs = await loadPdfJs();
   const buf = file instanceof ArrayBuffer ? file : await (file as File | Blob).arrayBuffer();
-  return pdfjs.getDocument({ data: new Uint8Array(buf), isEvalSupported: false }).promise;
+  return pdfjs.getDocument({ data: new Uint8Array(buf) }).promise;
 }
 
 export interface PageTextLine {
