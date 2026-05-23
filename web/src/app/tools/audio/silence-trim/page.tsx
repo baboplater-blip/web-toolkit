@@ -78,7 +78,12 @@ export default function SilenceTrimPage() {
         </p>
       </header>
 
-      <FileDropZone accept="audio/*,video/*" onFiles={(f) => setFile(f[0] ?? null)} title="오디오 또는 비디오 드롭" />
+      <FileDropZone
+        accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.mov,.webm,.mkv,.avi"
+        onFiles={(f) => setFile(f[0] ?? null)}
+        title="오디오 또는 비디오 드롭"
+        hint="MP3·WAV·MP4·MOV·WebM 등"
+      />
 
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
