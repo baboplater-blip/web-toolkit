@@ -16,7 +16,7 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-v3-20260523';
+const SW_VERSION = 'webtoolkit-sw-1a0548d-202605231251';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const ASSET_CACHE = `${SW_VERSION}-asset`;
@@ -136,17 +136,18 @@ async function networkFirst(request) {
   }
 }
 
-/** _next/static 자산: 캐시 우선 + 백그라운드 갱신 (SWR) */
-async function staleWhileRevalidate(request, cacheName) {
+/** _next/static 자산: 캐시 우선 (hash 가 박힌 immutable URL — cache miss 시만 fetch) */
+async function staticAssetCacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  const fetchPromise = fetch(request)
-    .then((res) => {
-      if (res.ok) cache.put(request, res.clone()).catch(() => {});
-      return res;
-    })
-    .catch(() => cached);
-  return cached || fetchPromise;
+  if (cached) return cached;
+  try {
+    const response = await fetch(request);
+    if (response.ok) cache.put(request, response.clone()).catch(() => {});
+    return response;
+  } catch {
+    return new Response('', { status: 504 });
+  }
 }
 
 async function cacheFirst(request, cacheName) {
@@ -178,9 +179,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // _next/static: SWR (immutable hash 자산이라 안전)
+  // _next/static: cache-first (URL 에 hash 가 박혀 있으므로 immutable)
   if (isNextStatic(url.pathname)) {
-    event.respondWith(staleWhileRevalidate(request, ASSET_CACHE));
+    event.respondWith(staticAssetCacheFirst(request, ASSET_CACHE));
     return;
   }
 

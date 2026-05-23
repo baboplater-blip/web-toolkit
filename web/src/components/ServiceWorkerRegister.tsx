@@ -43,23 +43,44 @@ export function ServiceWorkerRegister() {
           });
         });
 
-        // controller 가 새 SW 로 교체되면 "지금 새로고침" 옵션을 한 번 띄운다.
+        // controller 가 새 SW 로 교체되면:
+        //  - 페이지가 hidden 이면 즉시 reload (작업 중 아님)
+        //  - visible 이면 토스트로 안내 (사용자 작업 손실 방지)
         let reloaded = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           if (reloaded) return;
           reloaded = true;
-          toast('새 버전이 적용되었습니다 — 깔끔한 세션을 위해 새로고침을 권장합니다', {
+          if (document.visibilityState === 'hidden') {
+            location.reload();
+            return;
+          }
+          toast('새 버전 적용됨 — 새로고침하면 즉시 사용', {
             variant: 'success',
             duration: 8000,
             id: 'sw-update-active',
           });
         });
 
-        // 주기적으로 업데이트 체크 (15분마다).
+        // 탭이 활성화될 때마다 SW 업데이트 체크 (사용자가 돌아오면 새 버전 자동 감지)
+        const onVisibility = () => {
+          if (document.visibilityState === 'visible') {
+            reg.update().catch(() => {});
+          }
+        };
+        document.addEventListener('visibilitychange', onVisibility);
+
+        // 주기적으로도 업데이트 체크 (15분마다).
         const periodic = setInterval(() => {
           reg.update().catch(() => {});
         }, 15 * 60 * 1000);
-        window.addEventListener('beforeunload', () => clearInterval(periodic), { once: true });
+        window.addEventListener(
+          'beforeunload',
+          () => {
+            clearInterval(periodic);
+            document.removeEventListener('visibilitychange', onVisibility);
+          },
+          { once: true },
+        );
       } catch (e) {
         // 등록 실패해도 앱 동작에는 지장 없음.
         console.warn('[SW] 등록 실패:', e);

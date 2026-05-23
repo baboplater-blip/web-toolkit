@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/generate-tool-metadata.mjs",
+    "prebuild": "node scripts/generate-tool-metadata.mjs && node scripts/stamp-sw-version.mjs",
     "build": "tsc --noEmit && next build",
     "start": "next start",
     "lint": "eslint",
