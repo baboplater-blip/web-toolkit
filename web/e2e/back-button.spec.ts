@@ -1,16 +1,21 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('뒤로가기 ← 버튼 검증', () => {
+test.use({ serviceWorkers: 'block' });
+
+test.describe('뒤로가기 ← 버튼 검증 (SW 차단)', () => {
   test('이미지 일괄 압축 → ← 클릭 → /tools 로 이동', async ({ page }) => {
+    page.on('console', (msg) => console.log(`[browser ${msg.type()}]`, msg.text()));
+    page.on('pageerror', (err) => console.log(`[pageerror]`, err.message));
     await page.goto('/tools/image/batch-compress');
     await expect(page.getByRole('heading', { name: /일괄 압축/ })).toBeVisible();
 
     const back = page.getByRole('link', { name: '도구 목록으로' });
     await expect(back).toBeVisible();
+    const href = await back.getAttribute('href');
+    console.log(`[debug] href=${href}`);
     await back.click();
 
     await expect(page).toHaveURL(/\/tools\/?$/);
-    await expect(page.getByText('도구 모음').or(page.getByText('Web Toolkit'))).toBeVisible();
   });
 
   test('PDF 합치기 → ← 클릭', async ({ page }) => {

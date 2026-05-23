@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { ChevronRight, Clock, LayoutGrid, RefreshCw, WifiOff } from 'lucide-react';
 import { TOOLS, type ToolMeta } from '@/lib/tools/registry';
 import { getRecent } from '@/lib/tools/usage';
@@ -36,7 +35,7 @@ export default function OfflinePage() {
           </p>
         </div>
 
-        <Link
+        <a
           href="/tools"
           className="flex items-center gap-3 rounded-lg border bg-background p-3 transition-colors hover:bg-muted text-left"
         >
@@ -48,7 +47,7 @@ export default function OfflinePage() {
             </p>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </Link>
+        </a>
 
         {recentTools.length > 0 && (
           <div className="space-y-2 text-left">
@@ -61,7 +60,7 @@ export default function OfflinePage() {
                 const Icon = tool.icon;
                 return (
                   <li key={tool.id}>
-                    <Link
+                    <a
                       href={tool.href}
                       className="flex items-center gap-2.5 rounded-lg border bg-background p-2.5 transition-colors hover:bg-muted"
                     >
@@ -70,7 +69,7 @@ export default function OfflinePage() {
                       </div>
                       <p className="text-xs font-medium truncate">{tool.title}</p>
                       <ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                    </Link>
+                    </a>
                   </li>
                 );
               })}

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
 import { cn } from '@/lib/utils';
@@ -110,5 +109,5 @@ export function ToolCard({
   );
 
   if (isPlanned) return inner;
-  return <Link href={tool.href}>{inner}</Link>;
+  return <a href={tool.href}>{inner}</a>;
 }

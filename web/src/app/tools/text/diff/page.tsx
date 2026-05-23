@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { ArrowLeft, Diff } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 
@@ -51,13 +50,13 @@ export default function DiffPage() {
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between px-4 py-3 max-w-5xl mx-auto">
           <div className="flex items-center gap-2">
-            <Link
+            <a
               href="/tools"
               className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
               aria-label="도구 목록으로"
             >
               <ArrowLeft className="h-4 w-4" />
-            </Link>
+            </a>
             <Diff className="h-5 w-5" />
             <h1 className="font-semibold text-base">텍스트 비교</h1>
           </div>

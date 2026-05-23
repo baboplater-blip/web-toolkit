@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import { BarChart3, Settings2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -74,9 +73,9 @@ export default function SettingsPage() {
           {topTools.length === 0 ? (
             <div className="rounded-xl border bg-card p-6 text-center text-xs text-muted-foreground">
               아직 사용 기록이 없습니다.{' '}
-              <Link href="/tools" className="text-primary hover:underline">
+              <a href="/tools" className="text-primary hover:underline">
                 도구 둘러보기
-              </Link>
+              </a>
             </div>
           ) : (
             <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -89,7 +88,7 @@ export default function SettingsPage() {
                   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
                   return (
                     <li key={tool.id}>
-                      <Link
+                      <a
                         href={tool.href}
                         className="flex items-center gap-2 rounded-lg border bg-background p-2 transition-colors hover:bg-muted"
                       >
@@ -113,7 +112,7 @@ export default function SettingsPage() {
                             {count}회
                           </span>
                         </div>
-                      </Link>
+                      </a>
                     </li>
                   );
                 })}

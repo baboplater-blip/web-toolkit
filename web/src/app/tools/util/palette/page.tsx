@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import {
   ArrowLeft,
   Check,
@@ -211,14 +210,14 @@ export default function PalettePage() {
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
           <div className="flex items-center gap-2">
-            <Link
+            <a
               href="/tools"
               className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
               title="도구로"
               aria-label="도구 목록으로"
             >
               <ArrowLeft className="h-4 w-4" />
-            </Link>
+            </a>
             <Palette className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 색상 팔레트</h1>
           </div>

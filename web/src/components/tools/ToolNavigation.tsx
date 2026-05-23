@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ChevronLeft,
@@ -51,7 +50,7 @@ export function ToolNavigation() {
       className="mx-auto max-w-3xl px-4 pb-8 pt-2"
     >
       <div className="rounded-xl border bg-card p-2 flex items-center gap-2">
-        <Link
+        <a
           href={prev ? prev.href : '#'}
           aria-disabled={!prev}
           tabIndex={prev ? 0 : -1}
@@ -66,7 +65,7 @@ export function ToolNavigation() {
             <p className="text-[10px] text-muted-foreground">이전</p>
             <p className="truncate font-medium">{prev ? prev.title : '—'}</p>
           </div>
-        </Link>
+        </a>
 
         <div className="relative shrink-0">
           <button
@@ -93,7 +92,7 @@ export function ToolNavigation() {
               <ul className="py-1">
                 {siblings.map((t) => (
                   <li key={t.id}>
-                    <Link
+                    <a
                       href={t.href}
                       onClick={() => setMenuOpen(false)}
                       className={cn(
@@ -103,25 +102,25 @@ export function ToolNavigation() {
                     >
                       <t.icon className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">{t.title}</span>
-                    </Link>
+                    </a>
                   </li>
                 ))}
               </ul>
               <div className="border-t p-1">
-                <Link
+                <a
                   href="/tools"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <LayoutGrid className="h-3.5 w-3.5" />
                   전체 도구 허브
-                </Link>
+                </a>
               </div>
             </div>
           )}
         </div>
 
-        <Link
+        <a
           href={next ? next.href : '#'}
           aria-disabled={!next}
           tabIndex={next ? 0 : -1}
@@ -136,7 +135,7 @@ export function ToolNavigation() {
             <p className="truncate font-medium">{next ? next.title : '—'}</p>
           </div>
           <ChevronRight className="h-4 w-4 shrink-0" />
-        </Link>
+        </a>
       </div>
     </nav>
   );

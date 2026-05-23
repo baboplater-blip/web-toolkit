@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutGrid, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -29,9 +28,8 @@ export function BottomNav() {
             const active = match.test(pathname);
             return (
               <li key={href} className="flex-1">
-                <Link
+                <a
                   href={href}
-                  prefetch
                   aria-current={active ? 'page' : undefined}
                   className={cn(
                     'flex h-full w-full flex-col items-center justify-center gap-0.5 transition-colors',
@@ -44,7 +42,7 @@ export function BottomNav() {
                   <span className={cn('text-[11px]', active && 'font-semibold')}>
                     {label}
                   </span>
-                </Link>
+                </a>
               </li>
             );
           })}
@@ -61,9 +59,8 @@ export function BottomNav() {
             const active = match.test(pathname);
             return (
               <li key={href}>
-                <Link
+                <a
                   href={href}
-                  prefetch
                   aria-current={active ? 'page' : undefined}
                   title={label}
                   className={cn(
@@ -82,7 +79,7 @@ export function BottomNav() {
                   >
                     {label}
                   </span>
-                </Link>
+                </a>
               </li>
             );
           })}
