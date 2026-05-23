@@ -12,6 +12,7 @@ import {
   getMediaLimits,
   isOversizedSoft,
   limitsHint,
+  MEDIA_ACCEPT,
   validateMediaSize,
 } from '@/lib/tools/media-limits';
 
@@ -100,7 +101,7 @@ export default function SilenceTrimPage() {
       </header>
 
       <FileDropZone
-        accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.mov,.webm,.mkv,.avi"
+        accept={MEDIA_ACCEPT}
         onFiles={(f) => setFile(f[0] ?? null)}
         title="오디오 또는 비디오 드롭"
         hint={`MP3·WAV·MP4·MOV·WebM 등 · ${limitsHint()}`}

@@ -60,6 +60,19 @@ export function getMediaLimits(): MediaLimits {
   };
 }
 
+/**
+ * 비디오/오디오 파일 다이얼로그용 accept 표준 셋.
+ * `video/*` / `audio/*` 와일드카드 + 명시 확장자 — 일부 브라우저(특히 Windows
+ * Chrome) 에서 와일드카드만으로는 mp4 가 비활성화 되는 케이스 회피.
+ */
+export const VIDEO_ACCEPT =
+  'video/*,.mp4,.m4v,.mov,.webm,.mkv,.avi,.wmv,.flv,.mpg,.mpeg,.3gp,.3g2,.ogv,.ts,.mts,.m2ts';
+
+export const AUDIO_ACCEPT =
+  'audio/*,.mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.opus,.amr,.aiff,.wma';
+
+export const MEDIA_ACCEPT = `${AUDIO_ACCEPT},${VIDEO_ACCEPT.replace('video/*,', '')}`;
+
 export function fmtMB(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;

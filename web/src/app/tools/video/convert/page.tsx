@@ -22,6 +22,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -331,12 +332,12 @@ export default function VideoConvertPage() {
               setError(null);
             }}
             fileProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '변환할 비디오를 업로드하세요 (mp4/webm/mov/avi/mkv 등)',
               onFiles: (files) => acceptFile(files[0]),
             }}
             folderProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '폴더 안 모든 비디오를 같은 포맷으로 일괄 변환합니다.',
               onFolder: onFolderPicked,
             }}

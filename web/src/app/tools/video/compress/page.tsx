@@ -23,6 +23,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -385,12 +386,12 @@ export default function VideoCompressPage() {
               setError(null);
             }}
             fileProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '해상도·품질을 조정해 비디오 용량을 줄입니다',
               onFiles: (files) => acceptFile(files[0]),
             }}
             folderProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '폴더 안 모든 비디오를 같은 설정으로 일괄 압축합니다. (모두 MP4 출력)',
               onFolder: onFolderPicked,
             }}

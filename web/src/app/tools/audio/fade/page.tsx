@@ -6,7 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, probeAudio, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
-import { explainFfmpegError, limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
+import { AUDIO_ACCEPT, explainFfmpegError, limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
 
 export default function FadePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -84,7 +84,7 @@ export default function FadePage() {
       </header>
 
       <FileDropZone
-        accept="audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac"
+        accept={AUDIO_ACCEPT}
         onFiles={(f) => setFile(f[0] ?? null)}
         title="오디오 드롭"
         hint={limitsHint()}

@@ -24,6 +24,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -507,12 +508,12 @@ export default function ExtractFramesPage() {
               setError(null);
             }}
             fileProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '비디오에서 이미지 프레임을 추출합니다',
               onFiles: (files) => acceptFile(files[0]),
             }}
             folderProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description:
                 '폴더 안 모든 비디오에서 프레임을 추출해 각각 ZIP 으로 묶습니다.',
               onFolder: onFolderPicked,

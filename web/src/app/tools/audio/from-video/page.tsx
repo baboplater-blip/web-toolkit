@@ -12,6 +12,7 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import {
   cleanupFiles,
   getFFmpeg,
@@ -165,7 +166,7 @@ export default function VideoToAudioPage() {
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         {!file && (
           <FileDropZone
-            accept="video/*"
+            accept={VIDEO_ACCEPT}
             description="비디오에서 오디오 트랙을 추출합니다"
             onFiles={(files) => acceptFile(files[0])}
           />

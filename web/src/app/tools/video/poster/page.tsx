@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, Image as ImageIcon, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
+import { limitsHint, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 
 export default function PosterPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -76,7 +76,7 @@ export default function PosterPage() {
       </header>
 
       <FileDropZone
-        accept="video/*,.mp4,.mov,.webm,.mkv,.avi"
+        accept={VIDEO_ACCEPT}
         onFiles={(f) => f[0] && handleFile(f[0])}
         title="비디오 드롭"
         hint={limitsHint()}

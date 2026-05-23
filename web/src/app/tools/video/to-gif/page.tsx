@@ -27,6 +27,7 @@ import {
   type LoadProgress,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -533,13 +534,13 @@ export default function VideoToGifPage() {
               setError(null);
             }}
             fileProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: 'MP4 / WebM / MOV / AVI / MKV 등 비디오',
               hint: 'FFmpeg.wasm (~30MB) 을 최초 실행 시 다운로드합니다. 이후 캐시.',
               onFiles: (files) => acceptFile(files[0]),
             }}
             folderProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '폴더 안 모든 비디오를 같은 구간·옵션으로 GIF 로 일괄 변환합니다.',
               onFolder: onFolderPicked,
             }}

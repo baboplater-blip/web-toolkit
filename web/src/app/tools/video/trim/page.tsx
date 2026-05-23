@@ -26,6 +26,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   appendSuffix,
@@ -438,12 +439,12 @@ export default function VideoTrimPage() {
               setError(null);
             }}
             fileProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '구간을 지정하여 비디오를 잘라냅니다',
               onFiles: (files) => acceptFile(files[0]),
             }}
             folderProps={{
-              accept: 'video/*',
+              accept: VIDEO_ACCEPT,
               description: '폴더 안 모든 비디오를 같은 구간으로 일괄 자릅니다.',
               onFolder: onFolderPicked,
             }}
