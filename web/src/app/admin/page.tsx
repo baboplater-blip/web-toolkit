@@ -38,6 +38,7 @@ const SLOT_LABELS: Record<AdSlotKey, string> = {
   top: '상단 가로 배너',
   sidebarLeft: '좌측 세로 배너',
   sidebarRight: '우측 세로 배너',
+  inline: '도구 페이지 인라인 (본문 위)',
 };
 
 type SlotState = AdsConfig['slots'][AdSlotKey];
@@ -290,7 +291,11 @@ export default function AdminPage() {
                 const s = config.slots[slot];
                 const isPreviewing = preview === slot;
                 const hint =
-                  slot === 'top' ? '권장 970×90 (또는 728×90)' : '권장 160×600 (또는 300×600)';
+                  slot === 'top'
+                    ? '권장 970×90 (또는 728×90)'
+                    : slot === 'inline'
+                      ? '도구 페이지 본문 위 노출 — 권장 728×90 또는 970×250'
+                      : '권장 160×600 (또는 300×600)';
                 return (
                   <div key={slot} className="rounded-xl border bg-card p-3 space-y-2">
                     <div className="flex items-center justify-between gap-2">
@@ -450,7 +455,109 @@ export default function AdminPage() {
           </section>
         )}
 
+        {config && (
+          <section className="space-y-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              사이트 공지 배너
+            </h2>
+            <div className="rounded-xl border bg-card p-3 space-y-2">
+              <label className="flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={config.notice?.enabled ?? false}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      notice: {
+                        message: '',
+                        tone: 'info',
+                        ...(config.notice ?? {}),
+                        enabled: e.target.checked,
+                      },
+                    })
+                  }
+                />
+                공지 배너 표시
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">메시지</label>
+                  <textarea
+                    value={config.notice?.message ?? ''}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        notice: {
+                          enabled: config.notice?.enabled ?? false,
+                          tone: config.notice?.tone ?? 'info',
+                          ...config.notice,
+                          message: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="예: 5/24~26 점검 안내. 이 기간 작업한 결과는 저장하지 마세요."
+                    className="w-full rounded-md border bg-background px-2 py-1 text-xs h-20"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">색조</label>
+                    <select
+                      value={config.notice?.tone ?? 'info'}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          notice: {
+                            enabled: config.notice?.enabled ?? false,
+                            message: config.notice?.message ?? '',
+                            ...config.notice,
+                            tone: e.target.value as 'info' | 'warning' | 'success',
+                          },
+                        })
+                      }
+                      className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                    >
+                      <option value="info">정보 (파랑)</option>
+                      <option value="warning">경고 (노랑)</option>
+                      <option value="success">완료 (초록)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">자세히 보기 링크 (선택)</label>
+                    <input
+                      value={config.notice?.href ?? ''}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          notice: {
+                            enabled: config.notice?.enabled ?? false,
+                            message: config.notice?.message ?? '',
+                            tone: config.notice?.tone ?? 'info',
+                            ...config.notice,
+                            href: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://..."
+                      className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                사용자가 닫으면 같은 메시지는 다시 표시되지 않음. 메시지를 바꾸면 자동으로 다시 보임.
+              </p>
+            </div>
+          </section>
+        )}
+
         <Separator />
+
+        <AdImpressionStats />
+
+        <Separator />
+
 
         <section className="space-y-2">
           <div className="flex items-center justify-between">
@@ -541,5 +648,82 @@ export default function AdminPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function AdImpressionStats() {
+  const [impressions, setImpressions] = useState<Record<string, number>>({});
+  const [clicks, setClicks] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    try {
+      const imp = localStorage.getItem('webtoolkit/ads/impressions');
+      const clk = localStorage.getItem('webtoolkit/ads/clicks');
+      if (imp) setImpressions(JSON.parse(imp));
+      if (clk) setClicks(JSON.parse(clk));
+    } catch {}
+  }, []);
+
+  const slots = ['top', 'sidebarLeft', 'sidebarRight', 'inline'] as const;
+  const totalImp = slots.reduce((s, k) => s + (impressions[k] ?? 0), 0);
+  const totalClk = slots.reduce((s, k) => s + (clicks[k] ?? 0), 0);
+
+  function reset() {
+    if (!confirm('이 브라우저의 광고 노출·클릭 카운트를 초기화할까요?')) return;
+    localStorage.removeItem('webtoolkit/ads/impressions');
+    localStorage.removeItem('webtoolkit/ads/clicks');
+    setImpressions({});
+    setClicks({});
+  }
+
+  return (
+    <section className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          광고 노출·클릭 통계 (이 브라우저)
+        </h2>
+        <Button variant="ghost" size="sm" onClick={reset}>초기화</Button>
+      </div>
+      <div className="rounded-xl border bg-card p-3 space-y-2">
+        <p className="text-xs">
+          총 노출 <span className="font-semibold tabular-nums">{totalImp.toLocaleString()}</span>
+          {' · '}
+          총 클릭 <span className="font-semibold tabular-nums">{totalClk.toLocaleString()}</span>
+          {totalImp > 0 && (
+            <>
+              {' · '} CTR <span className="font-semibold">{((totalClk / totalImp) * 100).toFixed(2)}%</span>
+            </>
+          )}
+        </p>
+        <table className="w-full text-xs">
+          <thead className="text-muted-foreground border-b">
+            <tr>
+              <th className="text-left px-2 py-1">슬롯</th>
+              <th className="text-right px-2 py-1">노출</th>
+              <th className="text-right px-2 py-1">클릭</th>
+              <th className="text-right px-2 py-1">CTR</th>
+            </tr>
+          </thead>
+          <tbody>
+            {slots.map((k) => {
+              const imp = impressions[k] ?? 0;
+              const clk = clicks[k] ?? 0;
+              const ctr = imp > 0 ? (clk / imp) * 100 : 0;
+              return (
+                <tr key={k} className="border-b border-border/30 last:border-b-0">
+                  <td className="px-2 py-1">{k}</td>
+                  <td className="px-2 py-1 text-right tabular-nums">{imp.toLocaleString()}</td>
+                  <td className="px-2 py-1 text-right tabular-nums">{clk.toLocaleString()}</td>
+                  <td className="px-2 py-1 text-right tabular-nums">{ctr.toFixed(2)}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p className="text-[10px] text-muted-foreground">
+          서버 통계가 아닌 어드민 브라우저의 로컬 카운터입니다. 다른 사용자의 노출은 집계되지 않습니다.
+        </p>
+      </div>
+    </section>
   );
 }

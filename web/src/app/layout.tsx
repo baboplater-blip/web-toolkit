@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { AdSlot } from '@/components/AdSlot';
 import { BottomNav } from '@/components/BottomNav';
+import { NoticeBanner } from '@/components/NoticeBanner';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
@@ -106,6 +107,7 @@ export default function RootLayout({
         <KeyboardInsetTracker />
         <OfflineIndicator />
         <RecentTracker />
+        <NoticeBanner />
         <div className="md:pl-16">
           <div className="mx-auto max-w-[1720px] px-4 pt-3">
             <AdSlot size="top" slotKey="top" />

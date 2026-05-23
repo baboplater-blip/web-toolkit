@@ -5,7 +5,7 @@
  * /admin 페이지에서 GitHub API 로 같은 파일을 commit → Vercel 자동 재배포 → 사이트에 반영.
  */
 
-export type AdSlotKey = 'top' | 'sidebarLeft' | 'sidebarRight';
+export type AdSlotKey = 'top' | 'sidebarLeft' | 'sidebarRight' | 'inline';
 
 export interface AdImageConfig {
   /** data URL (data:image/png;base64,...) 또는 절대/상대 URL */
@@ -23,10 +23,21 @@ export interface AdSlotConfig {
   html: string;
 }
 
+export interface NoticeConfig {
+  enabled: boolean;
+  /** 배너 본문 텍스트 */
+  message: string;
+  /** 표시 색상 (info | warning | success) */
+  tone?: 'info' | 'warning' | 'success';
+  /** 자세히 보기 링크 */
+  href?: string;
+}
+
 export interface AdsConfig {
   version: number;
   updatedAt: string;
   slots: Record<AdSlotKey, AdSlotConfig>;
+  notice?: NoticeConfig;
 }
 
 const DEFAULT_CONFIG: AdsConfig = {
@@ -36,7 +47,9 @@ const DEFAULT_CONFIG: AdsConfig = {
     top: { enabled: true, html: '', image: null },
     sidebarLeft: { enabled: true, html: '', image: null },
     sidebarRight: { enabled: true, html: '', image: null },
+    inline: { enabled: true, html: '', image: null },
   },
+  notice: { enabled: false, message: '', tone: 'info' },
 };
 
 let cached: AdsConfig | null = null;
@@ -60,7 +73,11 @@ export async function loadAdsConfig(force = false): Promise<AdsConfig> {
             ...DEFAULT_CONFIG.slots.sidebarRight,
             ...(data.slots?.sidebarRight ?? {}),
           },
+          inline: { ...DEFAULT_CONFIG.slots.inline, ...(data.slots?.inline ?? {}) },
         },
+        notice: data.notice
+          ? { ...DEFAULT_CONFIG.notice!, ...data.notice }
+          : DEFAULT_CONFIG.notice,
       };
       cached = merged;
       return merged;

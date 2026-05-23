@@ -17,6 +17,7 @@ export const AD_SLOT_SIZES: Record<AdSlotKey, { width: number; height: number }>
   top: { width: 970, height: 90 },
   sidebarLeft: { width: 160, height: 600 },
   sidebarRight: { width: 160, height: 600 },
+  inline: { width: 728, height: 90 },
 };
 
 /**
@@ -29,6 +30,7 @@ const AD_MAX_DIMENSIONS: Record<AdSlotKey, { maxW: number; maxH: number }> = {
   top: { maxW: 1940, maxH: 500 },
   sidebarLeft: { maxW: 320, maxH: 1200 },
   sidebarRight: { maxW: 320, maxH: 1200 },
+  inline: { maxW: 1456, maxH: 400 },
 };
 
 const WEBP_QUALITY = 0.85;
