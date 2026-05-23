@@ -1,11 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, VolumeX } from 'lucide-react';
+import { Loader2, VolumeX, AlertTriangle } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
+
+/**
+ * FFmpeg.wasm 은 32-bit WASM 메모리(2GB) 한계가 있어
+ * 실용적으로 권장 ≤ 500MB, 절대 한도 1GB.
+ */
+const SOFT_LIMIT_MB = 500;
+const HARD_LIMIT_MB = 1024;
+
+function fmtMB(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
 
 export default function SilenceTrimPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,6 +26,7 @@ export default function SilenceTrimPage() {
   const [keepTail, setKeepTail] = useState(0.3);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
     blobUrl: string;
@@ -21,6 +34,9 @@ export default function SilenceTrimPage() {
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+
+  const sizeMB = file ? file.size / 1024 / 1024 : 0;
+  const oversized = sizeMB > SOFT_LIMIT_MB;
 
   async function handleProcess() {
     if (!file) {
@@ -31,12 +47,19 @@ export default function SilenceTrimPage() {
     setBusy(true);
     setProgress(0);
     setResult(null);
+    setProgressText('FFmpeg 로드 중 (최초만 ~30MB)');
     try {
       const ffmpeg = await getFFmpeg();
-      ffmpeg.on('progress', (p) => setProgress(Math.round((p.progress ?? 0) * 100)));
+      setProgressText('파일 메모리 적재 중');
+      ffmpeg.on('progress', (p) => {
+        setProgress(Math.round((p.progress ?? 0) * 100));
+        setProgressText('무음 구간 분석·제거 중');
+      });
       await writeFile(ffmpeg, 'in.bin', file);
 
-      const isVideo = (file.type || '').startsWith('video/') || /\.(mp4|mov|webm|mkv)$/i.test(file.name);
+      const isVideo =
+        (file.type || '').startsWith('video/') ||
+        /\.(mp4|mov|webm|mkv|avi)$/i.test(file.name);
       const ext = isVideo ? 'mp4' : (file.name.split('.').pop() ?? 'mp3').toLowerCase();
       const outName = `out.${ext === 'mp4' ? 'mp4' : ext}`;
 
@@ -58,9 +81,17 @@ export default function SilenceTrimPage() {
         compressedSize: blob.size,
       });
       setProgress(100);
+      setProgressText('완료');
       await cleanupFiles(ffmpeg, ['in.bin', outName]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : '처리에 실패했습니다.');
+      const msg = e instanceof Error ? e.message : String(e);
+      const isMemory =
+        /out of memory|memory access|allocation|aborted/i.test(msg);
+      setError(
+        isMemory
+          ? `메모리 부족 — 파일이 너무 큽니다 (${fmtMB(file.size)}). 1GB 이하 권장, 500MB 이하 안정. 더 짧게 잘라서 시도해보세요.`
+          : msg,
+      );
     } finally {
       setBusy(false);
     }
@@ -82,8 +113,33 @@ export default function SilenceTrimPage() {
         accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.mov,.webm,.mkv,.avi"
         onFiles={(f) => setFile(f[0] ?? null)}
         title="오디오 또는 비디오 드롭"
-        hint="MP3·WAV·MP4·MOV·WebM 등"
+        hint={`MP3·WAV·MP4·MOV·WebM 등 · 권장 ${SOFT_LIMIT_MB}MB 이하 · 한도 ${HARD_LIMIT_MB}MB`}
+        validate={(files) => {
+          const f = files[0];
+          if (!f) return null;
+          const mb = f.size / 1024 / 1024;
+          if (mb > HARD_LIMIT_MB) {
+            return `파일이 너무 큽니다 (${fmtMB(f.size)}). FFmpeg.wasm 한계로 ${HARD_LIMIT_MB}MB 이하만 처리됩니다.`;
+          }
+          return null;
+        }}
+        onError={(m) => setError(m)}
       />
+
+      {file && (
+        <div className="rounded-xl border bg-card p-3 text-xs space-y-1">
+          <p className="font-medium">{file.name}</p>
+          <p className="text-muted-foreground">
+            {fmtMB(file.size)}
+            {oversized && (
+              <span className="ml-2 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                <AlertTriangle className="h-3 w-3" />
+                {SOFT_LIMIT_MB}MB 초과 — 메모리 부족 가능
+              </span>
+            )}
+          </p>
+        </div>
+      )}
 
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
@@ -105,12 +161,40 @@ export default function SilenceTrimPage() {
           {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           무음 제거
         </Button>
-        {busy && <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} /></div>}
+        {busy && (
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+          </div>
+        )}
       </div>
 
-      {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+      {busy && progressText && (
+        <p className="text-xs text-muted-foreground" aria-live="polite">{progressText}</p>
+      )}
 
-      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} />}
+      {error && (
+        <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
+      {result && (
+        <ResultCard
+          fileName={result.filename}
+          blobUrl={result.blobUrl}
+          originalSize={result.originalSize}
+          compressedSize={result.compressedSize}
+        />
+      )}
+
+      <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mb-1 font-medium text-foreground">알아두실 점</p>
+        <ul className="list-disc space-y-0.5 pl-4">
+          <li>최초 사용 시 FFmpeg.wasm(~30MB) 을 한 번 다운로드합니다. 이후엔 캐시됩니다.</li>
+          <li>32-bit WASM 메모리(2GB) 한계로 큰 파일은 메모리 부족이 날 수 있어요. 권장 {SOFT_LIMIT_MB}MB 이하.</li>
+          <li>모든 처리는 브라우저 안에서 이뤄지고 파일은 서버로 전송되지 않습니다.</li>
+        </ul>
+      </div>
     </main>
   );
 }
