@@ -27,6 +27,7 @@ import {
   type AdSlotKey,
   type AdsConfig,
 } from '@/lib/ads-config';
+import { AD_SLOT_SIZES, processAdImage } from '@/lib/ads-image';
 
 const ADMIN_KEY_ENV = process.env.NEXT_PUBLIC_ADMIN_KEY ?? '';
 const REPO_ENV = process.env.NEXT_PUBLIC_GITHUB_REPO ?? 'baboplater-blip/web-toolkit';
@@ -81,23 +82,18 @@ export default function AdminPage() {
       setError('이미지 파일만 업로드 가능합니다.');
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setError(`이미지 용량이 큽니다 (${(file.size / 1024 / 1024).toFixed(1)}MB). 2MB 이하 권장 — JSON 파일에 base64로 박힙니다.`);
-      // 경고만 하고 진행
+    try {
+      const processed = await processAdImage(file, key);
+      updateSlot(key, {
+        image: {
+          src: processed.dataUrl,
+          href: config?.slots[key].image?.href ?? '',
+          alt: config?.slots[key].image?.alt ?? '',
+        },
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '이미지 변환 실패');
     }
-    const dataUrl = await new Promise<string>((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(String(r.result));
-      r.onerror = () => rej(r.error);
-      r.readAsDataURL(file);
-    });
-    updateSlot(key, {
-      image: {
-        src: dataUrl,
-        href: config?.slots[key].image?.href ?? '',
-        alt: config?.slots[key].image?.alt ?? '',
-      },
-    });
   };
 
   const removeImage = (key: AdSlotKey) => {
@@ -334,8 +330,9 @@ export default function AdminPage() {
                         <label className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed border-border/60 bg-background/60 p-4 cursor-pointer hover:bg-muted/40 transition-colors">
                           <Upload className="h-5 w-5 text-muted-foreground" />
                           <p className="text-xs font-medium">이미지 업로드</p>
-                          <p className="text-[10px] text-muted-foreground">
-                            PNG · JPG · WebP · GIF · SVG (2MB 이하 권장)
+                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
+                            PNG · JPG · WebP · GIF · SVG<br />
+                            자동으로 {AD_SLOT_SIZES[slot].width}×{AD_SLOT_SIZES[slot].height} WebP 로 변환 (중앙 crop)
                           </p>
                           <input
                             type="file"
