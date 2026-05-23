@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, FileImage } from 'lucide-react';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,6 +36,7 @@ async function heicToBlob(
 export default function HeicToJpgPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [format, setFormat] = useState<OutputFormat>('jpeg');
   const [quality, setQuality] = useState(0.9);
@@ -56,9 +58,11 @@ export default function HeicToJpgPage() {
     const filtered = filterFiles(files, { extensions: ['.heic', '.heif'] });
     if (filtered.length === 0) {
       setError('폴더 안에 HEIC/HEIF 파일이 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
@@ -70,7 +74,7 @@ export default function HeicToJpgPage() {
 
     if (inputMode === 'folder') {
       if (folderFiles.length === 0) {
-        setError('폴더를 먼저 선택하세요.');
+        setError('처리할 파일을 선택하세요.');
         return;
       }
       setBusy(true);
@@ -157,11 +161,12 @@ export default function HeicToJpgPage() {
         </p>
       )}
 
-      {inputMode === 'folder' && folderFiles.length > 0 && (
-        <div className="rounded-xl border bg-card p-3 text-xs text-muted-foreground">
-          폴더 — {folderFiles.length}개 HEIC · 루트:{' '}
-          <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-        </div>
+      {inputMode === 'folder' && allFolderFiles.length > 0 && (
+        <FolderPreviewPanel
+          files={allFolderFiles}
+          onSelectionChange={setFolderFiles}
+          fileKindLabel="이미지"
+        />
       )}
 
       <div className="space-y-2 rounded-xl border bg-card p-4">

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, ShieldOff } from 'lucide-react';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,6 +51,7 @@ async function stripExifOne(file: File): Promise<Blob> {
 export default function ExifStripPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [result, setResult] = useState<{
     blobUrl: string;
@@ -69,9 +71,11 @@ export default function ExifStripPage() {
     const filtered = filterFiles(files, { extensions: ['.jpg', '.jpeg'] });
     if (filtered.length === 0) {
       setError('폴더 안에 JPG 파일이 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
@@ -82,7 +86,7 @@ export default function ExifStripPage() {
 
     if (inputMode === 'folder') {
       if (folderFiles.length === 0) {
-        setError('폴더를 먼저 선택하세요.');
+        setError('처리할 파일을 선택하세요.');
         return;
       }
       setBusy(true);
@@ -162,11 +166,12 @@ export default function ExifStripPage() {
         }}
       />
 
-      {inputMode === 'folder' && folderFiles.length > 0 && (
-        <div className="rounded-xl border bg-card p-3 text-xs text-muted-foreground">
-          폴더 — {folderFiles.length}개 JPG · 루트:{' '}
-          <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-        </div>
+      {inputMode === 'folder' && allFolderFiles.length > 0 && (
+        <FolderPreviewPanel
+          files={allFolderFiles}
+          onSelectionChange={setFolderFiles}
+          fileKindLabel="이미지"
+        />
       )}
 
       <Button onClick={handleStrip} disabled={busy || !ready}>

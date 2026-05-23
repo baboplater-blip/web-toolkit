@@ -4,9 +4,11 @@ import { useEffect, useState, useCallback } from 'react';
 import {
   getFavorites,
   getRecent,
+  getUsageStats,
   toggleFavorite as toggleFavoriteRaw,
   USAGE_EVENTS,
   type RecentEntry,
+  type UsageStats,
 } from '@/lib/tools/usage';
 
 /**
@@ -77,4 +79,34 @@ export function useRecent(): RecentEntry[] {
   }, []);
 
   return recent;
+}
+
+/**
+ * 도구별 누적 사용 횟수.
+ */
+export function useUsageStats(): UsageStats {
+  const [stats, setStats] = useState<UsageStats>({});
+
+  useEffect(() => {
+    setStats(getUsageStats());
+
+    const onCustom = (e: Event) => {
+      const detail = (e as CustomEvent<UsageStats>).detail;
+      if (detail && typeof detail === 'object') setStats(detail);
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key && e.key.includes('stats')) {
+        setStats(getUsageStats());
+      }
+    };
+
+    window.addEventListener(USAGE_EVENTS.STATS, onCustom);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(USAGE_EVENTS.STATS, onCustom);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
+  return stats;
 }

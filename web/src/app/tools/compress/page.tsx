@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import {
   compressImage,
@@ -60,6 +61,7 @@ export default function CompressPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
   const [kind, setKind] = useState<FileKind>('unsupported');
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState<string>('');
@@ -110,9 +112,11 @@ export default function CompressPage() {
     });
     if (filtered.length === 0) {
       setError('폴더 안에 처리할 이미지·PDF 가 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
@@ -120,6 +124,7 @@ export default function CompressPage() {
     clearResult();
     setFile(null);
     setKind('unsupported');
+    setAllFolderFiles([]);
     setFolderFiles([]);
     setBatchResults(null);
     setError(null);
@@ -150,7 +155,7 @@ export default function CompressPage() {
   const runCompression = async () => {
     if (inputMode === 'folder') {
       if (folderFiles.length === 0) {
-        setError('폴더를 먼저 선택하세요.');
+        setError('처리할 파일을 선택하세요.');
         return;
       }
       setProcessing(true);
@@ -274,7 +279,7 @@ export default function CompressPage() {
             <Wand2 className="h-5 w-5" />
             <h1 className="font-semibold text-base">파일 용량 줄이기</h1>
           </div>
-          {(file || folderFiles.length > 0) && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -285,7 +290,7 @@ export default function CompressPage() {
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         {((inputMode === 'files' && !file) ||
-          (inputMode === 'folder' && folderFiles.length === 0)) && (
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
           <DualDropZone
             mode={inputMode}
             onModeChange={(m) => {
@@ -311,16 +316,17 @@ export default function CompressPage() {
           </div>
         )}
 
-        {inputMode === 'folder' && folderFiles.length > 0 && (
-          <div className="rounded-xl border bg-card p-4 space-y-2">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              폴더 — {folderFiles.length}개 · 루트:{' '}
-              <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-            </h2>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <>
+            <FolderPreviewPanel
+              files={allFolderFiles}
+              onSelectionChange={setFolderFiles}
+              fileKindLabel="파일"
+            />
             <p className="text-[11px] text-muted-foreground">
               이미지에는 이미지 설정, PDF 에는 PDF 설정이 자동으로 적용됩니다.
             </p>
-          </div>
+          </>
         )}
 
         {/* 파일 정보 + 설정 (파일 모드일 때만 단일 정보) */}
@@ -580,7 +586,7 @@ export default function CompressPage() {
         )}
 
         {/* 폴더 모드 옵션 패널 — 이미지·PDF 옵션 둘 다 노출 */}
-        {inputMode === 'folder' && folderFiles.length > 0 && (
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
           <div className="rounded-xl border bg-card p-4 space-y-4">
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">

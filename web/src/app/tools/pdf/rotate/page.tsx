@@ -14,7 +14,9 @@ import { degrees } from 'pdf-lib';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   allPages,
   isPdfFile,
@@ -25,17 +27,28 @@ import {
   triggerDownload,
 } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type Angle = 90 | 180 | 270;
 type TargetMode = 'all' | 'range';
 
 export default function PdfRotatePage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [pageCount, setPageCount] = useState(0);
   const [angle, setAngle] = useState<Angle>(90);
   const [targetMode, setTargetMode] = useState<TargetMode>('all');
   const [rangeSpec, setRangeSpec] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
     blob: Blob;
@@ -43,6 +56,7 @@ export default function PdfRotatePage() {
     originalSize: number;
     outputSize: number;
   } | null>(null);
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   const acceptFile = async (f: File) => {
     if (!isPdfFile(f)) {
@@ -61,20 +75,72 @@ export default function PdfRotatePage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, { extensions: ['.pdf'] });
+    if (filtered.length === 0) {
+      setError('폴더 안에 PDF 파일이 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setPageCount(0);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function rotateOne(srcFile: File): Promise<Blob> {
+    const doc = await loadPdfFromFile(srcFile);
+    const total = doc.getPageCount();
+    const targets = targetMode === 'all' ? allPages(total) : parsePageRanges(rangeSpec, total);
+    const pages = doc.getPages();
+    for (const p of targets) {
+      const page = pages[p - 1];
+      const current = page.getRotation().angle;
+      page.setRotation(degrees((current + angle) % 360));
+    }
+    return saveAsBlob(doc);
+  }
+
   const runRotate = async () => {
-    if (!file) return;
     setProcessing(true);
     setError(null);
     setResult(null);
+    setBatchResults(null);
 
     try {
+      if (inputMode === 'folder') {
+        if (folderFiles.length === 0) {
+          setError('처리할 파일을 선택하세요.');
+          return;
+        }
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await rotateOne(rf.file);
+            return { relativePath: rf.relativePath, blob };
+          },
+          {
+            concurrency: 2,
+            onProgress: (d, t, p) => setProgressText(`회전 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+        return;
+      }
+
+      if (!file) return;
       const doc = await loadPdfFromFile(file);
       const total = doc.getPageCount();
       const targets =
@@ -82,22 +148,13 @@ export default function PdfRotatePage() {
 
       if (targets.length === 0) {
         setError('회전 대상 페이지가 없습니다.');
-        setProcessing(false);
         return;
       }
 
-      const pages = doc.getPages();
-      for (const p of targets) {
-        const page = pages[p - 1];
-        const current = page.getRotation().angle;
-        page.setRotation(degrees((current + angle) % 360));
-      }
-
-      const blob = await saveAsBlob(doc);
-      const baseName = stripExtension(file.name);
+      const blob = await rotateOne(file);
       setResult({
         blob,
-        fileName: `${baseName}-rotated.pdf`,
+        fileName: `${stripExtension(file.name)}-rotated.pdf`,
         originalSize: file.size,
         outputSize: blob.size,
       });
@@ -105,6 +162,7 @@ export default function PdfRotatePage() {
       setError(err instanceof Error ? err.message : '회전 중 오류가 발생했습니다');
     } finally {
       setProcessing(false);
+      setProgressText('');
     }
   };
 
@@ -121,7 +179,7 @@ export default function PdfRotatePage() {
             <RotateCw className="h-5 w-5" />
             <h1 className="font-semibold text-base">PDF 회전</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -131,11 +189,24 @@ export default function PdfRotatePage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="application/pdf"
-            description="회전할 PDF 파일을 업로드하세요"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'application/pdf',
+              description: '회전할 PDF 파일을 업로드하세요',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'application/pdf',
+              description: '폴더 안 모든 PDF 에 같은 회전 각도를 적용합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
         )}
 
@@ -145,7 +216,57 @@ export default function PdfRotatePage() {
           </div>
         )}
 
-        {file && (
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="PDF"
+          />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <p className="text-[11px] text-muted-foreground">
+              선택한 PDF 의 {targetMode === 'all' ? '모든 페이지' : `지정 페이지 (${rangeSpec || '없음'})`} 에 {angle}° 회전 적용
+            </p>
+            <div>
+              <label className="text-xs font-medium mb-1.5 block">회전 각도</label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {([90, 180, 270] as const).map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    onClick={() => setAngle(a)}
+                    disabled={processing}
+                    className={`h-9 text-sm rounded-md border ${
+                      angle === a
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background hover:bg-muted border-border'
+                    }`}
+                  >
+                    {a}°
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <Button onClick={runRotate} disabled={processing} className="w-full">
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {progressText || '회전 중...'}
+                </>
+              ) : (
+                <>
+                  <RotateCw className="h-4 w-4" />
+                  폴더 일괄 회전 ({folderFiles.length}개)
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {file && inputMode === 'files' && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center gap-3">
               <FileText className="h-6 w-6 text-muted-foreground shrink-0" />
@@ -255,6 +376,15 @@ export default function PdfRotatePage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'rotated'}
+            zipFileName={`${commonRoot(folderFiles) || 'pdfs'}-rotated.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

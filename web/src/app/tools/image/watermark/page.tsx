@@ -17,6 +17,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
   detectFormatFromFile,
@@ -27,9 +30,19 @@ import {
 } from '@/lib/tools/image-common';
 import { triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type WmType = 'text' | 'image';
 type Position = 'center' | 'tl' | 'tr' | 'bl' | 'br';
+
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
 
 const POSITION_LABEL: Record<Position, string> = {
   center: '중앙',
@@ -40,7 +53,10 @@ const POSITION_LABEL: Record<Position, string> = {
 };
 
 export default function ImageWatermarkPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [loaded, setLoaded] = useState<LoadedImage | null>(null);
   const [wmType, setWmType] = useState<WmType>('text');
   const [text, setText] = useState('© SAMPLE');
@@ -55,10 +71,12 @@ export default function ImageWatermarkPage() {
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
   const [quality, setQuality] = useState(92);
   const [processing, setProcessing] = useState(false);
+  const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; fileName: string; previewUrl: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => () => loaded?.cleanup(), [loaded]);
   useEffect(() => () => wmImage?.cleanup(), [wmImage]);
@@ -76,6 +94,7 @@ export default function ImageWatermarkPage() {
     setError(null);
     if (result) URL.revokeObjectURL(result.previewUrl);
     setResult(null);
+    setBatchResults(null);
     loaded?.cleanup();
     try {
       const info = await loadImageFile(f);
@@ -109,37 +128,46 @@ export default function ImageWatermarkPage() {
     setWmImage(null);
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    if (result) URL.revokeObjectURL(result.previewUrl);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['image/'],
+      extensions: IMAGE_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 이미지가 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     loaded?.cleanup();
     wmImage?.cleanup();
     if (result) URL.revokeObjectURL(result.previewUrl);
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setLoaded(null);
     setWmImageFile(null);
     setWmImage(null);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
-  const runApply = async () => {
-    if (!file || !loaded) return;
-    if (wmType === 'text' && !text.trim()) {
-      setError('워터마크 텍스트를 입력하세요.');
-      return;
-    }
-    if (wmType === 'image' && !wmImage) {
-      setError('워터마크 이미지를 선택하세요.');
-      return;
-    }
-    setProcessing(true);
-    setError(null);
-    if (result) URL.revokeObjectURL(result.previewUrl);
-    setResult(null);
-
+  async function processOne(srcFile: File): Promise<Blob> {
+    const info = await loadImageFile(srcFile);
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = loaded.width;
-      canvas.height = loaded.height;
+      canvas.width = info.width;
+      canvas.height = info.height;
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas 컨텍스트를 생성할 수 없습니다');
 
@@ -147,7 +175,7 @@ export default function ImageWatermarkPage() {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
-      ctx.drawImage(loaded.element, 0, 0);
+      ctx.drawImage(info.element, 0, 0);
 
       ctx.save();
       ctx.globalAlpha = opacity / 100;
@@ -162,7 +190,14 @@ export default function ImageWatermarkPage() {
         const metrics = ctx.measureText(text);
         const textW = metrics.width;
         const textH = fontSize;
-        const { cx, cy } = computeCenter(position, canvas.width, canvas.height, textW, textH, margin);
+        const { cx, cy } = computeCenter(
+          position,
+          canvas.width,
+          canvas.height,
+          textW,
+          textH,
+          margin,
+        );
         ctx.translate(cx, cy);
         ctx.rotate((rotation * Math.PI) / 180);
         ctx.strokeText(text, -textW / 2, textH / 2);
@@ -172,7 +207,14 @@ export default function ImageWatermarkPage() {
         const ratio = baseDim / Math.max(wmImage.width, wmImage.height);
         const drawW = wmImage.width * ratio;
         const drawH = wmImage.height * ratio;
-        const { cx, cy } = computeCenter(position, canvas.width, canvas.height, drawW, drawH, margin);
+        const { cx, cy } = computeCenter(
+          position,
+          canvas.width,
+          canvas.height,
+          drawW,
+          drawH,
+          margin,
+        );
         ctx.translate(cx, cy);
         ctx.rotate((rotation * Math.PI) / 180);
         ctx.drawImage(wmImage.element, -drawW / 2, -drawH / 2, drawW, drawH);
@@ -180,7 +222,61 @@ export default function ImageWatermarkPage() {
 
       ctx.restore();
 
-      const blob = await canvasToBlob(canvas, outputFormat, quality / 100);
+      return await canvasToBlob(canvas, outputFormat, quality / 100);
+    } finally {
+      info.cleanup();
+    }
+  }
+
+  const runApply = async () => {
+    if (wmType === 'text' && !text.trim()) {
+      setError('워터마크 텍스트를 입력하세요.');
+      return;
+    }
+    if (wmType === 'image' && !wmImage) {
+      setError('워터마크 이미지를 선택하세요.');
+      return;
+    }
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setError(null);
+      setBatchResults(null);
+      const ext = formatExtension(outputFormat);
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await processOne(rf.file);
+            return { relativePath: replaceExtension(rf.relativePath, ext), blob };
+          },
+          {
+            concurrency: 2,
+            onProgress: (d, t, p) => setProgressText(`처리 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 처리 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+      }
+      return;
+    }
+
+    if (!file || !loaded) return;
+    setProcessing(true);
+    setError(null);
+    if (result) URL.revokeObjectURL(result.previewUrl);
+    setResult(null);
+
+    try {
+      const blob = await processOne(file);
       const newName = renameWithSuffix(file.name, '-watermarked', formatExtension(outputFormat));
       setResult({
         blob,
@@ -207,7 +303,7 @@ export default function ImageWatermarkPage() {
             <Stamp className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 워터마크</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -217,11 +313,24 @@ export default function ImageWatermarkPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="image/*"
-            description="워터마크를 넣을 이미지를 업로드하세요"
-            onFiles={(files) => acceptMain(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'image/*',
+              description: '워터마크를 넣을 이미지를 업로드하세요',
+              onFiles: (files) => acceptMain(files[0]),
+            }}
+            folderProps={{
+              accept: 'image/*',
+              description: '폴더 안 모든 이미지에 같은 워터마크를 일괄 적용합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
         )}
 
@@ -231,19 +340,32 @@ export default function ImageWatermarkPage() {
           </div>
         )}
 
-        {file && loaded && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatBytes(file.size)} · {loaded.width}×{loaded.height}
-                </p>
-              </div>
-            </div>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="이미지"
+          />
+        )}
 
-            <Separator />
+        {((file && loaded && inputMode === 'files') ||
+          (inputMode === 'folder' && allFolderFiles.length > 0)) && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            {inputMode === 'files' && file && loaded && (
+              <>
+                <div className="flex items-center gap-3">
+                  <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatBytes(file.size)} · {loaded.width}×{loaded.height}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+              </>
+            )}
 
             <div>
               <label className="text-xs font-medium mb-1.5 block">워터마크 타입</label>
@@ -484,12 +606,14 @@ export default function ImageWatermarkPage() {
               {processing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  적용 중...
+                  {progressText || '적용 중...'}
                 </>
               ) : (
                 <>
                   <Stamp className="h-4 w-4" />
-                  워터마크 적용
+                  {inputMode === 'folder'
+                    ? `폴더 일괄 적용 (${folderFiles.length}개)`
+                    : '워터마크 적용'}
                 </>
               )}
             </Button>
@@ -520,6 +644,15 @@ export default function ImageWatermarkPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'watermarked'}
+            zipFileName={`${commonRoot(folderFiles) || 'images'}-watermarked.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

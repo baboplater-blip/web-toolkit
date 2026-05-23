@@ -14,7 +14,9 @@ import { rgb, StandardFonts } from 'pdf-lib';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   allPages,
   isPdfFile,
@@ -25,6 +27,13 @@ import {
   triggerDownload,
 } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type Position = 'tl' | 'tc' | 'tr' | 'bl' | 'bc' | 'br';
 type FormatType = 'num' | 'num-total' | 'page-num' | 'page-num-total';
@@ -53,7 +62,10 @@ function formatNumber(type: FormatType, current: number, total: number): string 
 }
 
 export default function PageNumbersPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [pageCount, setPageCount] = useState(0);
   const [position, setPosition] = useState<Position>('bc');
   const [formatType, setFormatType] = useState<FormatType>('num-total');
@@ -63,10 +75,12 @@ export default function PageNumbersPage() {
   const [targetMode, setTargetMode] = useState<TargetMode>('all');
   const [rangeSpec, setRangeSpec] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; fileName: string; size: number } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   const acceptFile = async (f: File) => {
     if (!isPdfFile(f)) {
@@ -85,81 +99,130 @@ export default function PageNumbersPage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, { extensions: ['.pdf'] });
+    if (filtered.length === 0) {
+      setError('폴더 안에 PDF 파일이 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setPageCount(0);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function processOne(srcFile: File): Promise<Blob> {
+    const doc = await loadPdfFromFile(srcFile);
+    const total = doc.getPageCount();
+    const targets = targetMode === 'all' ? allPages(total) : parsePageRanges(rangeSpec, total);
+    if (targets.length === 0) {
+      throw new Error('페이지 번호를 삽입할 대상이 없습니다.');
+    }
+
+    const font = await doc.embedFont(StandardFonts.Helvetica);
+    const pages = doc.getPages();
+    const targetTotal = targets.length;
+
+    for (let i = 0; i < targets.length; i++) {
+      const pageIdx = targets[i] - 1;
+      const page = pages[pageIdx];
+      const { width: w, height: h } = page.getSize();
+      const currentNum = startNumber + i;
+      const text = formatNumber(formatType, currentNum, startNumber + targetTotal - 1);
+      const textWidth = font.widthOfTextAtSize(text, fontSize);
+
+      let x = margin;
+      let y = margin;
+      switch (position) {
+        case 'tl':
+          x = margin;
+          y = h - margin - fontSize;
+          break;
+        case 'tc':
+          x = (w - textWidth) / 2;
+          y = h - margin - fontSize;
+          break;
+        case 'tr':
+          x = w - margin - textWidth;
+          y = h - margin - fontSize;
+          break;
+        case 'bl':
+          x = margin;
+          y = margin;
+          break;
+        case 'bc':
+          x = (w - textWidth) / 2;
+          y = margin;
+          break;
+        case 'br':
+          x = w - margin - textWidth;
+          y = margin;
+          break;
+      }
+
+      page.drawText(text, {
+        x,
+        y,
+        size: fontSize,
+        font,
+        color: rgb(0, 0, 0),
+      });
+    }
+
+    return saveAsBlob(doc);
+  }
+
   const runApply = async () => {
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setError(null);
+      setBatchResults(null);
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await processOne(rf.file);
+            return { relativePath: rf.relativePath, blob };
+          },
+          {
+            concurrency: 2,
+            onProgress: (d, t, p) => setProgressText(`처리 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 처리 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+      }
+      return;
+    }
+
     if (!file) return;
     setProcessing(true);
     setError(null);
     setResult(null);
 
     try {
-      const doc = await loadPdfFromFile(file);
-      const total = doc.getPageCount();
-      const targets =
-        targetMode === 'all' ? allPages(total) : parsePageRanges(rangeSpec, total);
-      if (targets.length === 0) {
-        setError('페이지 번호를 삽입할 대상이 없습니다.');
-        setProcessing(false);
-        return;
-      }
-
-      const font = await doc.embedFont(StandardFonts.Helvetica);
-      const pages = doc.getPages();
-      const targetTotal = targets.length;
-
-      for (let i = 0; i < targets.length; i++) {
-        const pageIdx = targets[i] - 1;
-        const page = pages[pageIdx];
-        const { width: w, height: h } = page.getSize();
-        const currentNum = startNumber + i;
-        const text = formatNumber(formatType, currentNum, startNumber + targetTotal - 1);
-        const textWidth = font.widthOfTextAtSize(text, fontSize);
-
-        let x = margin;
-        let y = margin;
-        switch (position) {
-          case 'tl':
-            x = margin;
-            y = h - margin - fontSize;
-            break;
-          case 'tc':
-            x = (w - textWidth) / 2;
-            y = h - margin - fontSize;
-            break;
-          case 'tr':
-            x = w - margin - textWidth;
-            y = h - margin - fontSize;
-            break;
-          case 'bl':
-            x = margin;
-            y = margin;
-            break;
-          case 'bc':
-            x = (w - textWidth) / 2;
-            y = margin;
-            break;
-          case 'br':
-            x = w - margin - textWidth;
-            y = margin;
-            break;
-        }
-
-        page.drawText(text, {
-          x,
-          y,
-          size: fontSize,
-          font,
-          color: rgb(0, 0, 0),
-        });
-      }
-
-      const blob = await saveAsBlob(doc);
+      const blob = await processOne(file);
       const baseName = stripExtension(file.name);
       setResult({
         blob,
@@ -186,7 +249,7 @@ export default function PageNumbersPage() {
             <Layers className="h-5 w-5" />
             <h1 className="font-semibold text-base">PDF 페이지 번호</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -196,11 +259,24 @@ export default function PageNumbersPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="application/pdf"
-            description="페이지 번호를 삽입할 PDF 를 업로드하세요"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'application/pdf',
+              description: '페이지 번호를 삽입할 PDF 를 업로드하세요',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'application/pdf',
+              description: '폴더 안 모든 PDF 에 페이지 번호를 일괄 삽입합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
         )}
 
@@ -210,19 +286,32 @@ export default function PageNumbersPage() {
           </div>
         )}
 
-        {file && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <FileText className="h-6 w-6 text-muted-foreground shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatBytes(file.size)} · {pageCount}페이지
-                </p>
-              </div>
-            </div>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="PDF"
+          />
+        )}
 
-            <Separator />
+        {((file && inputMode === 'files') ||
+          (inputMode === 'folder' && allFolderFiles.length > 0)) && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            {inputMode === 'files' && file && (
+              <>
+                <div className="flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatBytes(file.size)} · {pageCount}페이지
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+              </>
+            )}
 
             <div>
               <label className="text-xs font-medium mb-1.5 block">위치</label>
@@ -361,7 +450,9 @@ export default function PageNumbersPage() {
                   type="text"
                   value={rangeSpec}
                   onChange={(e) => setRangeSpec(e.target.value)}
-                  placeholder="예: 2-10"
+                  placeholder={
+                    inputMode === 'folder' ? '예: 2-10 (모든 PDF 에 동일 적용)' : '예: 2-10'
+                  }
                   disabled={processing}
                   className="h-9 mt-2"
                 />
@@ -374,12 +465,14 @@ export default function PageNumbersPage() {
               {processing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  삽입 중...
+                  {progressText || '삽입 중...'}
                 </>
               ) : (
                 <>
                   <Layers className="h-4 w-4" />
-                  페이지 번호 삽입
+                  {inputMode === 'folder'
+                    ? `폴더 일괄 삽입 (${folderFiles.length}개)`
+                    : '페이지 번호 삽입'}
                 </>
               )}
             </Button>
@@ -402,6 +495,15 @@ export default function PageNumbersPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'numbered'}
+            zipFileName={`${commonRoot(folderFiles) || 'pdfs'}-numbered.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

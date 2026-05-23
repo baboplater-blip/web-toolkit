@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
   detectFormatFromFile,
@@ -43,6 +44,7 @@ export default function ImageResizePage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
   const [loaded, setLoaded] = useState<LoadedImage | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [mode, setMode] = useState<Mode>('pixel');
   const [targetW, setTargetW] = useState(1920);
@@ -98,9 +100,11 @@ export default function ImageResizePage() {
     });
     if (filtered.length === 0) {
       setError('폴더 안에 처리할 이미지가 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
@@ -108,6 +112,7 @@ export default function ImageResizePage() {
     loaded?.cleanup();
     setFile(null);
     setLoaded(null);
+    setAllFolderFiles([]);
     setFolderFiles([]);
     setResult(null);
     setBatchResults(null);
@@ -195,7 +200,7 @@ export default function ImageResizePage() {
   const runResize = async () => {
     if (inputMode === 'folder') {
       if (folderFiles.length === 0) {
-        setError('폴더를 먼저 선택하세요.');
+        setError('처리할 파일을 선택하세요.');
         return;
       }
       setProcessing(true);
@@ -331,7 +336,7 @@ export default function ImageResizePage() {
             <Maximize2 className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 리사이즈</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -342,7 +347,7 @@ export default function ImageResizePage() {
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         {((inputMode === 'files' && !file) ||
-          (inputMode === 'folder' && folderFiles.length === 0)) && (
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
           <DualDropZone
             mode={inputMode}
             onModeChange={(m) => {
@@ -368,20 +373,16 @@ export default function ImageResizePage() {
           </div>
         )}
 
-        {inputMode === 'folder' && folderFiles.length > 0 && (
-          <div className="rounded-xl border bg-card p-4 space-y-2">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              폴더 — {folderFiles.length}개 이미지
-            </h2>
-            <p className="text-[11px] text-muted-foreground">
-              루트: <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span> ·
-              비율 유지 픽셀 모드는 가로(targetW) 기준으로 모든 이미지에 적용됩니다.
-            </p>
-          </div>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="이미지"
+          />
         )}
 
         {((inputMode === 'files' && file && loaded) ||
-          (inputMode === 'folder' && folderFiles.length > 0)) && (
+          (inputMode === 'folder' && allFolderFiles.length > 0)) && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             {inputMode === 'files' && file && loaded && (
               <>

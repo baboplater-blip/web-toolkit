@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, FileImage } from 'lucide-react';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import {
@@ -51,6 +52,7 @@ async function svgFileToPng(
 export default function SvgToPngPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [scale, setScale] = useState(2);
   const [bg, setBg] = useState<'transparent' | 'white'>('transparent');
@@ -72,9 +74,11 @@ export default function SvgToPngPage() {
     const filtered = filterFiles(files, { extensions: ['.svg'] });
     if (filtered.length === 0) {
       setError('폴더 안에 SVG 파일이 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
@@ -85,7 +89,7 @@ export default function SvgToPngPage() {
 
     if (inputMode === 'folder') {
       if (folderFiles.length === 0) {
-        setError('폴더를 먼저 선택하세요.');
+        setError('처리할 파일을 선택하세요.');
         return;
       }
       setBusy(true);
@@ -165,11 +169,12 @@ export default function SvgToPngPage() {
         }}
       />
 
-      {inputMode === 'folder' && folderFiles.length > 0 && (
-        <div className="rounded-xl border bg-card p-3 text-xs text-muted-foreground">
-          폴더 — {folderFiles.length}개 SVG · 루트:{' '}
-          <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-        </div>
+      {inputMode === 'folder' && allFolderFiles.length > 0 && (
+        <FolderPreviewPanel
+          files={allFolderFiles}
+          onSelectionChange={setFolderFiles}
+          fileKindLabel="이미지"
+        />
       )}
 
       <div className="space-y-2 rounded-xl border bg-card p-4">

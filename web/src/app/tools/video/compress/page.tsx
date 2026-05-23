@@ -12,7 +12,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   cleanupFiles,
   getFFmpeg,
@@ -22,6 +24,16 @@ import {
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
 import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+const VIDEO_EXTS = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v', '.flv', '.wmv'];
 
 type Preset = 'high' | 'medium' | 'low' | 'custom';
 
@@ -33,7 +45,10 @@ const PRESETS: Record<Exclude<Preset, 'custom'>, { crf: number; maxHeight: numbe
   };
 
 export default function VideoCompressPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [meta, setMeta] = useState<{ duration: number; width: number; height: number } | null>(
     null,
@@ -48,6 +63,7 @@ export default function VideoCompressPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => {
     return () => {
@@ -87,74 +103,148 @@ export default function VideoCompressPage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['video/'],
+      extensions: VIDEO_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 비디오 파일이 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setPreviewUrl(null);
     setMeta(null);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  /**
+   * 폴더 모드에서는 파일별로 probe 비용을 피하기 위해 ffmpeg expression 으로
+   * "원본보다 작을 때만 다운스케일" 을 표현 — 업스케일을 막아 원본 화질을 보존.
+   * 단일 모드에서는 meta 정보를 활용해 필요 없으면 scale 자체를 생략.
+   */
+  async function processOne(srcFile: File, opts: { useExpressionScale: boolean }): Promise<Blob> {
+    const ext = 'mp4'; // H.264 재인코딩은 MP4 컨테이너로 통일
+    const inputName = `input.${srcFile.name.split('.').pop() ?? 'mp4'}`;
+    const outputName = `output.${ext}`;
+    const ffmpeg = await getFFmpeg();
+    try {
+      await writeFile(ffmpeg, inputName, srcFile);
+
+      const args: string[] = ['-i', inputName];
+
+      if (opts.useExpressionScale) {
+        // 입력 높이가 maxHeight 보다 크면 maxHeight 로 다운, 아니면 원본 유지.
+        // 가로는 -2 로 짝수 정렬해 비율 유지.
+        args.push('-vf', `scale='trunc(iw*min(1,${maxHeight}/ih)/2)*2':'min(${maxHeight},ih)'`);
+      } else {
+        // 단일 모드 — meta 가 있다는 가정
+        if (meta && meta.height > maxHeight) {
+          args.push('-vf', `scale=-2:${maxHeight}`);
+        }
+      }
+
+      args.push(
+        '-c:v',
+        'libx264',
+        '-preset',
+        'veryfast',
+        '-crf',
+        String(crf),
+        '-c:a',
+        'aac',
+        '-b:a',
+        '128k',
+        '-movflags',
+        '+faststart',
+        '-y',
+        outputName,
+      );
+
+      await ffmpeg.exec(args);
+      return await readOutput(ffmpeg, outputName, 'video/mp4');
+    } finally {
+      await cleanupFiles(ffmpeg, [inputName, outputName]);
+    }
+  }
+
   const runCompress = async () => {
+    setError(null);
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setBatchResults(null);
+      setProgress(0);
+      setProgressText('FFmpeg 로드 중');
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await processOne(rf.file, { useExpressionScale: true });
+            // 출력 컨테이너는 항상 mp4 — 확장자 교체
+            return { relativePath: replaceExtension(rf.relativePath, 'mp4'), blob };
+          },
+          {
+            concurrency: 1,
+            onProgress: (d, t, p) => setProgressText(`압축 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 압축 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+        setProgress(0);
+      }
+      return;
+    }
+
     if (!file || !meta) return;
     setProcessing(true);
-    setError(null);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
     setProgressText('FFmpeg 로드 중');
 
-    const ext = 'mp4'; // H.264 재인코딩은 MP4 컨테이너로 통일
-    const inputName = `input.${file.name.split('.').pop() ?? 'mp4'}`;
-    const outputName = `output.${ext}`;
     try {
       const ffmpeg = await getFFmpeg();
-      const onProgress = ({ progress }: { progress: number }) => {
-        if (Number.isFinite(progress)) {
-          setProgress(Math.max(0, Math.min(100, Math.round(progress * 100))));
+      const onFfProgress = ({ progress: p }: { progress: number }) => {
+        if (Number.isFinite(p)) {
+          setProgress(Math.max(0, Math.min(100, Math.round(p * 100))));
         }
       };
-      ffmpeg.on('progress', onProgress);
+      ffmpeg.on('progress', onFfProgress);
       try {
-        await writeFile(ffmpeg, inputName, file);
-
-        // 다운스케일이 필요할 때만 scale 필터 적용
-        const needsScale = meta.height > maxHeight;
-        const scaleFilter = needsScale ? `scale=-2:${maxHeight}` : null;
-
-        const args: string[] = ['-i', inputName];
-        if (scaleFilter) args.push('-vf', scaleFilter);
-        args.push(
-          '-c:v',
-          'libx264',
-          '-preset',
-          'veryfast',
-          '-crf',
-          String(crf),
-          '-c:a',
-          'aac',
-          '-b:a',
-          '128k',
-          '-movflags',
-          '+faststart',
-          '-y',
-          outputName,
-        );
-
         setProgressText('압축 중');
-        await ffmpeg.exec(args);
-
-        const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
+        const blob = await processOne(file, { useExpressionScale: false });
         setResult({
           blob,
           url: URL.createObjectURL(blob),
           fileName: renameWithSuffix(stripExtension(file.name) + '.mp4', '-compressed', 'mp4'),
         });
       } finally {
-        ffmpeg.off('progress', onProgress);
-        await cleanupFiles(ffmpeg, [inputName, outputName]);
+        ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '압축 실패');
@@ -166,6 +256,79 @@ export default function VideoCompressPage() {
   };
 
   const reduction = result && file ? compressionRatio(file.size, result.blob.size) : 0;
+
+  const optionsBlock = (
+    <>
+      <div>
+        <label className="text-xs font-medium mb-1.5 block">프리셋</label>
+        <div className="grid grid-cols-4 gap-1.5">
+          {(['high', 'medium', 'low', 'custom'] as const).map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => applyPreset(p)}
+              disabled={processing}
+              className={`h-9 text-xs rounded-md border ${
+                preset === p
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background hover:bg-muted border-border'
+              } disabled:opacity-50`}
+            >
+              {p === 'custom' ? '사용자 정의' : PRESETS[p].label.split(' ')[0]}
+            </button>
+          ))}
+        </div>
+        {preset !== 'custom' && (
+          <p className="text-[10px] text-muted-foreground mt-1">{PRESETS[preset].label}</p>
+        )}
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-medium">품질 (CRF)</label>
+          <span className="text-xs text-muted-foreground">
+            {crf} ({crf <= 22 ? '고품질' : crf <= 28 ? '보통' : '저품질'})
+          </span>
+        </div>
+        <input
+          type="range"
+          min={18}
+          max={34}
+          step={1}
+          value={crf}
+          onChange={(e) => {
+            setCrf(Number(e.target.value));
+            setPreset('custom');
+          }}
+          disabled={processing}
+          className="w-full accent-primary"
+        />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-medium">최대 세로 해상도</label>
+          <span className="text-xs text-muted-foreground">{maxHeight}p</span>
+        </div>
+        <input
+          type="range"
+          min={240}
+          max={1080}
+          step={60}
+          value={maxHeight}
+          onChange={(e) => {
+            setMaxHeight(Number(e.target.value));
+            setPreset('custom');
+          }}
+          disabled={processing}
+          className="w-full accent-primary"
+        />
+        <p className="text-[10px] text-muted-foreground mt-1">
+          원본이 더 작으면 다운스케일 없이 진행
+        </p>
+      </div>
+    </>
+  );
 
   return (
     <div className="min-h-dvh bg-background">
@@ -180,7 +343,7 @@ export default function VideoCompressPage() {
             <Archive className="h-5 w-5" />
             <h1 className="font-semibold text-base">비디오 압축</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -190,12 +353,59 @@ export default function VideoCompressPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="video/*"
-            description="해상도·품질을 조정해 비디오 용량을 줄입니다"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'video/*',
+              description: '해상도·품질을 조정해 비디오 용량을 줄입니다',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'video/*',
+              description: '폴더 안 모든 비디오를 같은 설정으로 일괄 압축합니다. (모두 MP4 출력)',
+              onFolder: onFolderPicked,
+            }}
           />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="비디오"
+          />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <p className="text-[11px] text-muted-foreground">
+              같은 옵션으로 모든 파일을 일괄 처리합니다. 출력은 모두 MP4 (H.264/AAC).
+            </p>
+
+            {optionsBlock}
+
+            <Separator />
+
+            <Button onClick={runCompress} disabled={processing} className="w-full">
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {progressText || '압축 중...'}
+                </>
+              ) : (
+                <>
+                  <Archive className="h-4 w-4" />
+                  폴더 일괄 압축 ({folderFiles.length}개)
+                </>
+              )}
+            </Button>
+          </div>
         )}
 
         {error && (
@@ -204,7 +414,7 @@ export default function VideoCompressPage() {
           </div>
         )}
 
-        {file && previewUrl && meta && (
+        {inputMode === 'files' && file && previewUrl && meta && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center gap-3">
               <FileVideo className="h-6 w-6 text-muted-foreground shrink-0" />
@@ -224,74 +434,7 @@ export default function VideoCompressPage() {
 
             <Separator />
 
-            <div>
-              <label className="text-xs font-medium mb-1.5 block">프리셋</label>
-              <div className="grid grid-cols-4 gap-1.5">
-                {(['high', 'medium', 'low', 'custom'] as const).map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => applyPreset(p)}
-                    disabled={processing}
-                    className={`h-9 text-xs rounded-md border ${
-                      preset === p
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background hover:bg-muted border-border'
-                    } disabled:opacity-50`}
-                  >
-                    {p === 'custom' ? '사용자 정의' : PRESETS[p].label.split(' ')[0]}
-                  </button>
-                ))}
-              </div>
-              {preset !== 'custom' && (
-                <p className="text-[10px] text-muted-foreground mt-1">{PRESETS[preset].label}</p>
-              )}
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium">품질 (CRF)</label>
-                <span className="text-xs text-muted-foreground">
-                  {crf} ({crf <= 22 ? '고품질' : crf <= 28 ? '보통' : '저품질'})
-                </span>
-              </div>
-              <input
-                type="range"
-                min={18}
-                max={34}
-                step={1}
-                value={crf}
-                onChange={(e) => {
-                  setCrf(Number(e.target.value));
-                  setPreset('custom');
-                }}
-                disabled={processing}
-                className="w-full accent-primary"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium">최대 세로 해상도</label>
-                <span className="text-xs text-muted-foreground">{maxHeight}p</span>
-              </div>
-              <input
-                type="range"
-                min={240}
-                max={1080}
-                step={60}
-                value={maxHeight}
-                onChange={(e) => {
-                  setMaxHeight(Number(e.target.value));
-                  setPreset('custom');
-                }}
-                disabled={processing}
-                className="w-full accent-primary"
-              />
-              <p className="text-[10px] text-muted-foreground mt-1">
-                원본이 더 작으면 다운스케일 없이 진행
-              </p>
-            </div>
+            {optionsBlock}
 
             {processing && (
               <div>
@@ -354,6 +497,15 @@ export default function VideoCompressPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'compressed'}
+            zipFileName={`${commonRoot(folderFiles) || 'video'}-compressed.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

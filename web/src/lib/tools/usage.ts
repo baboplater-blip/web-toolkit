@@ -9,10 +9,12 @@
 
 const FAVS_KEY = 'webtoolkit/favorites/v1';
 const RECENT_KEY = 'webtoolkit/recent/v1';
+const STATS_KEY = 'webtoolkit/stats/v1';
 const RECENT_LIMIT = 12;
 
 const FAVS_EVENT = 'webtoolkit:favorites';
 const RECENT_EVENT = 'webtoolkit:recent';
+const STATS_EVENT = 'webtoolkit:stats';
 
 export interface RecentEntry {
   id: string;
@@ -70,6 +72,7 @@ export function recordRecent(id: string): RecentEntry[] {
   const next = [{ id, ts: now }, ...existing].slice(0, RECENT_LIMIT);
   localStorage.setItem(RECENT_KEY, JSON.stringify(next));
   emit(RECENT_EVENT, next);
+  incrementUsage(id);
   return next;
 }
 
@@ -79,9 +82,41 @@ export function clearRecent(): void {
   emit(RECENT_EVENT, []);
 }
 
+/* ---------- usage stats (도구별 사용 횟수) ---------- */
+
+export type UsageStats = Record<string, number>;
+
+export function getUsageStats(): UsageStats {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(STATS_KEY);
+    if (!raw) return {};
+    const v = JSON.parse(raw);
+    return typeof v === 'object' && v !== null ? (v as UsageStats) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function incrementUsage(id: string): UsageStats {
+  if (typeof window === 'undefined') return {};
+  const stats = getUsageStats();
+  stats[id] = (stats[id] ?? 0) + 1;
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  emit(STATS_EVENT, stats);
+  return stats;
+}
+
+export function clearUsageStats(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(STATS_KEY);
+  emit(STATS_EVENT, {});
+}
+
 /* ---------- event names (hooks 에서 재사용) ---------- */
 
 export const USAGE_EVENTS = {
   FAVORITES: FAVS_EVENT,
   RECENT: RECENT_EVENT,
+  STATS: STATS_EVENT,
 } as const;

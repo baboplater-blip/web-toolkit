@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   cleanupFiles,
   getFFmpeg,
@@ -46,6 +47,7 @@ const PRESETS: Record<Exclude<Preset, 'custom'>, { bitrate: number; sampleRate: 
 export default function AudioCompressPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
@@ -115,9 +117,11 @@ export default function AudioCompressPage() {
     });
     if (filtered.length === 0) {
       setError('폴더 안에 오디오 파일이 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
@@ -125,6 +129,7 @@ export default function AudioCompressPage() {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
+    setAllFolderFiles([]);
     setFolderFiles([]);
     setPreviewUrl(null);
     setDuration(null);
@@ -171,7 +176,7 @@ export default function AudioCompressPage() {
     try {
       if (inputMode === 'folder') {
         if (folderFiles.length === 0) {
-          setError('폴더를 먼저 선택하세요.');
+          setError('처리할 파일을 선택하세요.');
           return;
         }
         const results = await runBatch(
@@ -232,7 +237,7 @@ export default function AudioCompressPage() {
             <Archive className="h-5 w-5" />
             <h1 className="font-semibold text-base">오디오 압축</h1>
           </div>
-          {(file || folderFiles.length > 0) && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -243,7 +248,7 @@ export default function AudioCompressPage() {
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         {((inputMode === 'files' && !file) ||
-          (inputMode === 'folder' && folderFiles.length === 0)) && (
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
           <DualDropZone
             mode={inputMode}
             onModeChange={(m) => {
@@ -263,13 +268,16 @@ export default function AudioCompressPage() {
           />
         )}
 
-        {inputMode === 'folder' && folderFiles.length > 0 && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              폴더 — {folderFiles.length}개 오디오 · 루트:{' '}
-              <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-            </h2>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="오디오"
+          />
+        )}
 
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
             <div>
               <label className="text-xs font-medium mb-1.5 block">프리셋</label>
               <div className="grid grid-cols-4 gap-1.5">

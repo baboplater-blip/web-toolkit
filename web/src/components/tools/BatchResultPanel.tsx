@@ -8,12 +8,19 @@ import {
   Download,
   FolderDown,
   Loader2,
+  Pencil,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
-import type { BatchOutput } from '@/lib/tools/folder-batch';
+import {
+  appendSuffix,
+  basename,
+  dirname,
+  type BatchOutput,
+} from '@/lib/tools/folder-batch';
 import { buildZip } from '@/lib/tools/zip-builder';
 import {
   isFsAccessSupported,
@@ -27,8 +34,57 @@ export interface BatchResultPanelProps {
   zipRootName?: string;
   /** 다운로드 ZIP 파일명 */
   zipFileName?: string;
-  /** 부가 통계 노출 (입력 대비 출력 크기 등) */
+  /** 부가 통계 노출 */
   totalInputSize?: number;
+}
+
+interface RenameRules {
+  prefix: string;
+  suffix: string;
+  findPattern: string;
+  replaceWith: string;
+  useRegex: boolean;
+}
+
+const DEFAULT_RULES: RenameRules = {
+  prefix: '',
+  suffix: '',
+  findPattern: '',
+  replaceWith: '',
+  useRegex: false,
+};
+
+function applyRename(relativePath: string, rules: RenameRules): string {
+  const dir = dirname(relativePath);
+  let name = basename(relativePath);
+
+  // find/replace 는 파일명에만 적용 (경로 제외)
+  if (rules.findPattern) {
+    try {
+      if (rules.useRegex) {
+        const re = new RegExp(rules.findPattern, 'g');
+        name = name.replace(re, rules.replaceWith);
+      } else {
+        name = name.split(rules.findPattern).join(rules.replaceWith);
+      }
+    } catch {
+      /* 잘못된 정규식이면 원본 유지 */
+    }
+  }
+
+  // prefix/suffix 는 확장자 앞에 적용
+  if (rules.prefix || rules.suffix) {
+    const dotIdx = name.lastIndexOf('.');
+    if (dotIdx > 0) {
+      const base = name.slice(0, dotIdx);
+      const ext = name.slice(dotIdx);
+      name = `${rules.prefix}${base}${rules.suffix}${ext}`;
+    } else {
+      name = `${rules.prefix}${name}${rules.suffix}`;
+    }
+  }
+
+  return dir ? `${dir}/${name}` : name;
 }
 
 export function BatchResultPanel({
@@ -45,11 +101,20 @@ export function BatchResultPanel({
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveDone, setSaveDone] = useState<number | null>(null);
+  const [showRename, setShowRename] = useState(false);
+  const [rules, setRules] = useState<RenameRules>(DEFAULT_RULES);
 
   const okResults = useMemo(() => results.filter((r) => !r.error), [results]);
   const errCount = results.length - okResults.length;
   const totalOutputSize = okResults.reduce((s, r) => s + r.blob.size, 0);
   const fsSupported = isFsAccessSupported();
+
+  const hasRenameRules =
+    !!rules.prefix || !!rules.suffix || !!rules.findPattern;
+
+  /** 규칙 적용된 출력 경로 */
+  const renamedPath = (r: BatchOutput): string =>
+    hasRenameRules ? applyRename(r.relativePath, rules) : r.relativePath;
 
   const toggle = (i: number) => {
     setSelected((prev) => {
@@ -66,8 +131,8 @@ export function BatchResultPanel({
     for (const i of selected) {
       const r = results[i];
       if (r.error) continue;
-      const baseName = r.relativePath.split('/').pop() || 'file';
-      triggerDownload(r.blob, baseName);
+      const name = basename(renamedPath(r));
+      triggerDownload(r.blob, name);
     }
   };
 
@@ -75,7 +140,12 @@ export function BatchResultPanel({
     setZipping(true);
     setZipProgress(0);
     try {
-      const filtered = [...selected].sort().map((i) => results[i]);
+      const filtered = [...selected]
+        .sort()
+        .map((i) => results[i])
+        .map((r) =>
+          hasRenameRules ? ({ ...r, relativePath: renamedPath(r) } as BatchOutput) : r,
+        );
       const blob = await buildZip(filtered, {
         rootName: zipRootName,
         onProgress: setZipProgress,
@@ -101,7 +171,7 @@ export function BatchResultPanel({
       const filtered = [...selected].sort().map((i) => results[i]);
       for (const r of filtered) {
         if (r.error) continue;
-        await writeFileToDirectory(dir, r.relativePath, r.blob);
+        await writeFileToDirectory(dir, renamedPath(r), r.blob);
         count++;
       }
       setSaveDone(count);
@@ -111,6 +181,9 @@ export function BatchResultPanel({
       setSaving(false);
     }
   };
+
+  // appendSuffix import 보존 (간단 사용 안 함 — 미사용 경고 방지)
+  void appendSuffix;
 
   return (
     <div className="rounded-xl border bg-card p-3 space-y-3">
@@ -125,6 +198,19 @@ export function BatchResultPanel({
           )}
         </h2>
         <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setShowRename((v) => !v)}
+            className={`h-7 px-2 text-[10px] inline-flex items-center gap-1 rounded border ${
+              showRename || hasRenameRules
+                ? 'bg-primary/10 border-primary/40 text-foreground'
+                : 'bg-background hover:bg-muted border-border'
+            }`}
+            aria-pressed={showRename}
+          >
+            <Pencil className="h-3 w-3" />
+            이름 규칙{hasRenameRules ? ' (적용 중)' : ''}
+          </button>
           <Button variant="ghost" size="sm" className="h-7 text-[10px]" onClick={selectAll}>
             전체
           </Button>
@@ -133,6 +219,70 @@ export function BatchResultPanel({
           </Button>
         </div>
       </div>
+
+      {showRename && (
+        <div className="rounded-lg border bg-background/40 p-2.5 space-y-2">
+          <p className="text-[11px] font-medium text-muted-foreground">
+            출력 파일명 규칙 (선택된 파일에만 적용)
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="text-[10px] text-muted-foreground">접두사</label>
+              <Input
+                value={rules.prefix}
+                onChange={(e) => setRules({ ...rules, prefix: e.target.value })}
+                placeholder="예: 2026_"
+                className="h-7 text-xs"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground">접미사 (확장자 앞)</label>
+              <Input
+                value={rules.suffix}
+                onChange={(e) => setRules({ ...rules, suffix: e.target.value })}
+                placeholder="예: -final"
+                className="h-7 text-xs"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground">찾기 (파일명만)</label>
+              <Input
+                value={rules.findPattern}
+                onChange={(e) => setRules({ ...rules, findPattern: e.target.value })}
+                placeholder="예: IMG_"
+                className="h-7 text-xs font-mono"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground">바꿀 문자열</label>
+              <Input
+                value={rules.replaceWith}
+                onChange={(e) => setRules({ ...rules, replaceWith: e.target.value })}
+                placeholder="비우면 제거"
+                className="h-7 text-xs font-mono"
+              />
+            </div>
+          </div>
+          <label className="flex items-center gap-1.5 text-[10px] cursor-pointer">
+            <input
+              type="checkbox"
+              checked={rules.useRegex}
+              onChange={(e) => setRules({ ...rules, useRegex: e.target.checked })}
+              className="h-3 w-3"
+            />
+            정규식 사용 (캡처 그룹 {'$1·$2'} 지원)
+          </label>
+          {hasRenameRules && (
+            <button
+              type="button"
+              onClick={() => setRules(DEFAULT_RULES)}
+              className="text-[10px] text-muted-foreground hover:text-foreground underline underline-offset-2"
+            >
+              규칙 초기화
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="text-[11px] text-muted-foreground flex flex-wrap gap-x-3">
         <span>선택: {selected.size}개</span>
@@ -147,6 +297,8 @@ export function BatchResultPanel({
       <ul className="max-h-72 overflow-y-auto space-y-0.5 rounded-lg border bg-background/40 p-1">
         {results.map((r, i) => {
           const isSelected = selected.has(i);
+          const finalPath = renamedPath(r);
+          const changed = hasRenameRules && finalPath !== r.relativePath;
           return (
             <li
               key={`${r.relativePath}-${i}`}
@@ -171,8 +323,14 @@ export function BatchResultPanel({
               ) : (
                 <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />
               )}
-              <span className="flex-1 truncate font-mono text-[11px]" title={r.relativePath}>
-                {r.relativePath}
+              <span
+                className="flex-1 truncate font-mono text-[11px]"
+                title={changed ? `${r.relativePath} → ${finalPath}` : r.relativePath}
+              >
+                {finalPath}
+                {changed && (
+                  <span className="text-muted-foreground"> ← {r.relativePath}</span>
+                )}
               </span>
               <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
                 {r.error ? r.error : formatBytes(r.blob.size)}
@@ -180,12 +338,9 @@ export function BatchResultPanel({
               {!r.error && (
                 <button
                   type="button"
-                  onClick={() => {
-                    const name = r.relativePath.split('/').pop() || 'file';
-                    triggerDownload(r.blob, name);
-                  }}
+                  onClick={() => triggerDownload(r.blob, basename(finalPath))}
                   className="h-5 w-5 shrink-0 flex items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
-                  aria-label={`${r.relativePath} 다운로드`}
+                  aria-label={`${finalPath} 다운로드`}
                 >
                   <Download className="h-3 w-3" />
                 </button>

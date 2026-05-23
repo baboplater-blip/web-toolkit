@@ -12,14 +12,29 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type Quality = 'fast' | 'medium' | 'high';
 
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
+
 export default function RemoveBackgroundPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [quality, setQuality] = useState<Quality>('medium');
   const [processing, setProcessing] = useState(false);
@@ -29,6 +44,7 @@ export default function RemoveBackgroundPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => {
     return () => {
@@ -46,8 +62,28 @@ export default function RemoveBackgroundPage() {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
+    setBatchResults(null);
     setFile(f);
     setPreviewUrl(URL.createObjectURL(f));
+  };
+
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    if (result) URL.revokeObjectURL(result.url);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['image/'],
+      extensions: IMAGE_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 이미지가 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
   };
 
   const reset = () => {
@@ -55,14 +91,63 @@ export default function RemoveBackgroundPage() {
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
     setPreviewUrl(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function processOne(srcFile: File): Promise<Blob> {
+    const { removeBackground } = await import('@imgly/background-removal');
+    return await removeBackground(srcFile, {
+      model:
+        quality === 'fast'
+          ? 'isnet_fp16'
+          : quality === 'high'
+            ? 'isnet'
+            : 'isnet_quint8',
+      output: { format: 'image/png', quality: 0.9 },
+    });
+  }
+
   const runRemove = async () => {
-    if (!file) return;
-    setProcessing(true);
     setError(null);
+    setBatchResults(null);
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await processOne(rf.file);
+            return { relativePath: replaceExtension(rf.relativePath, 'png'), blob };
+          },
+          {
+            concurrency: 1,
+            onProgress: (d, t, p) => setProgressText(`처리 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 처리 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+      }
+      return;
+    }
+
+    if (!file) {
+      setError('이미지 파일을 선택해주세요.');
+      return;
+    }
+    setProcessing(true);
     setResult(null);
     setProgress(0);
     setProgressText('AI 모델 로드 중 (최초 실행 시 ~40MB)');
@@ -96,6 +181,9 @@ export default function RemoveBackgroundPage() {
     }
   };
 
+  const folderInputSize = folderFiles.reduce((s, f) => s + f.file.size, 0);
+  const ready = inputMode === 'folder' ? folderFiles.length > 0 : !!file;
+
   return (
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -109,7 +197,7 @@ export default function RemoveBackgroundPage() {
             <Eraser className="h-5 w-5" />
             <h1 className="font-semibold text-base">AI 배경 제거</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -119,14 +207,24 @@ export default function RemoveBackgroundPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="image/*"
-            description="인물·상품·오브젝트 이미지를 업로드하세요"
-            hint="최초 실행 시 AI 모델을 다운로드합니다 (약 40MB, 이후 캐시). 모든 처리는 브라우저 내."
-            onFiles={(files) => accept(files[0])}
-          />
-        )}
+        <DualDropZone
+          mode={inputMode}
+          onModeChange={(m) => {
+            setInputMode(m);
+            setError(null);
+          }}
+          fileProps={{
+            accept: 'image/*',
+            description: '인물·상품·오브젝트 이미지를 업로드하세요',
+            hint: '최초 실행 시 AI 모델을 다운로드합니다 (약 40MB, 이후 캐시). 모든 처리는 브라우저 내.',
+            onFiles: (files) => accept(files[0]),
+          }}
+          folderProps={{
+            accept: 'image/*',
+            description: '폴더 안 모든 이미지의 배경을 일괄 제거합니다 (PNG 출력). 구조 유지.',
+            onFolder: onFolderPicked,
+          }}
+        />
 
         {error && (
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
@@ -134,7 +232,20 @@ export default function RemoveBackgroundPage() {
           </div>
         )}
 
-        {file && previewUrl && (
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <>
+            <FolderPreviewPanel
+              files={allFolderFiles}
+              onSelectionChange={setFolderFiles}
+              fileKindLabel="이미지"
+            />
+            <p className="text-[10px] text-yellow-500">
+              AI 모델 메모리 소모가 큽니다. 동시 1장씩 처리하므로 시간이 걸릴 수 있습니다.
+            </p>
+          </>
+        )}
+
+        {inputMode === 'files' && file && previewUrl && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center gap-3">
               <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
@@ -152,9 +263,11 @@ export default function RemoveBackgroundPage() {
                 className="max-w-full max-h-[40vh] object-contain"
               />
             </div>
+          </div>
+        )}
 
-            <Separator />
-
+        {ready && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
             <div>
               <label className="text-xs font-medium mb-1.5 block">모델 품질</label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -181,7 +294,7 @@ export default function RemoveBackgroundPage() {
               </div>
             </div>
 
-            {processing && (
+            {processing && inputMode === 'files' && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
@@ -196,16 +309,24 @@ export default function RemoveBackgroundPage() {
               </div>
             )}
 
+            {processing && inputMode === 'folder' && progressText && (
+              <p className="text-xs text-muted-foreground">{progressText}</p>
+            )}
+
+            <Separator />
+
             <Button onClick={runRemove} disabled={processing} className="w-full">
               {processing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  처리 중...
+                  {inputMode === 'folder' ? '일괄 처리 중...' : '처리 중...'}
                 </>
               ) : (
                 <>
                   <Eraser className="h-4 w-4" />
-                  배경 제거
+                  {inputMode === 'folder'
+                    ? `${folderFiles.length}장 일괄 배경 제거`
+                    : '배경 제거'}
                 </>
               )}
             </Button>
@@ -244,6 +365,15 @@ export default function RemoveBackgroundPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'no-bg'}
+            zipFileName={`${commonRoot(folderFiles) || 'images'}-no-bg.zip`}
+            totalInputSize={folderInputSize}
+          />
         )}
 
         <p className="text-[10px] text-muted-foreground text-center leading-relaxed">

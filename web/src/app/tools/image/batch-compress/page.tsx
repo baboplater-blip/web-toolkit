@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
   computeResize,
@@ -45,6 +46,7 @@ interface QueueItem {
 export default function BatchCompressPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [items, setItems] = useState<QueueItem[]>([]);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
   const [quality, setQuality] = useState(75);
@@ -89,14 +91,17 @@ export default function BatchCompressPage() {
     });
     if (filtered.length === 0) {
       setError('폴더 안에 처리할 이미지가 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
   const reset = () => {
     setItems([]);
+    setAllFolderFiles([]);
     setFolderFiles([]);
     setResult(null);
     setBatchResults(null);
@@ -125,7 +130,7 @@ export default function BatchCompressPage() {
     try {
       if (inputMode === 'folder') {
         if (folderFiles.length === 0) {
-          setError('폴더를 먼저 선택하세요.');
+          setError('처리할 파일을 선택하세요.');
           setProcessing(false);
           return;
         }
@@ -197,7 +202,7 @@ export default function BatchCompressPage() {
   const reduction = result ? compressionRatio(result.totalOriginal, result.totalCompressed) : 0;
 
   const ready =
-    inputMode === 'folder' ? folderFiles.length > 0 : items.length > 0;
+    inputMode === 'folder' ? allFolderFiles.length > 0 : items.length > 0;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -284,16 +289,12 @@ export default function BatchCompressPage() {
           </div>
         )}
 
-        {inputMode === 'folder' && folderFiles.length > 0 && (
-          <div className="rounded-xl border bg-card p-4 space-y-2">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              폴더 — {folderFiles.length}개 이미지 ·{' '}
-              {formatBytes(folderFiles.reduce((s, f) => s + f.file.size, 0))}
-            </h2>
-            <p className="text-[11px] text-muted-foreground">
-              루트: <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-            </p>
-          </div>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="이미지"
+          />
         )}
 
         {ready && (

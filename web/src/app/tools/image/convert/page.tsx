@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
   drawToCanvas,
@@ -44,6 +45,7 @@ interface QueueItem {
 export default function ImageConvertPage() {
   const { mode, setMode } = useBatchMode();
   const [items, setItems] = useState<QueueItem[]>([]);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('webp');
   const [quality, setQuality] = useState(85);
@@ -91,14 +93,17 @@ export default function ImageConvertPage() {
     });
     if (filtered.length === 0) {
       setError('폴더 안에 처리할 이미지가 없습니다.');
+      setAllFolderFiles([]);
       setFolderFiles([]);
       return;
     }
+    setAllFolderFiles(filtered);
     setFolderFiles(filtered);
   };
 
   const reset = () => {
     setItems([]);
+    setAllFolderFiles([]);
     setFolderFiles([]);
     setResult(null);
     setBatchResults(null);
@@ -129,7 +134,7 @@ export default function ImageConvertPage() {
     try {
       if (mode === 'folder') {
         if (folderFiles.length === 0) {
-          setError('폴더를 먼저 선택하세요.');
+          setError('처리할 파일을 선택하세요.');
           setProcessing(false);
           return;
         }
@@ -200,6 +205,7 @@ export default function ImageConvertPage() {
       : items.reduce((s, i) => s + i.file.size, 0);
 
   const ready = mode === 'folder' ? folderFiles.length > 0 : items.length > 0;
+  const hasAnyInput = mode === 'folder' ? allFolderFiles.length > 0 : items.length > 0;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -214,7 +220,7 @@ export default function ImageConvertPage() {
             <FileImage className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 포맷 변환</h1>
           </div>
-          {ready && (
+          {hasAnyInput && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -280,30 +286,12 @@ export default function ImageConvertPage() {
           </div>
         )}
 
-        {mode === 'folder' && folderFiles.length > 0 && (
-          <div className="rounded-xl border bg-card p-4 space-y-2">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              폴더 — {folderFiles.length}개 이미지 · {formatBytes(totalInputSize)}
-            </h2>
-            <p className="text-[11px] text-muted-foreground">
-              루트: <span className="font-mono">{commonRoot(folderFiles) || '(다중)'}</span>
-            </p>
-            <details className="text-[11px]">
-              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                파일 목록 보기
-              </summary>
-              <ul className="mt-2 max-h-40 overflow-y-auto space-y-0.5 text-[10px] font-mono text-muted-foreground">
-                {folderFiles.slice(0, 200).map((rf, i) => (
-                  <li key={i} className="truncate">
-                    {rf.relativePath}
-                  </li>
-                ))}
-                {folderFiles.length > 200 && (
-                  <li className="italic">… 외 {folderFiles.length - 200}개</li>
-                )}
-              </ul>
-            </details>
-          </div>
+        {mode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="이미지"
+          />
         )}
 
         {ready && (

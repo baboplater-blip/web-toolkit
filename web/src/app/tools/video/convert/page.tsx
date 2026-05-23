@@ -11,7 +11,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   cleanupFiles,
   getFFmpeg,
@@ -21,6 +23,16 @@ import {
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
+
+const VIDEO_EXTS = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v', '.flv', '.wmv'];
 
 type TargetFormat = 'mp4' | 'webm' | 'mov' | 'avi' | 'mkv';
 
@@ -45,7 +57,10 @@ function buildArgs(format: TargetFormat, crf: number): string[] {
 }
 
 export default function VideoConvertPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [meta, setMeta] = useState<{ duration: number; width: number; height: number } | null>(
     null,
@@ -59,6 +74,7 @@ export default function VideoConvertPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => {
     return () => {
@@ -72,7 +88,7 @@ export default function VideoConvertPage() {
   }, [result]);
 
   const acceptFile = async (f: File) => {
-    if (!f.type.startsWith('video/') && !/\.(mp4|webm|mov|avi|mkv|flv)$/i.test(f.name)) {
+    if (!f.type.startsWith('video/') && !/\.(mp4|webm|mov|avi|mkv|flv|m4v|wmv)$/i.test(f.name)) {
       setError('비디오 파일만 업로드 가능합니다.');
       return;
     }
@@ -90,51 +106,110 @@ export default function VideoConvertPage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['video/'],
+      extensions: VIDEO_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 비디오 파일이 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setPreviewUrl(null);
     setMeta(null);
     setResult(null);
+    setBatchResults(null);
     setError(null);
   };
 
+  async function processOne(srcFile: File): Promise<Blob> {
+    const inputName = `input.${srcFile.name.split('.').pop() ?? 'mp4'}`;
+    const outputName = `output.${target}`;
+    const ffmpeg = await getFFmpeg();
+    try {
+      await writeFile(ffmpeg, inputName, srcFile);
+      await ffmpeg.exec(['-i', inputName, ...buildArgs(target, crf), '-y', outputName]);
+      return await readOutput(ffmpeg, outputName, FORMAT_MIME[target]);
+    } finally {
+      await cleanupFiles(ffmpeg, [inputName, outputName]);
+    }
+  }
+
   const runConvert = async () => {
+    setError(null);
+
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setBatchResults(null);
+      setProgress(0);
+      setProgressText('FFmpeg 로드 중');
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await processOne(rf.file);
+            return { relativePath: replaceExtension(rf.relativePath, target), blob };
+          },
+          {
+            concurrency: 1,
+            onProgress: (d, t, p) => setProgressText(`변환 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 변환 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+        setProgress(0);
+      }
+      return;
+    }
+
     if (!file) return;
     setProcessing(true);
-    setError(null);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
     setProgressText('FFmpeg 로드 중');
 
-    const inputName = `input.${file.name.split('.').pop() ?? 'mp4'}`;
-    const outputName = `output.${target}`;
     try {
       const ffmpeg = await getFFmpeg();
-      const onProgress = ({ progress }: { progress: number }) => {
-        if (Number.isFinite(progress)) {
-          setProgress(Math.max(0, Math.min(100, Math.round(progress * 100))));
+      const onFfProgress = ({ progress: p }: { progress: number }) => {
+        if (Number.isFinite(p)) {
+          setProgress(Math.max(0, Math.min(100, Math.round(p * 100))));
         }
       };
-      ffmpeg.on('progress', onProgress);
+      ffmpeg.on('progress', onFfProgress);
       try {
-        setProgressText('입력 준비');
-        await writeFile(ffmpeg, inputName, file);
-
         setProgressText('변환 중');
-        await ffmpeg.exec(['-i', inputName, ...buildArgs(target, crf), '-y', outputName]);
-
-        const blob = await readOutput(ffmpeg, outputName, FORMAT_MIME[target]);
+        const blob = await processOne(file);
         setResult({
           blob,
           url: URL.createObjectURL(blob),
           fileName: `${stripExtension(file.name)}.${target}`,
         });
       } finally {
-        ffmpeg.off('progress', onProgress);
-        await cleanupFiles(ffmpeg, [inputName, outputName]);
+        ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '변환 실패');
@@ -144,6 +219,62 @@ export default function VideoConvertPage() {
       setProgress(0);
     }
   };
+
+  const optionsBlock = (
+    <>
+      <div>
+        <label className="text-xs font-medium mb-1.5 block">출력 포맷</label>
+        <div className="grid grid-cols-5 gap-1.5">
+          {(['mp4', 'webm', 'mov', 'avi', 'mkv'] as const).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setTarget(f)}
+              disabled={processing}
+              className={`h-9 text-xs rounded-md border font-medium ${
+                target === f
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background hover:bg-muted border-border'
+              } disabled:opacity-50`}
+            >
+              {f.toUpperCase()}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          {target === 'mp4' && 'H.264 + AAC · 가장 널리 호환'}
+          {target === 'webm' && 'VP9 + Opus · 웹 최적화'}
+          {target === 'mov' && 'H.264 + AAC (QuickTime 컨테이너)'}
+          {target === 'avi' && 'MPEG-4 + MP3 · 구형 플레이어 호환'}
+          {target === 'mkv' && 'H.264 + AAC (Matroska 컨테이너)'}
+        </p>
+      </div>
+
+      {target !== 'avi' && (
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-medium">품질 (CRF)</label>
+            <span className="text-xs text-muted-foreground">
+              {crf} ({crf <= 20 ? '고품질' : crf <= 28 ? '보통' : '저품질'})
+            </span>
+          </div>
+          <input
+            type="range"
+            min={16}
+            max={35}
+            step={1}
+            value={crf}
+            onChange={(e) => setCrf(Number(e.target.value))}
+            disabled={processing}
+            className="w-full accent-primary"
+          />
+          <p className="text-[10px] text-muted-foreground mt-1">
+            낮을수록 고품질·큰 용량. 23 전후가 표준.
+          </p>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <div className="min-h-dvh bg-background">
@@ -158,7 +289,7 @@ export default function VideoConvertPage() {
             <FileVideo className="h-5 w-5" />
             <h1 className="font-semibold text-base">비디오 포맷 변환</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -168,12 +299,59 @@ export default function VideoConvertPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="video/*"
-            description="변환할 비디오를 업로드하세요 (mp4/webm/mov/avi/mkv 등)"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'video/*',
+              description: '변환할 비디오를 업로드하세요 (mp4/webm/mov/avi/mkv 등)',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'video/*',
+              description: '폴더 안 모든 비디오를 같은 포맷으로 일괄 변환합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="비디오"
+          />
+        )}
+
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <p className="text-[11px] text-muted-foreground">
+              같은 옵션으로 모든 파일을 일괄 처리합니다.
+            </p>
+
+            {optionsBlock}
+
+            <Separator />
+
+            <Button onClick={runConvert} disabled={processing} className="w-full">
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {progressText || '변환 중...'}
+                </>
+              ) : (
+                <>
+                  <FileVideo className="h-4 w-4" />
+                  폴더 일괄 변환 ({folderFiles.length}개) → {target.toUpperCase()}
+                </>
+              )}
+            </Button>
+          </div>
         )}
 
         {error && (
@@ -182,7 +360,7 @@ export default function VideoConvertPage() {
           </div>
         )}
 
-        {file && previewUrl && meta && (
+        {inputMode === 'files' && file && previewUrl && meta && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center gap-3">
               <FileVideo className="h-6 w-6 text-muted-foreground shrink-0" />
@@ -203,57 +381,7 @@ export default function VideoConvertPage() {
 
             <Separator />
 
-            <div>
-              <label className="text-xs font-medium mb-1.5 block">출력 포맷</label>
-              <div className="grid grid-cols-5 gap-1.5">
-                {(['mp4', 'webm', 'mov', 'avi', 'mkv'] as const).map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setTarget(f)}
-                    disabled={processing}
-                    className={`h-9 text-xs rounded-md border font-medium ${
-                      target === f
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background hover:bg-muted border-border'
-                    } disabled:opacity-50`}
-                  >
-                    {f.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-1">
-                {target === 'mp4' && 'H.264 + AAC · 가장 널리 호환'}
-                {target === 'webm' && 'VP9 + Opus · 웹 최적화'}
-                {target === 'mov' && 'H.264 + AAC (QuickTime 컨테이너)'}
-                {target === 'avi' && 'MPEG-4 + MP3 · 구형 플레이어 호환'}
-                {target === 'mkv' && 'H.264 + AAC (Matroska 컨테이너)'}
-              </p>
-            </div>
-
-            {target !== 'avi' && (
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-medium">품질 (CRF)</label>
-                  <span className="text-xs text-muted-foreground">
-                    {crf} ({crf <= 20 ? '고품질' : crf <= 28 ? '보통' : '저품질'})
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={16}
-                  max={35}
-                  step={1}
-                  value={crf}
-                  onChange={(e) => setCrf(Number(e.target.value))}
-                  disabled={processing}
-                  className="w-full accent-primary"
-                />
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  낮을수록 고품질·큰 용량. 23 전후가 표준.
-                </p>
-              </div>
-            )}
+            {optionsBlock}
 
             {processing && (
               <div>
@@ -309,6 +437,15 @@ export default function VideoConvertPage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || `converted-${target}`}
+            zipFileName={`${commonRoot(folderFiles) || 'video'}-${target}.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>

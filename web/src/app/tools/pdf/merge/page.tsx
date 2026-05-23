@@ -17,6 +17,7 @@ import { PDFDocument } from 'pdf-lib';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { ResultCard } from '@/components/tools/ResultCard';
 import {
   isPdfFile,
@@ -51,6 +52,7 @@ const KO_COLLATOR = new Intl.Collator('ko', { numeric: true, sensitivity: 'base'
 export default function PdfMergePage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [items, setItems] = useState<QueueItem[]>([]);
+  const [allFolderPdfs, setAllFolderPdfs] = useState<RelativeFile[]>([]);
   const [folderPdfs, setFolderPdfs] = useState<RelativeFile[]>([]);
   const [folderRoot, setFolderRoot] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('natural');
@@ -99,9 +101,11 @@ export default function PdfMergePage() {
     const filtered = filterFiles(files, { extensions: ['.pdf'] });
     if (filtered.length === 0) {
       setError('폴더 안에 PDF 가 없습니다.');
+      setAllFolderPdfs([]);
       setFolderPdfs([]);
       return;
     }
+    setAllFolderPdfs(filtered);
     setFolderPdfs(filtered);
     setFolderRoot(commonRoot(filtered));
   };
@@ -109,6 +113,7 @@ export default function PdfMergePage() {
   const reset = () => {
     clearResult();
     setItems([]);
+    setAllFolderPdfs([]);
     setFolderPdfs([]);
     setFolderRoot('');
     setError(null);
@@ -202,7 +207,7 @@ export default function PdfMergePage() {
             <Merge className="h-5 w-5" />
             <h1 className="font-semibold text-base">PDF 합치기</h1>
           </div>
-          {(items.length > 0 || folderPdfs.length > 0) && (
+          {(items.length > 0 || allFolderPdfs.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -238,13 +243,16 @@ export default function PdfMergePage() {
           </div>
         )}
 
+        {inputMode === 'folder' && allFolderPdfs.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderPdfs}
+            onSelectionChange={setFolderPdfs}
+            fileKindLabel="PDF"
+          />
+        )}
+
         {inputMode === 'folder' && folderPdfs.length > 0 && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                폴더 — {folderPdfs.length}개 PDF · 루트: {folderRoot || '(다중)'}
-              </h2>
-            </div>
             <div>
               <label className="text-[10px] font-medium text-muted-foreground mb-1 block">
                 정렬 방식

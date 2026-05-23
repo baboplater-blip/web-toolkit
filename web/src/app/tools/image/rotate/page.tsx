@@ -14,7 +14,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { FileDropZone } from '@/components/tools/FileDropZone';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
   detectFormatFromFile,
@@ -25,11 +27,24 @@ import {
 } from '@/lib/tools/image-common';
 import { triggerDownload } from '@/lib/tools/pdf-common';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type Angle = 0 | 90 | 180 | 270;
 
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
+
 export default function ImageRotatePage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [loaded, setLoaded] = useState<LoadedImage | null>(null);
   const [angle, setAngle] = useState<Angle>(90);
   const [flipH, setFlipH] = useState(false);
@@ -37,10 +52,12 @@ export default function ImageRotatePage() {
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
   const [quality, setQuality] = useState(90);
   const [processing, setProcessing] = useState(false);
+  const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; fileName: string; previewUrl: string } | null>(
     null,
   );
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => () => loaded?.cleanup(), [loaded]);
   useEffect(() => {
@@ -57,6 +74,7 @@ export default function ImageRotatePage() {
     setError(null);
     if (result) URL.revokeObjectURL(result.previewUrl);
     setResult(null);
+    setBatchResults(null);
     loaded?.cleanup();
     try {
       const info = await loadImageFile(f);
@@ -69,28 +87,45 @@ export default function ImageRotatePage() {
     }
   };
 
+  const onFolderPicked = (files: RelativeFile[]) => {
+    setError(null);
+    if (result) URL.revokeObjectURL(result.previewUrl);
+    setResult(null);
+    setBatchResults(null);
+    const filtered = filterFiles(files, {
+      mimePrefixes: ['image/'],
+      extensions: IMAGE_EXTS,
+    });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 이미지가 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  };
+
   const reset = () => {
     loaded?.cleanup();
     if (result) URL.revokeObjectURL(result.previewUrl);
     setFile(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setLoaded(null);
     setResult(null);
+    setBatchResults(null);
     setError(null);
     setAngle(90);
     setFlipH(false);
     setFlipV(false);
   };
 
-  const runTransform = async () => {
-    if (!file || !loaded) return;
-    setProcessing(true);
-    setError(null);
-    if (result) URL.revokeObjectURL(result.previewUrl);
-    setResult(null);
-
+  async function processOne(srcFile: File): Promise<Blob> {
+    const info = await loadImageFile(srcFile);
     try {
-      const iw = loaded.width;
-      const ih = loaded.height;
+      const iw = info.width;
+      const ih = info.height;
       const rotated = angle === 90 || angle === 270;
       const canvas = document.createElement('canvas');
       canvas.width = rotated ? ih : iw;
@@ -107,10 +142,55 @@ export default function ImageRotatePage() {
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((angle * Math.PI) / 180);
       ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
-      ctx.drawImage(loaded.element, -iw / 2, -ih / 2, iw, ih);
+      ctx.drawImage(info.element, -iw / 2, -ih / 2, iw, ih);
       ctx.restore();
 
-      const blob = await canvasToBlob(canvas, outputFormat, quality / 100);
+      return await canvasToBlob(canvas, outputFormat, quality / 100);
+    } finally {
+      info.cleanup();
+    }
+  }
+
+  const runTransform = async () => {
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setError(null);
+      setBatchResults(null);
+      const ext = formatExtension(outputFormat);
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await processOne(rf.file);
+            return { relativePath: replaceExtension(rf.relativePath, ext), blob };
+          },
+          {
+            concurrency: 2,
+            onProgress: (d, t, p) => setProgressText(`처리 중 ${d}/${t} — ${p}`),
+          },
+        );
+        setBatchResults(results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '일괄 처리 실패');
+      } finally {
+        setProcessing(false);
+        setProgressText('');
+      }
+      return;
+    }
+
+    if (!file || !loaded) return;
+    setProcessing(true);
+    setError(null);
+    if (result) URL.revokeObjectURL(result.previewUrl);
+    setResult(null);
+
+    try {
+      const blob = await processOne(file);
       const newName = renameWithSuffix(file.name, '-rotated', formatExtension(outputFormat));
       setResult({
         blob,
@@ -137,7 +217,7 @@ export default function ImageRotatePage() {
             <RotateCw className="h-5 w-5" />
             <h1 className="font-semibold text-base">이미지 회전 / 반전</h1>
           </div>
-          {file && (
+          {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
               초기화
@@ -147,11 +227,24 @@ export default function ImageRotatePage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        {!file && (
-          <FileDropZone
-            accept="image/*"
-            description="회전/반전할 이미지를 업로드하세요"
-            onFiles={(files) => acceptFile(files[0])}
+        {((inputMode === 'files' && !file) ||
+          (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+          <DualDropZone
+            mode={inputMode}
+            onModeChange={(m) => {
+              setInputMode(m);
+              setError(null);
+            }}
+            fileProps={{
+              accept: 'image/*',
+              description: '회전/반전할 이미지를 업로드하세요',
+              onFiles: (files) => acceptFile(files[0]),
+            }}
+            folderProps={{
+              accept: 'image/*',
+              description: '폴더 안 모든 이미지에 같은 회전/반전을 일괄 적용합니다.',
+              onFolder: onFolderPicked,
+            }}
           />
         )}
 
@@ -161,19 +254,32 @@ export default function ImageRotatePage() {
           </div>
         )}
 
-        {file && loaded && (
-          <div className="rounded-xl border bg-card p-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatBytes(file.size)} · {loaded.width}×{loaded.height}
-                </p>
-              </div>
-            </div>
+        {inputMode === 'folder' && allFolderFiles.length > 0 && (
+          <FolderPreviewPanel
+            files={allFolderFiles}
+            onSelectionChange={setFolderFiles}
+            fileKindLabel="이미지"
+          />
+        )}
 
-            <Separator />
+        {((file && loaded && inputMode === 'files') ||
+          (inputMode === 'folder' && allFolderFiles.length > 0)) && (
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            {inputMode === 'files' && file && loaded && (
+              <>
+                <div className="flex items-center gap-3">
+                  <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatBytes(file.size)} · {loaded.width}×{loaded.height}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+              </>
+            )}
 
             <div>
               <label className="text-xs font-medium mb-1.5 block">회전 각도 (시계방향)</label>
@@ -276,12 +382,12 @@ export default function ImageRotatePage() {
               {processing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  처리 중...
+                  {progressText || '처리 중...'}
                 </>
               ) : (
                 <>
                   <RotateCw className="h-4 w-4" />
-                  적용
+                  {inputMode === 'folder' ? `폴더 일괄 적용 (${folderFiles.length}개)` : '적용'}
                 </>
               )}
             </Button>
@@ -312,6 +418,15 @@ export default function ImageRotatePage() {
               {result.fileName} 다운로드
             </Button>
           </div>
+        )}
+
+        {batchResults && (
+          <BatchResultPanel
+            results={batchResults}
+            zipRootName={commonRoot(folderFiles) || 'rotated'}
+            zipFileName={`${commonRoot(folderFiles) || 'images'}-rotated.zip`}
+            totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+          />
         )}
       </main>
     </div>
