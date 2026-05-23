@@ -36,4 +36,25 @@ test.describe('어드민 페이지', () => {
     const btn = page.getByRole('button', { name: /GitHub 에 커밋/ });
     await expect(btn).toBeDisabled();
   });
+
+  test('이미지 업로드 UI가 슬롯마다 표시', async ({ page }) => {
+    await page.goto('/admin?key=test-key');
+    const uploadLabels = page.getByText('이미지 업로드');
+    await expect(uploadLabels).toHaveCount(3);
+    await expect(page.getByText(/PNG · JPG · WebP/)).toHaveCount(3);
+  });
+
+  test('이미지 파일 업로드 → 미리보기 + 메타 입력 표시', async ({ page }) => {
+    await page.goto('/admin?key=test-key');
+    const pngBytes = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    const input = page.locator('input[type="file"]').first();
+    await input.setInputFiles({ name: 'test.png', mimeType: 'image/png', buffer: pngBytes });
+
+    await expect(page.locator('img[src^="data:image/png"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('input[placeholder*="클릭 URL"]').first()).toBeVisible();
+    await expect(page.locator('input[placeholder*="대체 텍스트"]').first()).toBeVisible();
+  });
 });

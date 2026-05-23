@@ -7,9 +7,19 @@
 
 export type AdSlotKey = 'top' | 'sidebarLeft' | 'sidebarRight';
 
+export interface AdImageConfig {
+  /** data URL (data:image/png;base64,...) 또는 절대/상대 URL */
+  src: string;
+  /** 클릭 시 이동 URL. 비우면 단순 표시. */
+  href?: string;
+  alt?: string;
+}
+
 export interface AdSlotConfig {
   enabled: boolean;
-  /** AdSense <ins> 태그·네이버·Coupang 등 광고 네트워크 HTML 코드. 비우면 placeholder 표시. */
+  /** 이미지 광고 (우선순위 1) */
+  image?: AdImageConfig | null;
+  /** HTML 코드 (이미지 없을 때, AdSense 등) */
   html: string;
 }
 
@@ -23,9 +33,9 @@ const DEFAULT_CONFIG: AdsConfig = {
   version: 1,
   updatedAt: '1970-01-01T00:00:00Z',
   slots: {
-    top: { enabled: true, html: '' },
-    sidebarLeft: { enabled: true, html: '' },
-    sidebarRight: { enabled: true, html: '' },
+    top: { enabled: true, html: '', image: null },
+    sidebarLeft: { enabled: true, html: '', image: null },
+    sidebarRight: { enabled: true, html: '', image: null },
   },
 };
 

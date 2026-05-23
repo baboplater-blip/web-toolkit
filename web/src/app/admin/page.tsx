@@ -7,11 +7,14 @@ import {
   Eye,
   EyeOff,
   GitCommit,
+  ImageIcon,
   KeyRound,
   Loader2,
   RefreshCw,
   Settings2,
   ShieldAlert,
+  Upload,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -70,6 +73,35 @@ export default function AdminPage() {
       ...config,
       slots: { ...config.slots, [key]: { ...config.slots[key], ...patch } },
     });
+  };
+
+  const onImagePicked = async (key: AdSlotKey, file: File) => {
+    setError(null);
+    if (!file.type.startsWith('image/')) {
+      setError('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError(`이미지 용량이 큽니다 (${(file.size / 1024 / 1024).toFixed(1)}MB). 2MB 이하 권장 — JSON 파일에 base64로 박힙니다.`);
+      // 경고만 하고 진행
+    }
+    const dataUrl = await new Promise<string>((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(String(r.result));
+      r.onerror = () => rej(r.error);
+      r.readAsDataURL(file);
+    });
+    updateSlot(key, {
+      image: {
+        src: dataUrl,
+        href: config?.slots[key].image?.href ?? '',
+        alt: config?.slots[key].image?.alt ?? '',
+      },
+    });
+  };
+
+  const removeImage = (key: AdSlotKey) => {
+    updateSlot(key, { image: null });
   };
 
   const persistToken = (value: string) => {
@@ -225,10 +257,15 @@ export default function AdminPage() {
               {(Object.keys(SLOT_LABELS) as AdSlotKey[]).map((slot) => {
                 const s = config.slots[slot];
                 const isPreviewing = preview === slot;
+                const hint =
+                  slot === 'top' ? '권장 970×90 (또는 728×90)' : '권장 160×600 (또는 300×600)';
                 return (
                   <div key={slot} className="rounded-xl border bg-card p-3 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium">{SLOT_LABELS[slot]}</p>
+                      <div>
+                        <p className="text-sm font-medium">{SLOT_LABELS[slot]}</p>
+                        <p className="text-[10px] text-muted-foreground">{hint}</p>
+                      </div>
                       <label className="flex items-center gap-1.5 text-[11px] cursor-pointer">
                         <input
                           type="checkbox"
@@ -239,13 +276,95 @@ export default function AdminPage() {
                         활성
                       </label>
                     </div>
-                    <textarea
-                      value={s.html}
-                      onChange={(e) => updateSlot(slot, { html: e.target.value })}
-                      placeholder={`광고 네트워크 HTML (예: AdSense <ins class="adsbygoogle"> ...)\n비우면 placeholder 표시`}
-                      rows={4}
-                      className="w-full rounded-md border bg-background p-2 text-xs font-mono leading-relaxed resize-y"
-                    />
+
+                    {/* 이미지 광고 영역 */}
+                    <div className="rounded-lg border bg-background/40 p-2 space-y-2">
+                      <p className="text-[10px] font-medium text-muted-foreground inline-flex items-center gap-1">
+                        <ImageIcon className="h-3 w-3" />
+                        이미지 광고 (우선)
+                      </p>
+                      {s.image && s.image.src ? (
+                        <>
+                          <div className="relative rounded-md border bg-muted/40 overflow-hidden flex items-center justify-center max-h-40">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={s.image.src}
+                              alt={s.image.alt ?? '광고 미리보기'}
+                              className="max-w-full max-h-40 object-contain"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(slot)}
+                              className="absolute top-1 right-1 h-6 w-6 inline-flex items-center justify-center rounded-md bg-background/90 border hover:bg-destructive hover:text-destructive-foreground"
+                              aria-label="이미지 제거"
+                              title="이미지 제거"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <Input
+                              type="url"
+                              value={s.image.href ?? ''}
+                              onChange={(e) =>
+                                updateSlot(slot, {
+                                  image: { ...s.image!, href: e.target.value },
+                                })
+                              }
+                              placeholder="클릭 URL (https://...)"
+                              className="h-8 text-xs"
+                            />
+                            <Input
+                              type="text"
+                              value={s.image.alt ?? ''}
+                              onChange={(e) =>
+                                updateSlot(slot, {
+                                  image: { ...s.image!, alt: e.target.value },
+                                })
+                              }
+                              placeholder="대체 텍스트 (alt)"
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">
+                            크기: 약 {Math.round(s.image.src.length * 0.75 / 1024)}KB
+                          </p>
+                        </>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed border-border/60 bg-background/60 p-4 cursor-pointer hover:bg-muted/40 transition-colors">
+                          <Upload className="h-5 w-5 text-muted-foreground" />
+                          <p className="text-xs font-medium">이미지 업로드</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            PNG · JPG · WebP · GIF · SVG (2MB 이하 권장)
+                          </p>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) void onImagePicked(slot, f);
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+
+                    {/* HTML 광고 영역 (이미지 없을 때 대체) */}
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] font-medium text-muted-foreground">
+                        또는 HTML 코드 (AdSense 등 — 이미지 없을 때만 사용)
+                      </p>
+                      <textarea
+                        value={s.html}
+                        onChange={(e) => updateSlot(slot, { html: e.target.value })}
+                        placeholder={`<ins class="adsbygoogle" ...></ins> 등`}
+                        rows={3}
+                        className="w-full rounded-md border bg-background p-2 text-xs font-mono leading-relaxed resize-y"
+                      />
+                    </div>
+
                     <div className="flex items-center justify-between">
                       <button
                         type="button"
@@ -256,20 +375,36 @@ export default function AdminPage() {
                         {isPreviewing ? '미리보기 닫기' : '미리보기'}
                       </button>
                       <span className="text-[10px] text-muted-foreground">
-                        {s.html ? `${s.html.length}자` : '비어 있음 (placeholder)'}
+                        {s.image?.src
+                          ? '이미지 광고'
+                          : s.html
+                            ? `HTML ${s.html.length}자`
+                            : '비어 있음 (placeholder)'}
                       </span>
                     </div>
+
                     {isPreviewing && (
                       <div className="rounded-lg border-2 border-dashed border-primary/40 bg-background p-2">
                         <p className="text-[10px] text-muted-foreground mb-1">
-                          미리보기 (실제 광고 네트워크 응답은 사이트 라이브에서 확인)
+                          미리보기 (사이트의 광고 위치에 표시될 모습)
                         </p>
-                        <div
-                          className="min-h-[60px] flex items-center justify-center text-xs"
-                          dangerouslySetInnerHTML={{
-                            __html: s.html || '<span class="text-muted-foreground">placeholder</span>',
-                          }}
-                        />
+                        <div className="min-h-[60px] flex items-center justify-center text-xs overflow-hidden">
+                          {s.image?.src ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={s.image.src}
+                              alt={s.image.alt ?? '광고'}
+                              className="max-w-full max-h-40 object-contain"
+                            />
+                          ) : s.html ? (
+                            <div
+                              className="w-full"
+                              dangerouslySetInnerHTML={{ __html: s.html }}
+                            />
+                          ) : (
+                            <span className="text-muted-foreground">placeholder</span>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
