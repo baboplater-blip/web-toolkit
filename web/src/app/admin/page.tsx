@@ -201,10 +201,23 @@ export default function AdminPage() {
       </header>
 
       <main className="mx-auto max-w-3xl space-y-6 p-4">
-        <section className="space-y-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <KeyRound className="h-3.5 w-3.5" />
-            GitHub Personal Access Token
+        <section id="pat-section" className="space-y-2 scroll-mt-20">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between gap-1.5">
+            <span className="inline-flex items-center gap-1.5">
+              <KeyRound className="h-3.5 w-3.5" />
+              GitHub Personal Access Token
+            </span>
+            {token ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-normal text-emerald-600 dark:text-emerald-400 normal-case">
+                <CheckCircle2 className="h-3 w-3" />
+                입력됨 (브라우저에 저장)
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-normal text-amber-600 dark:text-amber-400 normal-case">
+                <AlertTriangle className="h-3 w-3" />
+                미입력
+              </span>
+            )}
           </h2>
           <div className="rounded-xl border bg-card p-3 space-y-2">
             <div className="flex gap-2">
@@ -224,20 +237,27 @@ export default function AdminPage() {
                 {tokenVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              repo {REPO_ENV} 의 {CONFIG_PATH} 를 수정할 수 있는 토큰. 토큰은 이 브라우저의 localStorage 에만 저장됩니다.
-              <br />
-              발급:{' '}
-              <a
-                href="https://github.com/settings/personal-access-tokens/new"
-                target="_blank"
-                rel="noreferrer"
-                className="underline text-primary"
-              >
-                Fine-grained PAT
-              </a>{' '}
-              → Repository access: web-toolkit → Permissions → Contents: Read and write
-            </p>
+            <div className="text-[10px] text-muted-foreground leading-relaxed space-y-1">
+              <p>
+                repo {REPO_ENV} 의 {CONFIG_PATH} 를 수정할 토큰. 이 브라우저의 localStorage 에만 저장 — 한 번 입력하면 다음부터 자동.
+              </p>
+              <p>
+                토큰 없으면{' '}
+                <a
+                  href="https://github.com/settings/personal-access-tokens/new"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline text-primary"
+                >
+                  Fine-grained PAT 발급
+                </a>{' '}
+                → Repository access: <strong>Only select repositories → web-toolkit</strong> →
+                Permissions → Contents: <strong>Read and write</strong> + Workflows: Read and write.
+              </p>
+              <p>
+                <strong>Expiration: No expiration</strong> 선택하면 갱신 불필요 (잃어버리지 않게 보관).
+              </p>
+            </div>
           </div>
         </section>
 
@@ -467,28 +487,39 @@ export default function AdminPage() {
                 {success}
               </div>
             )}
-            <Button
-              onClick={saveToGithub}
-              disabled={saving || !token}
-              size="lg"
-              className="w-full h-11 text-sm font-semibold"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  GitHub 커밋 중...
-                </>
-              ) : (
-                <>
-                  <GitCommit className="h-4 w-4" />
-                  변경사항 저장 (GitHub 커밋 → 1~2분 후 사이트 반영)
-                </>
-              )}
-            </Button>
-            {!token && (
-              <p className="mt-1.5 text-[10px] text-muted-foreground text-center">
-                저장하려면 위에서 GitHub PAT 를 입력하세요.
-              </p>
+            {token ? (
+              <Button
+                onClick={saveToGithub}
+                disabled={saving}
+                size="lg"
+                className="w-full h-11 text-sm font-semibold"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    GitHub 커밋 중...
+                  </>
+                ) : (
+                  <>
+                    <GitCommit className="h-4 w-4" />
+                    변경사항 저장 (GitHub 커밋 → 1~2분 후 사이트 반영)
+                  </>
+                )}
+              </Button>
+            ) : (
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById('pat-section')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                  })
+                }
+                className="w-full h-11 rounded-lg border-2 border-amber-500/60 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-sm font-semibold inline-flex items-center justify-center gap-2 hover:bg-amber-500/20"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                저장하려면 GitHub PAT 입력 필요 — 클릭하면 입력란으로 이동
+              </button>
             )}
           </div>
         </div>

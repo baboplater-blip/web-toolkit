@@ -31,10 +31,10 @@ test.describe('어드민 페이지', () => {
     await expect(page.locator('[data-test="ad"]')).toBeVisible();
   });
 
-  test('저장 버튼은 토큰 없으면 비활성', async ({ page }) => {
+  test('토큰 없으면 저장 버튼 대신 PAT 입력 안내', async ({ page }) => {
     await page.goto('/admin?key=test-key');
-    const btn = page.getByRole('button', { name: /변경사항 저장/ });
-    await expect(btn).toBeDisabled();
+    await expect(page.getByText(/저장하려면 GitHub PAT 입력 필요/)).toBeVisible();
+    await expect(page.getByText('미입력')).toBeVisible();
   });
 
   test('이미지 업로드 UI가 슬롯마다 표시', async ({ page }) => {
