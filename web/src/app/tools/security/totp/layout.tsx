@@ -10,7 +10,14 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   keywords: ["totp","otp","2fa","인증","authenticator","google","rfc 6238","보안","브라우저 도구","무료","온라인","no upload"],
-  alternates: { canonical: URL_PATH },
+  alternates: {
+    canonical: URL_PATH,
+    languages: {
+      'ko-KR': URL_PATH,
+      'en': '/en/tools',
+      'x-default': URL_PATH,
+    },
+  },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
@@ -36,6 +43,7 @@ export const metadata: Metadata = {
 };
 
 const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"TOTP 인증코드 생성기","description":"Google Authenticator 호환 OTP 코드 생성.","url":"https://agent-control-panel-phi.vercel.app/tools/security/totp","applicationCategory":"SecurityApplication","applicationSubCategory":"보안","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"TOTP 인증코드 생성기 사용 방법","description":"Google Authenticator 호환 OTP 코드 생성.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"TOTP 인증코드 생성기","url":"https://agent-control-panel-phi.vercel.app/tools/security/totp"},"step":[{"@type":"HowToStep","position":1,"name":"옵션 선택","text":"필요한 형식·길이·강도 등 옵션을 화면에서 선택합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/totp#step1"},{"@type":"HowToStep","position":2,"name":"생성","text":"\"생성\" 버튼을 누르면 브라우저 내장 Web Crypto API 로 즉시 결과가 만들어집니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/totp#step2"},{"@type":"HowToStep","position":3,"name":"복사·저장","text":"결과를 클립보드에 복사하거나 파일로 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/totp#step3"}]} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -44,6 +52,11 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOWTO_JSON_LD) }}
       />
       {children}
     </>

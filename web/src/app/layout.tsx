@@ -64,6 +64,7 @@ export const metadata: Metadata = {
     canonical: '/',
     languages: {
       'ko-KR': '/',
+      'en': '/en',
       'x-default': '/',
     },
   },
@@ -150,6 +151,69 @@ const ORGANIZATION_JSON_LD = {
   },
 };
 
+const FAQ_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '파일이 서버로 전송되나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '전송되지 않습니다. 모든 처리(PDF·이미지·비디오·오디오·OCR·AI)는 브라우저 안의 Web Worker와 WebAssembly에서 수행되며, 업로드한 파일은 사용자 기기에서 나가지 않습니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '회원 가입이 필요한가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '필요 없습니다. 모든 도구를 무료로 즉시 사용할 수 있습니다. 광고로 운영비를 충당합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '인터넷 연결이 필요한가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '첫 접속에는 필요합니다. 한 번 로드된 도구는 PWA로 오프라인에서도 동작합니다. 홈 화면에 추가하면 앱처럼 사용 가능합니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '얼마나 큰 파일까지 처리할 수 있나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '브라우저 메모리 제한에 따라 다르지만 일반적으로 PDF 100MB, 비디오 500MB, 이미지 50MB까지 검증되어 있습니다. 그 이상은 처리 시간이 길거나 메모리 부족이 발생할 수 있습니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '모바일에서도 사용 가능한가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '네. 모든 도구가 모바일 우선 설계되어 있고 터치 동작·키보드 인셋·홈 화면 추가를 지원합니다. iOS Safari·Android Chrome 양쪽에서 검증됐습니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are the files uploaded to a server?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. All processing happens in your browser using Web Workers and WebAssembly. Your files never leave your device.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do I need to sign up?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No registration required. All tools are free to use immediately. Ad-supported.',
+      },
+    },
+  ],
+};
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -177,6 +241,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(ORGANIZATION_JSON_LD),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(FAQ_JSON_LD),
           }}
         />
         {/*

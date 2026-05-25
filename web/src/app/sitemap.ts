@@ -33,12 +33,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/`,
+          en: `${SITE_URL}/en`,
+          'x-default': `${SITE_URL}/`,
+        },
+      },
     },
     {
       url: `${SITE_URL}/tools`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.95,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/tools`,
+          en: `${SITE_URL}/en/tools`,
+          'x-default': `${SITE_URL}/tools`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/en`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${SITE_URL}/en/tools`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     {
       url: `${SITE_URL}/settings`,
