@@ -80,14 +80,22 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
     className,
   );
 
+  // <div> 에는 aria-label 이 ARIA prohibited. role="complementary" 부여로 landmark 화
+  // (광고는 보조 콘텐츠 — complementary landmark).
   return (
-    <div className={containerCls} data-ad-slot={slotKey} aria-label="광고 영역">
+    <div
+      className={containerCls}
+      data-ad-slot={slotKey}
+      role="complementary"
+      aria-label="광고 영역"
+    >
       {hasImage ? (
         image!.href ? (
           <a
             href={image!.href}
             target="_blank"
             rel="noopener noreferrer sponsored"
+            aria-label={image!.alt ? `광고: ${image!.alt}` : '광고 링크'}
             className="block w-full"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

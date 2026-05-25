@@ -152,8 +152,10 @@ const ORGANIZATION_JSON_LD = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // 접근성: 사용자 줌 차단 금지 (a11y · meta-viewport 감사)
+  // PWA·a11y 표준 합의는 줌 허용 + 최대 5x.
+  maximumScale: 5,
+  userScalable: true,
   viewportFit: 'cover',
 };
 
@@ -210,7 +212,9 @@ export default function RootLayout({
                 <AdSlot size="sidebar" slotKey="sidebarRight" />
               </div>
             </aside>
-            <div className="xl:px-[180px]">{children}</div>
+            <div id="main-content" tabIndex={-1} className="xl:px-[180px]">
+              {children}
+            </div>
           </div>
         </div>
         <BottomNav />
