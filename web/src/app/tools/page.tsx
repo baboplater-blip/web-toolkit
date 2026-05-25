@@ -11,6 +11,7 @@ import {
   Search,
   Sparkles,
   Star,
+  TrendingUp,
   X,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -260,6 +261,25 @@ export default function ToolsHubPage() {
       .filter((t): t is ToolMeta => t !== undefined && t.status === 'ready')
       .slice(0, 8);
   }, [recent, favorites, isSearching, isFiltered]);
+
+  /* 인기 도구 (usage 상위, 즐겨찾기·최근에 이미 있는 도구는 제외) */
+  const popularTools = useMemo<ToolMeta[]>(() => {
+    if (isSearching || isFiltered) return [];
+    const entries = Object.entries(usage)
+      .filter(([, count]) => count > 0)
+      .sort(([, a], [, b]) => b - a);
+    if (entries.length === 0) return [];
+    const excluded = new Set<string>([
+      ...favorites,
+      ...recentTools.map((t) => t.id),
+    ]);
+    const map = new Map(TOOLS.map((t) => [t.id, t]));
+    return entries
+      .filter(([id]) => !excluded.has(id))
+      .map(([id]) => map.get(id))
+      .filter((t): t is ToolMeta => t !== undefined && t.status === 'ready')
+      .slice(0, 6);
+  }, [usage, favorites, recentTools, isSearching, isFiltered]);
 
   /* 카테고리 그루핑 (검색·필터 없을 때만) */
   const grouped = useMemo(() => {
@@ -531,6 +551,30 @@ export default function ToolsHubPage() {
               {recentTools.map((tool) => (
                 <ToolCard
                   key={`recent-${tool.id}`}
+                  tool={tool}
+                  favorite={isFavorite(tool.id)}
+                  onToggleFavorite={toggle}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {popularTools.length > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <TrendingUp className="h-3.5 w-3.5" />
+                자주 쓰는 도구
+              </h2>
+              <span className="text-[11px] text-muted-foreground">
+                {popularTools.length}개
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+              {popularTools.map((tool) => (
+                <ToolCard
+                  key={`pop-${tool.id}`}
                   tool={tool}
                   favorite={isFavorite(tool.id)}
                   onToggleFavorite={toggle}
