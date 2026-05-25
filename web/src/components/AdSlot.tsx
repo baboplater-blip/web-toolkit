@@ -93,17 +93,17 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
             target="_blank"
             rel="noopener noreferrer sponsored"
             aria-label={image!.alt ? `광고: ${image!.alt}` : '광고 링크'}
-            className="block w-full"
+            className="block h-full w-full"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={image!.src}
               alt={image!.alt ?? '광고'}
-              className={cn(
-                'block w-full h-auto',
-                isSidebar ? 'max-h-[600px] object-contain' : 'max-h-[250px] object-contain',
-              )}
-              loading="lazy"
+              className="block h-full w-full object-contain"
+              // top slot 은 LCP 후보라 eager + high priority.
+              // 다른 slot 은 viewport 외라 lazy 유지.
+              loading={isTop ? 'eager' : 'lazy'}
+              fetchPriority={isTop ? 'high' : 'auto'}
               onClick={() => {
                 try {
                   const key = 'webtoolkit/ads/clicks';
@@ -120,10 +120,9 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
           <img
             src={image!.src}
             alt={image!.alt ?? '광고'}
-            className={cn(
-              'block h-full w-full object-contain',
-            )}
-            loading="lazy"
+            className="block h-full w-full object-contain"
+            loading={isTop ? 'eager' : 'lazy'}
+            fetchPriority={isTop ? 'high' : 'auto'}
           />
         )
       ) : html ? (
