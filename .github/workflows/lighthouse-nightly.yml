@@ -1,0 +1,98 @@
+name: Lighthouse Nightly
+
+# 매일 KST 02:00 (UTC 17:00) 에 라이브 사이트의 핵심 8개 페이지 측정.
+# manual trigger (workflow_dispatch) 도 지원.
+#
+# - 회귀 임계 미만(assertions error) 이면 workflow fail → 메일 알림
+# - 결과 HTML 은 temporary-public-storage 로 업로드되어 PR/issue 에서 공유 가능
+# - .lighthouseci/ 디렉터리는 artifact 로 30일 보존
+on:
+  schedule:
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: Mobile Lighthouse (8 pages)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.14.x
+
+      - name: Run Lighthouse against production
+        id: lhci
+        working-directory: web
+        run: lhci autorun
+        continue-on-error: true
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ github.run_id }}
+          path: web/.lighthouseci/
+          retention-days: 30
+
+      - name: Open regression issue on failure
+        if: steps.lhci.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const date = new Date().toISOString().slice(0, 10);
+            const title = `Lighthouse 회귀 — ${date}`;
+            // 이미 같은 날짜의 회귀 issue 가 열려 있으면 댓글만 추가
+            const existing = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              labels: 'lighthouse,regression',
+              per_page: 20,
+            });
+            const dup = existing.data.find((i) => i.title === title);
+            const body = [
+              '야간 Lighthouse 측정에서 회귀 임계 미만 항목이 발견됐습니다.',
+              '',
+              `- 워크플로 실행: ${runUrl}`,
+              `- 측정 시각(UTC): ${new Date().toISOString()}`,
+              '',
+              '상세 결과는 위 링크의 artifacts (\`lighthouse-<run_id>\`) 와',
+              '워크플로 로그의 temporary-public-storage URL 을 확인하세요.',
+              '',
+              '임계값 정의: `web/lighthouserc.json`',
+            ].join('\n');
+            if (dup) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: dup.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body,
+                labels: ['lighthouse', 'regression'],
+              });
+            }
+
+      - name: Fail job if regression
+        if: steps.lhci.outcome == 'failure'
+        run: |
+          echo "Lighthouse assertions failed — see uploaded artifact + issue."
+          exit 1

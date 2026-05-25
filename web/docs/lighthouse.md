@@ -142,6 +142,47 @@ npm run build 2>&1 | grep -E "^\\s+(○|λ)" | head -20
 2. 회귀 임계를 명백히 넘는 경우 즉시 롤백 또는 핫픽스
 3. 점수 회복 후 본 문서 절차 업데이트
 
+## 자동 측정 (GitHub Actions)
+
+`.github/workflows/lighthouse-nightly.yml` 이 **매일 KST 02:00 (UTC 17:00)** 에
+라이브 사이트의 8개 페이지를 자동 측정한다. 수동 실행은 GitHub Actions UI 의
+`Run workflow` 버튼.
+
+### 동작
+
+1. `@lhci/cli@0.14.x` 로 8개 URL 측정 (mobile, perf preset, 1회 측정)
+2. 결과 HTML 은 **temporary-public-storage** 로 업로드되어 워크플로 로그에
+   공개 URL 노출 (PR/issue 에서 그대로 공유 가능)
+3. `.lighthouseci/` 디렉터리 전체는 **artifact 로 30일 보존**
+4. 임계 미만 항목(assertions `error`) 이면 워크플로 fail
+5. fail 시 `lighthouse,regression` 레이블 단 GitHub issue 자동 생성 — 같은 날짜
+   issue 가 이미 열려 있으면 댓글만 추가 (중복 방지)
+
+### 임계값 (`web/lighthouserc.json`)
+
+| 항목 | 레벨 | 임계 |
+| --- | --- | --- |
+| Performance | warn | minScore 0.7 |
+| Accessibility | **error** | minScore 0.9 |
+| Best Practices | warn | minScore 0.8 |
+| SEO | **error** | minScore 0.9 |
+| LCP | warn | ≤ 4000ms |
+| CLS | **error** | ≤ 0.25 |
+| TBT | warn | ≤ 600ms |
+| Speed Index | warn | ≤ 5800ms |
+
+`error` 항목 미달 시 issue 생성, `warn` 은 로그에만 표시되고 워크플로는 통과.
+(A11y/SEO 100점 유지 + CLS 0 누적 성과를 회귀 마지노선으로 강제)
+
+### 수동 트리거
+
+```bash
+# GitHub Actions UI: Actions → Lighthouse Nightly → Run workflow
+# 또는 로컬에서 동일 cfg 실행
+cd web
+npx -p @lhci/cli@0.14.x lhci autorun
+```
+
 ## 측정 이력
 
 > 새 측정 결과는 아래에 추가. 최신이 위.
