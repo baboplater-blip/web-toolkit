@@ -131,6 +131,7 @@ export default function JsonFormatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder='{ "hello": "world" }'
+            aria-label="JSON 입력"
             rows={10}
             className={`w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y ${
               !parsed.ok ? 'border-destructive/50' : ''
@@ -198,8 +199,7 @@ export default function JsonFormatPage() {
                 readOnly
                 value={output}
                 rows={viewMode === 'minify' ? 3 : 10}
-                className="w-full rounded-lg border bg-muted px-3 py-2 text-xs font-mono resize-y"
-              />
+                className="w-full rounded-lg border bg-muted px-3 py-2 text-xs font-mono resize-y" aria-label="결과" />
               {stats && (
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>

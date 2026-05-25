@@ -88,8 +88,7 @@ export default function TextCountPage() {
             onChange={(e) => setText(e.target.value)}
             rows={12}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm resize-y"
-            placeholder="텍스트를 입력하세요..."
-          />
+            placeholder="텍스트를 입력하세요..." aria-label="텍스트를 입력하세요..." />
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-3">

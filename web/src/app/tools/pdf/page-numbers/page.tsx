@@ -475,6 +475,7 @@ export default function PageNumbersPage() {
                     inputMode === 'folder' ? '예: 2-10 (모든 PDF 에 동일 적용)' : '예: 2-10'
                   }
                   disabled={processing}
+                  aria-label="페이지 번호를 넣을 페이지 범위"
                   className="h-9 mt-2"
                 />
               )}

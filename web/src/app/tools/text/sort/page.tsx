@@ -247,8 +247,7 @@ export default function TextSortPage() {
               rows={16}
               className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
               placeholder="줄 단위로 입력..."
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="줄 단위로 입력..." />
           </div>
 
           <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -281,8 +280,7 @@ export default function TextSortPage() {
               readOnly
               value={resultText}
               rows={16}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-            />
+              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y" aria-label="결과" />
           </div>
         </div>
 

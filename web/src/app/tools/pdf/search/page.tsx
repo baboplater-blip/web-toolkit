@@ -125,8 +125,7 @@ export default function PdfSearchPage() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           placeholder="검색어"
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-        />
+          className="w-full rounded-md border bg-background px-3 py-2 text-sm" aria-label="검색어" />
         <div className="flex flex-wrap gap-3 text-xs">
           <label className="flex items-center gap-1.5">
             <input type="checkbox" className="h-3.5 w-3.5" checked={caseSensitive} onChange={(e) => setCaseSensitive(e.target.checked)} />

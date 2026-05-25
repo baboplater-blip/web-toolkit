@@ -506,6 +506,7 @@ export default function ImageResizePage() {
                   value={percent}
                   onChange={(e) => setPercent(Number(e.target.value))}
                   disabled={processing}
+                  aria-label="리사이즈 비율 (%)"
                   className="w-full accent-primary"
                 />
               </div>

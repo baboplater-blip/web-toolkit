@@ -221,8 +221,7 @@ export default function CsvJsonPage() {
               readOnly
               value={output}
               rows={18}
-              className="w-full rounded-lg border bg-muted px-2.5 py-2 text-xs font-mono resize-y"
-            />
+              className="w-full rounded-lg border bg-muted px-2.5 py-2 text-xs font-mono resize-y" aria-label="결과" />
           </div>
         </div>
 

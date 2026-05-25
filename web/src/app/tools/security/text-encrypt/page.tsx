@@ -166,8 +166,7 @@ export default function TextEncryptPage() {
               onChange={(e) => setConfirmPass(e.target.value)}
               placeholder="비밀번호 확인"
               className="h-9 font-mono text-xs"
-              autoComplete="new-password"
-            />
+              autoComplete="new-password" aria-label="비밀번호 확인" />
           )}
         </div>
 
@@ -211,8 +210,7 @@ export default function TextEncryptPage() {
               readOnly
               value={output}
               rows={6}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y break-all"
-            />
+              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y break-all" aria-label="결과" />
           </div>
         )}
 

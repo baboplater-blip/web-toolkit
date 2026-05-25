@@ -191,8 +191,7 @@ export default function TextReplacePage() {
               readOnly
               value={output}
               rows={16}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-            />
+              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y" aria-label="결과" />
           </div>
         </div>
 

@@ -298,6 +298,7 @@ export default function AudioMergePage() {
                   value={crossfadeSec}
                   onChange={(e) => setCrossfadeSec(Math.max(0.1, Number(e.target.value)))}
                   disabled={processing}
+                  aria-label="크로스페이드 시간 (초)"
                   className="w-16 h-7 rounded border bg-background px-2 text-xs ml-auto"
                 />
               )}

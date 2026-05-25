@@ -100,7 +100,7 @@ function SliderRow({ label, value, min, max, onChange }: { label: string; value:
   return (
     <div className="space-y-0.5">
       <label className="text-xs font-medium">{label}</label>
-      <input type="range" min={min} max={max} value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full" />
+      <input type="range" min={min} max={max} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={label} className="w-full" />
     </div>
   );
 }

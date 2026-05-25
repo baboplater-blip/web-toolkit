@@ -104,16 +104,19 @@ export default function SubtitleEditPage() {
                 <input
                   value={formatTimecode(c.start, ',')}
                   onChange={(e) => updateCue(i, { start: parseTimeInput(e.target.value) })}
+                  aria-label={`자막 ${i + 1} 시작 시간`}
                   className="rounded-md border bg-background px-1 py-0.5 font-mono"
                 />
                 <input
                   value={formatTimecode(c.end, ',')}
                   onChange={(e) => updateCue(i, { end: parseTimeInput(e.target.value) })}
+                  aria-label={`자막 ${i + 1} 끝 시간`}
                   className="rounded-md border bg-background px-1 py-0.5 font-mono"
                 />
                 <textarea
                   value={c.text}
                   onChange={(e) => updateCue(i, { text: e.target.value })}
+                  aria-label={`자막 ${i + 1} 텍스트`}
                   className="rounded-md border bg-background px-1.5 py-1 min-h-[2em] leading-snug"
                   rows={2}
                 />

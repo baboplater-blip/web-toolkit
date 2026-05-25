@@ -255,8 +255,7 @@ export default function MarkdownTocPage() {
               readOnly
               value={finalOutput}
               rows={20}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-            />
+              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y" aria-label="결과" />
           </div>
         </div>
 

@@ -280,8 +280,7 @@ export default function OcrPage() {
             <textarea
               readOnly
               value={recognized}
-              className="w-full h-80 p-3 text-xs font-mono rounded-lg border bg-background resize-y"
-            />
+              className="w-full h-80 p-3 text-xs font-mono rounded-lg border bg-background resize-y" aria-label="결과" />
           </div>
         )}
 

@@ -188,7 +188,18 @@ function main() {
         continue;
       }
       const preceding = next.slice(Math.max(0, t.start - 400), t.start);
-      const candidate = extractCandidateLabels(preceding);
+      let candidate = extractCandidateLabels(preceding);
+
+      // 폴백 1: placeholder 가 있으면 그 값을 라벨로 사용
+      if (!candidate) {
+        const ph = block.match(/placeholder\s*=\s*"([^"]+)"/);
+        if (ph) candidate = ph[1].slice(0, 40);
+      }
+      // 폴백 2: readOnly textarea/Input 은 "결과" 로 의미 부여
+      if (!candidate && /\breadOnly\b/.test(block)) {
+        candidate = '결과';
+      }
+
       if (!candidate) {
         skipped++;
         continue;

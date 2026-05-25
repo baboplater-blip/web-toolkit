@@ -260,8 +260,7 @@ export default function Base64Page() {
               readOnly
               value={output}
               rows={8}
-              className="w-full rounded-lg border bg-muted px-3 py-2 text-xs font-mono resize-y"
-            />
+              className="w-full rounded-lg border bg-muted px-3 py-2 text-xs font-mono resize-y" aria-label="결과" />
             {mode === 'encode-file' && fileData && (
               <div className="rounded-lg border bg-background p-2">
                 <p className="text-[10px] font-semibold text-muted-foreground mb-1">

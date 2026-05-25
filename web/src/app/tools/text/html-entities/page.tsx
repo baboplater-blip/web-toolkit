@@ -162,6 +162,7 @@ export default function HtmlEntitiesPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={14}
+              aria-label="HTML 텍스트 입력"
               className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
               spellCheck={false}
             />
@@ -181,8 +182,7 @@ export default function HtmlEntitiesPage() {
               readOnly
               value={output}
               rows={14}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-            />
+              className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y" aria-label="결과" />
           </div>
         </div>
 

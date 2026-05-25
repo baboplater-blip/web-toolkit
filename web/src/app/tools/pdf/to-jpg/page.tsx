@@ -320,8 +320,7 @@ export default function PdfToJpgPage() {
                   onChange={(e) => setRangeSpec(e.target.value)}
                   placeholder="예: 1, 3, 5-7"
                   disabled={processing}
-                  className="h-9 mt-2"
-                />
+                  className="h-9 mt-2" aria-label="예: 1, 3, 5-7" />
               )}
             </div>
 

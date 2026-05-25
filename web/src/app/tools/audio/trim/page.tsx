@@ -235,6 +235,7 @@ export default function AudioTrimPage() {
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   disabled={processing}
+                  aria-label="시작 시간"
                   className="h-9 font-mono text-xs"
                 />
               </div>
@@ -255,6 +256,7 @@ export default function AudioTrimPage() {
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   disabled={processing}
+                  aria-label="끝 시간"
                   className="h-9 font-mono text-xs"
                 />
               </div>

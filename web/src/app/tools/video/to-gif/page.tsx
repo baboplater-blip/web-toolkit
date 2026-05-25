@@ -403,8 +403,7 @@ export default function VideoToGifPage() {
               onChange={(e) => setStartTime(e.target.value)}
               placeholder="MM:SS.ms"
               disabled={processing}
-              className="h-9 font-mono text-xs"
-            />
+              className="h-9 font-mono text-xs" aria-label="MM:SS.ms" />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -426,8 +425,7 @@ export default function VideoToGifPage() {
               onChange={(e) => setEndTime(e.target.value)}
               placeholder="MM:SS.ms"
               disabled={processing}
-              className="h-9 font-mono text-xs"
-            />
+              className="h-9 font-mono text-xs" aria-label="MM:SS.ms" />
           </div>
         </div>
         <p className="text-[10px] text-muted-foreground mt-1">

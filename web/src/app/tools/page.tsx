@@ -345,8 +345,7 @@ export default function ToolsHubPage() {
               placeholder="도구 검색 — / 키로 빠르게 포커스"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="h-10 pl-9 pr-9"
-            />
+              className="h-10 pl-9 pr-9" aria-label="도구 검색 — / 키로 빠르게 포커스" />
             {query && (
               <button
                 type="button"

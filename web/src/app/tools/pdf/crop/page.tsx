@@ -267,6 +267,7 @@ export default function PdfCropPage() {
                       value={value}
                       onChange={(e) => setter(Math.max(0, Number(e.target.value) || 0))}
                       disabled={processing}
+                      aria-label={`여백 ${label}`}
                       className="h-9 text-sm"
                     />
                   </div>
@@ -353,8 +354,7 @@ export default function PdfCropPage() {
                   onChange={(e) => setRangeSpec(e.target.value)}
                   placeholder="예: 2-10"
                   disabled={processing}
-                  className="h-9 mt-2"
-                />
+                  className="h-9 mt-2" aria-label="예: 2-10" />
               )}
             </div>
 

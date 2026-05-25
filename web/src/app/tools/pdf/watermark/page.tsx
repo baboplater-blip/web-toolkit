@@ -578,6 +578,7 @@ export default function PdfWatermarkPage() {
                     inputMode === 'folder' ? '예: 1-5, 7 (모든 PDF 에 동일 적용)' : '예: 1-5, 7'
                   }
                   disabled={processing}
+                  aria-label="워터마크를 적용할 페이지 범위"
                   className="h-9 mt-2"
                 />
               )}

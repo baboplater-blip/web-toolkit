@@ -109,7 +109,7 @@ function RangeBox({ label, v, onChange }: { label: string; v: number; onChange: 
   return (
     <div className="space-y-0.5">
       <label className="text-[10px] text-muted-foreground">{label}</label>
-      <input type="number" min={0} max={100} value={v} onChange={(e) => onChange(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-xs" />
+      <input type="number" min={0} max={100} value={v} onChange={(e) => onChange(Number(e.target.value))} aria-label={label} className="w-full rounded-md border bg-background px-2 py-1 text-xs" />
     </div>
   );
 }

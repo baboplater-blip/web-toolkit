@@ -153,8 +153,7 @@ export default function UrlPage() {
               readOnly
               value={result.output}
               rows={4}
-              className="w-full rounded-lg border bg-muted px-3 py-2 text-xs font-mono resize-y break-all"
-            />
+              className="w-full rounded-lg border bg-muted px-3 py-2 text-xs font-mono resize-y break-all" aria-label="결과" />
           </div>
         )}
 

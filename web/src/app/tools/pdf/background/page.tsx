@@ -155,6 +155,7 @@ export default function PdfBackgroundPage() {
             <input
               value={color}
               onChange={(e) => setColor(e.target.value)}
+              aria-label="배경색 헥스 값"
               className="flex-1 rounded-md border bg-background px-2 py-1 text-sm font-mono"
             />
           </div>

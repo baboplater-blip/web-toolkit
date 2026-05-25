@@ -95,7 +95,7 @@ export default function PosterPage() {
           />
           <div className="rounded-xl border bg-card p-3 space-y-2">
             <p className="text-xs">현재 시각: {time.toFixed(2)}s / {duration.toFixed(2)}s</p>
-            <input type="range" min={0} max={duration} step={0.1} value={time} onChange={(e) => setTime(Number(e.target.value))} className="w-full" />
+            <input type="range" min={0} max={duration} step={0.1} value={time} onChange={(e) => setTime(Number(e.target.value))} aria-label="현재 재생 시점" className="w-full" />
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <label className="text-xs font-medium">포맷</label>
