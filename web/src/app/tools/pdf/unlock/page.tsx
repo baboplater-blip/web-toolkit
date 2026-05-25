@@ -9,7 +9,6 @@ import {
   RotateCcw,
   ShieldOff,
 } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -18,7 +17,8 @@ import {
   isPdfFile,
   stripExtension,
   triggerDownload,
-} from '@/lib/tools/pdf-common';
+} from '@/lib/tools/file-utils';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import { formatBytes } from '@/lib/compress/format';
 
 /**
@@ -78,6 +78,7 @@ export default function PdfUnlockPage() {
     setProgressText('');
 
     try {
+      const { PDFDocument } = await loadPdfLib();
       const arrayBuffer = await file.arrayBuffer();
 
       if (mode === 'auto') {

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Loader2, FilePen } from 'lucide-react';
-import { PDFCheckBox, PDFDocument, PDFDropdown, PDFRadioGroup, PDFTextField } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 type FieldKind = 'text' | 'checkbox' | 'radio' | 'dropdown' | 'other';
 interface FieldInfo {
@@ -35,6 +35,7 @@ export default function PdfFormFillPage() {
     setFields([]);
     setResult(null);
     try {
+      const { PDFDocument, PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown } = await loadPdfLib();
       const doc = await PDFDocument.load(await f.arrayBuffer(), { updateMetadata: false });
       const form = doc.getForm();
       const list: FieldInfo[] = [];
@@ -73,6 +74,7 @@ export default function PdfFormFillPage() {
     setBusy(true);
     setResult(null);
     try {
+      const { PDFDocument, PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown } = await loadPdfLib();
       const doc = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
       const form = doc.getForm();
       for (const f of fields) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowLeft,
   MoveLeft,
@@ -13,7 +14,6 @@ import {
   Shuffle,
   Trash2,
 } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
@@ -132,6 +132,7 @@ export default function PdfOrganizePage() {
     setResult(null);
 
     try {
+      const { PDFDocument } = await loadPdfLib();
       const src = await loadPdfFromFile(file);
       const outDoc = await PDFDocument.create();
       outDoc.setProducer('');

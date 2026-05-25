@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowLeft,
   Download,
@@ -9,7 +10,6 @@ import {
   Loader2,
   RotateCcw,
 } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
@@ -73,6 +73,7 @@ export default function PdfRepairPage() {
     setProgressText('');
 
     try {
+      const { PDFDocument } = await loadPdfLib();
       const arrayBuffer = await file.arrayBuffer();
 
       // Step 1: pdf-lib 관대한 파싱

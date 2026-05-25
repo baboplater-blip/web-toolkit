@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowLeft,
   Download,
@@ -9,7 +10,6 @@ import {
   RotateCcw,
   SplitSquareHorizontal,
 } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import JSZip from 'jszip';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -105,6 +105,7 @@ export default function PdfSplitPage() {
     setResult(null);
 
     try {
+      const { PDFDocument } = await loadPdfLib();
       const src = await loadPdfFromFile(file);
       const total = src.getPageCount();
       const parts = buildParts(total);

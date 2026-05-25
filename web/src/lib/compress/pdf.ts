@@ -7,19 +7,14 @@
  *            이미지 품질만 조절. 10~80% 감소 (이미지 비중에 따라).
  * - 'rasterize': 각 페이지 전체를 JPEG 로 변환 후 새 PDF 재조립. 40~90% 감소,
  *                텍스트 선택/벡터 상실.
+ *
+ * @cantoo/pdf-lib 는 함수 호출 시점에 lazy load — 이 모듈을 import 하는 페이지의
+ * 초기 JS 번들에 pdf-lib(~600KB) 가 포함되지 않는다.
  */
 
-import {
-  PDFDocument,
-  PDFName,
-  PDFNumber,
-  PDFRawStream,
-  PDFRef,
-  PDFDict,
-  PDFArray,
-  PDFObject,
-} from '@cantoo/pdf-lib';
+import type { PDFDocument, PDFRawStream, PDFDict, PDFRef } from '@cantoo/pdf-lib';
 import type { PDFPageProxy } from 'pdfjs-dist';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 export type PdfCompressMode = 'light' | 'smart' | 'rasterize';
 
@@ -67,6 +62,7 @@ function stripMetadata(doc: PDFDocument) {
 }
 
 async function compressLight(file: File): Promise<PdfCompressResult> {
+  const { PDFDocument } = await loadPdfLib();
   const bytes = await file.arrayBuffer();
   const srcDoc = await PDFDocument.load(bytes, { updateMetadata: false });
   stripMetadata(srcDoc);
@@ -83,24 +79,6 @@ async function compressLight(file: File): Promise<PdfCompressResult> {
 }
 
 // ---- smart 모드 ----
-
-/** 필터 값이 DCTDecode (JPEG) 인지 확인. 단일 이름/배열 모두 처리. */
-function isDctFilter(filter: PDFObject | undefined): boolean {
-  if (!filter) return false;
-  if (filter instanceof PDFName) return filter.toString() === '/DCTDecode';
-  if (filter instanceof PDFArray) {
-    // 배열의 마지막 필터만 DCT 면 복합 인코딩 (예: /ASCII85Decode /DCTDecode). 복잡하므로 스킵.
-    return filter.size() === 1 && filter.lookup(0, PDFName)?.toString() === '/DCTDecode';
-  }
-  return false;
-}
-
-/** 스트림 딕셔너리에서 숫자 값 읽기. */
-function readNumber(dict: PDFDict, key: string): number | null {
-  const v = dict.get(PDFName.of(key));
-  if (v instanceof PDFNumber) return v.asNumber();
-  return null;
-}
 
 /** 캔버스에 그려 JPEG 로 재인코딩. */
 async function recompressJpeg(
@@ -161,6 +139,23 @@ async function compressSmart(
 ): Promise<PdfCompressResult> {
   onProgress?.({ stage: 'preparing', current: 0, total: 0 });
 
+  const { PDFDocument, PDFName, PDFNumber, PDFRawStream, PDFArray } = await loadPdfLib();
+
+  // helper closures — pdf-lib 의 값(클래스/static) 을 캡처
+  const isDctFilter = (filter: unknown): boolean => {
+    if (!filter) return false;
+    if (filter instanceof PDFName) return filter.toString() === '/DCTDecode';
+    if (filter instanceof PDFArray) {
+      return filter.size() === 1 && filter.lookup(0, PDFName)?.toString() === '/DCTDecode';
+    }
+    return false;
+  };
+  const readNumber = (dict: PDFDict, key: string): number | null => {
+    const v = dict.get(PDFName.of(key));
+    if (v instanceof PDFNumber) return v.asNumber();
+    return null;
+  };
+
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { updateMetadata: false });
   stripMetadata(doc);
@@ -169,7 +164,7 @@ async function compressSmart(
 
   onProgress?.({ stage: 'scanning', current: 0, total: 0 });
 
-  const imageRefs: { ref: PDFRef; stream: PDFRawStream }[] = [];
+  const collected: { ref: PDFRef; stream: PDFRawStream }[] = [];
   for (const [ref, obj] of ctx.enumerateIndirectObjects()) {
     if (!(obj instanceof PDFRawStream)) continue;
     const dict = obj.dict;
@@ -183,16 +178,16 @@ async function compressSmart(
     if (imageMask && imageMask.toString() === 'true') continue;
     if (!isDctFilter(dict.get(PDFName.of('Filter')))) continue;
 
-    imageRefs.push({ ref, stream: obj });
+    collected.push({ ref, stream: obj });
   }
 
   let processed = 0;
   let skipped = 0;
-  const total = imageRefs.length;
+  const total = collected.length;
 
-  for (let i = 0; i < imageRefs.length; i++) {
+  for (let i = 0; i < collected.length; i++) {
     onProgress?.({ stage: 'recompressing', current: i + 1, total });
-    const { ref, stream } = imageRefs[i];
+    const { ref, stream } = collected[i];
     const origBytes = stream.getContents();
     const origDict = stream.dict;
     const origW = readNumber(origDict, 'Width') ?? 0;
@@ -285,6 +280,7 @@ async function compressRasterize(
   options: PdfCompressOptions,
   onProgress?: (p: PdfCompressProgress) => void,
 ): Promise<PdfCompressResult> {
+  const { PDFDocument } = await loadPdfLib();
   const pdfjs = await loadPdfJs();
   const arrayBuffer = await file.arrayBuffer();
 

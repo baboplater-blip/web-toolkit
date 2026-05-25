@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2, Palette } from 'lucide-react';
-import { PDFDocument, degrees, rgb } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 type Mode = 'color' | 'image';
 
@@ -50,6 +50,7 @@ export default function PdfBackgroundPage() {
     setBusy(true);
     setResult(null);
     try {
+      const { PDFDocument, degrees, rgb } = await loadPdfLib();
       const doc = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
       const pages = doc.getPages();
 

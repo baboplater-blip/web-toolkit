@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Loader2, FileEdit } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 interface MetaForm {
   title: string;
@@ -35,6 +35,7 @@ export default function PdfMetadataPage() {
     setMeta(null);
     setResult(null);
     try {
+      const { PDFDocument } = await loadPdfLib();
       const doc = await PDFDocument.load(await f.arrayBuffer(), { updateMetadata: false });
       setMeta({
         title: doc.getTitle() ?? '',
@@ -57,6 +58,7 @@ export default function PdfMetadataPage() {
     setBusy(true);
     setResult(null);
     try {
+      const { PDFDocument } = await loadPdfLib();
       const doc = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
       doc.setTitle(meta.title);
       doc.setAuthor(meta.author);

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Loader2, LayoutGrid } from 'lucide-react';
-import { PDFDocument, PageSizes } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 type NupMode = 2 | 4 | 6 | 9;
 type Orientation = 'auto' | 'portrait' | 'landscape';
@@ -41,6 +41,7 @@ export default function PdfNupPage() {
     setBusy(true);
     setResult(null);
     try {
+      const { PDFDocument, PageSizes } = await loadPdfLib();
       const src = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
       const out = await PDFDocument.create();
       const { cols, rows, preferredLandscape } = NUP_LAYOUTS[mode];

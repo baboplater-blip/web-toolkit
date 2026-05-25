@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowLeft,
   Download,
@@ -9,7 +10,6 @@ import {
   RotateCcw,
   RotateCw,
 } from 'lucide-react';
-import { degrees } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -104,6 +104,7 @@ export default function PdfRotatePage() {
   };
 
   async function rotateOne(srcFile: File): Promise<Blob> {
+    const { degrees } = await loadPdfLib();
     const doc = await loadPdfFromFile(srcFile);
     const total = doc.getPageCount();
     const targets = targetMode === 'all' ? allPages(total) : parsePageRanges(rangeSpec, total);

@@ -1,13 +1,18 @@
 /**
- * PDF 전용 공통 유틸. pdf-lib (정확히는 @cantoo/pdf-lib — pdf-lib + SVG 지원 fork)
- * 의존이 있으므로 PDF 도구 페이지에서만 import 한다.
+ * PDF 전용 공통 유틸 — `@cantoo/pdf-lib` 를 *함수 호출 시점*에 lazy load.
+ *
+ * `import { loadPdfFromFile } from '@/lib/tools/pdf-common'` 만으로는 더 이상
+ * pdf-lib 가 페이지 초기 번들에 따라오지 않는다. 실제 호출이 일어나는 순간
+ * `loadPdfLib()` 가 동적 import 로 모듈을 가져온다.
  *
  * 파일/다운로드 일반 유틸은 `./file-utils` 에 있다.
  */
 
-import { PDFDocument } from '@cantoo/pdf-lib';
+import type { PDFDocument } from './pdf-lazy';
+import { loadPdfLib } from './pdf-lazy';
 
 export async function loadPdfFromFile(file: File): Promise<PDFDocument> {
+  const { PDFDocument } = await loadPdfLib();
   const bytes = await file.arrayBuffer();
   return PDFDocument.load(bytes, { updateMetadata: false });
 }

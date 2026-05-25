@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowDown,
   ArrowLeft,
@@ -12,7 +13,6 @@ import {
   RotateCcw,
   Trash2,
 } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
@@ -154,6 +154,7 @@ export default function PdfMergePage() {
     clearResult();
 
     try {
+      const { PDFDocument } = await loadPdfLib();
       const outDoc = await PDFDocument.create();
       outDoc.setProducer('');
       outDoc.setCreator('');

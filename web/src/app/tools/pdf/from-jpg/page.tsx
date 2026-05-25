@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowDown,
   ArrowLeft,
@@ -12,7 +13,6 @@ import {
   RotateCcw,
   Trash2,
 } from 'lucide-react';
-import { PDFDocument, PageSizes } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
@@ -112,6 +112,7 @@ export default function FromJpgPage() {
     setResult(null);
 
     try {
+      const { PDFDocument, PageSizes } = await loadPdfLib();
       const doc = await PDFDocument.create();
       doc.setProducer('');
       doc.setCreator('');

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowLeft,
   Download,
@@ -12,7 +13,6 @@ import {
   Type,
   X,
 } from 'lucide-react';
-import { degrees, rgb, StandardFonts } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -146,6 +146,7 @@ export default function PdfWatermarkPage() {
   };
 
   async function processOne(srcFile: File): Promise<Blob> {
+    const { degrees, rgb, StandardFonts } = await loadPdfLib();
     const doc = await loadPdfFromFile(srcFile);
     const total = doc.getPageCount();
     const targets = targetMode === 'all' ? allPages(total) : parsePageRanges(rangeSpec, total);

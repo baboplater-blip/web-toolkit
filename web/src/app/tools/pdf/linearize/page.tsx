@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Loader2, Zap } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 export default function PdfLinearizePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -28,6 +28,7 @@ export default function PdfLinearizePage() {
     setBusy(true);
     setResult(null);
     try {
+      const { PDFDocument } = await loadPdfLib();
       const buf = await file.arrayBuffer();
       const doc = await PDFDocument.load(buf, { updateMetadata: false, ignoreEncryption: false });
       // 새 PDF 를 처음부터 재저장 — 구조 단순화·중복 객체 제거

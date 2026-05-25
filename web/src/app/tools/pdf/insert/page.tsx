@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2, FilePlus } from 'lucide-react';
-import { PDFDocument } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
 type Position = 'start' | 'end' | 'after';
 
@@ -31,7 +31,10 @@ export default function PdfInsertPage() {
     }
     base
       .arrayBuffer()
-      .then((buf) => PDFDocument.load(buf, { updateMetadata: false }))
+      .then(async (buf) => {
+        const { PDFDocument } = await loadPdfLib();
+        return PDFDocument.load(buf, { updateMetadata: false });
+      })
       .then((doc) => setBasePages(doc.getPageCount()))
       .catch(() => setBasePages(0));
   }, [base]);
@@ -45,6 +48,7 @@ export default function PdfInsertPage() {
     setBusy(true);
     setResult(null);
     try {
+      const { PDFDocument } = await loadPdfLib();
       const baseDoc = await PDFDocument.load(await base.arrayBuffer(), { updateMetadata: false });
       const insertDoc = await PDFDocument.load(await insert.arrayBuffer(), { updateMetadata: false });
       const insertIndices = Array.from({ length: insertDoc.getPageCount() }, (_, i) => i);
