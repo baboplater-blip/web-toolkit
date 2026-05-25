@@ -235,6 +235,57 @@ npm run build 2>&1 | grep -E "^\\s+(○|λ)" | head -20
 - 도구 페이지 LCP 3.5s — 광고 이미지가 LCP 후보. 광고 lazy load 강화 또는 본문 우선 렌더링
 - /tools BP 96 — DevTools console 권고사항 1개 추정. 별도 audit 필요
 
+### 2026-05-25 (LCP 시도) — 캐시 인프라 강화 + 본질적 한계 확인
+
+**진단** (`compress` 페이지 LCP element + phase 분석)
+
+```
+LCP element: <img alt="..." loading="lazy" src="data:image/webp;base64,...">
+             (AdSlot 의 top 광고 이미지)
+phase breakdown:
+  TTFB         888ms
+  Load Delay  2978ms   ← 문제
+  Load Time     0.6ms
+  Render Delay   21ms
+```
+
+광고 데이터가 data URL 자체는 즉시 페인트 가능한 형식인데도 Load Delay 3초.
+원인: AdSlot 이 `'use client'` 컴포넌트 → hydration 완료 후 fetch → setState
+→ re-render 까지 ~3초.
+
+**처방 (`2f97713`)**
+
+1. AdSlot 의 top 슬롯에 `loading="eager"` + `fetchPriority="high"`
+2. `ads-config.ts` 에서 `cache: 'no-store'` 제거 (SW · HTTP 캐시 효과 부활)
+3. 모듈 평가 시점에 즉시 `loadAdsConfig()` 호출 (hydration 보다 먼저 fetch 시작)
+4. `<link rel="preload" as="fetch" href="/ads-config.json">` 첫 paint 와 동시 다운로드
+5. SW `isStaticAsset` · `PRECACHE_URLS` 에 `/ads-config.json` 추가
+
+**효과**
+
+| 페이지 | LCP before | LCP after | 변화 |
+|--------|-----------:|----------:|-----:|
+| compress | 3.9s | 4.1s | ~ |
+| pdf-merge | 3.6s | 3.6s | 0 |
+| image-resize | 3.8s | 3.8s | 0 |
+| util-qr | 3.8s | 3.8s | 0 |
+
+**lighthouse 첫 방문 시뮬레이션에서는 효과 미미**. 이유:
+
+- Lighthouse mobile preset 은 신규 사용자 (캐시 비어있음) 시뮬레이션 → SW precache 효과 못 봄
+- `ads-config.json` 78KB 가 4G slow 네트워크에서 다운로드에 1.5-2s 소요
+- preload 가 priority 만 올리지 절대 속도는 못 줄임
+- module eager fetch 도 첫 페이지 응답 받은 후에야 JS 가 평가되므로 큰 단축 없음
+
+**효과가 큰 환경**: 재방문 (SW 캐시 히트), 5G/Wi-Fi 사용자 (RTT 짧음). 실제
+한국 평균 모바일 사용자는 4G slow 보다 빠르므로 라이브 점수는 더 좋을 것.
+
+**근본적 처방은 별도 라운드** — `ads-config.json` 의 광고 이미지 data URL 을
+외부 파일 (`/ads/*.webp`) 로 분리. 그러면 config 자체가 ~1KB 로 축소되어 RTT
+1번에 끝남. 다만 admin 페이지의 이미지 업로드 로직 동시 변경 필요.
+
+### 비고 — 모바일 preset 의 LCP 가 항상 3s+ 인 이유
+
 ### 비고 — 모바일 preset 의 LCP 가 항상 3s+ 인 이유
 
 Lighthouse 12 의 mobile preset 은 4G slow + Moto G4 시뮬레이션이다. 실제 한국
