@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import bundleAnalyzer from '@next/bundle-analyzer';
 
 /**
  * 정적 export 모드.
@@ -15,9 +16,17 @@ import type { NextConfig } from 'next';
  *   - API Routes: 모두 _legacy 이전 완료
  *   - middleware: _legacy 이전 완료
  *   - redirect() in server component: / 만 → page.tsx 가 클라이언트 redirect 로 대체
+ *
+ * 번들 분석은 `ANALYZE=true npm run build` (또는 `npm run analyze`) 로 실행.
+ * Turbopack 빌드에서도 동작하며, 결과 HTML 은 `.next/analyze/` 에 떨어진다.
  */
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+  openAnalyzer: false,
+});
+
 const nextConfig: NextConfig = {
   output: 'export',
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

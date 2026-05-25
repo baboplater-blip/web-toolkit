@@ -6,6 +6,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/generate-tool-metadata.mjs && node scripts/stamp-sw-version.mjs",
     "build": "tsc --noEmit && next build",
+    "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint",
     "check": "tsc --noEmit && eslint",
@@ -62,6 +63,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.6",
     "@playwright/test": "^1.60.0",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4",
@@ -75,6 +77,7 @@
     "@types/react-dom": "^19",
     "@types/turndown": "^5.0.6",
     "@vitest/coverage-v8": "^4.1.4",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "tailwindcss": "^4",
