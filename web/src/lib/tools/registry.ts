@@ -114,6 +114,8 @@ export interface ToolMeta {
   phase: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   /** 검색에서 매칭될 추가 키워드 (한/영) */
   keywords?: string[];
+  /** 도구가 registry 에 추가된 날짜 (ISO yyyy-mm-dd). NEW 배지·신규순 정렬에 사용. */
+  addedAt?: string;
 }
 
 export const CATEGORY_LABELS: Record<ToolCategory | 'all', string> = {
@@ -1420,6 +1422,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['나이', 'age', '만나이', '세는나이', '연나이', '생일', 'birthday'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'dday',
@@ -1431,6 +1434,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['dday', '디데이', '카운트다운', 'countdown', '시험', '결혼'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'totp',
@@ -1442,6 +1446,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['totp', 'otp', '2fa', '인증', 'authenticator', 'google', 'rfc 6238'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'rsa-keypair',
@@ -1453,6 +1458,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['rsa', '키페어', 'keypair', 'pem', 'public', 'private', '암호'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'image-ascii-art',
@@ -1464,6 +1470,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['ascii', '아스키', 'art', '아트', '문자', 'text', 'image'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'md-table',
@@ -1475,6 +1482,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 7,
     keywords: ['markdown', 'table', '마크다운', '표', 'md', 'github', 'notion'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'video-merge',
@@ -1486,6 +1494,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 5,
     keywords: ['video', 'merge', 'concat', '합치기', '병합', 'mp4'],
+    addedAt: '2026-05-25',
   },
   {
     id: 'video-rotate',
@@ -1497,6 +1506,7 @@ export const TOOLS: ToolMeta[] = [
     status: 'ready',
     phase: 5,
     keywords: ['video', 'rotate', '회전', 'flip', '반전', '돌리기'],
+    addedAt: '2026-05-25',
   },
 ];
 

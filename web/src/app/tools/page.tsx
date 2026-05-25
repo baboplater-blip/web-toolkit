@@ -4,10 +4,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownAZ,
   Clock,
+  Flame,
   Keyboard,
   LayoutGrid,
   ListOrdered,
   Search,
+  Sparkles,
   Star,
   X,
 } from 'lucide-react';
@@ -20,7 +22,7 @@ import {
   type ToolCategory,
   type ToolMeta,
 } from '@/lib/tools/registry';
-import { useFavorites, useRecent } from '@/lib/hooks/useUsage';
+import { useFavorites, useRecent, useUsageStats } from '@/lib/hooks/useUsage';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES: (ToolCategory | 'all')[] = [
@@ -52,12 +54,62 @@ const CATEGORY_ORDER: ToolCategory[] = [
   'ai',
 ];
 
-type SortKey = 'relevance' | 'name' | 'phase';
+type SortKey = 'relevance' | 'name' | 'newest' | 'popular' | 'phase';
 const SORT_LABELS: Record<SortKey, string> = {
   relevance: '기본',
   name: '이름순',
-  phase: '신규순',
+  newest: 'NEW',
+  popular: '인기',
+  phase: '우선순위',
 };
+
+/** addedAt → 비교용 timestamp (없으면 0 — 가장 오래된 것으로 취급) */
+function addedTime(t: ToolMeta): number {
+  if (!t.addedAt) return 0;
+  const ms = Date.parse(t.addedAt);
+  return Number.isNaN(ms) ? 0 : ms;
+}
+
+function sortBy(
+  list: ToolMeta[],
+  key: SortKey,
+  usage: Record<string, number>,
+): ToolMeta[] {
+  if (key === 'relevance') {
+    // filterTools 가 이미 정렬해 주지만, 카테고리 그룹별 호출에서도 일관성 유지.
+    return [...list].sort((a, b) => {
+      if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+      return a.phase - b.phase;
+    });
+  }
+  if (key === 'name') {
+    const c = new Intl.Collator('ko');
+    return [...list].sort((a, b) => {
+      if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+      return c.compare(a.title, b.title);
+    });
+  }
+  if (key === 'phase') {
+    return [...list].sort((a, b) => {
+      if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+      return a.phase - b.phase;
+    });
+  }
+  if (key === 'newest') {
+    return [...list].sort((a, b) => {
+      if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+      return addedTime(b) - addedTime(a);
+    });
+  }
+  // popular
+  return [...list].sort((a, b) => {
+    if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+    const ua = usage[a.id] ?? 0;
+    const ub = usage[b.id] ?? 0;
+    if (ua !== ub) return ub - ua;
+    return a.phase - b.phase;
+  });
+}
 
 const SORT_STORAGE_KEY = 'webtoolkit:hub:sort';
 
@@ -113,6 +165,7 @@ export default function ToolsHubPage() {
 
   const { favorites, toggle, isFavorite } = useFavorites();
   const recent = useRecent();
+  const usage = useUsageStats();
 
   const searchRef = useRef<HTMLInputElement>(null);
   const categoryRailRef = useRef<HTMLDivElement>(null);
@@ -161,7 +214,13 @@ export default function ToolsHubPage() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const saved = window.localStorage.getItem(SORT_STORAGE_KEY);
-    if (saved === 'relevance' || saved === 'name' || saved === 'phase') {
+    if (
+      saved === 'relevance' ||
+      saved === 'name' ||
+      saved === 'newest' ||
+      saved === 'popular' ||
+      saved === 'phase'
+    ) {
       setSortKey(saved);
     }
   }, []);
@@ -170,23 +229,10 @@ export default function ToolsHubPage() {
     window.localStorage.setItem(SORT_STORAGE_KEY, sortKey);
   }, [sortKey]);
 
-  const tools = useMemo(() => {
-    const result = filterTools(query, category);
-    if (sortKey === 'name') {
-      const c = new Intl.Collator('ko');
-      return [...result].sort((a, b) => {
-        if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-        return c.compare(a.title, b.title);
-      });
-    }
-    if (sortKey === 'phase') {
-      return [...result].sort((a, b) => {
-        if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-        return b.phase - a.phase;
-      });
-    }
-    return result;
-  }, [query, category, sortKey]);
+  const tools = useMemo(
+    () => sortBy(filterTools(query, category), sortKey, usage),
+    [query, category, sortKey, usage],
+  );
   const readyCount = tools.filter((t) => t.status === 'ready').length;
   const plannedCount = tools.length - readyCount;
 
@@ -224,29 +270,13 @@ export default function ToolsHubPage() {
       arr.push(t);
       map.set(t.category, arr);
     }
-    for (const [, list] of map) {
-      if (sortKey === 'name') {
-        const c = new Intl.Collator('ko');
-        list.sort((a, b) => {
-          if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-          return c.compare(a.title, b.title);
-        });
-      } else if (sortKey === 'phase') {
-        list.sort((a, b) => {
-          if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-          return b.phase - a.phase;
-        });
-      } else {
-        list.sort((a, b) => {
-          if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-          return a.phase - b.phase;
-        });
-      }
+    for (const [cat, list] of map) {
+      map.set(cat, sortBy(list, sortKey, usage));
     }
     return CATEGORY_ORDER.filter((c) => map.has(c)).map(
       (c) => [c, map.get(c)!] as const,
     );
-  }, [isSearching, isFiltered, sortKey]);
+  }, [isSearching, isFiltered, sortKey, usage]);
 
   /* 키보드 단축키 */
   useEffect(() => {
@@ -396,22 +426,27 @@ export default function ToolsHubPage() {
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground flex-wrap">
               <ListOrdered className="h-3.5 w-3.5" />
               정렬:
-              {(['relevance', 'name', 'phase'] as SortKey[]).map((k) => (
+              {(
+                ['relevance', 'newest', 'popular', 'name', 'phase'] as SortKey[]
+              ).map((k) => (
                 <button
                   key={k}
                   type="button"
                   onClick={() => setSortKey(k)}
                   className={cn(
-                    'h-6 px-2 rounded-md border',
+                    'h-6 px-2 rounded-md border inline-flex items-center',
                     sortKey === k
                       ? 'bg-primary/10 border-primary/40 text-foreground'
                       : 'bg-background hover:bg-muted border-border',
                   )}
+                  aria-pressed={sortKey === k}
                 >
-                  {k === 'name' && <ArrowDownAZ className="inline h-3 w-3 mr-1" />}
+                  {k === 'name' && <ArrowDownAZ className="h-3 w-3 mr-1" />}
+                  {k === 'newest' && <Sparkles className="h-3 w-3 mr-1" />}
+                  {k === 'popular' && <Flame className="h-3 w-3 mr-1" />}
                   {SORT_LABELS[k]}
                 </button>
               ))}

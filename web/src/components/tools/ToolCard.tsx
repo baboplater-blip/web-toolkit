@@ -1,8 +1,11 @@
 'use client';
 
-import { Star } from 'lucide-react';
+import { Sparkles, Star } from 'lucide-react';
 import { CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
 import { cn } from '@/lib/utils';
+
+/** addedAt 이 이 일수 이내면 NEW 배지 표시 */
+const NEW_BADGE_DAYS = 14;
 
 interface ToolCardProps {
   tool: ToolMeta;
@@ -11,6 +14,14 @@ interface ToolCardProps {
   showCategory?: boolean;
   /** 검색어 — 카드 안 매치 부분을 강조 표시 */
   query?: string;
+}
+
+function isRecent(addedAt: string | undefined): boolean {
+  if (!addedAt) return false;
+  const t = Date.parse(addedAt);
+  if (Number.isNaN(t)) return false;
+  const days = (Date.now() - t) / 86_400_000;
+  return days >= 0 && days < NEW_BADGE_DAYS;
 }
 
 function highlight(text: string, query: string): React.ReactNode {
@@ -49,6 +60,7 @@ export function ToolCard({
 }: ToolCardProps) {
   const Icon = tool.icon;
   const isPlanned = tool.status === 'planned';
+  const isNew = !isPlanned && isRecent(tool.addedAt);
 
   const inner = (
     <div
@@ -67,6 +79,15 @@ export function ToolCard({
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex items-center gap-1">
+          {isNew && (
+            <span
+              className="shrink-0 inline-flex items-center gap-0.5 rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400"
+              title="최근 추가된 도구"
+            >
+              <Sparkles className="h-2.5 w-2.5" aria-hidden />
+              NEW
+            </span>
+          )}
           {isPlanned && (
             <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
               준비 중
