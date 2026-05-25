@@ -16,6 +16,7 @@ import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { loadBgRemoval } from '@/lib/tools/bg-removal-lazy';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -102,7 +103,7 @@ export default function RemoveBackgroundPage() {
   };
 
   async function processOne(srcFile: File): Promise<Blob> {
-    const { removeBackground } = await import('@imgly/background-removal');
+    const { removeBackground } = await loadBgRemoval();
     return await removeBackground(srcFile, {
       model:
         quality === 'fast'
@@ -167,7 +168,7 @@ export default function RemoveBackgroundPage() {
     setProgressText('AI 모델 로드 중 (최초 실행 시 ~40MB)');
 
     try {
-      const { removeBackground } = await import('@imgly/background-removal');
+      const { removeBackground } = await loadBgRemoval();
       const outBlob = await removeBackground(file, {
         model:
           quality === 'fast'
