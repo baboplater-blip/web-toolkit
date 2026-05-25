@@ -16,14 +16,23 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-e162365-202605250434';
+const SW_VERSION = 'webtoolkit-sw-7e23fb5-202605250446';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const ASSET_CACHE = `${SW_VERSION}-asset`;
 
 const RUNTIME_MAX_ENTRIES = 80;
 
+/**
+ * 사전 캐시 대상.
+ *   - 핵심 셸: 랜딩 / 도구 허브 / 오프라인 폴백 / 매니페스트 / 아이콘
+ *   - 인기 경량 도구 HTML — WASM 없이 즉시 동작하거나 의존성이 작은 것 우선
+ *   - HTML 만 미리 받고, _next/static chunks 는 첫 온라인 방문 시 runtime 캐시에서 자연 누적
+ *   - cache.add 는 실패해도 install 자체는 통과(allSettled) — 한 URL 실패로 전체 PWA 가
+ *     깨지지 않도록.
+ */
 const PRECACHE_URLS = [
+  // 셸
   '/',
   '/tools',
   '/settings',
@@ -31,6 +40,21 @@ const PRECACHE_URLS = [
   '/manifest.json',
   '/icon-192.svg',
   '/icon-512.svg',
+  // 기본 OG (공유 카드 라이브 캐시)
+  '/og/default.png',
+  // 인기 경량 도구 — 카테고리 다양성 + WASM 의존성 적은 것 위주
+  '/tools/compress',
+  '/tools/pdf/merge',
+  '/tools/pdf/split',
+  '/tools/pdf/rotate',
+  '/tools/image/resize',
+  '/tools/image/watermark',
+  '/tools/util/qr',
+  '/tools/util/base64',
+  '/tools/util/hash',
+  '/tools/dev/password',
+  '/tools/dev/uuid',
+  '/tools/text/case',
 ];
 
 self.addEventListener('install', (event) => {
