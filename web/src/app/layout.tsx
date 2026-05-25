@@ -110,6 +110,21 @@ export const metadata: Metadata = {
     email: false,
     address: false,
   },
+  verification: {
+    // 환경변수가 비어있으면 Next 가 알아서 메타 태그를 생략한다.
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: {
+      ...(process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION
+        ? {
+            'naver-site-verification':
+              process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION,
+          }
+        : {}),
+      ...(process.env.NEXT_PUBLIC_MS_VALIDATE_01
+        ? { 'msvalidate.01': process.env.NEXT_PUBLIC_MS_VALIDATE_01 }
+        : {}),
+    },
+  },
 };
 
 const ORGANIZATION_JSON_LD = {

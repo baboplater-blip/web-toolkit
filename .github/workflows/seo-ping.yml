@@ -1,0 +1,45 @@
+name: SEO IndexNow ping
+
+# 트리거:
+#   - master 푸시 후 60초 sleep (Vercel 배포 완료 보장) → ping
+#   - 스케줄 (UTC 00:00 매일) — 잠재적 누락 보정
+#   - 수동 (workflow_dispatch) — 대규모 변경 직후
+#
+# 작동 조건:
+#   secrets.INDEXNOW_KEY 설정. 없으면 스크립트가 no-op 처리.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'web/src/**'
+      - 'web/public/**'
+      - 'web/scripts/generate-tool-metadata.mjs'
+  schedule:
+    # 한국 시간 09:00 (UTC 00:00) — 트래픽 적은 시간대
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  ping:
+    name: IndexNow ping
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Wait for Vercel production deploy
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - name: Ping IndexNow
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://web-toolkit.vercel.app' }}
+        run: node scripts/ping-indexnow.mjs
