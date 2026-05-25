@@ -16,7 +16,7 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-5584c4d-202605250607';
+const SW_VERSION = 'webtoolkit-sw-6fbfa5b-202605250618';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const ASSET_CACHE = `${SW_VERSION}-asset`;
@@ -42,6 +42,10 @@ const PRECACHE_URLS = [
   '/icon-512.svg',
   // 광고 설정 — 첫 방문에도 LCP 임계 경로에서 즉시 사용 가능
   '/ads-config.json',
+  // 광고 이미지 (data URL 분리 후) — top 은 LCP 후보라 사전 캐시 중요
+  '/ads/top.webp',
+  '/ads/sidebarLeft.webp',
+  '/ads/sidebarRight.webp',
   // 기본 OG (공유 카드 라이브 캐시)
   '/og/default.png',
   // 인기 경량 도구 — 카테고리 다양성 + WASM 의존성 적은 것 위주

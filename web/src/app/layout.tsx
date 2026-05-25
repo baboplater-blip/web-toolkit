@@ -179,8 +179,9 @@ export default function RootLayout({
           }}
         />
         {/*
-         * ads-config 우선 fetch — AdSlot 의 hydration 후 fetch 체인이
+         * 광고 자산 우선 fetch — AdSlot 의 hydration 후 fetch 체인이
          * LCP 임계 경로를 차지하지 않도록 첫 paint 와 동시에 다운로드 트리거.
+         * top 광고 이미지는 LCP 후보라 image 타입 preload (가장 빠른 우선순위).
          */}
         <link
           rel="preload"
@@ -188,6 +189,7 @@ export default function RootLayout({
           as="fetch"
           crossOrigin="anonymous"
         />
+        <link rel="preload" href="/ads/top.webp" as="image" />
       </head>
       <body className="antialiased">
         <a
