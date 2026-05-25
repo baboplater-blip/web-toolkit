@@ -61,6 +61,32 @@ const SORT_LABELS: Record<SortKey, string> = {
 
 const SORT_STORAGE_KEY = 'webtoolkit:hub:sort';
 
+const VALID_CATEGORIES = new Set<ToolCategory | 'all'>([
+  'all',
+  'image',
+  'pdf',
+  'video',
+  'gif',
+  'audio',
+  'docs',
+  'text',
+  'dev',
+  'util',
+  'security',
+  'ai',
+]);
+
+function readUrlState(): { category: ToolCategory | 'all'; query: string } {
+  if (typeof window === 'undefined') return { category: 'all', query: '' };
+  const sp = new URLSearchParams(window.location.search);
+  const cat = sp.get('category');
+  const q = sp.get('q') ?? '';
+  const validCat = cat && VALID_CATEGORIES.has(cat as ToolCategory | 'all')
+    ? (cat as ToolCategory | 'all')
+    : 'all';
+  return { category: validCat, query: q };
+}
+
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 ).replace(/\/$/, '');
@@ -103,6 +129,33 @@ export default function ToolsHubPage() {
     m.set('all', total);
     return m;
   }, []);
+
+  /* URL → 상태 (mount + popstate 시) */
+  useEffect(() => {
+    const sync = () => {
+      const { category: c, query: q } = readUrlState();
+      setCategory(c);
+      setQuery(q);
+    };
+    sync();
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
+
+  /* 상태 → URL 동기화 (replaceState — 새 history 항목 안 만듦) */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const sp = new URLSearchParams(window.location.search);
+    if (category === 'all') sp.delete('category');
+    else sp.set('category', category);
+    if (!query.trim()) sp.delete('q');
+    else sp.set('q', query.trim());
+    const next = sp.toString();
+    const target = `${window.location.pathname}${next ? `?${next}` : ''}${window.location.hash}`;
+    if (target !== window.location.pathname + window.location.search + window.location.hash) {
+      window.history.replaceState(null, '', target);
+    }
+  }, [category, query]);
 
   /* 정렬 키 로드/저장 */
   useEffect(() => {
