@@ -27,6 +27,12 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   output: 'export',
+  // lucide-react 는 가장 많이 쓰이는 무거운 패키지 (190+ 파일에서 named import).
+  // optimizePackageImports 가 barrel import 를 자동으로 per-icon subpath import 로
+  // 재작성해서 tree-shake 효율을 끌어올린다. Turbopack 도 지원.
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
