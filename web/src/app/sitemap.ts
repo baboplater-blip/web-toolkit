@@ -67,6 +67,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/guide`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
       url: `${SITE_URL}/settings`,
       lastModified: now,
       changeFrequency: 'monthly',
@@ -76,6 +82,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const seen = new Set<string>();
   const toolEntries: MetadataRoute.Sitemap = [];
+  const guideEntries: MetadataRoute.Sitemap = [];
   for (const tool of TOOLS) {
     if (tool.status !== 'ready') continue;
     if (seen.has(tool.href)) continue;
@@ -87,7 +94,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: tool.phase >= 5 ? 'weekly' : 'monthly',
       priority: CATEGORY_PRIORITY[tool.category] ?? 0.7,
     });
+    // 각 도구별 가이드 페이지 (long-tail SEO)
+    guideEntries.push({
+      url: `${SITE_URL}/guide/${tool.id}`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: (CATEGORY_PRIORITY[tool.category] ?? 0.7) * 0.8,
+    });
   }
 
-  return [...hub, ...toolEntries];
+  return [...hub, ...toolEntries, ...guideEntries];
 }
