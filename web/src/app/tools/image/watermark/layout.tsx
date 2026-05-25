@@ -2,14 +2,14 @@
 import type { Metadata } from 'next';
 
 const TITLE = `이미지 워터마크 — Web Toolkit`;
-const DESCRIPTION = `텍스트/로고 워터마크 합성.`;
+const DESCRIPTION = `이미지 위에 텍스트 또는 로고 이미지를 워터마크로 합성합니다. 위치·투명도·크기·회전을 자유롭게 조절할 수 있습니다.`;
 const URL_PATH = '/tools/image/watermark';
 const OG_IMAGE = '/og/tools/image-watermark.png';
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["watermark","워터마크","이미지","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["watermark","logo","stamp","워터마크","로고","텍스트","서명","overlay","이미지","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"이미지 워터마크","description":"텍스트/로고 워터마크 합성.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark","applicationCategory":"MultimediaApplication","applicationSubCategory":"이미지","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"이미지 워터마크 사용 방법","description":"텍스트/로고 워터마크 합성.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"이미지 워터마크","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"이미지 워터마크에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"이미지 워터마크","description":"이미지 위에 텍스트 또는 로고 이미지를 워터마크로 합성합니다. 위치·투명도·크기·회전을 자유롭게 조절할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark","applicationCategory":"MultimediaApplication","applicationSubCategory":"이미지","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"이미지 워터마크 사용 방법","description":"이미지 위에 텍스트 또는 로고 이미지를 워터마크로 합성합니다. 위치·투명도·크기·회전을 자유롭게 조절할 수 있습니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"이미지 워터마크","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"이미지 워터마크에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/watermark#step3"}]} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

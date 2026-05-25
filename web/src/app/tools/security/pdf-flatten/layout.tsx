@@ -2,14 +2,14 @@
 import type { Metadata } from 'next';
 
 const TITLE = `PDF Flatten — Web Toolkit`;
-const DESCRIPTION = `양식 입력값을 페이지에 고정하고 주석·링크를 제거합니다.`;
+const DESCRIPTION = `양식 입력값을 페이지에 고정하고 주석·링크를 제거해 인쇄·배포용으로 최종화합니다. 편집 가능한 필드를 모두 평탄화합니다.`;
 const URL_PATH = '/tools/security/pdf-flatten';
 const OG_IMAGE = '/og/tools/pdf-flatten.png';
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["flatten","form","annotation","평탄화","양식","주석","pdf","보안","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["flatten","form","annotation","평탄화","양식","주석","pdf","인쇄","최종화","PDF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: `PDF Flatten — 보안 도구`,
+        alt: `PDF Flatten — PDF 도구`,
       },
     ],
   },
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"PDF Flatten","description":"양식 입력값을 페이지에 고정하고 주석·링크를 제거합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten","applicationCategory":"SecurityApplication","applicationSubCategory":"보안","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"PDF Flatten 사용 방법","description":"양식 입력값을 페이지에 고정하고 주석·링크를 제거합니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"PDF Flatten","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten"},"step":[{"@type":"HowToStep","position":1,"name":"입력","text":"변환·분석할 텍스트나 데이터를 입력 영역에 붙여넣습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten#step1"},{"@type":"HowToStep","position":2,"name":"결과 확인","text":"결과가 실시간으로 표시됩니다. 옵션을 조절해 결과를 다듬을 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten#step2"},{"@type":"HowToStep","position":3,"name":"복사·저장","text":"결과를 클립보드에 복사하거나 파일로 내려받습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"PDF Flatten","description":"양식 입력값을 페이지에 고정하고 주석·링크를 제거해 인쇄·배포용으로 최종화합니다. 편집 가능한 필드를 모두 평탄화합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten","applicationCategory":"BusinessApplication","applicationSubCategory":"PDF","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"PDF Flatten 사용 방법","description":"양식 입력값을 페이지에 고정하고 주석·링크를 제거해 인쇄·배포용으로 최종화합니다. 편집 가능한 필드를 모두 평탄화합니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"PDF Flatten","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"PDF Flatten에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/security/pdf-flatten#step3"}]} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

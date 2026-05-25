@@ -149,6 +149,7 @@ web-toolkit/
 
 ## 변경 이력
 
+- 2026-05-25: **SEO 허브 확장 + registry 톱10 정리** — `/guide/category/[cat]` 11개 카테고리 가이드 신규 생성(CollectionPage·BreadcrumbList·ItemList·FAQ JSON-LD 다층). `/guide` 인덱스의 카테고리 헤더를 해당 카테고리 가이드로 링크, 도구 수 hardcode 제거. `/guide/[slug]` breadcrumb 가 카테고리 가이드 경유 4단으로 확장. `sitemap.ts` 에 11개 카테고리 URL 추가. registry 정합성: `images-to-pdf` 중복 카드 제거(pdf-from-jpg 와 동일 href), `html-entities` 이중 인코딩 description 정정, `pdf-rotate`·`gif-resize`·`image-watermark`·`video-trim`·`audio-trim`·`gif-trim`·`base64` 키워드·설명 보강, `pdf-flatten` 카테고리 security→pdf, `chart` dev→util, `subtitle-edit`·`subtitle-convert` text→video. 빌드 336 페이지 통과.
 - 2026-05-22: 폴더명 `agent-control-panel` → `web-toolkit`, 미션 재정의(원격 통제 → 브라우저 도구 모음). 하네스 신규 구성 — 11 에이전트 + 11 스킬 + 5 슬래시 커맨드.
 - 2026-05-22: **legacy-pruner 1차** — 옛 채팅·에이전트 시스템 `_legacy/` 이전 완료. `agent/`, `agent-package/`, `supabase/`, `middleware.ts`, web 의 `chat|dashboard|harnesses|share|(auth)|api/*` 라우트, `components/chat|dashboard|sidebar|settings`, `AuthProvider|SessionRecovery|RealtimeStatusBadge|ErrorReporter`, `lib/supabase|hooks|agent-*|outbox|realtime-*|...` 모두 이동. 루트 redirect `/chat` → `/tools`, BottomNav 2탭(도구·설정)으로 단순화, settings 페이지 테마+안내만 유지. 빌드 OK.
 - 2026-05-22: **의존성 청소** — Supabase(2), web-push(2), pako(2), react-markdown 계열(3) 등 9개 패키지 + 125 transitive 제거. `prebuild` 스크립트(copy-agent-package.mjs) 와 `public/_agent/` 산출물도 정리.

@@ -132,6 +132,12 @@ export default async function GuidePage({ params }: PageProps) {
       {
         '@type': 'ListItem',
         position: 3,
+        name: `${categoryLabel} 가이드`,
+        item: `${SITE_URL}/guide/category/${tool.category}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 4,
         name: tool.title,
         item: `${SITE_URL}/guide/${tool.id}`,
       },
@@ -189,7 +195,10 @@ export default async function GuidePage({ params }: PageProps) {
           <span className="mx-1">/</span>
           <a href="/guide" className="hover:text-foreground">가이드</a>
           <span className="mx-1">/</span>
-          <a href={`/tools?category=${tool.category}`} className="hover:text-foreground">
+          <a
+            href={`/guide/category/${tool.category}`}
+            className="hover:text-foreground"
+          >
             {categoryLabel}
           </a>
           <span className="mx-1">/</span>

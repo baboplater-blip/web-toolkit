@@ -26,10 +26,11 @@ const SITE_URL = (
   .replace(/^﻿/, '')
   .replace(/\/$/, '');
 
+const READY_COUNT = TOOLS.filter((t) => t.status === 'ready').length;
+
 export const metadata: Metadata = {
   title: '도구 사용 가이드 — Web Toolkit',
-  description:
-    'Web Toolkit 123 개 도구의 사용법·옵션·자주 묻는 질문을 도구별로 정리한 가이드 모음. PDF·이미지·비디오·오디오·OCR·AI 도구를 효율적으로 쓰는 방법.',
+  description: `Web Toolkit ${READY_COUNT}개 도구의 사용법·옵션·자주 묻는 질문을 도구별·카테고리별로 정리한 가이드 모음. PDF·이미지·비디오·오디오·OCR·AI 도구를 효율적으로 쓰는 방법.`,
   alternates: {
     canonical: '/guide',
     languages: {
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: '도구 사용 가이드 — Web Toolkit',
-    description: '123 개 도구의 사용법·옵션·FAQ 정리.',
+    description: `${READY_COUNT}개 도구의 사용법·옵션·FAQ 정리.`,
     type: 'website',
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
@@ -118,12 +119,25 @@ export default function GuideIndexPage() {
           const list = grouped.get(cat)!;
           return (
             <section key={cat} className="space-y-3">
-              <h2 className="text-lg font-bold">
-                {CATEGORY_LABELS[cat]}
-                <span className="text-xs font-normal text-muted-foreground ml-2">
-                  {list.length}개
-                </span>
-              </h2>
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="text-lg font-bold">
+                  <a
+                    href={`/guide/category/${cat}`}
+                    className="hover:text-primary hover:underline"
+                  >
+                    {CATEGORY_LABELS[cat]}
+                  </a>
+                  <span className="text-xs font-normal text-muted-foreground ml-2">
+                    {list.length}개
+                  </span>
+                </h2>
+                <a
+                  href={`/guide/category/${cat}`}
+                  className="text-[11px] text-primary hover:underline shrink-0"
+                >
+                  카테고리 가이드 →
+                </a>
+              </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {list.map((t) => (
                   <li key={t.id}>

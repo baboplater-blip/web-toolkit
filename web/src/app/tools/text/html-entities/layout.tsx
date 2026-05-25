@@ -2,14 +2,14 @@
 import type { Metadata } from 'next';
 
 const TITLE = `HTML 엔티티 인·디코드 — Web Toolkit`;
-const DESCRIPTION = `&amp;amp; · &amp;copy; · &amp;#161; 등 엔티티 양방향 변환.`;
+const DESCRIPTION = `HTML 특수 문자(&, <, >, ©, ¡ 등)와 엔티티 표기를 양방향 변환합니다. 이름·숫자·16진수 엔티티를 모두 지원합니다.`;
 const URL_PATH = '/tools/text/html-entities';
 const OG_IMAGE = '/og/tools/html-entities.png';
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["html","entity","entities","엔티티","encode","decode","escape","텍스트","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["html","entity","entities","엔티티","encode","decode","escape","특수문자","텍스트","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"HTML 엔티티 인·디코드","description":"&amp;amp; · &amp;copy; · &amp;#161; 등 엔티티 양방향 변환.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities","applicationCategory":"UtilitiesApplication","applicationSubCategory":"텍스트","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"HTML 엔티티 인·디코드 사용 방법","description":"&amp;amp; · &amp;copy; · &amp;#161; 등 엔티티 양방향 변환.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"HTML 엔티티 인·디코드","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities"},"step":[{"@type":"HowToStep","position":1,"name":"입력","text":"변환·분석할 텍스트나 데이터를 입력 영역에 붙여넣습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities#step1"},{"@type":"HowToStep","position":2,"name":"결과 확인","text":"결과가 실시간으로 표시됩니다. 옵션을 조절해 결과를 다듬을 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities#step2"},{"@type":"HowToStep","position":3,"name":"복사·저장","text":"결과를 클립보드에 복사하거나 파일로 내려받습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"HTML 엔티티 인·디코드","description":"HTML 특수 문자(&, <, >, ©, ¡ 등)와 엔티티 표기를 양방향 변환합니다. 이름·숫자·16진수 엔티티를 모두 지원합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities","applicationCategory":"UtilitiesApplication","applicationSubCategory":"텍스트","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"HTML 엔티티 인·디코드 사용 방법","description":"HTML 특수 문자(&, <, >, ©, ¡ 등)와 엔티티 표기를 양방향 변환합니다. 이름·숫자·16진수 엔티티를 모두 지원합니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"HTML 엔티티 인·디코드","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities"},"step":[{"@type":"HowToStep","position":1,"name":"입력","text":"변환·분석할 텍스트나 데이터를 입력 영역에 붙여넣습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities#step1"},{"@type":"HowToStep","position":2,"name":"결과 확인","text":"결과가 실시간으로 표시됩니다. 옵션을 조절해 결과를 다듬을 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities#step2"},{"@type":"HowToStep","position":3,"name":"복사·저장","text":"결과를 클립보드에 복사하거나 파일로 내려받습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/text/html-entities#step3"}]} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

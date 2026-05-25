@@ -2,14 +2,14 @@
 import type { Metadata } from 'next';
 
 const TITLE = `오디오 자르기 — Web Toolkit`;
-const DESCRIPTION = `구간 지정으로 오디오를 잘라냅니다.`;
+const DESCRIPTION = `시작·끝 시각을 지정해 오디오 파일의 원하는 구간만 잘라 새 파일로 저장합니다. MP3·WAV·OGG 등 대부분 포맷을 지원합니다.`;
 const URL_PATH = '/tools/audio/trim';
 const OG_IMAGE = '/og/tools/audio-trim.png';
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["trim","cut","자르기","오디오","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["trim","cut","splice","segment","오디오자르기","구간","편집","audio cut","오디오","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"오디오 자르기","description":"구간 지정으로 오디오를 잘라냅니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim","applicationCategory":"MultimediaApplication","applicationSubCategory":"오디오","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"오디오 자르기 사용 방법","description":"구간 지정으로 오디오를 잘라냅니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"오디오 자르기","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"오디오 자르기에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"오디오 자르기","description":"시작·끝 시각을 지정해 오디오 파일의 원하는 구간만 잘라 새 파일로 저장합니다. MP3·WAV·OGG 등 대부분 포맷을 지원합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim","applicationCategory":"MultimediaApplication","applicationSubCategory":"오디오","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"오디오 자르기 사용 방법","description":"시작·끝 시각을 지정해 오디오 파일의 원하는 구간만 잘라 새 파일로 저장합니다. MP3·WAV·OGG 등 대부분 포맷을 지원합니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"오디오 자르기","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"오디오 자르기에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim#step3"}]} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

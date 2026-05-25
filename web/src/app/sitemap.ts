@@ -72,6 +72,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.85,
     },
+    ...(
+      ['pdf', 'image', 'video', 'gif', 'audio', 'docs', 'text', 'dev', 'util', 'security', 'ai'] as ToolCategory[]
+    ).map<MetadataRoute.Sitemap[number]>((cat) => ({
+      url: `${SITE_URL}/guide/category/${cat}`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: (CATEGORY_PRIORITY[cat] ?? 0.7) * 0.9,
+    })),
     {
       url: `${SITE_URL}/settings`,
       lastModified: now,

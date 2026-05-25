@@ -173,13 +173,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'pdf-rotate',
     title: 'PDF 회전',
-    description: '선택한 페이지를 90/180/270도 회전합니다.',
+    description: 'PDF 의 선택한 페이지만 90·180·270도 회전해 새로 저장합니다. 가로/세로 스캔 혼합 문서를 정리할 때 유용합니다.',
     href: '/tools/pdf/rotate',
     category: 'pdf',
     icon: RotateCw,
     status: 'ready',
     phase: 1,
-    keywords: ['rotate', '회전'],
+    keywords: ['rotate', 'turn', 'flip', '회전', '페이지회전', '90도', 'orientation'],
   },
   {
     id: 'pdf-organize',
@@ -206,13 +206,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'pdf-from-jpg',
     title: 'JPG → PDF',
-    description: '여러 이미지를 하나의 PDF 로 묶습니다.',
+    description: '여러 장의 이미지(JPG·PNG·WebP·HEIC)를 순서대로 묶어 하나의 PDF 파일로 만듭니다.',
     href: '/tools/pdf/from-jpg',
     category: 'pdf',
     icon: FileText,
     status: 'ready',
     phase: 1,
-    keywords: ['convert', '변환', 'combine'],
+    keywords: ['convert', 'combine', '이미지to PDF', '이미지묶기', 'jpg', 'png', 'webp', '변환', 'PDF로', 'image to pdf'],
   },
   {
     id: 'pdf-page-numbers',
@@ -452,24 +452,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'image-watermark',
     title: '이미지 워터마크',
-    description: '텍스트/로고 워터마크 합성.',
+    description: '이미지 위에 텍스트 또는 로고 이미지를 워터마크로 합성합니다. 위치·투명도·크기·회전을 자유롭게 조절할 수 있습니다.',
     href: '/tools/image/watermark',
     category: 'image',
     icon: Stamp,
     status: 'ready',
     phase: 2,
-    keywords: ['watermark', '워터마크'],
-  },
-  {
-    id: 'images-to-pdf',
-    title: '여러 이미지 → PDF',
-    description: '이미지를 순서대로 묶어 PDF 로 만듭니다.',
-    href: '/tools/pdf/from-jpg',
-    category: 'image',
-    icon: Images,
-    status: 'ready',
-    phase: 2,
-    keywords: ['convert', 'combine', 'PDF로'],
+    keywords: ['watermark', 'logo', 'stamp', '워터마크', '로고', '텍스트', '서명', 'overlay'],
   },
   {
     id: 'image-batch-compress',
@@ -601,13 +590,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'video-trim',
     title: '비디오 자르기',
-    description: '구간 지정으로 비디오를 잘라냅니다.',
+    description: '시작·종료 시각을 지정해 비디오의 특정 구간만 잘라 새 파일로 저장합니다. 재인코딩 없이 빠르게 분할됩니다.',
     href: '/tools/video/trim',
     category: 'video',
     icon: Scissors,
     status: 'ready',
     phase: 5,
-    keywords: ['trim', 'cut', '자르기'],
+    keywords: ['trim', 'cut', 'splice', 'segment', '비디오자르기', '구간', '편집', '동영상자르기'],
   },
   {
     id: 'video-compress',
@@ -646,13 +635,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'gif-resize',
     title: 'GIF 리사이즈',
-    description: 'GIF 크기를 조정합니다.',
+    description: 'GIF 의 가로·세로 크기를 비율 유지 또는 자유 비율로 변경합니다. 해상도를 줄여 용량을 함께 절감할 수 있습니다.',
     href: '/tools/gif/resize',
     category: 'gif',
     icon: Maximize2,
     status: 'ready',
     phase: 5,
-    keywords: ['resize', '크기'],
+    keywords: ['resize', 'scale', 'dimension', '크기', '해상도', '비율', 'gif size'],
   },
   {
     id: 'gif-optimize',
@@ -679,13 +668,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'gif-trim',
     title: 'GIF 구간 자르기',
-    description: '시작·끝 시간을 지정하여 GIF 를 자릅니다.',
+    description: 'GIF 의 시작·끝 시간을 지정해 원하는 구간만 잘라 새 GIF 로 저장합니다. 앞뒤 불필요한 프레임을 제거할 때 유용합니다.',
     href: '/tools/gif/trim',
     category: 'gif',
     icon: Scissors,
     status: 'ready',
     phase: 5,
-    keywords: ['trim', 'cut', '구간'],
+    keywords: ['trim', 'cut', 'segment', '구간', '자르기', 'gif trim', '프레임'],
   },
   {
     id: 'gif-effects',
@@ -736,13 +725,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'audio-trim',
     title: '오디오 자르기',
-    description: '구간 지정으로 오디오를 잘라냅니다.',
+    description: '시작·끝 시각을 지정해 오디오 파일의 원하는 구간만 잘라 새 파일로 저장합니다. MP3·WAV·OGG 등 대부분 포맷을 지원합니다.',
     href: '/tools/audio/trim',
     category: 'audio',
     icon: Scissors,
     status: 'ready',
     phase: 6,
-    keywords: ['trim', 'cut', '자르기'],
+    keywords: ['trim', 'cut', 'splice', 'segment', '오디오자르기', '구간', '편집', 'audio cut'],
   },
   {
     id: 'audio-compress',
@@ -814,13 +803,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'base64',
     title: 'Base64 인코딩',
-    description: '텍스트·파일을 Base64 로 변환 (양방향).',
+    description: '텍스트·파일을 Base64 로 인코딩하거나 다시 디코딩합니다. data URI·이미지 임베드·API 전송 사전 처리에 사용합니다.',
     href: '/tools/util/base64',
     category: 'util',
     icon: FileCode,
     status: 'ready',
     phase: 6,
-    keywords: ['base64', 'encode', 'decode'],
+    keywords: ['base64', 'encode', 'decode', '인코딩', '디코딩', '변환', 'data uri', '이미지base64'],
   },
 
   // ---- Phase 7: 문서 변환 / 텍스트 / 개발자 도구 ----
@@ -1265,13 +1254,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'html-entities',
     title: 'HTML 엔티티 인·디코드',
-    description: '&amp;amp; · &amp;copy; · &amp;#161; 등 엔티티 양방향 변환.',
+    description: 'HTML 특수 문자(&, <, >, ©, ¡ 등)와 엔티티 표기를 양방향 변환합니다. 이름·숫자·16진수 엔티티를 모두 지원합니다.',
     href: '/tools/text/html-entities',
     category: 'text',
     icon: Code2,
     status: 'ready',
     phase: 7,
-    keywords: ['html', 'entity', 'entities', '엔티티', 'encode', 'decode', 'escape'],
+    keywords: ['html', 'entity', 'entities', '엔티티', 'encode', 'decode', 'escape', '특수문자'],
   },
 
   {
@@ -1333,13 +1322,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'pdf-flatten',
     title: 'PDF Flatten',
-    description: '양식 입력값을 페이지에 고정하고 주석·링크를 제거합니다.',
+    description: '양식 입력값을 페이지에 고정하고 주석·링크를 제거해 인쇄·배포용으로 최종화합니다. 편집 가능한 필드를 모두 평탄화합니다.',
     href: '/tools/security/pdf-flatten',
-    category: 'security',
+    category: 'pdf',
     icon: Layers,
     status: 'ready',
     phase: 7,
-    keywords: ['flatten', 'form', 'annotation', '평탄화', '양식', '주석', 'pdf'],
+    keywords: ['flatten', 'form', 'annotation', '평탄화', '양식', '주석', 'pdf', '인쇄', '최종화'],
   },
 
   {
@@ -1370,7 +1359,7 @@ export const TOOLS: ToolMeta[] = [
   { id: 'sql-format', title: 'SQL 포맷터', description: 'SQL 쿼리 들여쓰기·키워드 케이스. 10종 방언 지원.', href: '/tools/dev/sql-format', category: 'dev', icon: Database, status: 'ready', phase: 7, keywords: ['sql', 'format', 'pretty', '쿼리', 'mysql', 'postgres'] },
   { id: 'jsonpath', title: 'JSONPath 테스터', description: 'JSONPath 표현식으로 JSON 값 추출. 실시간 평가.', href: '/tools/dev/jsonpath', category: 'dev', icon: Search, status: 'ready', phase: 7, keywords: ['jsonpath', 'json', '쿼리', '추출', 'path'] },
   { id: 'json-xml', title: 'JSON ↔ XML', description: 'JSON 과 XML 간 상호 변환. 루트 태그 지정.', href: '/tools/dev/json-xml', category: 'dev', icon: ArrowRightLeft, status: 'ready', phase: 7, keywords: ['json', 'xml', 'convert', '변환'] },
-  { id: 'chart', title: '차트 → PNG', description: '막대·꺾은선·원그래프 데이터를 PNG 로 생성.', href: '/tools/dev/chart', category: 'dev', icon: BarChart3, status: 'ready', phase: 7, keywords: ['chart', '차트', '그래프', 'bar', 'line', 'pie', 'png'] },
+  { id: 'chart', title: '차트 → PNG', description: '막대·꺾은선·원그래프 데이터를 입력해 즉시 PNG 이미지로 생성합니다. 보고서·발표 자료에 바로 붙여 쓸 수 있습니다.', href: '/tools/dev/chart', category: 'util', icon: BarChart3, status: 'ready', phase: 7, keywords: ['chart', '차트', '그래프', 'bar', 'line', 'pie', 'png', '시각화', 'graph'] },
   { id: 'csv-diff', title: 'CSV 비교', description: '두 CSV 를 키 컬럼 기준 행 단위 비교. 추가·삭제·변경 표시.', href: '/tools/docs/csv-diff', category: 'docs', icon: Diff, status: 'ready', phase: 7, keywords: ['csv', 'diff', '비교', 'compare'] },
 
   // PDF 고급 5종
@@ -1391,8 +1380,8 @@ export const TOOLS: ToolMeta[] = [
   { id: 'image-exif-batch', title: 'EXIF 일괄 제거', description: '여러 사진의 GPS·촬영 정보를 한꺼번에 제거.', href: '/tools/image/exif-batch', category: 'image', icon: ShieldOff, status: 'ready', phase: 2, keywords: ['exif', 'strip', '일괄', 'privacy', '제거'] },
 
   // 오디오/비디오 7종
-  { id: 'subtitle-edit', title: '자막 편집·시간 보정', description: 'SRT·VTT·ASS·LRC 편집·시간 보정·포맷 변환.', href: '/tools/text/subtitle-edit', category: 'text', icon: Subtitles, status: 'ready', phase: 7, keywords: ['subtitle', '자막', 'srt', 'vtt', 'ass', 'lrc', '편집'] },
-  { id: 'subtitle-convert', title: '자막 포맷 변환', description: 'SRT ↔ VTT ↔ ASS ↔ LRC ↔ TXT 자유 변환.', href: '/tools/text/subtitle-convert', category: 'text', icon: ArrowRightLeft, status: 'ready', phase: 7, keywords: ['subtitle', '자막', 'srt', 'vtt', '변환'] },
+  { id: 'subtitle-edit', title: '자막 편집·시간 보정', description: 'SRT·VTT·ASS·LRC 자막 파일을 편집하고 시간을 일괄 보정하거나 포맷을 변환합니다. 영상 워크플로우의 자막 마무리에 사용합니다.', href: '/tools/text/subtitle-edit', category: 'video', icon: Subtitles, status: 'ready', phase: 7, keywords: ['subtitle', '자막', 'srt', 'vtt', 'ass', 'lrc', '편집', 'sync', '싱크', '시간보정'] },
+  { id: 'subtitle-convert', title: '자막 포맷 변환', description: 'SRT ↔ VTT ↔ ASS ↔ LRC ↔ TXT 자유 변환. 영상 플랫폼별 자막 포맷 호환성 문제를 한 번에 해결합니다.', href: '/tools/text/subtitle-convert', category: 'video', icon: ArrowRightLeft, status: 'ready', phase: 7, keywords: ['subtitle', '자막', 'srt', 'vtt', 'ass', 'lrc', '변환', 'convert', '포맷'] },
   { id: 'video-burn-subtitle', title: '비디오에 자막 굽기', description: 'SRT/VTT/ASS 자막을 영상에 영구 결합.', href: '/tools/video/burn-subtitle', category: 'video', icon: Subtitles, status: 'ready', phase: 5, keywords: ['subtitle', 'burn', '자막', '굽기', '하드'] },
   { id: 'video-poster', title: '비디오 포스터 추출', description: '비디오의 특정 시각을 정지 이미지로 캡처.', href: '/tools/video/poster', category: 'video', icon: ImageIcon, status: 'ready', phase: 5, keywords: ['poster', 'thumbnail', '포스터', '썸네일', '캡처'] },
   { id: 'audio-silence-trim', title: '무음 자동 제거', description: '말 없는 구간을 자동으로 잘라내 깔끔하게.', href: '/tools/audio/silence-trim', category: 'audio', icon: VolumeX, status: 'ready', phase: 6, keywords: ['silence', '무음', 'remove', '제거', 'auto'] },
