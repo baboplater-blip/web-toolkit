@@ -16,7 +16,7 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-2ee040b-202605250558';
+const SW_VERSION = 'webtoolkit-sw-5584c4d-202605250607';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const ASSET_CACHE = `${SW_VERSION}-asset`;
@@ -40,6 +40,8 @@ const PRECACHE_URLS = [
   '/manifest.json',
   '/icon-192.svg',
   '/icon-512.svg',
+  // 광고 설정 — 첫 방문에도 LCP 임계 경로에서 즉시 사용 가능
+  '/ads-config.json',
   // 기본 OG (공유 카드 라이브 캐시)
   '/og/default.png',
   // 인기 경량 도구 — 카테고리 다양성 + WASM 의존성 적은 것 위주
@@ -107,6 +109,7 @@ function isStaticAsset(url) {
     path.endsWith('.png') ||
     path.endsWith('.ico') ||
     path === '/manifest.json' ||
+    path === '/ads-config.json' ||
     path.endsWith('.woff') ||
     path.endsWith('.woff2')
   );

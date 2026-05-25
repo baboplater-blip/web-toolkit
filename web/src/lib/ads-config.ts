@@ -60,7 +60,9 @@ export async function loadAdsConfig(force = false): Promise<AdsConfig> {
   if (inflight && !force) return inflight;
   inflight = (async () => {
     try {
-      const res = await fetch('/ads-config.json', { cache: 'no-store' });
+      // 캐시 적극 활용 — admin 변경 → Vercel 재배포로 ETag 갱신되어
+      // 자연스럽게 새 응답 받음. no-store 시 SW precache·HTTP 캐시 모두 무효.
+      const res = await fetch('/ads-config.json');
       if (!res.ok) throw new Error(`status ${res.status}`);
       const data = (await res.json()) as Partial<AdsConfig>;
       const merged: AdsConfig = {
@@ -94,4 +96,13 @@ export async function loadAdsConfig(force = false): Promise<AdsConfig> {
 export function clearAdsConfigCache() {
   cached = null;
   inflight = null;
+}
+
+// Module 평가 시점에 즉시 fetch 시작 — AdSlot 컴포넌트의 hydration 보다 먼저.
+// 결과는 inflight cache 에 보관되어 컴포넌트 mount 시 await 한 번에 끝남.
+// 서버 환경(typeof window === 'undefined')에서는 noop.
+if (typeof window !== 'undefined') {
+  // microtask 로 미루지 않고 즉시 발화. 큰 데이터 (~78KB) 라 RTT 시간을
+  // hydration 과 병렬화하는 게 핵심.
+  void loadAdsConfig();
 }

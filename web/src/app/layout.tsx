@@ -178,6 +178,16 @@ export default function RootLayout({
             __html: JSON.stringify(ORGANIZATION_JSON_LD),
           }}
         />
+        {/*
+         * ads-config 우선 fetch — AdSlot 의 hydration 후 fetch 체인이
+         * LCP 임계 경로를 차지하지 않도록 첫 paint 와 동시에 다운로드 트리거.
+         */}
+        <link
+          rel="preload"
+          href="/ads-config.json"
+          as="fetch"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="antialiased">
         <a
