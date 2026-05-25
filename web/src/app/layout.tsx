@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { AdSlot } from '@/components/AdSlot';
 import { BottomNav } from '@/components/BottomNav';
+import { CommandPalette } from '@/components/CommandPalette';
 import { NoticeBanner } from '@/components/NoticeBanner';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
@@ -198,6 +199,7 @@ export default function RootLayout({
           </div>
         </div>
         <BottomNav />
+        <CommandPalette />
         <InstallPrompt />
         <ToastHost />
         <ServiceWorkerRegister />

@@ -372,8 +372,16 @@ export default function ToolsHubPage() {
             <p className="mb-1.5 text-foreground font-medium">키보드 단축키</p>
             <ul className="space-y-1">
               <li>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">⌘</kbd>
+                <span className="mx-0.5">/</span>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">Ctrl</kbd>
+                <span className="mx-0.5">+</span>
+                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">K</kbd>
+                <span className="ml-2">어디서나 검색 팔레트 열기</span>
+              </li>
+              <li>
                 <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">/</kbd>
-                <span className="ml-2">검색 박스로 포커스</span>
+                <span className="ml-2">검색 박스로 포커스 (허브)</span>
               </li>
               <li>
                 <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">g</kbd>
