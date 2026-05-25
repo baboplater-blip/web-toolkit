@@ -35,6 +35,7 @@ export const metadata: Metadata = {
     canonical: '/guide',
     languages: {
       'ko-KR': '/guide',
+      en: '/en/guide',
       'x-default': '/guide',
     },
   },

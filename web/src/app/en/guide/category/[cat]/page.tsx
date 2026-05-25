@@ -1,12 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2 } from 'lucide-react';
-import {
-  CATEGORY_LABELS,
-  TOOLS,
-  type ToolCategory,
-} from '@/lib/tools/registry';
-import { CATEGORY_GUIDES } from '@/lib/category-guide-content';
+import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
+import { CATEGORY_GUIDES_EN } from '@/lib/category-guide-content-en';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -28,6 +24,20 @@ const ALL_CATEGORIES: ToolCategory[] = [
   'ai',
 ];
 
+const CATEGORY_LABELS_EN: Record<ToolCategory, string> = {
+  image: 'Image',
+  pdf: 'PDF',
+  video: 'Video',
+  gif: 'GIF',
+  audio: 'Audio',
+  docs: 'Documents',
+  text: 'Text',
+  dev: 'Developer',
+  util: 'Utility',
+  security: 'Security',
+  ai: 'AI',
+};
+
 export function generateStaticParams() {
   return ALL_CATEGORIES.map((cat) => ({ cat }));
 }
@@ -43,20 +53,27 @@ function isCategory(v: string): v is ToolCategory {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { cat } = await params;
   if (!isCategory(cat)) {
-    return { title: '카테고리를 찾을 수 없습니다 — Web Toolkit' };
+    return { title: 'Category not found — Web Toolkit' };
   }
-  const guide = CATEGORY_GUIDES[cat];
-  const canonical = `/guide/category/${cat}`;
+  const guide = CATEGORY_GUIDES_EN[cat];
+  const canonical = `/en/guide/category/${cat}`;
   return {
     title: guide.metaTitle,
     description: guide.metaDescription,
-    keywords: [...guide.keywords, CATEGORY_LABELS[cat], '브라우저 도구', '무료', '온라인'],
+    keywords: [
+      ...guide.keywords,
+      CATEGORY_LABELS_EN[cat],
+      'browser tools',
+      'free',
+      'online',
+      'no upload',
+    ],
     alternates: {
       canonical,
       languages: {
-        'ko-KR': canonical,
-        en: `/en/guide/category/${cat}`,
-        'x-default': canonical,
+        'ko-KR': `/guide/category/${cat}`,
+        en: canonical,
+        'x-default': `/guide/category/${cat}`,
       },
     },
     openGraph: {
@@ -64,7 +81,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: guide.metaDescription,
       type: 'website',
       siteName: 'Web Toolkit',
-      locale: 'ko_KR',
+      locale: 'en_US',
       url: canonical,
       images: [
         {
@@ -84,17 +101,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CategoryGuidePage({ params }: PageProps) {
+export default async function EnglishCategoryGuidePage({ params }: PageProps) {
   const { cat } = await params;
   if (!isCategory(cat)) notFound();
 
-  const guide = CATEGORY_GUIDES[cat];
-  const categoryLabel = CATEGORY_LABELS[cat];
+  const guide = CATEGORY_GUIDES_EN[cat];
+  const categoryLabel = CATEGORY_LABELS_EN[cat];
   const tools = TOOLS.filter((t) => t.status === 'ready' && t.category === cat).sort(
     (a, b) => a.phase - b.phase,
   );
 
-  // 같은 라운드에서 보고 갈 만한 관련 카테고리 — 도메인 인접성 기준 매핑
   const RELATED_MAP: Record<ToolCategory, ToolCategory[]> = {
     pdf: ['image', 'docs', 'security'],
     image: ['pdf', 'ai', 'docs'],
@@ -114,13 +130,13 @@ export default async function CategoryGuidePage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Web Toolkit', item: `${SITE_URL}/` },
-      { '@type': 'ListItem', position: 2, name: '가이드', item: `${SITE_URL}/guide` },
+      { '@type': 'ListItem', position: 1, name: 'Web Toolkit', item: `${SITE_URL}/en` },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE_URL}/en/guide` },
       {
         '@type': 'ListItem',
         position: 3,
-        name: `${categoryLabel} 가이드`,
-        item: `${SITE_URL}/guide/category/${cat}`,
+        name: `${categoryLabel} Guide`,
+        item: `${SITE_URL}/en/guide/category/${cat}`,
       },
     ],
   };
@@ -128,12 +144,12 @@ export default async function CategoryGuidePage({ params }: PageProps) {
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `${categoryLabel} 도구 모음`,
+    name: `${categoryLabel} Tools Collection`,
     numberOfItems: tools.length,
     itemListElement: tools.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `${SITE_URL}/guide/${t.id}`,
+      url: `${SITE_URL}${t.href}`,
       name: t.title,
     })),
   };
@@ -141,6 +157,7 @@ export default async function CategoryGuidePage({ params }: PageProps) {
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
+    inLanguage: 'en',
     mainEntity: guide.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
@@ -153,10 +170,10 @@ export default async function CategoryGuidePage({ params }: PageProps) {
     '@type': 'CollectionPage',
     name: guide.h1,
     description: guide.metaDescription,
-    inLanguage: 'ko-KR',
+    inLanguage: 'en',
     isPartOf: { '@type': 'WebSite', name: 'Web Toolkit', url: SITE_URL },
-    url: `${SITE_URL}/guide/category/${cat}`,
-    mainEntity: { '@id': `${SITE_URL}/guide/category/${cat}#tools` },
+    url: `${SITE_URL}/en/guide/category/${cat}`,
+    mainEntity: { '@id': `${SITE_URL}/en/guide/category/${cat}#tools` },
   };
 
   return (
@@ -185,35 +202,35 @@ export default async function CategoryGuidePage({ params }: PageProps) {
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-[52px] max-w-5xl items-center gap-2 px-4">
           <a
-            href="/guide"
+            href="/en/guide"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
-            aria-label="가이드 목록"
-            title="가이드 목록"
+            aria-label="All guides"
+            title="All guides"
           >
             <ArrowLeft className="h-4 w-4" />
           </a>
           <BookOpen className="h-5 w-5" />
           <h1 className="text-sm sm:text-base font-semibold truncate">
-            {categoryLabel} 도구 가이드
+            {categoryLabel} Tools Guide
           </h1>
-          <span className="ml-auto text-[11px] text-muted-foreground">{tools.length}개</span>
+          <span className="ml-auto text-[11px] text-muted-foreground">{tools.length}</span>
         </div>
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-8">
         <nav aria-label="breadcrumb" className="text-[11px] text-muted-foreground">
-          <a href="/" className="hover:text-foreground">홈</a>
+          <a href="/en" className="hover:text-foreground">Home</a>
           <span className="mx-1">/</span>
-          <a href="/guide" className="hover:text-foreground">가이드</a>
+          <a href="/en/guide" className="hover:text-foreground">Guides</a>
           <span className="mx-1">/</span>
           <span className="text-foreground">{categoryLabel}</span>
           <span className="mx-2 text-muted-foreground/60">·</span>
           <a
-            href={`/en/guide/category/${cat}`}
-            hrefLang="en"
+            href={`/guide/category/${cat}`}
+            hrefLang="ko"
             className="underline hover:text-foreground"
           >
-            English
+            한국어
           </a>
         </nav>
 
@@ -230,21 +247,21 @@ export default async function CategoryGuidePage({ params }: PageProps) {
               href={`/tools?category=${cat}`}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
             >
-              {categoryLabel} 도구 둘러보기
+              Browse {categoryLabel} tools
               <ArrowRight className="h-4 w-4" />
             </a>
             <a
-              href="/guide"
+              href="/en/guide"
               className="inline-flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
             >
-              전체 가이드
+              All guides
             </a>
           </div>
         </section>
 
         <section className="rounded-xl border bg-card p-5 space-y-2">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            이 카테고리의 핵심
+            What you can do
           </h3>
           <ul className="space-y-1.5">
             {guide.highlights.map((h, i) => (
@@ -258,16 +275,16 @@ export default async function CategoryGuidePage({ params }: PageProps) {
 
         <section id="tools" className="space-y-3">
           <h3 className="text-lg font-bold">
-            {categoryLabel} 도구 전체
+            All {categoryLabel} Tools
             <span className="text-xs font-normal text-muted-foreground ml-2">
-              {tools.length}개
+              {tools.length}
             </span>
           </h3>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {tools.map((t) => (
               <li key={t.id}>
                 <a
-                  href={`/guide/${t.id}`}
+                  href={t.href}
                   className="block rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                 >
                   <div className="flex items-center gap-2">
@@ -281,10 +298,14 @@ export default async function CategoryGuidePage({ params }: PageProps) {
               </li>
             ))}
           </ul>
+          <p className="text-[11px] text-muted-foreground pt-1">
+            Tool pages are currently bilingual where possible; UI labels may still be
+            in Korean. Most are icon-driven and language-agnostic.
+          </p>
         </section>
 
         <section className="space-y-3">
-          <h3 className="text-lg font-bold">자주 묻는 질문</h3>
+          <h3 className="text-lg font-bold">Frequently asked</h3>
           <div className="space-y-2">
             {guide.faqs.map((f, i) => (
               <details
@@ -305,22 +326,22 @@ export default async function CategoryGuidePage({ params }: PageProps) {
 
         {related.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">함께 보면 좋은 가이드</h3>
+            <h3 className="text-lg font-bold">Related guides</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {related.map((rc) => (
                 <a
                   key={rc}
-                  href={`/guide/category/${rc}`}
+                  href={`/en/guide/category/${rc}`}
                   className="rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-primary shrink-0" aria-hidden />
                     <span className="text-sm font-medium">
-                      {CATEGORY_LABELS[rc]} 가이드
+                      {CATEGORY_LABELS_EN[rc]} Guide
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                    {CATEGORY_GUIDES[rc].metaDescription}
+                    {CATEGORY_GUIDES_EN[rc].metaDescription}
                   </p>
                 </a>
               ))}
@@ -330,17 +351,17 @@ export default async function CategoryGuidePage({ params }: PageProps) {
 
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 text-center space-y-3">
           <p className="text-sm font-medium">
-            {categoryLabel} 카테고리의 모든 도구는 무료입니다.
+            Every {categoryLabel} tool here is free.
           </p>
           <a
             href={`/tools?category=${cat}`}
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            지금 사용하러 가기
+            Start using
             <ArrowRight className="h-4 w-4" />
           </a>
           <p className="text-[11px] text-muted-foreground">
-            회원가입 없이 즉시 사용 · 파일이 서버로 전송되지 않습니다.
+            No signup · files never leave your browser.
           </p>
         </section>
       </main>

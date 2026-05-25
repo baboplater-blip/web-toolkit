@@ -115,7 +115,11 @@ export default function EnglishToolsHubPage() {
             and language-agnostic.
           </p>
           <p className="text-muted-foreground text-[12px]">
-            Bilingual tool pages are planned for the next round.
+            New: per-category guides in English are now available at{' '}
+            <a href="/en/guide" className="text-primary underline">
+              /en/guide
+            </a>{' '}
+            with step-by-step instructions and FAQs.
           </p>
         </section>
 
@@ -123,12 +127,20 @@ export default function EnglishToolsHubPage() {
           const list = grouped.get(cat)!;
           return (
             <section key={cat} className="space-y-3">
-              <h2 className="text-lg font-bold flex items-baseline gap-2">
-                {CATEGORY_LABELS_EN[cat]}
-                <span className="text-xs font-normal text-muted-foreground">
-                  ({CATEGORY_LABELS[cat]}) · {list.length}
-                </span>
-              </h2>
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="text-lg font-bold flex items-baseline gap-2">
+                  {CATEGORY_LABELS_EN[cat]}
+                  <span className="text-xs font-normal text-muted-foreground">
+                    ({CATEGORY_LABELS[cat]}) · {list.length}
+                  </span>
+                </h2>
+                <a
+                  href={`/en/guide/category/${cat}`}
+                  className="text-[11px] text-primary hover:underline shrink-0"
+                >
+                  Read {CATEGORY_LABELS_EN[cat]} guide →
+                </a>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {list.map((t) => (
                   <a

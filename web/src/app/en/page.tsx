@@ -108,6 +108,12 @@ export default function EnglishLandingPage() {
               <ArrowRight className="h-4 w-4" />
             </a>
             <a
+              href="/en/guide"
+              className="inline-flex items-center gap-1.5 rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              Read tool guides
+            </a>
+            <a
               href="/"
               hrefLang="ko"
               className="inline-flex items-center gap-1.5 rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-muted"

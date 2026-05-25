@@ -71,15 +71,56 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.85,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/guide`,
+          en: `${SITE_URL}/en/guide`,
+          'x-default': `${SITE_URL}/guide`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/en/guide`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/guide`,
+          en: `${SITE_URL}/en/guide`,
+          'x-default': `${SITE_URL}/guide`,
+        },
+      },
     },
     ...(
       ['pdf', 'image', 'video', 'gif', 'audio', 'docs', 'text', 'dev', 'util', 'security', 'ai'] as ToolCategory[]
-    ).map<MetadataRoute.Sitemap[number]>((cat) => ({
-      url: `${SITE_URL}/guide/category/${cat}`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: (CATEGORY_PRIORITY[cat] ?? 0.7) * 0.9,
-    })),
+    ).flatMap<MetadataRoute.Sitemap[number]>((cat) => {
+      const koUrl = `${SITE_URL}/guide/category/${cat}`;
+      const enUrl = `${SITE_URL}/en/guide/category/${cat}`;
+      const alternates = {
+        languages: {
+          'ko-KR': koUrl,
+          en: enUrl,
+          'x-default': koUrl,
+        },
+      };
+      return [
+        {
+          url: koUrl,
+          lastModified: now,
+          changeFrequency: 'monthly' as const,
+          priority: (CATEGORY_PRIORITY[cat] ?? 0.7) * 0.9,
+          alternates,
+        },
+        {
+          url: enUrl,
+          lastModified: now,
+          changeFrequency: 'monthly' as const,
+          priority: (CATEGORY_PRIORITY[cat] ?? 0.7) * 0.85,
+          alternates,
+        },
+      ];
+    }),
     {
       url: `${SITE_URL}/settings`,
       lastModified: now,
