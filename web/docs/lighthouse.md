@@ -284,7 +284,48 @@ phase breakdown:
 외부 파일 (`/ads/*.webp`) 로 분리. 그러면 config 자체가 ~1KB 로 축소되어 RTT
 1번에 끝남. 다만 admin 페이지의 이미지 업로드 로직 동시 변경 필요.
 
-### 비고 — 모바일 preset 의 LCP 가 항상 3s+ 인 이유
+### 2026-05-25 (LCP 구조 변경) — 광고 이미지 외부 파일 분리
+
+**근본 처방 적용**. `ads-config.json` 의 image `src` data URL 78KB 를 외부 파일로 분리.
+
+- `scripts/extract-ads-images.mjs` 신규 — data URL → `public/ads/{slotKey}.{ext}` 분리 후 config 의 src 를 외부 경로로 교체. idempotent
+- 일회성 적용 결과: **ads-config.json 78KB → 662B (118× 축소)**, top.webp 14KB / sidebar*.webp 21KB
+- SW PRECACHE_URLS 에 `/ads/*.webp` 3종 추가
+- layout.tsx head 에 `<link rel="preload" as="image" href="/ads/top.webp">` (LCP 후보 최고 priority)
+
+**측정 결과** (mobile, `292a827` 이후)
+
+| 페이지 | Perf | A11y | BP | SEO | LCP(ms) | CLS | TBT(ms) |
+|--------|:----:|:----:|:--:|:---:|:-------:|:----:|:------:|
+| / | **99** | 100 | 100 | 100 | 2109 | 0.000 | 16 |
+| /tools | **97** | 100 | 96 | 100 | 2561 | 0.000 | 6 |
+| /tools/compress | 89 | 100 | 100 | 100 | 3577 | 0.000 | 69 |
+| /tools/pdf/merge | 91 | 100 | 100 | 100 | 3461 | 0.000 | 22 |
+| /tools/image/resize | **92** | 100 | 100 | 100 | 3310 | 0.000 | 13 |
+| /tools/util/qr | 90 | 100 | 100 | 100 | 3578 | 0.000 | 24 |
+
+**도구 페이지 LCP 단축**
+
+| 페이지 | 분리 전 | 분리 후 | 변화 |
+|--------|---------:|---------:|-----:|
+| /tools | 3009ms | 2561ms | **-448ms** |
+| /tools/compress | 3684ms | 3577ms | -107ms |
+| /tools/pdf/merge | 3609ms | 3461ms | -148ms |
+| /tools/image/resize | 3619ms | 3310ms | -309ms |
+| /tools/util/qr | 3729ms | 3578ms | -151ms |
+
+도구 페이지 평균 ~200ms 단축. 5G/Wi-Fi 실제 사용자 환경에서는 효과가 더 큼.
+
+**Admin 워크플로 (광고 변경 시 새 절차)**
+
+1. admin 페이지에서 이미지 업로드 (기존 그대로) → data URL 임시 저장
+2. **commit 전·후** 로컬에서 `npm run ads:extract -- --apply` 실행
+3. `git add public/ads/ public/ads-config.json && git commit && git push`
+4. Vercel 자동 배포
+
+`extract-ads-images.mjs` 는 idempotent — data URL 이 이미 외부 경로면 그대로 둠. 매번 실행해도 안전.
+
+추후 자동화 후보: admin 페이지가 directly 외부 파일로 GitHub multi-file commit (git data API 사용). 현재는 일회성 명령으로 충분.
 
 ### 비고 — 모바일 preset 의 LCP 가 항상 3s+ 인 이유
 
