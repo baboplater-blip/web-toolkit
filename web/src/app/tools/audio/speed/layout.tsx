@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `오디오 배속 조절 — Web Toolkit`;
 const DESCRIPTION = `0.25x~4x 속도 조절. 피치 유지 (atempo 필터).`;
 const URL_PATH = '/tools/audio/speed';
-const OG_IMAGE = '/og/audio.png';
+const OG_IMAGE = '/og/tools/audio-speed.png';
 
 export const metadata: Metadata = {
   title: TITLE,

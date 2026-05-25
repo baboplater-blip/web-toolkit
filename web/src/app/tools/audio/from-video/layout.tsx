@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 → MP3 (오디오 추출) — Web Toolkit`;
 const DESCRIPTION = `비디오 파일에서 오디오 트랙을 추출하여 MP3/WAV 로 저장.`;
 const URL_PATH = '/tools/audio/from-video';
-const OG_IMAGE = '/og/audio.png';
+const OG_IMAGE = '/og/tools/video-to-audio.png';
 
 export const metadata: Metadata = {
   title: TITLE,

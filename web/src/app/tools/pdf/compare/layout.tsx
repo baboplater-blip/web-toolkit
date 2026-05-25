@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 비교 — Web Toolkit`;
 const DESCRIPTION = `두 PDF 의 텍스트를 추출해 줄 단위로 차이점(diff) 을 표시합니다.`;
 const URL_PATH = '/tools/pdf/compare';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-compare.png';
 
 export const metadata: Metadata = {
   title: TITLE,

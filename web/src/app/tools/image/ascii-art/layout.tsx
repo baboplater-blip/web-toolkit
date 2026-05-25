@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 → ASCII 아트 — Web Toolkit`;
 const DESCRIPTION = `이미지를 텍스트 문자로 변환. TXT/PNG 출력.`;
 const URL_PATH = '/tools/image/ascii-art';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-ascii-art.png';
 
 export const metadata: Metadata = {
   title: TITLE,

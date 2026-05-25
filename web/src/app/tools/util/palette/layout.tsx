@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 색상 팔레트 — Web Toolkit`;
 const DESCRIPTION = `이미지에서 주요 색상을 추출합니다.`;
 const URL_PATH = '/tools/util/palette';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/color-palette.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비밀번호 생성 — Web Toolkit`;
 const DESCRIPTION = `안전한 랜덤 비밀번호를 생성하고 강도를 평가합니다.`;
 const URL_PATH = '/tools/dev/password';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/password-gen.png';
 
 export const metadata: Metadata = {
   title: TITLE,

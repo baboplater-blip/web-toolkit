@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 통계 — Web Toolkit`;
 const DESCRIPTION = `페이지·단어·문자·폰트·목차·메타데이터를 분석합니다.`;
 const URL_PATH = '/tools/pdf/stats';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-stats.png';
 
 export const metadata: Metadata = {
   title: TITLE,

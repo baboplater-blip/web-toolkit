@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 표지 교체 — Web Toolkit`;
 const DESCRIPTION = `EPUB 의 표지 이미지를 새 그림으로 교체합니다.`;
 const URL_PATH = '/tools/docs/epub-cover-replace';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-cover-replace.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF → EPUB — Web Toolkit`;
 const DESCRIPTION = `PDF 텍스트를 추출해 헤딩 단위로 챕터를 만든 EPUB 전자책으로 변환.`;
 const URL_PATH = '/tools/pdf/to-epub';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-to-epub.png';
 
 export const metadata: Metadata = {
   title: TITLE,

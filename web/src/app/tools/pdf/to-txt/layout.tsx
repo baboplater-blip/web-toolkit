@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF → TXT — Web Toolkit`;
 const DESCRIPTION = `PDF 의 텍스트를 추출해 일반 텍스트 파일로 저장합니다.`;
 const URL_PATH = '/tools/pdf/to-txt';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-to-txt.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 분할 — Web Toolkit`;
 const DESCRIPTION = `페이지 범위로 PDF 를 나눕니다.`;
 const URL_PATH = '/tools/pdf/split';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-split.png';
 
 export const metadata: Metadata = {
   title: TITLE,

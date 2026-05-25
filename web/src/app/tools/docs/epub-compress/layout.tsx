@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 압축 — Web Toolkit`;
 const DESCRIPTION = `EPUB 안의 이미지를 재인코딩·축소해 전체 용량을 줄입니다.`;
 const URL_PATH = '/tools/docs/epub-compress';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-compress.png';
 
 export const metadata: Metadata = {
   title: TITLE,

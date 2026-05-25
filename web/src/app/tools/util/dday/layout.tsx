@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `D-day 계산기 — Web Toolkit`;
 const DESCRIPTION = `여러 이벤트의 D-day 를 한 화면에서 관리.`;
 const URL_PATH = '/tools/util/dday';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/dday.png';
 
 export const metadata: Metadata = {
   title: TITLE,

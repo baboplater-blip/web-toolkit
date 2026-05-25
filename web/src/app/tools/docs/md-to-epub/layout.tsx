@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `Markdown → EPUB — Web Toolkit`;
 const DESCRIPTION = `Markdown 을 헤딩 단위로 챕터 분할해 EPUB 으로 만듭니다. 표지 포함 가능.`;
 const URL_PATH = '/tools/docs/md-to-epub';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/md-to-epub.png';
 
 export const metadata: Metadata = {
   title: TITLE,

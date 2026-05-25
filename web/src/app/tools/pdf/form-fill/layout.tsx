@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 양식 채우기 — Web Toolkit`;
 const DESCRIPTION = `PDF 의 AcroForm 텍스트·체크·라디오·드롭다운 필드를 채워 저장.`;
 const URL_PATH = '/tools/pdf/form-fill';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-form-fill.png';
 
 export const metadata: Metadata = {
   title: TITLE,

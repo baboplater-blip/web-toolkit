@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB → HTML — Web Toolkit`;
 const DESCRIPTION = `EPUB 을 단일 HTML(이미지 인라인) 또는 챕터별 HTML ZIP 으로 변환.`;
 const URL_PATH = '/tools/docs/epub-to-html';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-to-html.png';
 
 export const metadata: Metadata = {
   title: TITLE,

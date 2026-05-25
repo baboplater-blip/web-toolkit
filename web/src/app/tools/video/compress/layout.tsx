@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 압축 — Web Toolkit`;
 const DESCRIPTION = `해상도·비트레이트 조정으로 용량을 줄입니다.`;
 const URL_PATH = '/tools/video/compress';
-const OG_IMAGE = '/og/video.png';
+const OG_IMAGE = '/og/tools/video-compress.png';
 
 export const metadata: Metadata = {
   title: TITLE,

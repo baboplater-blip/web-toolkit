@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `파일 암호화·복호화 — Web Toolkit`;
 const DESCRIPTION = `AES-256-GCM + PBKDF2 로 어떤 파일이든 비밀번호 암호화.`;
 const URL_PATH = '/tools/security/file-encrypt';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/file-encrypt.png';
 
 export const metadata: Metadata = {
   title: TITLE,

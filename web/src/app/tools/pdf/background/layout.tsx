@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 배경 추가 — Web Toolkit`;
 const DESCRIPTION = `모든 페이지에 배경 색상이나 이미지를 깔아 워터마크·노트 스타일로 만듭니다.`;
 const URL_PATH = '/tools/pdf/background';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-background.png';
 
 export const metadata: Metadata = {
   title: TITLE,

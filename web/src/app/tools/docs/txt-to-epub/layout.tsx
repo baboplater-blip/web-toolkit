@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `텍스트 → EPUB — Web Toolkit`;
 const DESCRIPTION = `TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.`;
 const URL_PATH = '/tools/docs/txt-to-epub';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/txt-to-epub.png';
 
 export const metadata: Metadata = {
   title: TITLE,

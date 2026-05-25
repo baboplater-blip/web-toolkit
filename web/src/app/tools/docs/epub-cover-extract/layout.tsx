@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 표지 추출 — Web Toolkit`;
 const DESCRIPTION = `EPUB 의 표지 이미지를 원본 그대로 꺼냅니다.`;
 const URL_PATH = '/tools/docs/epub-cover-extract';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-cover-extract.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 합치기 — Web Toolkit`;
 const DESCRIPTION = `여러 PDF 파일을 하나로 병합합니다.`;
 const URL_PATH = '/tools/pdf/merge';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-merge.png';
 
 export const metadata: Metadata = {
   title: TITLE,

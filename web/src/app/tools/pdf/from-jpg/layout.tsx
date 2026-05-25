@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `여러 이미지 → PDF — Web Toolkit`;
 const DESCRIPTION = `이미지를 순서대로 묶어 PDF 로 만듭니다.`;
 const URL_PATH = '/tools/pdf/from-jpg';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/images-to-pdf.png';
 
 export const metadata: Metadata = {
   title: TITLE,

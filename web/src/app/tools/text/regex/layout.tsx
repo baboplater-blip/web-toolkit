@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `정규식 테스터 — Web Toolkit`;
 const DESCRIPTION = `정규식을 실시간으로 테스트하고 매칭 결과를 확인.`;
 const URL_PATH = '/tools/text/regex';
-const OG_IMAGE = '/og/text.png';
+const OG_IMAGE = '/og/tools/regex-tester.png';
 
 export const metadata: Metadata = {
   title: TITLE,

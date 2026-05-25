@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `RSA 키페어 생성 — Web Toolkit`;
 const DESCRIPTION = `브라우저에서 RSA 공개/개인 키 PEM 생성.`;
 const URL_PATH = '/tools/security/rsa-keypair';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/rsa-keypair.png';
 
 export const metadata: Metadata = {
   title: TITLE,

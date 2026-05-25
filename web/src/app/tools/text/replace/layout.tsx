@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `일괄 찾기·치환 — Web Toolkit`;
 const DESCRIPTION = `정규식·캡처 그룹 지원 일괄 치환. 매칭 개수 실시간 표시.`;
 const URL_PATH = '/tools/text/replace';
-const OG_IMAGE = '/og/text.png';
+const OG_IMAGE = '/og/tools/text-replace.png';
 
 export const metadata: Metadata = {
   title: TITLE,

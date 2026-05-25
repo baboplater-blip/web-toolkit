@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 잠금 해제 — Web Toolkit`;
 const DESCRIPTION = `편집/인쇄 제한 제거 또는 열람 암호 해제 (래스터화).`;
 const URL_PATH = '/tools/pdf/unlock';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/pdf-unlock.png';
 
 export const metadata: Metadata = {
   title: TITLE,

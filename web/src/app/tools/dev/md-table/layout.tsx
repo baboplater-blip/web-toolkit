@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `마크다운 표 생성기 — Web Toolkit`;
 const DESCRIPTION = `시각 편집기로 마크다운 표 생성 · CSV 가져오기.`;
 const URL_PATH = '/tools/dev/md-table';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/md-table.png';
 
 export const metadata: Metadata = {
   title: TITLE,

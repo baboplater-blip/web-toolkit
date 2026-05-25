@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 회전 — Web Toolkit`;
 const DESCRIPTION = `90/180도 회전 + 좌우/상하 반전. 픽셀 단위 변환.`;
 const URL_PATH = '/tools/video/rotate';
-const OG_IMAGE = '/og/video.png';
+const OG_IMAGE = '/og/tools/video-rotate.png';
 
 export const metadata: Metadata = {
   title: TITLE,

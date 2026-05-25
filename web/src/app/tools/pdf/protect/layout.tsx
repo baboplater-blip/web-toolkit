@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 암호 설정 — Web Toolkit`;
 const DESCRIPTION = `열람·권한 암호와 세부 권한(인쇄·편집·복사 등) 설정.`;
 const URL_PATH = '/tools/pdf/protect';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/pdf-protect.png';
 
 export const metadata: Metadata = {
   title: TITLE,

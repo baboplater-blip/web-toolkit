@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 포맷 변환 — Web Toolkit`;
 const DESCRIPTION = `MP4 / WebM / MOV / AVI / MKV 상호 변환.`;
 const URL_PATH = '/tools/video/convert';
-const OG_IMAGE = '/og/video.png';
+const OG_IMAGE = '/og/tools/video-convert.png';
 
 export const metadata: Metadata = {
   title: TITLE,

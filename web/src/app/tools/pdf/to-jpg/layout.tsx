@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF → JPG — Web Toolkit`;
 const DESCRIPTION = `각 페이지를 JPG 이미지로 추출합니다.`;
 const URL_PATH = '/tools/pdf/to-jpg';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-to-jpg.png';
 
 export const metadata: Metadata = {
   title: TITLE,

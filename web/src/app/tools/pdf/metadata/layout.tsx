@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 메타데이터 편집 — Web Toolkit`;
 const DESCRIPTION = `제목·저자·주제·키워드 등 PDF 메타데이터를 수정합니다.`;
 const URL_PATH = '/tools/pdf/metadata';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-metadata.png';
 
 export const metadata: Metadata = {
   title: TITLE,

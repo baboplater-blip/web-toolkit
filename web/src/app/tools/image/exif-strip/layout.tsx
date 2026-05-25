@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EXIF 제거 — Web Toolkit`;
 const DESCRIPTION = `사진의 위치·촬영 정보를 제거합니다 (개인정보 보호).`;
 const URL_PATH = '/tools/image/exif-strip';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-exif-strip.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EXIF 뷰어 — Web Toolkit`;
 const DESCRIPTION = `사진의 촬영 정보·GPS·카메라 정보를 표시합니다.`;
 const URL_PATH = '/tools/image/exif-view';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-exif-view.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF → HTML — Web Toolkit`;
 const DESCRIPTION = `PDF 텍스트를 헤딩·단락 구조의 HTML 페이지로 변환합니다.`;
 const URL_PATH = '/tools/pdf/to-html';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-to-html.png';
 
 export const metadata: Metadata = {
   title: TITLE,

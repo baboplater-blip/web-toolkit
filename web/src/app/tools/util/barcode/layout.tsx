@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `바코드 생성 — Web Toolkit`;
 const DESCRIPTION = `Code128 / EAN / UPC 바코드를 생성합니다.`;
 const URL_PATH = '/tools/util/barcode';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/barcode.png';
 
 export const metadata: Metadata = {
   title: TITLE,

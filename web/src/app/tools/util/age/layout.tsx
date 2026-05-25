@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `나이 계산기 — Web Toolkit`;
 const DESCRIPTION = `만/연/세는 나이 동시 계산 + 마일스톤 일수.`;
 const URL_PATH = '/tools/util/age';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/age-calc.png';
 
 export const metadata: Metadata = {
   title: TITLE,

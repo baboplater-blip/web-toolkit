@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 만들기 — Web Toolkit`;
 const DESCRIPTION = `여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.`;
 const URL_PATH = '/tools/gif/maker';
-const OG_IMAGE = '/og/gif.png';
+const OG_IMAGE = '/og/tools/gif-maker.png';
 
 export const metadata: Metadata = {
   title: TITLE,

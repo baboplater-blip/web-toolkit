@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF Flatten — Web Toolkit`;
 const DESCRIPTION = `양식 입력값을 페이지에 고정하고 주석·링크를 제거합니다.`;
 const URL_PATH = '/tools/security/pdf-flatten';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/pdf-flatten.png';
 
 export const metadata: Metadata = {
   title: TITLE,

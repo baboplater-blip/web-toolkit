@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 페이지 삽입 — Web Toolkit`;
 const DESCRIPTION = `다른 PDF 의 페이지를 원하는 위치(맨 앞·맨 뒤·특정 페이지 뒤) 에 삽입.`;
 const URL_PATH = '/tools/pdf/insert';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-insert.png';
 
 export const metadata: Metadata = {
   title: TITLE,

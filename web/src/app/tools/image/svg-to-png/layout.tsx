@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `SVG → PNG — Web Toolkit`;
 const DESCRIPTION = `벡터 SVG 를 원하는 해상도의 PNG 로 래스터화합니다.`;
 const URL_PATH = '/tools/image/svg-to-png';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-svg-to-png.png';
 
 export const metadata: Metadata = {
   title: TITLE,

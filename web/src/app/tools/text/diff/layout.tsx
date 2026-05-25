@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `텍스트 비교 (Diff) — Web Toolkit`;
 const DESCRIPTION = `두 텍스트의 차이를 줄 단위로 비교합니다.`;
 const URL_PATH = '/tools/text/diff';
-const OG_IMAGE = '/og/text.png';
+const OG_IMAGE = '/og/tools/text-diff.png';
 
 export const metadata: Metadata = {
   title: TITLE,

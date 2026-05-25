@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `HTML 엔티티 인·디코드 — Web Toolkit`;
 const DESCRIPTION = `&amp;amp; · &amp;copy; · &amp;#161; 등 엔티티 양방향 변환.`;
 const URL_PATH = '/tools/text/html-entities';
-const OG_IMAGE = '/og/text.png';
+const OG_IMAGE = '/og/tools/html-entities.png';
 
 export const metadata: Metadata = {
   title: TITLE,

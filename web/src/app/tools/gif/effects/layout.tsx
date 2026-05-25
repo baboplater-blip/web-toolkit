@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 효과 — Web Toolkit`;
 const DESCRIPTION = `역재생 · 배속 · 핑퐁 반복 효과를 적용합니다.`;
 const URL_PATH = '/tools/gif/effects';
-const OG_IMAGE = '/og/gif.png';
+const OG_IMAGE = '/og/tools/gif-effects.png';
 
 export const metadata: Metadata = {
   title: TITLE,

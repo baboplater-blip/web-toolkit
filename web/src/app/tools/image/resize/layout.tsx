@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 리사이즈 — Web Toolkit`;
 const DESCRIPTION = `픽셀/비율/목표 용량으로 크기를 조정합니다.`;
 const URL_PATH = '/tools/image/resize';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-resize.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `오디오 포맷 변환 — Web Toolkit`;
 const DESCRIPTION = `MP3 / WAV / OGG / AAC / M4A / FLAC 상호 변환.`;
 const URL_PATH = '/tools/audio/convert';
-const OG_IMAGE = '/og/audio.png';
+const OG_IMAGE = '/og/tools/audio-convert.png';
 
 export const metadata: Metadata = {
   title: TITLE,

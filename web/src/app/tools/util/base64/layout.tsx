@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `Base64 인코딩 — Web Toolkit`;
 const DESCRIPTION = `텍스트·파일을 Base64 로 변환 (양방향).`;
 const URL_PATH = '/tools/util/base64';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/base64.png';
 
 export const metadata: Metadata = {
   title: TITLE,

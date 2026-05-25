@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 여백 자르기 — Web Toolkit`;
 const DESCRIPTION = `페이지 박스를 잘라 여백을 제거합니다.`;
 const URL_PATH = '/tools/pdf/crop';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-crop.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 → 프레임 추출 — Web Toolkit`;
 const DESCRIPTION = `각 프레임을 이미지로 추출합니다.`;
 const URL_PATH = '/tools/video/extract-frames';
-const OG_IMAGE = '/og/video.png';
+const OG_IMAGE = '/og/tools/video-extract-frames.png';
 
 export const metadata: Metadata = {
   title: TITLE,

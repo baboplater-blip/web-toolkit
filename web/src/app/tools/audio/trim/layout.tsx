@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `오디오 자르기 — Web Toolkit`;
 const DESCRIPTION = `구간 지정으로 오디오를 잘라냅니다.`;
 const URL_PATH = '/tools/audio/trim';
-const OG_IMAGE = '/og/audio.png';
+const OG_IMAGE = '/og/tools/audio-trim.png';
 
 export const metadata: Metadata = {
   title: TITLE,

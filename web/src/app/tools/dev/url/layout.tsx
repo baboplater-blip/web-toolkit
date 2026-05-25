@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `URL 인코더/디코더 — Web Toolkit`;
 const DESCRIPTION = `URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.`;
 const URL_PATH = '/tools/dev/url';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/url-encoder.png';
 
 export const metadata: Metadata = {
   title: TITLE,

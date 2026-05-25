@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `Markdown ↔ HTML — Web Toolkit`;
 const DESCRIPTION = `Markdown 과 HTML 상호 변환, 미리보기 포함.`;
 const URL_PATH = '/tools/docs/md-html';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/md-html.png';
 
 export const metadata: Metadata = {
   title: TITLE,

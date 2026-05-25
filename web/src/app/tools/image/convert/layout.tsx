@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 포맷 변환 — Web Toolkit`;
 const DESCRIPTION = `JPG/PNG/WebP/AVIF 간 변환. 다중 파일 지원.`;
 const URL_PATH = '/tools/image/convert';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-convert.png';
 
 export const metadata: Metadata = {
   title: TITLE,

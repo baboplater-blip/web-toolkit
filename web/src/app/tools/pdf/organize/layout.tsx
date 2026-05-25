@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 페이지 정리 — Web Toolkit`;
 const DESCRIPTION = `페이지 재정렬·삭제·복제를 썸네일로 처리합니다.`;
 const URL_PATH = '/tools/pdf/organize';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-organize.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 합치기 — Web Toolkit`;
 const DESCRIPTION = `여러 비디오를 순서대로 이어붙임. 코덱 자동 통일.`;
 const URL_PATH = '/tools/video/merge';
-const OG_IMAGE = '/og/video.png';
+const OG_IMAGE = '/og/tools/video-merge.png';
 
 export const metadata: Metadata = {
   title: TITLE,

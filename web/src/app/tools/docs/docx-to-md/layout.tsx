@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `DOCX → Markdown — Web Toolkit`;
 const DESCRIPTION = `Word 문서를 Markdown 으로 변환합니다.`;
 const URL_PATH = '/tools/docs/docx-to-md';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/docx-to-md.png';
 
 export const metadata: Metadata = {
   title: TITLE,

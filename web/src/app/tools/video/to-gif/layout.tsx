@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 → GIF — Web Toolkit`;
 const DESCRIPTION = `비디오의 구간을 GIF 애니메이션으로 변환합니다.`;
 const URL_PATH = '/tools/video/to-gif';
-const OG_IMAGE = '/og/video.png';
+const OG_IMAGE = '/og/tools/video-to-gif.png';
 
 export const metadata: Metadata = {
   title: TITLE,

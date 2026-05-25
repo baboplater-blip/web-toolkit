@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 페이지 번호 — Web Toolkit`;
 const DESCRIPTION = `페이지 번호를 일괄 삽입합니다.`;
 const URL_PATH = '/tools/pdf/page-numbers';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-page-numbers.png';
 
 export const metadata: Metadata = {
   title: TITLE,

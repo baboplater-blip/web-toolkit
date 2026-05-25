@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `YAML ↔ JSON — Web Toolkit`;
 const DESCRIPTION = `YAML 과 JSON 상호 변환.`;
 const URL_PATH = '/tools/docs/yaml-json';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/yaml-json.png';
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 이미지 추출 — Web Toolkit`;
 const DESCRIPTION = `EPUB 안의 모든 이미지(표지·삽화) 를 ZIP 으로 추출합니다.`;
 const URL_PATH = '/tools/docs/epub-images-extract';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-images-extract.png';
 
 export const metadata: Metadata = {
   title: TITLE,

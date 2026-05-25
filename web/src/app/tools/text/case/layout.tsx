@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `대소문자·케이스 변환 — Web Toolkit`;
 const DESCRIPTION = `UPPER · lower · Title · camelCase · snake_case 등 12종 즉시 변환.`;
 const URL_PATH = '/tools/text/case';
-const OG_IMAGE = '/og/text.png';
+const OG_IMAGE = '/og/tools/text-case.png';
 
 export const metadata: Metadata = {
   title: TITLE,

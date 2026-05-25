@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 메타데이터 편집 — Web Toolkit`;
 const DESCRIPTION = `제목·저자·언어·설명·태그 등 EPUB 메타데이터를 편집합니다.`;
 const URL_PATH = '/tools/docs/epub-metadata';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-metadata.png';
 
 export const metadata: Metadata = {
   title: TITLE,

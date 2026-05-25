@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 리사이즈 — Web Toolkit`;
 const DESCRIPTION = `GIF 크기를 조정합니다.`;
 const URL_PATH = '/tools/gif/resize';
-const OG_IMAGE = '/og/gif.png';
+const OG_IMAGE = '/og/tools/gif-resize.png';
 
 export const metadata: Metadata = {
   title: TITLE,

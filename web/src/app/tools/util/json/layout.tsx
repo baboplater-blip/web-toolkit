@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `JSON 포맷터 — Web Toolkit`;
 const DESCRIPTION = `JSON 포맷팅·압축·검증·트리 뷰.`;
 const URL_PATH = '/tools/util/json';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/json-format.png';
 
 export const metadata: Metadata = {
   title: TITLE,

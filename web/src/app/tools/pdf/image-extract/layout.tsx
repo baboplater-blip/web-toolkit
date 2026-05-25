@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 이미지 추출 — Web Toolkit`;
 const DESCRIPTION = `PDF 페이지에 삽입된 이미지를 PNG 로 추출해 ZIP 으로 저장.`;
 const URL_PATH = '/tools/pdf/image-extract';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-image-extract.png';
 
 export const metadata: Metadata = {
   title: TITLE,

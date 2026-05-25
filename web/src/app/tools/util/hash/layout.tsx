@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `파일 해시 — Web Toolkit`;
 const DESCRIPTION = `SHA-1/256/512 · MD5 해시를 계산합니다.`;
 const URL_PATH = '/tools/util/hash';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/file-hash.png';
 
 export const metadata: Metadata = {
   title: TITLE,

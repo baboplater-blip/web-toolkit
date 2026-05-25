@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `UUID 생성 — Web Toolkit`;
 const DESCRIPTION = `UUID v4 를 단일·대량 생성합니다.`;
 const URL_PATH = '/tools/dev/uuid';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/uuid-gen.png';
 
 export const metadata: Metadata = {
   title: TITLE,

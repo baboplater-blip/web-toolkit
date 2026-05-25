@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `단위 변환기 — Web Toolkit`;
 const DESCRIPTION = `길이·무게·온도·면적·속도 등 일상 단위 상호 변환.`;
 const URL_PATH = '/tools/util/unit';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/unit-converter.png';
 
 export const metadata: Metadata = {
   title: TITLE,

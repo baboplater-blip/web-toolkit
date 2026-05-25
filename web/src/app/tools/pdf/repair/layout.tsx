@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 복구 — Web Toolkit`;
 const DESCRIPTION = `2단계 복구: 구조 복원 + 래스터 재조립 폴백.`;
 const URL_PATH = '/tools/pdf/repair';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/pdf-repair.png';
 
 export const metadata: Metadata = {
   title: TITLE,

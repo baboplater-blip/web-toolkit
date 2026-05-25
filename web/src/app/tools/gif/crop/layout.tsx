@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 영역 자르기 — Web Toolkit`;
 const DESCRIPTION = `GIF 의 특정 영역만 잘라냅니다.`;
 const URL_PATH = '/tools/gif/crop';
-const OG_IMAGE = '/og/gif.png';
+const OG_IMAGE = '/og/tools/gif-crop.png';
 
 export const metadata: Metadata = {
   title: TITLE,

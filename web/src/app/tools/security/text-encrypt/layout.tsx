@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `텍스트 암호화·복호화 — Web Toolkit`;
 const DESCRIPTION = `AES-256-GCM 으로 메모·메시지를 비밀번호 암호화. Base64 출력.`;
 const URL_PATH = '/tools/security/text-encrypt';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/text-encrypt.png';
 
 export const metadata: Metadata = {
   title: TITLE,

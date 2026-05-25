@@ -15,6 +15,8 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const TOOL_OG_DIR_REL = 'public/og/tools';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = join(__dirname, '..');
 const REGISTRY_PATH = join(WEB_ROOT, 'src/lib/tools/registry.ts');
@@ -148,7 +150,11 @@ function renderLayout(tool) {
   const dedupedKeywords = [...new Set(baseKeywords.filter(Boolean))];
   const keywordsLiteral = JSON.stringify(dedupedKeywords);
   const jsonLdLiteral = JSON.stringify(buildJsonLd(tool));
-  const ogImagePath = `/og/${tool.category}.png`;
+  // 도구별 OG PNG 가 commit 되어 있으면 그것을 우선, 없으면 카테고리 폴백
+  const toolOgPath = join(WEB_ROOT, TOOL_OG_DIR_REL, `${tool.id}.png`);
+  const ogImagePath = existsSync(toolOgPath)
+    ? `/og/tools/${tool.id}.png`
+    : `/og/${tool.category}.png`;
 
   return `${MARKER}
 import type { Metadata } from 'next';

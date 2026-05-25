@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 구간 자르기 — Web Toolkit`;
 const DESCRIPTION = `시작·끝 시간을 지정하여 GIF 를 자릅니다.`;
 const URL_PATH = '/tools/gif/trim';
-const OG_IMAGE = '/og/gif.png';
+const OG_IMAGE = '/og/tools/gif-trim.png';
 
 export const metadata: Metadata = {
   title: TITLE,

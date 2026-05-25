@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `Lorem Ipsum 생성 — Web Toolkit`;
 const DESCRIPTION = `더미 텍스트(단어·문장·문단)를 즉시 생성합니다.`;
 const URL_PATH = '/tools/dev/lorem';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/lorem-ipsum.png';
 
 export const metadata: Metadata = {
   title: TITLE,

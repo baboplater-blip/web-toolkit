@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `CSV ↔ JSON — Web Toolkit`;
 const DESCRIPTION = `스프레드시트 데이터를 JSON 으로 변환하거나 반대로.`;
 const URL_PATH = '/tools/docs/csv-json';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/csv-json.png';
 
 export const metadata: Metadata = {
   title: TITLE,

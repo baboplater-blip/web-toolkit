@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `cron 표현식 해석기 — Web Toolkit`;
 const DESCRIPTION = `cron 5필드 표현식을 한국어로 풀고 다음 7회 실행 시각 표시.`;
 const URL_PATH = '/tools/dev/cron';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/cron-explainer.png';
 
 export const metadata: Metadata = {
   title: TITLE,

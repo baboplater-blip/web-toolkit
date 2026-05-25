@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 챕터 분할 — Web Toolkit`;
 const DESCRIPTION = `EPUB 의 챕터를 각각 독립된 EPUB 으로 분할해 ZIP 으로 묶습니다.`;
 const URL_PATH = '/tools/docs/epub-split';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-split.png';
 
 export const metadata: Metadata = {
   title: TITLE,

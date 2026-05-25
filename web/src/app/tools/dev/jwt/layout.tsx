@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `JWT 디코더 — Web Toolkit`;
 const DESCRIPTION = `JWT 토큰을 헤더·페이로드·시그니처로 분해합니다.`;
 const URL_PATH = '/tools/dev/jwt';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/jwt-decoder.png';
 
 export const metadata: Metadata = {
   title: TITLE,

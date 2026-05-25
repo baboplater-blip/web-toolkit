@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `파일 용량 줄이기 — Web Toolkit`;
 const DESCRIPTION = `이미지와 PDF 를 브라우저에서 압축합니다.`;
 const URL_PATH = '/tools/compress';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/compress.png';
 
 export const metadata: Metadata = {
   title: TITLE,

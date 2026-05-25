@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 텍스트 삽입 — Web Toolkit`;
 const DESCRIPTION = `GIF 전체에 표시될 텍스트·자막을 추가합니다.`;
 const URL_PATH = '/tools/gif/text';
-const OG_IMAGE = '/og/gif.png';
+const OG_IMAGE = '/og/tools/gif-text.png';
 
 export const metadata: Metadata = {
   title: TITLE,

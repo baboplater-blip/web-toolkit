@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 자르기 — Web Toolkit`;
 const DESCRIPTION = `드래그로 영역 지정, 비율 프리셋 지원.`;
 const URL_PATH = '/tools/image/crop';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-crop.png';
 
 export const metadata: Metadata = {
   title: TITLE,

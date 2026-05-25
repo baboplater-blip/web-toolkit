@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 구조 검증 — Web Toolkit`;
 const DESCRIPTION = `OPF·spine·manifest·표지·자산 누락 등 EPUB 구조를 점검합니다.`;
 const URL_PATH = '/tools/docs/epub-validate';
-const OG_IMAGE = '/og/docs.png';
+const OG_IMAGE = '/og/tools/epub-validate.png';
 
 export const metadata: Metadata = {
   title: TITLE,

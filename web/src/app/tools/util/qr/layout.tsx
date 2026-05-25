@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `QR 코드 생성/읽기 — Web Toolkit`;
 const DESCRIPTION = `텍스트·URL → QR 생성, 이미지 → QR 해독.`;
 const URL_PATH = '/tools/util/qr';
-const OG_IMAGE = '/og/util.png';
+const OG_IMAGE = '/og/tools/qr-code.png';
 
 export const metadata: Metadata = {
   title: TITLE,

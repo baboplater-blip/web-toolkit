@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF → Word (.doc) — Web Toolkit`;
 const DESCRIPTION = `PDF 의 텍스트를 추출해 Word/한컴에서 열 수 있는 .doc 파일로 변환.`;
 const URL_PATH = '/tools/pdf/to-word';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-to-word.png';
 
 export const metadata: Metadata = {
   title: TITLE,

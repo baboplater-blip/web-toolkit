@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF → Markdown — Web Toolkit`;
 const DESCRIPTION = `폰트 크기로 헤딩을 추정해 # / ## / ### 구조의 Markdown 으로 변환합니다.`;
 const URL_PATH = '/tools/pdf/to-md';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-to-md.png';
 
 export const metadata: Metadata = {
   title: TITLE,

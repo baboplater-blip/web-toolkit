@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `AI 배경 제거 — Web Toolkit`;
 const DESCRIPTION = `인물·상품 배경을 자동 분리. 투명 배경 PNG 출력.`;
 const URL_PATH = '/tools/image/remove-background';
-const OG_IMAGE = '/og/ai.png';
+const OG_IMAGE = '/og/tools/remove-background.png';
 
 export const metadata: Metadata = {
   title: TITLE,

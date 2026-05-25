@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 워터마크 — Web Toolkit`;
 const DESCRIPTION = `텍스트/이미지 워터마크를 추가합니다.`;
 const URL_PATH = '/tools/pdf/watermark';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/pdf-watermark.png';
 
 export const metadata: Metadata = {
   title: TITLE,

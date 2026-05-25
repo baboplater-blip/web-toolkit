@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `색상 변환기 — Web Toolkit`;
 const DESCRIPTION = `HEX / RGB / HSL / OKLCH 색상 표기 상호 변환.`;
 const URL_PATH = '/tools/dev/color';
-const OG_IMAGE = '/og/dev.png';
+const OG_IMAGE = '/og/tools/color-converter.png';
 
 export const metadata: Metadata = {
   title: TITLE,

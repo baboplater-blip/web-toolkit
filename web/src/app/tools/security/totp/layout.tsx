@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `TOTP 인증코드 생성기 — Web Toolkit`;
 const DESCRIPTION = `Google Authenticator 호환 OTP 코드 생성.`;
 const URL_PATH = '/tools/security/totp';
-const OG_IMAGE = '/og/security.png';
+const OG_IMAGE = '/og/tools/totp.png';
 
 export const metadata: Metadata = {
   title: TITLE,

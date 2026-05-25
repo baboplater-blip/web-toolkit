@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `줄 정렬·중복 제거 — Web Toolkit`;
 const DESCRIPTION = `여러 줄을 정렬·역순·랜덤·중복 제거. 한국어·숫자 인식.`;
 const URL_PATH = '/tools/text/sort';
-const OG_IMAGE = '/og/text.png';
+const OG_IMAGE = '/og/tools/text-sort.png';
 
 export const metadata: Metadata = {
   title: TITLE,

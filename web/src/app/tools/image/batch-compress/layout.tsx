@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 일괄 압축 — Web Toolkit`;
 const DESCRIPTION = `여러 장을 한 번에 압축하여 ZIP 으로 저장.`;
 const URL_PATH = '/tools/image/batch-compress';
-const OG_IMAGE = '/og/image.png';
+const OG_IMAGE = '/og/tools/image-batch-compress.png';
 
 export const metadata: Metadata = {
   title: TITLE,

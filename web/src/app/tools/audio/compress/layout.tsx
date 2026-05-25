@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `오디오 압축 — Web Toolkit`;
 const DESCRIPTION = `비트레이트를 낮춰 오디오 용량을 줄입니다.`;
 const URL_PATH = '/tools/audio/compress';
-const OG_IMAGE = '/og/audio.png';
+const OG_IMAGE = '/og/tools/audio-compress.png';
 
 export const metadata: Metadata = {
   title: TITLE,

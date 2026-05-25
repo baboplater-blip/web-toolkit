@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `HTML → PDF — Web Toolkit`;
 const DESCRIPTION = `HTML 코드를 PDF 로 변환합니다. 한글 폰트·CSS·인라인 이미지 지원.`;
 const URL_PATH = '/tools/pdf/from-html';
-const OG_IMAGE = '/og/pdf.png';
+const OG_IMAGE = '/og/tools/html-to-pdf.png';
 
 export const metadata: Metadata = {
   title: TITLE,
