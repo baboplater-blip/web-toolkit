@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { InlineToolAd } from '@/components/InlineToolAd';
+import { RelatedTools } from '@/components/tools/RelatedTools';
 import { ToolNavigation } from '@/components/tools/ToolNavigation';
 
 const SITE_NAME = 'Web Toolkit';
@@ -59,7 +60,8 @@ const breadcrumbJsonLd = {
 /**
  * 도구 섹션 공통 레이아웃.
  * - 도구 페이지 본문 위에 인라인 광고(허브 제외)
- * - 도구 페이지 하단에 자동으로 prev/next + 같은 카테고리 메뉴 노출
+ * - 도구 페이지 하단에 관련 도구 그리드(같은 카테고리 + cross-category)
+ * - 그 아래에 prev/next + 같은 카테고리 메뉴 노출
  * - BreadcrumbList JSON-LD 로 검색엔진 경로 표기
  */
 export default function ToolsLayout({ children }: { children: React.ReactNode }) {
@@ -72,6 +74,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
       />
       <InlineToolAd />
       {children}
+      <RelatedTools />
       <ToolNavigation />
     </>
   );
