@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 import {
   appendSuffix,

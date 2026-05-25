@@ -9,7 +9,7 @@ import {
   Loader2,
   RotateCcw,
 } from 'lucide-react';
-import { rgb, StandardFonts } from 'pdf-lib';
+import { rgb, StandardFonts } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';

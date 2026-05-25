@@ -15,7 +15,7 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 type Mode = 'generate' | 'read';
 type ErrorLevel = 'L' | 'M' | 'Q' | 'H';

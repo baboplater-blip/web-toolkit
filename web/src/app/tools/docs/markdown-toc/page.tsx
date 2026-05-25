@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { ArrowLeft, Check, Copy, Download, ListTree } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 interface Heading {
   level: number;

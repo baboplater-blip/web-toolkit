@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 type Usage = 'encrypt' | 'sign';
 type Bits = 2048 | 3072 | 4096;

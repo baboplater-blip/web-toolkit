@@ -12,7 +12,7 @@ import {
   RotateCcw,
   Trash2,
 } from 'lucide-react';
-import { PDFDocument, PageSizes } from 'pdf-lib';
+import { PDFDocument, PageSizes } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';

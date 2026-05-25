@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2, FilePlus } from 'lucide-react';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';

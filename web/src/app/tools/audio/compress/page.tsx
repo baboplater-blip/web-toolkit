@@ -22,7 +22,7 @@ import {
   readOutput,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
-import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
 import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
 import {
   commonRoot,

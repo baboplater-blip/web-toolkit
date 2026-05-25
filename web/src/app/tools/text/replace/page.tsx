@@ -5,7 +5,7 @@ import { ArrowLeft, Check, Copy, Download, Replace } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 export default function TextReplacePage() {
   const [text, setText] = useState(

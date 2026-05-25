@@ -12,7 +12,7 @@ import {
   runBatch,
   type RelativeFile,
 } from '@/lib/tools/folder-batch';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
 interface ExifGroup {

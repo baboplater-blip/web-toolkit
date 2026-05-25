@@ -12,7 +12,7 @@ import {
   Type,
   X,
 } from 'lucide-react';
-import { degrees, rgb, StandardFonts } from 'pdf-lib';
+import { degrees, rgb, StandardFonts } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';

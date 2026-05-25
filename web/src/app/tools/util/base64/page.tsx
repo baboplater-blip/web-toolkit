@@ -13,7 +13,7 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
 type Mode = 'encode-text' | 'decode-text' | 'encode-file';

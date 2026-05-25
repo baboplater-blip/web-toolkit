@@ -92,7 +92,7 @@ export default function PdfFlattenPage() {
       }
 
       if (removeAnnots) {
-        const { PDFName } = await import('pdf-lib');
+        const { PDFName } = await import('@cantoo/pdf-lib');
         for (const page of doc.getPages()) {
           page.node.delete(PDFName.of('Annots'));
         }

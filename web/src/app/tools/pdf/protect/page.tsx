@@ -16,7 +16,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
-import { isPdfFile, stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { isPdfFile, stripExtension, triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
 interface Permissions {
@@ -95,7 +95,6 @@ export default function PdfProtectPage() {
     setResult(null);
 
     try {
-      // @cantoo/pdf-lib 는 보호 기능 추가된 pdf-lib 포크
       const { PDFDocument } = await import('@cantoo/pdf-lib');
       const bytes = await file.arrayBuffer();
       const doc = await PDFDocument.load(bytes, { updateMetadata: false });

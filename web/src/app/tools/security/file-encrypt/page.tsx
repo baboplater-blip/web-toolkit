@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { decryptBytes, encryptBytes } from '@/lib/tools/crypto-common';
-import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
 type Mode = 'encrypt' | 'decrypt';

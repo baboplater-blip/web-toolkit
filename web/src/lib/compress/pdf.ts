@@ -18,7 +18,7 @@ import {
   PDFDict,
   PDFArray,
   PDFObject,
-} from 'pdf-lib';
+} from '@cantoo/pdf-lib';
 import type { PDFPageProxy } from 'pdfjs-dist';
 
 export type PdfCompressMode = 'light' | 'smart' | 'rasterize';

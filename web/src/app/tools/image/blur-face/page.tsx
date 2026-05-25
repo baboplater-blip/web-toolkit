@@ -27,7 +27,7 @@ import {
   type ImageFormat,
   type LoadedImage,
 } from '@/lib/tools/image-common';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 import {
   commonRoot,

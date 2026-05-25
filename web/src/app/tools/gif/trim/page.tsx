@@ -21,7 +21,7 @@ import {
   readOutput,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 
 export default function GifTrimPage() {

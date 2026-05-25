@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Loader2, FilePen } from 'lucide-react';
-import { PDFCheckBox, PDFDocument, PDFDropdown, PDFRadioGroup, PDFTextField } from 'pdf-lib';
+import { PDFCheckBox, PDFDocument, PDFDropdown, PDFRadioGroup, PDFTextField } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';

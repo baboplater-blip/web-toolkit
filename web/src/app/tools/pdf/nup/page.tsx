@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Loader2, LayoutGrid } from 'lucide-react';
-import { PDFDocument, PageSizes } from 'pdf-lib';
+import { PDFDocument, PageSizes } from '@cantoo/pdf-lib';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';

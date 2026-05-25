@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRightLeft, Check, Copy, Download, Table } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 type Direction = 'csv-to-json' | 'json-to-csv';
 

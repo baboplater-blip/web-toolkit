@@ -15,7 +15,7 @@ import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
-import { triggerDownload } from '@/lib/tools/pdf-common';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 import {
   commonRoot,

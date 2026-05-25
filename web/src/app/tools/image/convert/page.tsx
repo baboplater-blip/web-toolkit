@@ -24,7 +24,7 @@ import {
   supportsAvifEncode,
   type ImageFormat,
 } from '@/lib/tools/image-common';
-import { stripExtension, triggerDownload } from '@/lib/tools/pdf-common';
+import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,

@@ -9,7 +9,7 @@ import {
   RotateCcw,
   RotateCw,
 } from 'lucide-react';
-import { degrees } from 'pdf-lib';
+import { degrees } from '@cantoo/pdf-lib';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
