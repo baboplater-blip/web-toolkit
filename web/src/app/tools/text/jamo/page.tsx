@@ -51,8 +51,7 @@ export default function JamoPage() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-        />
+          className="w-full rounded-md border bg-background px-3 py-2 text-sm" aria-label="한글 텍스트" />
       </div>
 
       <label className="flex items-center gap-2 text-sm">

@@ -77,7 +77,7 @@ export default function PixelatePage() {
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">픽셀 크기 ({size}px)</label>
-            <input type="range" min={4} max={80} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full" />
+            <input type="range" min={4} max={80} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full" aria-label="픽셀 크기 ( px)" />
           </div>
           {mode === 'region' && (
             <div className="grid grid-cols-4 gap-2">

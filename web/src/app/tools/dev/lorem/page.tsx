@@ -120,8 +120,7 @@ export default function LoremPage() {
             max={mode === 'words' ? 200 : 30}
             value={count}
             onChange={(e) => setCount(Math.max(1, Math.min(200, parseInt(e.target.value || '1', 10))))}
-            className="w-24 font-mono"
-          />
+            className="w-24 font-mono" aria-label="개수" />
         </div>
         <label className="flex items-center gap-2 text-xs">
           <input

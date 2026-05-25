@@ -149,8 +149,7 @@ export default function UnitPage() {
             type="number"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="font-mono"
-          />
+            className="font-mono" aria-label="입력" />
           <select
             value={fromId}
             onChange={(e) => setFromId(e.target.value)}

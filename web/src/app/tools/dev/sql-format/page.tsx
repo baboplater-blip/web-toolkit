@@ -120,8 +120,7 @@ export default function SqlFormatPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed"
-        />
+          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed" aria-label="SQL" />
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -147,7 +146,7 @@ export default function SqlFormatPage() {
               {copied ? '복사됨' : '복사'}
             </Button>
           </div>
-          <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-72 leading-relaxed" />
+          <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-72 leading-relaxed" aria-label="결과" />
         </div>
       )}
     </main>

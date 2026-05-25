@@ -84,8 +84,7 @@ export default function SubtitleConvertPage() {
             if (e.target.value) convertText(e.target.value, target);
           }}
           placeholder="자막 텍스트를 직접 붙여넣거나 파일을 드롭하세요."
-          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-40 leading-relaxed"
-        />
+          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-40 leading-relaxed" aria-label="입력" />
       </div>
 
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
@@ -94,7 +93,7 @@ export default function SubtitleConvertPage() {
         <>
           <div className="space-y-2">
             <label className="text-xs font-medium">결과</label>
-            <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-40 leading-relaxed" />
+            <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-40 leading-relaxed" aria-label="결과" />
           </div>
           <a href={downloadUrl} download={filename} className={buttonVariants({ variant: 'default', className: 'w-full' })}>
             <Download className="h-4 w-4" /> {filename} 다운로드

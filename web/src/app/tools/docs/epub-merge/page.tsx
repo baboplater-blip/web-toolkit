@@ -178,8 +178,7 @@ export default function EpubMergePage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="비워두면 첫 EPUB 제목 사용"
-                className="w-full rounded-md border bg-background px-2 py-1 text-sm"
-              />
+                className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="병합 결과 메타데이터" />
             </div>
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">저자</label>
@@ -187,8 +186,7 @@ export default function EpubMergePage() {
                 value={creator}
                 onChange={(e) => setCreator(e.target.value)}
                 placeholder="비워두면 첫 EPUB 저자 사용"
-                className="w-full rounded-md border bg-background px-2 py-1 text-sm"
-              />
+                className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="저자" />
             </div>
           </div>
         </div>

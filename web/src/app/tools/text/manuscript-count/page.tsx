@@ -61,8 +61,7 @@ export default function ManuscriptCountPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="w-full rounded-md border bg-background p-3 text-sm h-72 leading-relaxed"
-          placeholder="원고지 매수가 궁금한 글을 붙여넣거나 직접 입력하세요."
-        />
+          placeholder="원고지 매수가 궁금한 글을 붙여넣거나 직접 입력하세요." aria-label="본문" />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">

@@ -404,8 +404,7 @@ export default function PdfWatermarkPage() {
                     onChange={(e) => setText(e.target.value)}
                     placeholder="예: CONFIDENTIAL"
                     disabled={processing}
-                    className="h-9"
-                  />
+                    className="h-9" aria-label="텍스트 내용" />
                   <p className="text-[10px] text-muted-foreground mt-1">
                     Helvetica 폰트 사용. 한글은 표시되지 않을 수 있습니다.
                   </p>
@@ -423,8 +422,7 @@ export default function PdfWatermarkPage() {
                     value={fontSize}
                     onChange={(e) => setFontSize(Number(e.target.value))}
                     disabled={processing}
-                    className="w-full accent-primary"
-                  />
+                    className="w-full accent-primary" aria-label="글자 크기" />
                 </div>
               </>
             )}
@@ -482,8 +480,7 @@ export default function PdfWatermarkPage() {
                       value={imageScale}
                       onChange={(e) => setImageScale(Number(e.target.value))}
                       disabled={processing}
-                      className="w-full accent-primary"
-                    />
+                      className="w-full accent-primary" aria-label="이미지 크기 (페이지 대비)" />
                   </div>
                 )}
               </div>
@@ -525,8 +522,7 @@ export default function PdfWatermarkPage() {
                 value={rotation}
                 onChange={(e) => setRotation(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="회전" />
             </div>
 
             <div>
@@ -542,8 +538,7 @@ export default function PdfWatermarkPage() {
                 value={opacity}
                 onChange={(e) => setOpacity(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="투명도" />
             </div>
 
             <div>

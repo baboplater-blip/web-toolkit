@@ -430,8 +430,7 @@ export default function ImageWatermarkPage() {
                     onChange={(e) => setText(e.target.value)}
                     placeholder="텍스트 입력 (한글 가능)"
                     disabled={processing}
-                    className="h-9"
-                  />
+                    className="h-9" aria-label="텍스트" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -447,8 +446,7 @@ export default function ImageWatermarkPage() {
                       value={fontSize}
                       onChange={(e) => setFontSize(Number(e.target.value))}
                       disabled={processing}
-                      className="w-full accent-primary"
-                    />
+                      className="w-full accent-primary" aria-label="글자 크기" />
                   </div>
                   <div>
                     <label className="text-xs font-medium mb-1.5 block">색상</label>
@@ -457,8 +455,7 @@ export default function ImageWatermarkPage() {
                       value={fontColor}
                       onChange={(e) => setFontColor(e.target.value)}
                       disabled={processing}
-                      className="h-9 w-full rounded-md border bg-background cursor-pointer"
-                    />
+                      className="h-9 w-full rounded-md border bg-background cursor-pointer" aria-label="색상" />
                   </div>
                 </div>
               </>
@@ -515,8 +512,7 @@ export default function ImageWatermarkPage() {
                         value={imageScale}
                         onChange={(e) => setImageScale(Number(e.target.value))}
                         disabled={processing}
-                        className="w-full accent-primary"
-                      />
+                        className="w-full accent-primary" aria-label="로고 크기 (이미지 대비)" />
                     </div>
                   </>
                 )}
@@ -559,8 +555,7 @@ export default function ImageWatermarkPage() {
                 value={rotation}
                 onChange={(e) => setRotation(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="회전" />
             </div>
 
             <div>
@@ -576,8 +571,7 @@ export default function ImageWatermarkPage() {
                 value={opacity}
                 onChange={(e) => setOpacity(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="투명도" />
             </div>
 
             <Separator />
@@ -617,8 +611,7 @@ export default function ImageWatermarkPage() {
                   value={quality}
                   onChange={(e) => setQuality(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="품질" />
               </div>
             )}
 

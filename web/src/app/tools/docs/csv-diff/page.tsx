@@ -124,8 +124,7 @@ export default function CsvDiffPage() {
           min={0}
           value={keyCol}
           onChange={(e) => setKeyCol(Math.max(0, Number(e.target.value)))}
-          className="w-20 rounded-md border bg-background px-2 py-1 text-sm"
-        />
+          className="w-20 rounded-md border bg-background px-2 py-1 text-sm" aria-label="키 컬럼 인덱스 (0부터)" />
       </div>
 
       <Button onClick={handleProcess} disabled={busy || !a || !b}>

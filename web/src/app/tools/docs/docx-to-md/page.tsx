@@ -115,8 +115,7 @@ export default function DocxToMdPage() {
           <textarea
             readOnly
             value={markdown}
-            className="h-72 w-full rounded-md border bg-card p-3 text-xs font-mono leading-relaxed"
-          />
+            className="h-72 w-full rounded-md border bg-card p-3 text-xs font-mono leading-relaxed" aria-label="변환 결과" />
         </div>
       )}
 

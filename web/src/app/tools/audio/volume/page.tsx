@@ -270,8 +270,7 @@ export default function AudioVolumePage() {
             value={gainDb}
             onChange={(e) => setGainDb(Number(e.target.value))}
             disabled={processing}
-            className="w-full"
-          />
+            className="w-full" aria-label="dB" />
           <div className="flex justify-between text-[9px] text-muted-foreground mt-0.5">
             <span>-30dB (감소)</span>
             <span>0dB</span>
@@ -305,8 +304,7 @@ export default function AudioVolumePage() {
             value={targetLufs}
             onChange={(e) => setTargetLufs(Number(e.target.value))}
             disabled={processing}
-            className="h-9"
-          />
+            className="h-9" aria-label="목표 라우드니스 (LUFS)" />
           <div className="grid grid-cols-3 gap-1 mt-2">
             {[
               [-23, 'EBU R128 (TV)'],

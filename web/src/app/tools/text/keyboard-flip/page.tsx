@@ -62,8 +62,7 @@ export default function KeyboardFlipPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed font-mono"
-          placeholder="잘못된 한/영 키로 입력된 글을 붙여넣으세요."
-        />
+          placeholder="잘못된 한/영 키로 입력된 글을 붙여넣으세요." aria-label="입력" />
       </div>
 
       <div className="space-y-2">
@@ -74,7 +73,7 @@ export default function KeyboardFlipPage() {
             {copied ? '복사됨' : '복사'}
           </Button>
         </div>
-        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" />
+        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" aria-label="변환 결과" />
       </div>
     </main>
   );

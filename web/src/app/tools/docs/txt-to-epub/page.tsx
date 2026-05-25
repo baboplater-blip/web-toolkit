@@ -175,8 +175,7 @@ export default function TxtToEpubPage() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="여기에 텍스트를 붙여넣거나 위에서 TXT 파일을 올리세요."
-            className="w-full rounded-md border bg-background p-2 text-xs font-mono h-72 leading-relaxed"
-          />
+            className="w-full rounded-md border bg-background p-2 text-xs font-mono h-72 leading-relaxed" aria-label="본문" />
           <p className="text-[10px] text-muted-foreground">{text.length.toLocaleString()} 자</p>
         </div>
       </div>

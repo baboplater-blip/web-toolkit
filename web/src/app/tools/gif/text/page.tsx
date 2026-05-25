@@ -286,8 +286,7 @@ export default function GifTextPage() {
                 placeholder="텍스트를 입력하세요 (한글 가능)"
                 disabled={processing}
                 rows={2}
-                className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm resize-y"
-              />
+                className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm resize-y" aria-label="텍스트 (줄바꿈: 엔터)" />
             </div>
 
             <div>
@@ -330,8 +329,7 @@ export default function GifTextPage() {
                 value={fontSize}
                 onChange={(e) => setFontSize(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="글자 크기" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -342,8 +340,7 @@ export default function GifTextPage() {
                   value={fontColor}
                   onChange={(e) => setFontColor(e.target.value)}
                   disabled={processing}
-                  className="h-9 cursor-pointer p-0"
-                />
+                  className="h-9 cursor-pointer p-0" aria-label="글자색" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1.5 block">외곽선 색</label>
@@ -352,8 +349,7 @@ export default function GifTextPage() {
                   value={strokeColor}
                   onChange={(e) => setStrokeColor(e.target.value)}
                   disabled={processing}
-                  className="h-9 cursor-pointer p-0"
-                />
+                  className="h-9 cursor-pointer p-0" aria-label="외곽선 색" />
               </div>
             </div>
 

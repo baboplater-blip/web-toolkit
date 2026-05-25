@@ -36,8 +36,7 @@ export default function HanjaPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed"
-        />
+          className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed" aria-label="한자 포함 텍스트" />
       </div>
 
       <div className="space-y-2">
@@ -48,7 +47,7 @@ export default function HanjaPage() {
             {copied ? '복사됨' : '복사'}
           </Button>
         </div>
-        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" />
+        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" aria-label="변환 결과 ( 자 변환)" />
       </div>
 
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">

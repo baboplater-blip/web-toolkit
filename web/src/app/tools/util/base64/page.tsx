@@ -192,8 +192,7 @@ export default function Base64Page() {
               }
               rows={8}
               className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="encode-text" />
           </div>
         )}
 

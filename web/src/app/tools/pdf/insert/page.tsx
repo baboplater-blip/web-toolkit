@@ -125,8 +125,7 @@ export default function PdfInsertPage() {
                 max={basePages}
                 value={afterPage}
                 onChange={(e) => setAfterPage(Math.max(0, Math.min(basePages, Number(e.target.value))))}
-                className="w-20 rounded-md border bg-background px-2 py-1 text-sm"
-              />
+                className="w-20 rounded-md border bg-background px-2 py-1 text-sm" aria-label="대상 페이지" />
               <span className="text-xs text-muted-foreground">뒤에 삽입 (0 = 맨 앞)</span>
             </div>
           )}

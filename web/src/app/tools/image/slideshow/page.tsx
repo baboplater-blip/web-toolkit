@@ -154,7 +154,7 @@ export default function SlideshowPage() {
       <div className="rounded-xl border bg-card p-3 grid grid-cols-3 gap-2">
         <div className="space-y-1">
           <label className="text-xs font-medium">장당 (초)</label>
-          <input type="number" min={0.5} max={20} step={0.5} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+          <input type="number" min={0.5} max={20} step={0.5} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="장당 (초)" />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">FPS</label>

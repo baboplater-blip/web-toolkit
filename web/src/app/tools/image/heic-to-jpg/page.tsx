@@ -218,8 +218,7 @@ export default function HeicToJpgPage() {
               step={0.05}
               value={quality}
               onChange={(e) => setQuality(parseFloat(e.target.value))}
-              className="flex-1"
-            />
+              className="flex-1" aria-label="품질" />
             <span className="text-xs text-muted-foreground w-10 text-right">
               {Math.round(quality * 100)}%
             </span>

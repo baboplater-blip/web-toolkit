@@ -275,8 +275,7 @@ export default function CronExplainerPage() {
             onChange={(e) => setExpression(e.target.value)}
             placeholder="0 9 * * 1-5"
             className="h-10 font-mono text-sm tracking-wider"
-            spellCheck={false}
-          />
+            spellCheck={false} aria-label="cron 표현식 (분 시 일 월 요일)" />
           <div className="flex flex-wrap gap-1">
             {PRESETS.map((p) => (
               <button

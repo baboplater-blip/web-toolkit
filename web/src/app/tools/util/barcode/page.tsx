@@ -145,8 +145,7 @@ export default function BarcodePage() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={placeholder(format)}
-              className="h-9 font-mono"
-            />
+              className="h-9 font-mono" aria-label="내용" />
           </div>
 
           <div>
@@ -184,8 +183,7 @@ export default function BarcodePage() {
                 step={0.5}
                 value={width}
                 onChange={(e) => setWidth(Number(e.target.value))}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="바 두께" />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1.5">
@@ -199,8 +197,7 @@ export default function BarcodePage() {
                 step={5}
                 value={height}
                 onChange={(e) => setHeight(Number(e.target.value))}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="높이" />
             </div>
           </div>
 
@@ -211,8 +208,7 @@ export default function BarcodePage() {
                 type="color"
                 value={fgColor}
                 onChange={(e) => setFgColor(e.target.value)}
-                className="h-9 w-full rounded-md border cursor-pointer"
-              />
+                className="h-9 w-full rounded-md border cursor-pointer" aria-label="전경색" />
             </div>
             <div>
               <label className="text-xs font-medium mb-1.5 block">배경색</label>
@@ -220,8 +216,7 @@ export default function BarcodePage() {
                 type="color"
                 value={bgColor}
                 onChange={(e) => setBgColor(e.target.value)}
-                className="h-9 w-full rounded-md border cursor-pointer"
-              />
+                className="h-9 w-full rounded-md border cursor-pointer" aria-label="배경색" />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1.5">
@@ -235,8 +230,7 @@ export default function BarcodePage() {
                 step={1}
                 value={fontSize}
                 onChange={(e) => setFontSize(Number(e.target.value))}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="폰트" />
             </div>
           </div>
 

@@ -244,8 +244,7 @@ export default function AudioSpeedPage() {
         value={rate}
         onChange={(e) => setRate(Number(e.target.value))}
         disabled={processing}
-        className="w-full"
-      />
+        className="w-full" aria-label="배속" />
       <div className="flex justify-between text-[9px] text-muted-foreground mt-0.5">
         <span>0.25x (느림)</span>
         <span>1x</span>

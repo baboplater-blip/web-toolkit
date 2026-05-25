@@ -359,8 +359,7 @@ export default function BatchCompressPage() {
                   value={quality}
                   onChange={(e) => setQuality(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="품질" />
               </div>
             )}
 
@@ -379,8 +378,7 @@ export default function BatchCompressPage() {
                 value={maxDim}
                 onChange={(e) => setMaxDim(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="최대 크기 (긴 변, px)" />
             </div>
 
             <Separator />

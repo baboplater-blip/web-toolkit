@@ -120,7 +120,7 @@ export default function PdfToMdPage() {
               {copied ? '복사됨' : '복사'}
             </Button>
           </div>
-          <textarea readOnly value={md} className="h-72 w-full rounded-md border bg-card p-3 text-xs font-mono leading-relaxed" />
+          <textarea readOnly value={md} className="h-72 w-full rounded-md border bg-card p-3 text-xs font-mono leading-relaxed" aria-label="미리보기" />
         </div>
       )}
 

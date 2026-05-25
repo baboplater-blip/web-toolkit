@@ -146,28 +146,28 @@ export default function ChartPage() {
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <label className="text-xs font-medium">제목</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="제목" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">색상</label>
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 w-full rounded-md border bg-background" />
+            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 w-full rounded-md border bg-background" aria-label="색상" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <label className="text-xs font-medium">너비 (px)</label>
-            <input type="number" min={300} max={2000} value={width} onChange={(e) => setWidth(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={300} max={2000} value={width} onChange={(e) => setWidth(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="너비 (px)" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">높이 (px)</label>
-            <input type="number" min={200} max={2000} value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={200} max={2000} value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="높이 (px)" />
           </div>
         </div>
       </div>
 
       <div className="space-y-2">
         <label className="text-xs font-medium">데이터 (한 줄에 "레이블, 값")</label>
-        <textarea value={data} onChange={(e) => setData(e.target.value)} className="w-full rounded-md border bg-background p-3 text-xs font-mono h-32 leading-relaxed" />
+        <textarea value={data} onChange={(e) => setData(e.target.value)} className="w-full rounded-md border bg-background p-3 text-xs font-mono h-32 leading-relaxed" aria-label="데이터" />
       </div>
 
       <div className="rounded-xl border bg-card p-2 overflow-x-auto">

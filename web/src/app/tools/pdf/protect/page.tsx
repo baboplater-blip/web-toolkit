@@ -189,8 +189,7 @@ export default function PdfProtectPage() {
                     onChange={(e) => setUserPassword(e.target.value)}
                     placeholder="문서를 열 때 필요한 암호"
                     disabled={processing}
-                    className="h-9 pr-9"
-                  />
+                    className="h-9 pr-9" aria-label="사용자 암호 (PDF 열람 시 요구)" />
                   <button
                     type="button"
                     onClick={() => setShowUserPw((v) => !v)}
@@ -214,8 +213,7 @@ export default function PdfProtectPage() {
                     onChange={(e) => setOwnerPassword(e.target.value)}
                     placeholder="편집·인쇄 제한을 해제할 때 필요한 암호"
                     disabled={processing}
-                    className="h-9 pr-9"
-                  />
+                    className="h-9 pr-9" aria-label="소유자 암호 (권한 변경 시 요구, 선택)" />
                   <button
                     type="button"
                     onClick={() => setShowOwnerPw((v) => !v)}

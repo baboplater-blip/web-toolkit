@@ -144,8 +144,7 @@ export default function PdfFormFillPage() {
                   <input
                     value={f.value}
                     onChange={(e) => updateField(i, e.target.value)}
-                    className="w-full rounded-md border bg-background px-2 py-1 text-sm"
-                  />
+                    className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="[ ]" />
                 )}
                 {f.kind === 'checkbox' && (
                   <label className="flex items-center gap-2 text-xs">

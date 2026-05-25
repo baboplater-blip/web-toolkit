@@ -183,8 +183,7 @@ export default function PdfBackgroundPage() {
             max={100}
             value={Math.round(opacity * 100)}
             onChange={(e) => setOpacity(Number(e.target.value) / 100)}
-            className="w-full"
-          />
+            className="w-full" aria-label="불투명도 ( %)" />
         </div>
       </div>
 

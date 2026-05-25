@@ -138,8 +138,7 @@ export default function TextEncryptPage() {
             rows={6}
             className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
             placeholder={mode === 'encrypt' ? '암호화할 텍스트' : 'WTK1... 형식 Base64 문자열'}
-            spellCheck={false}
-          />
+            spellCheck={false} aria-label="encrypt" />
         </div>
 
         <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -150,8 +149,7 @@ export default function TextEncryptPage() {
               value={passphrase}
               onChange={(e) => setPassphrase(e.target.value)}
               className="h-9 pr-9 font-mono text-xs"
-              autoComplete="new-password"
-            />
+              autoComplete="new-password" aria-label="비밀번호" />
             <button
               type="button"
               onClick={() => setShowPass((v) => !v)}

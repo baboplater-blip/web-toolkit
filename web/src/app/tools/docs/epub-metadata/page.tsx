@@ -133,8 +133,7 @@ export default function EpubMetadataPage() {
             <textarea
               value={meta.description ?? ''}
               onChange={(e) => setMeta({ ...meta, description: e.target.value || undefined })}
-              className="w-full rounded-md border bg-background p-2 text-sm h-24"
-            />
+              className="w-full rounded-md border bg-background p-2 text-sm h-24" aria-label="설명" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">태그 / 주제</label>
@@ -149,8 +148,7 @@ export default function EpubMetadataPage() {
                   }
                 }}
                 placeholder="태그 입력 후 Enter"
-                className="flex-1 rounded-md border bg-background px-2 py-1 text-sm"
-              />
+                className="flex-1 rounded-md border bg-background px-2 py-1 text-sm" aria-label="태그 / 주제" />
               <Button variant="outline" size="sm" onClick={addSubject}>추가</Button>
             </div>
             {meta.subjects.length > 0 && (

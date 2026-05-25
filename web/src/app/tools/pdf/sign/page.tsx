@@ -344,8 +344,7 @@ export default function PdfSignPage() {
                     value={penColor}
                     onChange={(e) => setPenColor(e.target.value)}
                     disabled={processing}
-                    className="h-9 w-full rounded-md border cursor-pointer"
-                  />
+                    className="h-9 w-full rounded-md border cursor-pointer" aria-label="펜 색상" />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -360,8 +359,7 @@ export default function PdfSignPage() {
                     value={penWidth}
                     onChange={(e) => setPenWidth(Number(e.target.value))}
                     disabled={processing}
-                    className="w-full accent-primary"
-                  />
+                    className="w-full accent-primary" aria-label="펜 굵기" />
                 </div>
               </div>
             </div>
@@ -405,8 +403,7 @@ export default function PdfSignPage() {
                   value={signatureScale}
                   onChange={(e) => setSignatureScale(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="서명 크기 (페이지 대비)" />
               </div>
 
               <div>

@@ -322,8 +322,7 @@ export default function VideoCompressPage() {
             setPreset('custom');
           }}
           disabled={processing}
-          className="w-full accent-primary"
-        />
+          className="w-full accent-primary" aria-label="품질 (CRF)" />
       </div>
 
       <div>
@@ -342,8 +341,7 @@ export default function VideoCompressPage() {
             setPreset('custom');
           }}
           disabled={processing}
-          className="w-full accent-primary"
-        />
+          className="w-full accent-primary" aria-label="최대 세로 해상도" />
         <p className="text-[10px] text-muted-foreground mt-1">
           원본이 더 작으면 다운스케일 없이 진행
         </p>

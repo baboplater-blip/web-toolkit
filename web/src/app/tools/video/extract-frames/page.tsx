@@ -382,8 +382,7 @@ export default function ExtractFramesPage() {
               value={fps}
               onChange={(e) => setFps(Number(e.target.value))}
               disabled={processing}
-              className="w-full accent-primary"
-            />
+              className="w-full accent-primary" aria-label="초당 프레임 수" />
           </>
         )}
         {extractMode === 'interval' && (
@@ -396,8 +395,7 @@ export default function ExtractFramesPage() {
               value={interval}
               onChange={(e) => setInterval(Math.max(0.1, Number(e.target.value) || 0.1))}
               disabled={processing}
-              className="h-9"
-            />
+              className="h-9" aria-label="간격 (초)" />
           </>
         )}
         {extractMode === 'total' && (
@@ -414,8 +412,7 @@ export default function ExtractFramesPage() {
                 )
               }
               disabled={processing}
-              className="h-9"
-            />
+              className="h-9" aria-label="총 장수" />
           </>
         )}
         {inputMode === 'files' && meta && (
@@ -466,8 +463,7 @@ export default function ExtractFramesPage() {
             value={quality}
             onChange={(e) => setQuality(Number(e.target.value))}
             disabled={processing}
-            className="w-full accent-primary"
-          />
+            className="w-full accent-primary" aria-label="JPEG 품질" />
         </div>
       )}
     </>

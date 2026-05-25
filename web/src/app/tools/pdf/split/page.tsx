@@ -282,8 +282,7 @@ export default function PdfSplitPage() {
                   onChange={(e) => setRanges(e.target.value)}
                   placeholder="예: 1-3, 4-6, 7"
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="페이지 범위 (콤마로 여러 파트 구분)" />
                 <p className="text-[10px] text-muted-foreground mt-1">
                   각 파트가 독립 PDF 로 저장됩니다. 전체 페이지: 1~{pageCount}
                 </p>
@@ -301,8 +300,7 @@ export default function PdfSplitPage() {
                     value={everyN}
                     onChange={(e) => setEveryN(Math.max(1, Number(e.target.value) || 1))}
                     disabled={processing}
-                    className="h-9 w-24"
-                  />
+                    className="h-9 w-24" aria-label="페이지당 크기" />
                   <span className="text-xs text-muted-foreground">페이지씩 잘라 독립 PDF 생성</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">

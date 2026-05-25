@@ -239,8 +239,7 @@ export default function VideoToAudioPage() {
                   value={bitrate}
                   onChange={(e) => setBitrate(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="비트레이트" />
                 <div className="grid grid-cols-4 gap-1.5 mt-1.5">
                   {[96, 128, 192, 256].map((v) => (
                     <button

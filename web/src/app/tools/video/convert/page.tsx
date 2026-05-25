@@ -287,8 +287,7 @@ export default function VideoConvertPage() {
             value={crf}
             onChange={(e) => setCrf(Number(e.target.value))}
             disabled={processing}
-            className="w-full accent-primary"
-          />
+            className="w-full accent-primary" aria-label="품질 (CRF)" />
           <p className="text-[10px] text-muted-foreground mt-1">
             낮을수록 고품질·큰 용량. 23 전후가 표준.
           </p>

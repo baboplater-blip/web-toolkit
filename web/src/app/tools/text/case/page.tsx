@@ -141,8 +141,7 @@ export default function TextCasePage() {
             onChange={(e) => setText(e.target.value)}
             rows={5}
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm resize-y font-mono"
-            placeholder="변환할 텍스트를 입력하세요..."
-          />
+            placeholder="변환할 텍스트를 입력하세요..." aria-label="원본 텍스트" />
         </div>
 
         <Separator />

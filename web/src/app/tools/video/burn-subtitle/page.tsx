@@ -122,7 +122,7 @@ export default function BurnSubtitlePage() {
       <div className="rounded-xl border bg-card p-3 grid grid-cols-3 gap-2">
         <div className="space-y-1">
           <label className="text-xs font-medium">글자 크기</label>
-          <input type="number" min={12} max={72} value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+          <input type="number" min={12} max={72} value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="글자 크기" />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">색상</label>

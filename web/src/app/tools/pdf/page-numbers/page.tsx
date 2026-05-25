@@ -413,8 +413,7 @@ export default function PageNumbersPage() {
                   value={fontSize}
                   onChange={(e) => setFontSize(Math.max(6, Number(e.target.value) || 12))}
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="글자 크기" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1 block">여백 (px)</label>
@@ -425,8 +424,7 @@ export default function PageNumbersPage() {
                   value={margin}
                   onChange={(e) => setMargin(Math.max(0, Number(e.target.value) || 0))}
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="여백 (px)" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1 block">시작 번호</label>
@@ -436,8 +434,7 @@ export default function PageNumbersPage() {
                   value={startNumber}
                   onChange={(e) => setStartNumber(Math.max(1, Number(e.target.value) || 1))}
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="시작 번호" />
               </div>
             </div>
 

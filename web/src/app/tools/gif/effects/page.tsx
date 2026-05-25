@@ -313,8 +313,7 @@ export default function GifEffectsPage() {
                   value={speedPct}
                   onChange={(e) => setSpeedPct(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="재생 속도" />
                 <div className="grid grid-cols-4 gap-1.5 mt-1.5">
                   {[50, 100, 200, 300].map((v) => (
                     <button

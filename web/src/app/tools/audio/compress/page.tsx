@@ -414,8 +414,7 @@ export default function AudioCompressPage() {
                   setPreset('custom');
                 }}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="비트레이트" />
             </div>
 
             <div>

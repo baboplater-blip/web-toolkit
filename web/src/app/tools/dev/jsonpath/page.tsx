@@ -69,8 +69,7 @@ export default function JsonPathPage() {
         <textarea
           value={json}
           onChange={(e) => setJson(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed"
-        />
+          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed" aria-label="JSON" />
       </div>
 
       <div className="space-y-2">
@@ -78,8 +77,7 @@ export default function JsonPathPage() {
         <input
           value={path}
           onChange={(e) => setPath(e.target.value)}
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono"
-        />
+          className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono" aria-label="JSONPath 표현식" />
         <div className="flex flex-wrap gap-1.5">
           {EXAMPLES.map((ex) => (
             <button
@@ -107,7 +105,7 @@ export default function JsonPathPage() {
               {copied ? '복사됨' : '복사'}
             </Button>
           </div>
-          <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-48 leading-relaxed" />
+          <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-48 leading-relaxed" aria-label="결과" />
         </div>
       )}
 

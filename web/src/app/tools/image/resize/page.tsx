@@ -458,8 +458,7 @@ export default function ImageResizePage() {
                       value={targetW}
                       onChange={(e) => onWChange(Math.max(1, Number(e.target.value) || 1))}
                       disabled={processing}
-                      className="h-9"
-                    />
+                      className="h-9" aria-label="가로 (px)" />
                   </div>
                   <div>
                     <label className="text-xs font-medium mb-1 block">세로 (px)</label>
@@ -469,8 +468,7 @@ export default function ImageResizePage() {
                       value={targetH}
                       onChange={(e) => onHChange(Math.max(1, Number(e.target.value) || 1))}
                       disabled={processing}
-                      className="h-9"
-                    />
+                      className="h-9" aria-label="세로 (px)" />
                   </div>
                 </div>
                 <label className="flex items-center gap-2 text-xs">
@@ -522,8 +520,7 @@ export default function ImageResizePage() {
                   value={targetKb}
                   onChange={(e) => setTargetKb(Math.max(10, Number(e.target.value) || 10))}
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="목표 용량 (KB)" />
                 <p className="text-[10px] text-muted-foreground mt-1">
                   품질·크기를 자동 조정하여 지정 용량 이하로 맞춥니다.
                 </p>
@@ -567,8 +564,7 @@ export default function ImageResizePage() {
                   value={quality}
                   onChange={(e) => setQuality(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="품질" />
               </div>
             )}
 

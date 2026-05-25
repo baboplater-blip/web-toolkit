@@ -116,24 +116,24 @@ export default function CollagePage() {
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <label className="text-xs font-medium">셀 너비</label>
-            <input type="number" min={100} max={2000} value={cellW} onChange={(e) => setCellW(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={100} max={2000} value={cellW} onChange={(e) => setCellW(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 너비" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">셀 높이</label>
-            <input type="number" min={100} max={2000} value={cellH} onChange={(e) => setCellH(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={100} max={2000} value={cellH} onChange={(e) => setCellH(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 높이" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">여백 (외곽)</label>
-            <input type="number" min={0} max={200} value={padding} onChange={(e) => setPadding(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={0} max={200} value={padding} onChange={(e) => setPadding(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="여백 (외곽)" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">간격 (셀 사이)</label>
-            <input type="number" min={0} max={100} value={gap} onChange={(e) => setGap(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={0} max={100} value={gap} onChange={(e) => setGap(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="간격 (셀 사이)" />
           </div>
         </div>
         <div className="flex items-center gap-2">
           <label className="text-xs font-medium">배경색</label>
-          <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="h-8 w-12 rounded border" />
+          <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="h-8 w-12 rounded border" aria-label="배경색" />
         </div>
       </div>
 

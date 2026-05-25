@@ -74,8 +74,7 @@ export default function JsonXmlPage() {
               <input
                 value={rootName}
                 onChange={(e) => setRootName(e.target.value.replace(/[^a-zA-Z0-9_]/g, '') || 'root')}
-                className="flex-1 rounded-md border bg-background px-2 py-0.5 text-xs font-mono"
-              />
+                className="flex-1 rounded-md border bg-background px-2 py-0.5 text-xs font-mono" aria-label="예쁘게 정렬" />
             </div>
           )}
         </div>
@@ -86,8 +85,7 @@ export default function JsonXmlPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed"
-        />
+          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed" aria-label="입력" />
       </div>
 
       <Button onClick={handleConvert}>변환</Button>
@@ -107,7 +105,7 @@ export default function JsonXmlPage() {
               {copied ? '복사됨' : '복사'}
             </Button>
           </div>
-          <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-48 leading-relaxed" />
+          <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-48 leading-relaxed" aria-label="결과" />
         </div>
       )}
     </main>

@@ -260,8 +260,7 @@ export default function GifTrimPage() {
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   disabled={processing}
-                  className="h-9 font-mono text-xs"
-                />
+                  className="h-9 font-mono text-xs" aria-label="시작 (MM:SS.ms)" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1 block">종료 (MM:SS.ms)</label>
@@ -270,8 +269,7 @@ export default function GifTrimPage() {
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   disabled={processing}
-                  className="h-9 font-mono text-xs"
-                />
+                  className="h-9 font-mono text-xs" aria-label="종료 (MM:SS.ms)" />
               </div>
             </div>
 

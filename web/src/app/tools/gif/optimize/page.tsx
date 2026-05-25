@@ -266,8 +266,7 @@ export default function GifOptimizePage() {
                   value={maxColors}
                   onChange={(e) => setMaxColors(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="색상 수" />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
@@ -282,8 +281,7 @@ export default function GifOptimizePage() {
                   value={scalePct}
                   onChange={(e) => setScalePct(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="크기 %" />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
@@ -300,8 +298,7 @@ export default function GifOptimizePage() {
                   value={frameRate}
                   onChange={(e) => setFrameRate(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="FPS" />
               </div>
             </div>
 

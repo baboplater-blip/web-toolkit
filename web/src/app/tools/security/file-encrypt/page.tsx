@@ -178,8 +178,7 @@ export default function FileEncryptPage() {
               onChange={(e) => setPassphrase(e.target.value)}
               placeholder="안전한 비밀번호 입력"
               className="h-9 pr-9 font-mono text-xs"
-              autoComplete="new-password"
-            />
+              autoComplete="new-password" aria-label="비밀번호" />
             <button
               type="button"
               onClick={() => setShowPass((v) => !v)}
@@ -201,8 +200,7 @@ export default function FileEncryptPage() {
                 onChange={(e) => setConfirmPass(e.target.value)}
                 placeholder="동일한 비밀번호 재입력"
                 className="h-9 font-mono text-xs"
-                autoComplete="new-password"
-              />
+                autoComplete="new-password" aria-label="비밀번호 확인" />
             </>
           )}
 

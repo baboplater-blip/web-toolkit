@@ -449,8 +449,7 @@ export default function VideoToGifPage() {
             value={fps}
             onChange={(e) => setFps(Number(e.target.value))}
             disabled={processing}
-            className="w-full accent-primary"
-          />
+            className="w-full accent-primary" aria-label="프레임률 (FPS)" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-1.5">
@@ -465,8 +464,7 @@ export default function VideoToGifPage() {
             value={Math.min(width, widthMax)}
             onChange={(e) => setWidth(Number(e.target.value))}
             disabled={processing}
-            className="w-full accent-primary"
-          />
+            className="w-full accent-primary" aria-label="너비 (px)" />
         </div>
       </div>
 

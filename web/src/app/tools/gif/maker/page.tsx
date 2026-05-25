@@ -309,8 +309,7 @@ export default function GifMakerPage() {
                 value={frameMs}
                 onChange={(e) => setFrameMs(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="프레임 표시 시간" />
             </div>
 
             <div>
@@ -326,8 +325,7 @@ export default function GifMakerPage() {
                 value={width}
                 onChange={(e) => setWidth(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="너비 (px)" />
             </div>
 
             <label className="flex items-center gap-2 text-xs">

@@ -213,8 +213,7 @@ export default function QrCodePage() {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="https://... 또는 텍스트"
                 rows={3}
-                className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm font-mono resize-y"
-              />
+                className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm font-mono resize-y" aria-label="내용 (URL 또는 텍스트)" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -230,8 +229,7 @@ export default function QrCodePage() {
                   step={32}
                   value={size}
                   onChange={(e) => setSize(Number(e.target.value))}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="크기" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1.5 block">오류 복원</label>
@@ -270,8 +268,7 @@ export default function QrCodePage() {
                   type="color"
                   value={fgColor}
                   onChange={(e) => setFgColor(e.target.value)}
-                  className="h-9 w-full rounded-md border cursor-pointer"
-                />
+                  className="h-9 w-full rounded-md border cursor-pointer" aria-label="전경색" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1.5 block">배경색</label>
@@ -279,8 +276,7 @@ export default function QrCodePage() {
                   type="color"
                   value={bgColor}
                   onChange={(e) => setBgColor(e.target.value)}
-                  className="h-9 w-full rounded-md border cursor-pointer"
-                />
+                  className="h-9 w-full rounded-md border cursor-pointer" aria-label="배경색" />
               </div>
             </div>
 

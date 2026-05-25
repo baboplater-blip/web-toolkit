@@ -136,11 +136,11 @@ export default function AudioReplacePage() {
           <div className="grid grid-cols-2 gap-2 pt-1">
             <div className="space-y-1">
               <label className="text-xs">원본 게인 ({origGain} dB)</label>
-              <input type="range" min={-30} max={20} value={origGain} onChange={(e) => setOrigGain(Number(e.target.value))} className="w-full" />
+              <input type="range" min={-30} max={20} value={origGain} onChange={(e) => setOrigGain(Number(e.target.value))} className="w-full" aria-label="원본 게인 ( dB)" />
             </div>
             <div className="space-y-1">
               <label className="text-xs">새 오디오 게인 ({audioGain} dB)</label>
-              <input type="range" min={-30} max={20} value={audioGain} onChange={(e) => setAudioGain(Number(e.target.value))} className="w-full" />
+              <input type="range" min={-30} max={20} value={audioGain} onChange={(e) => setAudioGain(Number(e.target.value))} className="w-full" aria-label="새 오디오 게인 ( dB)" />
             </div>
           </div>
         )}

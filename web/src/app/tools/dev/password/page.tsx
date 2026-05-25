@@ -136,8 +136,7 @@ export default function PasswordPage() {
               step={1}
               value={opts.length}
               onChange={(e) => setOpt('length', Number(e.target.value))}
-              className="w-full accent-primary"
-            />
+              className="w-full accent-primary" aria-label="길이" />
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -181,8 +180,7 @@ export default function PasswordPage() {
                 max={100}
                 value={count}
                 onChange={(e) => setCount(Math.max(1, Math.min(100, Number(e.target.value) || 1)))}
-                className="w-full h-9 rounded-md border bg-background px-2.5 text-sm"
-              />
+                className="w-full h-9 rounded-md border bg-background px-2.5 text-sm" aria-label="생성 개수" />
             </div>
             <Button onClick={regenerate}>
               <RefreshCw className="h-4 w-4" />

@@ -127,8 +127,7 @@ export default function UrlPage() {
             onChange={(e) => setInput(e.target.value)}
             rows={4}
             className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y break-all"
-            spellCheck={false}
-          />
+            spellCheck={false} aria-label="입력 URL" />
         </div>
 
         {result.error && (

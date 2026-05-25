@@ -143,8 +143,7 @@ export default function HtmlToPdfPage() {
               max={120}
               value={margin}
               onChange={(e) => setMargin(Number(e.target.value))}
-              className="w-full rounded-md border bg-background px-2 py-1 text-sm"
-            />
+              className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="여백 (pt)" />
           </div>
         </div>
 
@@ -163,8 +162,7 @@ export default function HtmlToPdfPage() {
           <textarea
             value={html}
             onChange={(e) => setHtml(e.target.value)}
-            className="w-full rounded-md border bg-background p-2 text-xs font-mono h-72 leading-relaxed"
-          />
+            className="w-full rounded-md border bg-background p-2 text-xs font-mono h-72 leading-relaxed" aria-label="HTML" />
         </div>
       </div>
 

@@ -222,8 +222,7 @@ export default function MarkdownTocPage() {
               onChange={(e) => setText(e.target.value)}
               rows={20}
               className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="Markdown 원본" />
           </div>
 
           <div className="rounded-xl border bg-card p-3 space-y-2">

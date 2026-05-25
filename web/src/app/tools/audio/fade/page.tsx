@@ -96,11 +96,11 @@ export default function FadePage() {
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
           <label className="text-xs font-medium">페이드 인 ({fadeIn.toFixed(1)}초)</label>
-          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeIn} onChange={(e) => setFadeIn(Number(e.target.value))} className="w-full" />
+          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeIn} onChange={(e) => setFadeIn(Number(e.target.value))} className="w-full" aria-label="페이드 인 ( 초)" />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">페이드 아웃 ({fadeOut.toFixed(1)}초)</label>
-          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeOut} onChange={(e) => setFadeOut(Number(e.target.value))} className="w-full" />
+          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeOut} onChange={(e) => setFadeOut(Number(e.target.value))} className="w-full" aria-label="페이드 아웃 ( 초)" />
         </div>
       </div>
 

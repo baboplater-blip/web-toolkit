@@ -146,8 +146,7 @@ export default function PdfNupPage() {
               max={100}
               value={margin}
               onChange={(e) => setMargin(Math.max(0, Number(e.target.value)))}
-              className="w-full rounded-md border bg-background px-2 py-1 text-sm"
-            />
+              className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="여백 (pt)" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">셀 간격 (pt)</label>
@@ -157,8 +156,7 @@ export default function PdfNupPage() {
               max={50}
               value={gap}
               onChange={(e) => setGap(Math.max(0, Number(e.target.value)))}
-              className="w-full rounded-md border bg-background px-2 py-1 text-sm"
-            />
+              className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 간격 (pt)" />
           </div>
         </div>
       </div>

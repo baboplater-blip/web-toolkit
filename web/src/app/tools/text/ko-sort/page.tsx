@@ -75,8 +75,7 @@ export default function KoSortPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-48 leading-relaxed font-mono"
-        />
+          className="w-full rounded-md border bg-background p-3 text-sm h-48 leading-relaxed font-mono" aria-label="한 줄에 하나씩 ( 줄 · 고유 )" />
       </div>
 
       <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -113,7 +112,7 @@ export default function KoSortPage() {
             {copied ? '복사됨' : '복사'}
           </Button>
         </div>
-        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-48 leading-relaxed font-mono" />
+        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-48 leading-relaxed font-mono" aria-label="결과" />
       </div>
     </main>
   );

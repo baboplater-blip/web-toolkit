@@ -108,8 +108,7 @@ export default function RegexPage() {
                 value={pattern}
                 onChange={(e) => setPattern(e.target.value)}
                 className="h-9 font-mono text-xs flex-1"
-                spellCheck={false}
-              />
+                spellCheck={false} aria-label="정규식 패턴" />
               <span className="text-sm text-muted-foreground">/</span>
               <div className="flex gap-1">
                 {(['g', 'i', 'm', 's', 'u'] as const).map((f) => (
@@ -167,8 +166,7 @@ export default function RegexPage() {
             onChange={(e) => setText(e.target.value)}
             rows={8}
             className="w-full rounded-lg border bg-background px-2.5 py-2 text-xs font-mono resize-y"
-            spellCheck={false}
-          />
+            spellCheck={false} aria-label="테스트 문자열" />
         </div>
 
         <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -214,16 +212,14 @@ export default function RegexPage() {
             value={replaceWith}
             onChange={(e) => setReplaceWith(e.target.value)}
             placeholder="치환할 텍스트 ($1, $2 등 그룹 참조 가능)"
-            className="h-9 font-mono text-xs"
-          />
+            className="h-9 font-mono text-xs" aria-label="치환" />
           <Separator />
           <label className="text-[10px] text-muted-foreground">치환 결과</label>
           <textarea
             readOnly
             value={replaced}
             rows={5}
-            className="w-full rounded-lg border bg-muted px-2.5 py-2 text-xs font-mono resize-y"
-          />
+            className="w-full rounded-lg border bg-muted px-2.5 py-2 text-xs font-mono resize-y" aria-label="치환" />
         </div>
       </main>
     </div>

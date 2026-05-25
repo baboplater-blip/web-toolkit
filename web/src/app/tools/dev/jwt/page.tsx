@@ -90,8 +90,7 @@ export default function JwtPage() {
             onChange={(e) => setToken(e.target.value)}
             rows={4}
             className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y break-all"
-            spellCheck={false}
-          />
+            spellCheck={false} aria-label="JWT 토큰 (Bearer 접두사 허용)" />
           <p className="text-[10px] text-muted-foreground">
             토큰은 브라우저에서만 해독되며 서버로 전송되지 않습니다.
           </p>

@@ -143,8 +143,7 @@ export default function YamlJsonPage() {
               onChange={(e) => setInput(e.target.value)}
               rows={18}
               className="w-full rounded-lg border bg-background px-2.5 py-2 text-xs font-mono resize-y"
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="입력 ( )" />
           </div>
           <div className="rounded-xl border bg-card p-3 space-y-2">
             <div className="flex items-center justify-between">

@@ -272,8 +272,7 @@ export default function PdfUnlockPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="PDF 비밀번호"
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="비밀번호 (있는 경우)" />
                 <p className="text-[10px] text-muted-foreground mt-1">
                   비밀번호는 브라우저에서만 사용되며 저장되지 않습니다.
                 </p>

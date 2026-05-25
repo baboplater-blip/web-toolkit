@@ -103,8 +103,7 @@ export default function DiffPage() {
               onChange={(e) => setA(e.target.value)}
               rows={10}
               className="w-full rounded-lg border bg-background px-2.5 py-2 text-xs font-mono resize-y"
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="원본 (A)" />
           </div>
           <div className="rounded-xl border bg-card p-3 space-y-2">
             <label className="text-xs font-medium">수정본 (B)</label>
@@ -113,8 +112,7 @@ export default function DiffPage() {
               onChange={(e) => setB(e.target.value)}
               rows={10}
               className="w-full rounded-lg border bg-background px-2.5 py-2 text-xs font-mono resize-y"
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="수정본 (B)" />
           </div>
         </div>
 

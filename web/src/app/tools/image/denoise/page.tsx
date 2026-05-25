@@ -83,7 +83,7 @@ export default function DenoisePage() {
       {file && (
         <div className="rounded-xl border bg-card p-3 space-y-1">
           <label className="text-xs font-medium">강도 ({strength}/5)</label>
-          <input type="range" min={1} max={5} value={strength} onChange={(e) => setStrength(Number(e.target.value))} className="w-full" />
+          <input type="range" min={1} max={5} value={strength} onChange={(e) => setStrength(Number(e.target.value))} className="w-full" aria-label="강도 ( /5)" />
           <p className="text-[10px] text-muted-foreground">강도가 높을수록 디테일이 흐려집니다.</p>
         </div>
       )}

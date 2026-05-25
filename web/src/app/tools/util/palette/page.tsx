@@ -281,8 +281,7 @@ export default function PalettePage() {
                   step={1}
                   value={k}
                   onChange={(e) => setK(Number(e.target.value))}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="추출할 색상 수" />
               </div>
             </div>
 

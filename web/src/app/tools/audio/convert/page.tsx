@@ -319,8 +319,7 @@ export default function AudioConvertPage() {
                   value={bitrate}
                   onChange={(e) => setBitrate(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="비트레이트" />
               </div>
             )}
 
@@ -402,8 +401,7 @@ export default function AudioConvertPage() {
                   value={bitrate}
                   onChange={(e) => setBitrate(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="비트레이트" />
               </div>
             )}
 

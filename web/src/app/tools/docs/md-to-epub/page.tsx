@@ -156,8 +156,7 @@ export default function MdToEpubPage() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="# 첫 챕터&#10;&#10;본문…"
-            className="w-full rounded-md border bg-background p-2 text-xs font-mono h-72 leading-relaxed"
-          />
+            className="w-full rounded-md border bg-background p-2 text-xs font-mono h-72 leading-relaxed" aria-label="Markdown 본문" />
           <p className="text-[10px] text-muted-foreground">{text.length.toLocaleString()} 자</p>
         </div>
       </div>
@@ -231,8 +230,7 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
-      />
+        className="w-full rounded-md border bg-background px-2 py-1.5 text-sm" aria-label="$" />
     </div>
   );
 }

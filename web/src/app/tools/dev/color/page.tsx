@@ -160,8 +160,7 @@ export default function ColorConverterPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="#3b82f6 / rgb(59, 130, 246) / hsl(217, 91%, 60%)"
-            className="font-mono"
-          />
+            className="font-mono" aria-label="색상 입력" />
           <input
             type="color"
             value={rgb ? toHex({ ...rgb, a: 1 }) : '#000000'}

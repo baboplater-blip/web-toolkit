@@ -97,8 +97,7 @@ export default function UuidPage() {
                 max={10000}
                 value={count}
                 onChange={(e) => setCount(Math.max(1, Math.min(10000, Number(e.target.value) || 1)))}
-                className="h-9"
-              />
+                className="h-9" aria-label="생성 개수" />
             </div>
             <div>
               <label className="text-xs font-medium mb-1 block">포맷</label>

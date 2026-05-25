@@ -239,8 +239,7 @@ export default function GifResizePage() {
                   value={targetW}
                   onChange={(e) => onWChange(Math.max(1, Number(e.target.value) || 1))}
                   disabled={processing}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="가로 (px)" />
               </div>
               <div>
                 <label className="text-xs font-medium mb-1 block">세로 (px)</label>
@@ -250,8 +249,7 @@ export default function GifResizePage() {
                   value={keepRatio ? Math.round(targetW / ratio) : targetH}
                   onChange={(e) => onHChange(Math.max(1, Number(e.target.value) || 1))}
                   disabled={processing || keepRatio}
-                  className="h-9"
-                />
+                  className="h-9" aria-label="세로 (px)" />
               </div>
             </div>
 

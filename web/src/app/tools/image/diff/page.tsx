@@ -103,7 +103,7 @@ export default function ImageDiffPage() {
 
       <div className="rounded-xl border bg-card p-3 space-y-1">
         <label className="text-xs font-medium">민감도 (threshold = {threshold})</label>
-        <input type="range" min={0} max={80} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="w-full" />
+        <input type="range" min={0} max={80} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="w-full" aria-label="민감도 (threshold = )" />
         <p className="text-[10px] text-muted-foreground">낮음=민감 ↔ 높음=둔감</p>
       </div>
 

@@ -36,8 +36,7 @@ export default function KoSpacingPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="w-full rounded-md border bg-background p-3 text-sm h-40 leading-relaxed"
-          placeholder="한국어 문장을 입력하세요."
-        />
+          placeholder="한국어 문장을 입력하세요." aria-label="원본 텍스트" />
         <p className="text-[10px] text-muted-foreground">{input.length.toLocaleString()} 자</p>
       </div>
 
@@ -52,8 +51,7 @@ export default function KoSpacingPage() {
         <textarea
           readOnly
           value={output}
-          className="w-full rounded-md border bg-card p-3 text-sm h-40 leading-relaxed"
-        />
+          className="w-full rounded-md border bg-card p-3 text-sm h-40 leading-relaxed" aria-label="교정 결과" />
       </div>
 
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">

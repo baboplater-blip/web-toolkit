@@ -283,8 +283,7 @@ export default function HashPage() {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="해시를 계산할 텍스트를 입력하세요"
                 rows={5}
-                className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm font-mono resize-y"
-              />
+                className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm font-mono resize-y" aria-label="텍스트" />
             </div>
             <Button onClick={computeTextHash} disabled={processing || !text} className="w-full">
               {processing ? (

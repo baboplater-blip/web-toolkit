@@ -120,7 +120,7 @@ export default function BatchWatermarkPage() {
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
           <label className="text-xs font-medium">워터마크 텍스트</label>
-          <input value={text} onChange={(e) => setText(e.target.value)} className="w-full rounded-md border bg-background px-2 py-1.5 text-sm" />
+          <input value={text} onChange={(e) => setText(e.target.value)} className="w-full rounded-md border bg-background px-2 py-1.5 text-sm" aria-label="워터마크 텍스트" />
         </div>
         <div className="space-y-1">
           <p className="text-xs font-medium">위치</p>
@@ -133,20 +133,20 @@ export default function BatchWatermarkPage() {
         <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
             <label className="text-xs font-medium">글자 크기</label>
-            <input type="number" min={12} max={400} value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={12} max={400} value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="글자 크기" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">색상</label>
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-8 w-full rounded border" />
+            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-8 w-full rounded border" aria-label="색상" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">여백</label>
-            <input type="number" min={0} max={200} value={margin} onChange={(e) => setMargin(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+            <input type="number" min={0} max={200} value={margin} onChange={(e) => setMargin(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="여백" />
           </div>
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">불투명도 ({Math.round(opacity * 100)}%)</label>
-          <input type="range" min={10} max={100} value={Math.round(opacity * 100)} onChange={(e) => setOpacity(Number(e.target.value) / 100)} className="w-full" />
+          <input type="range" min={10} max={100} value={Math.round(opacity * 100)} onChange={(e) => setOpacity(Number(e.target.value) / 100)} className="w-full" aria-label="불투명도 ( %)" />
         </div>
         <label className="flex items-center gap-2 text-xs">
           <input type="checkbox" className="h-4 w-4" checked={shadow} onChange={(e) => setShadow(e.target.checked)} />

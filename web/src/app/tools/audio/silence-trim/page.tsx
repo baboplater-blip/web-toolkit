@@ -132,15 +132,15 @@ export default function SilenceTrimPage() {
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
           <label className="text-xs font-medium">무음 판정 임계값 ({threshold} dB) — 낮을수록 엄격</label>
-          <input type="range" min={-60} max={-10} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="w-full" />
+          <input type="range" min={-60} max={-10} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="w-full" aria-label="무음 판정 임계값 ( dB) — 낮을수록 엄격" />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">최소 무음 길이 ({minSilenceSec.toFixed(1)}초)</label>
-          <input type="range" min={0.2} max={5} step={0.1} value={minSilenceSec} onChange={(e) => setMinSilenceSec(Number(e.target.value))} className="w-full" />
+          <input type="range" min={0.2} max={5} step={0.1} value={minSilenceSec} onChange={(e) => setMinSilenceSec(Number(e.target.value))} className="w-full" aria-label="최소 무음 길이 ( 초)" />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">자르고 남길 여백 ({keepTail.toFixed(2)}초)</label>
-          <input type="range" min={0} max={1} step={0.05} value={keepTail} onChange={(e) => setKeepTail(Number(e.target.value))} className="w-full" />
+          <input type="range" min={0} max={1} step={0.05} value={keepTail} onChange={(e) => setKeepTail(Number(e.target.value))} className="w-full" aria-label="자르고 남길 여백 ( 초)" />
         </div>
       </div>
 

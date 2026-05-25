@@ -388,8 +388,7 @@ export default function CompressPage() {
                     value={imgQuality}
                     onChange={(e) => setImgQuality(Number(e.target.value))}
                     disabled={imgFormat === 'png' || processing}
-                    className="w-full accent-primary disabled:opacity-50"
-                  />
+                    className="w-full accent-primary disabled:opacity-50" aria-label="품질" />
                   {imgFormat === 'png' && (
                     <p className="text-[10px] text-muted-foreground mt-1">
                       PNG는 무손실 포맷이므로 품질 슬라이더가 적용되지 않습니다.
@@ -412,8 +411,7 @@ export default function CompressPage() {
                     value={imgMaxDim}
                     onChange={(e) => setImgMaxDim(Number(e.target.value))}
                     disabled={processing}
-                    className="w-full accent-primary"
-                  />
+                    className="w-full accent-primary" aria-label="최대 크기 (긴 변, px)" />
                 </div>
 
                 <div>
@@ -514,8 +512,7 @@ export default function CompressPage() {
                         value={pdfQuality}
                         onChange={(e) => setPdfQuality(Number(e.target.value))}
                         disabled={processing}
-                        className="w-full accent-primary"
-                      />
+                        className="w-full accent-primary" aria-label="이미지 품질" />
                       <p className="text-[10px] text-muted-foreground mt-1">
                         낮출수록 감소율이 커지지만 이미지 화질이 떨어집니다. 텍스트에는 영향 없음.
                       </p>
@@ -536,8 +533,7 @@ export default function CompressPage() {
                         value={pdfMaxImageDim}
                         onChange={(e) => setPdfMaxImageDim(Number(e.target.value))}
                         disabled={processing}
-                        className="w-full accent-primary"
-                      />
+                        className="w-full accent-primary" aria-label="이미지 최대 크기 (긴 변)" />
                       <p className="text-[10px] text-muted-foreground mt-1">
                         고해상도 이미지를 다운샘플합니다. 인쇄용이 아니면 1200~1600px 권장.
                       </p>
@@ -560,8 +556,7 @@ export default function CompressPage() {
                         value={pdfQuality}
                         onChange={(e) => setPdfQuality(Number(e.target.value))}
                         disabled={processing}
-                        className="w-full accent-primary"
-                      />
+                        className="w-full accent-primary" aria-label="JPEG 품질" />
                     </div>
 
                     <div>
@@ -579,8 +574,7 @@ export default function CompressPage() {
                         value={pdfScale}
                         onChange={(e) => setPdfScale(Number(e.target.value))}
                         disabled={processing}
-                        className="w-full accent-primary"
-                      />
+                        className="w-full accent-primary" aria-label="렌더링 배율" />
                       <p className="text-[10px] text-muted-foreground mt-1">
                         배율이 높을수록 선명해지지만 용량이 커집니다.
                       </p>
@@ -629,8 +623,7 @@ export default function CompressPage() {
                     value={imgQuality}
                     onChange={(e) => setImgQuality(Number(e.target.value))}
                     disabled={imgFormat === 'png' || processing}
-                    className="w-full accent-primary disabled:opacity-50"
-                  />
+                    className="w-full accent-primary disabled:opacity-50" aria-label="품질" />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -647,8 +640,7 @@ export default function CompressPage() {
                     value={imgMaxDim}
                     onChange={(e) => setImgMaxDim(Number(e.target.value))}
                     disabled={processing}
-                    className="w-full accent-primary"
-                  />
+                    className="w-full accent-primary" aria-label="최대 크기 (긴 변, px)" />
                 </div>
                 <div>
                   <label className="text-xs font-medium mb-1.5 block">출력 포맷</label>
@@ -714,8 +706,7 @@ export default function CompressPage() {
                       value={pdfQuality}
                       onChange={(e) => setPdfQuality(Number(e.target.value))}
                       disabled={processing}
-                      className="w-full accent-primary"
-                    />
+                      className="w-full accent-primary" aria-label="PDF 이미지 품질" />
                   </div>
                 )}
               </div>

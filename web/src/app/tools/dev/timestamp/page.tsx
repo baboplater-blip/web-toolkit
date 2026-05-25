@@ -88,8 +88,7 @@ export default function TimestampPage() {
             value={tsInput}
             onChange={(e) => setTsInput(e.target.value)}
             placeholder="1716383040"
-            className="font-mono"
-          />
+            className="font-mono" aria-label="타임스탬프 → 날짜" />
           <div className="flex gap-1">
             {(['s', 'ms'] as const).map((u) => (
               <button
@@ -129,8 +128,7 @@ export default function TimestampPage() {
           value={isoInput}
           onChange={(e) => setIsoInput(e.target.value)}
           step="1"
-          className="font-mono"
-        />
+          className="font-mono" aria-label="날짜 → 타임스탬프" />
         {fromIso && (
           <div className="space-y-1.5 rounded-lg bg-muted/40 p-3 text-sm">
             <div className="flex items-center justify-between gap-2">

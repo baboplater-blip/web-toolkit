@@ -559,8 +559,7 @@ export default function ImageUpscalePage() {
                   value={quality}
                   onChange={(e) => setQuality(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="품질" />
               </div>
             )}
 

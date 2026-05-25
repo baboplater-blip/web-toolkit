@@ -79,11 +79,11 @@ export default function SubtitleEditPage() {
           <div className="rounded-xl border bg-card p-3 grid grid-cols-3 gap-2">
             <div className="space-y-1">
               <label className="text-xs font-medium">시간 보정 (초)</label>
-              <input type="number" step={0.1} value={offset} onChange={(e) => setOffset(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+              <input type="number" step={0.1} value={offset} onChange={(e) => setOffset(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="시간 보정 (초)" />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium">시간 배속</label>
-              <input type="number" step={0.01} min={0.1} max={5} value={rate} onChange={(e) => setRate(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" />
+              <input type="number" step={0.01} min={0.1} max={5} value={rate} onChange={(e) => setRate(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="시간 배속" />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium">출력 포맷</label>

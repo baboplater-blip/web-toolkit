@@ -262,8 +262,7 @@ export default function PdfToJpgPage() {
                   value={quality}
                   onChange={(e) => setQuality(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary"
-                />
+                  className="w-full accent-primary" aria-label="JPEG 품질" />
               </div>
             )}
 
@@ -280,8 +279,7 @@ export default function PdfToJpgPage() {
                 value={scale}
                 onChange={(e) => setScale(Number(e.target.value))}
                 disabled={processing}
-                className="w-full accent-primary"
-              />
+                className="w-full accent-primary" aria-label="렌더링 배율" />
               <p className="text-[10px] text-muted-foreground mt-1">
                 높을수록 선명해지지만 파일 크기가 커집니다.
               </p>

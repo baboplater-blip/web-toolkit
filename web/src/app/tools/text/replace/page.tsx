@@ -84,8 +84,7 @@ export default function TextReplacePage() {
                 onChange={(e) => setFind(e.target.value)}
                 className="h-9 font-mono text-xs"
                 placeholder="검색 패턴"
-                spellCheck={false}
-              />
+                spellCheck={false} aria-label="찾을 문자열" />
             </div>
             <div>
               <label className="text-[10px] font-medium text-muted-foreground mb-1 block">
@@ -96,8 +95,7 @@ export default function TextReplacePage() {
                 onChange={(e) => setReplace(e.target.value)}
                 className="h-9 font-mono text-xs"
                 placeholder="대체 문자열"
-                spellCheck={false}
-              />
+                spellCheck={false} aria-label="바꿀 문자열" />
             </div>
           </div>
 
@@ -160,8 +158,7 @@ export default function TextReplacePage() {
               onChange={(e) => setText(e.target.value)}
               rows={16}
               className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y"
-              spellCheck={false}
-            />
+              spellCheck={false} aria-label="원본" />
           </div>
 
           <div className="rounded-xl border bg-card p-3 space-y-2">
