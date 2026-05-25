@@ -263,8 +263,9 @@ export default function GifMakerPage() {
                       className="h-5 w-5"
                       onClick={() => moveItem(it.id, -1)}
                       disabled={idx === 0 || processing}
+                      aria-label="앞으로"
                     >
-                      <ArrowUp className="h-3 w-3" />
+                      <ArrowUp className="h-3 w-3" aria-hidden="true" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -272,8 +273,9 @@ export default function GifMakerPage() {
                       className="h-5 w-5"
                       onClick={() => moveItem(it.id, 1)}
                       disabled={idx === items.length - 1 || processing}
+                      aria-label="뒤로"
                     >
-                      <ArrowDown className="h-3 w-3" />
+                      <ArrowDown className="h-3 w-3" aria-hidden="true" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -281,8 +283,9 @@ export default function GifMakerPage() {
                       className="h-5 w-5 text-destructive"
                       onClick={() => removeItem(it.id)}
                       disabled={processing}
+                      aria-label="삭제"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-3 w-3" aria-hidden="true" />
                     </Button>
                   </div>
                 </div>

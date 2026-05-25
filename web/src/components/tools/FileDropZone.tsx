@@ -51,8 +51,13 @@ export function FileDropZone({
     [onFiles, validate, onError],
   );
 
+  const openPicker = useCallback(() => inputRef.current?.click(), []);
+
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${title}${description ? `. ${description}` : ''}`}
       onDragOver={(e) => {
         e.preventDefault();
         setDragActive(true);
@@ -63,9 +68,17 @@ export function FileDropZone({
         setDragActive(false);
         handleFiles(e.dataTransfer.files);
       }}
-      onClick={() => inputRef.current?.click()}
-      className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors cursor-pointer ${
-        dragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+      onClick={openPicker}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openPicker();
+        }
+      }}
+      className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+        dragActive
+          ? 'border-primary bg-primary/5'
+          : 'border-border hover:border-primary/50'
       }`}
     >
       <input
@@ -73,6 +86,8 @@ export function FileDropZone({
         type="file"
         accept={accept}
         multiple={multiple}
+        aria-hidden="true"
+        tabIndex={-1}
         className="hidden"
         onChange={(e) => {
           handleFiles(e.target.files);
@@ -80,9 +95,14 @@ export function FileDropZone({
           e.target.value = '';
         }}
       />
-      <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+      <Upload
+        className="h-10 w-10 mx-auto text-muted-foreground mb-3"
+        aria-hidden="true"
+      />
       <p className="text-sm font-medium">{title}</p>
-      {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
+      {description && (
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+      )}
       {hint && <p className="text-[10px] text-muted-foreground mt-3">{hint}</p>}
     </div>
   );

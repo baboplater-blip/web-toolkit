@@ -315,8 +315,9 @@ export default function ImageConvertPage() {
                     className="h-6 w-6 shrink-0 text-destructive"
                     onClick={() => removeItem(it.id)}
                     disabled={processing}
+                    aria-label={`${it.file.name} 제거`}
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <Trash2 className="h-3 w-3" aria-hidden="true" />
                   </Button>
                 </div>
               ))}

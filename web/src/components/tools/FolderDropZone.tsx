@@ -94,13 +94,18 @@ export function FolderDropZone({
         type="file"
         multiple
         accept={accept}
+        aria-hidden="true"
+        tabIndex={-1}
         className="hidden"
         onChange={(e) => {
           handleFiles(e.target.files);
           e.target.value = '';
         }}
       />
-      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div
+        className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"
+        aria-hidden="true"
+      >
         {busy ? <FolderInput className="h-5 w-5 animate-pulse" /> : <Folder className="h-6 w-6" />}
       </div>
       <p className="text-sm font-medium">{title}</p>

@@ -190,6 +190,7 @@ export default function UrlPage() {
                       size="icon"
                       className="h-5 w-5 shrink-0"
                       onClick={() => copy(key, value)}
+                      aria-label={`${label} 복사`}
                     >
                       {copied === key ? (
                         <Check className="h-3 w-3" />

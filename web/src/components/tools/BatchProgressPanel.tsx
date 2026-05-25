@@ -38,7 +38,7 @@ export function BatchProgressPanel({
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+          <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden="true" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
             {label}
           </span>
@@ -62,7 +62,7 @@ export function BatchProgressPanel({
           disabled={cancelling}
           aria-label="처리 취소"
         >
-          <X className="h-3 w-3" />
+          <X className="h-3 w-3" aria-hidden="true" />
           {cancelling ? '취소 중...' : '취소'}
         </Button>
       </div>

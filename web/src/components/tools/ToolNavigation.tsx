@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import {
   ChevronLeft,
@@ -26,6 +26,24 @@ import { cn } from '@/lib/utils';
 export function ToolNavigation() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // 메뉴 외부 클릭 + Esc 키로 닫기
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
 
   const current = useMemo<ToolMeta | undefined>(() => {
     if (!pathname) return undefined;
@@ -60,22 +78,23 @@ export function ToolNavigation() {
           )}
           title={prev ? prev.title : '이전 도구 없음'}
         >
-          <ChevronLeft className="h-4 w-4 shrink-0" />
+          <ChevronLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
           <div className="min-w-0 flex-1 text-left">
             <p className="text-[10px] text-muted-foreground">이전</p>
             <p className="truncate font-medium">{prev ? prev.title : '—'}</p>
           </div>
         </a>
 
-        <div className="relative shrink-0">
+        <div className="relative shrink-0" ref={menuRef}>
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
             className="inline-flex items-center gap-1 h-9 px-2.5 rounded-md text-[11px] bg-background hover:bg-muted border"
             aria-expanded={menuOpen}
             aria-haspopup="listbox"
+            aria-label={`같은 카테고리 도구 (${CATEGORY_LABELS[current.category]} ${idx + 1}/${siblings.length})`}
           >
-            <ListChecks className="h-3.5 w-3.5" />
+            <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">{CATEGORY_LABELS[current.category]}</span>
             <span>
               {idx + 1}/{siblings.length}
@@ -84,6 +103,7 @@ export function ToolNavigation() {
           {menuOpen && (
             <div
               role="listbox"
+              aria-label={`${CATEGORY_LABELS[current.category]} 도구 목록`}
               className="absolute right-0 bottom-full mb-2 w-64 max-h-80 overflow-y-auto rounded-lg border bg-popover shadow-lg z-20"
             >
               <div className="sticky top-0 px-3 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b bg-popover">
@@ -94,13 +114,16 @@ export function ToolNavigation() {
                   <li key={t.id}>
                     <a
                       href={t.href}
+                      role="option"
+                      aria-selected={t.id === current.id}
+                      aria-current={t.id === current.id ? 'page' : undefined}
                       onClick={() => setMenuOpen(false)}
                       className={cn(
                         'flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-muted',
                         t.id === current.id && 'bg-primary/10 text-foreground font-medium',
                       )}
                     >
-                      <t.icon className="h-3.5 w-3.5 shrink-0" />
+                      <t.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                       <span className="truncate">{t.title}</span>
                     </a>
                   </li>
@@ -112,7 +135,7 @@ export function ToolNavigation() {
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-1.5 text-xs rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
-                  <LayoutGrid className="h-3.5 w-3.5" />
+                  <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
                   전체 도구 허브
                 </a>
               </div>
@@ -134,7 +157,7 @@ export function ToolNavigation() {
             <p className="text-[10px] text-muted-foreground">다음</p>
             <p className="truncate font-medium">{next ? next.title : '—'}</p>
           </div>
-          <ChevronRight className="h-4 w-4 shrink-0" />
+          <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />
         </a>
       </div>
     </nav>

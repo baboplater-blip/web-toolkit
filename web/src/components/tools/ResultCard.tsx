@@ -61,9 +61,10 @@ export function ResultCard({
       <a
         href={blobUrl}
         download={fileName}
+        aria-label={`${fileName} 다운로드`}
         className={buttonVariants({ variant: 'default', className: 'w-full' })}
       >
-        <Download className="h-4 w-4" />
+        <Download className="h-4 w-4" aria-hidden="true" />
         {fileName} 다운로드
       </a>
     </div>

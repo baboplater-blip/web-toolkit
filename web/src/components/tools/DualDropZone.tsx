@@ -34,7 +34,11 @@ export function DualDropZone({
 }: DualDropZoneProps) {
   return (
     <div className="space-y-2">
-      <div className="inline-flex rounded-lg border bg-card p-0.5">
+      <div
+        className="inline-flex rounded-lg border bg-card p-0.5"
+        role="group"
+        aria-label="입력 모드 선택"
+      >
         {(
           [
             ['files', '파일', File],
@@ -53,7 +57,7 @@ export function DualDropZone({
             )}
             aria-pressed={mode === v}
           >
-            <Icon className="h-3.5 w-3.5" />
+            <Icon className="h-3.5 w-3.5" aria-hidden="true" />
             {label}
           </button>
         ))}

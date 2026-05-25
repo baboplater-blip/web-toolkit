@@ -217,6 +217,7 @@ export default function PasswordPage() {
                       size="icon"
                       className="h-7 w-7 shrink-0"
                       onClick={() => copyOne(i)}
+                      aria-label="비밀번호 복사"
                     >
                       {copiedIdx === i ? (
                         <Check className="h-3.5 w-3.5" />

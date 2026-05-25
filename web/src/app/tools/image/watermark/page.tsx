@@ -497,8 +497,9 @@ export default function ImageWatermarkPage() {
                         className="h-7 w-7 shrink-0"
                         onClick={clearWmImage}
                         disabled={processing}
+                        aria-label="워터마크 이미지 제거"
                       >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-3.5 w-3.5" aria-hidden="true" />
                       </Button>
                     </div>
                     <div className="mt-3">

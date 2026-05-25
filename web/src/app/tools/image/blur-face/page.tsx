@@ -650,10 +650,22 @@ export default function BlurFacePage() {
                     {boxes.map((box) => (
                       <div
                         key={box.id}
+                        role="button"
+                        tabIndex={addMode ? -1 : 0}
+                        aria-pressed={box.enabled}
+                        aria-label={`얼굴 영역 ${box.enabled ? '활성' : '비활성'} — 클릭으로 토글`}
                         onClick={(e) => {
                           if (addMode) return;
                           e.stopPropagation();
                           toggleBox(box.id);
+                        }}
+                        onKeyDown={(e) => {
+                          if (addMode) return;
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleBox(box.id);
+                          }
                         }}
                         onPointerDown={(e) => {
                           if (addMode) return;

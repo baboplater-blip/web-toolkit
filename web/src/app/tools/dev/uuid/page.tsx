@@ -167,6 +167,7 @@ export default function UuidPage() {
                   size="icon"
                   className="h-6 w-6 shrink-0"
                   onClick={() => copyOne(i)}
+                  aria-label="UUID 복사"
                 >
                   {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                 </Button>
