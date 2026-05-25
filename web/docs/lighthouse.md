@@ -146,9 +146,69 @@ npm run build 2>&1 | grep -E "^\\s+(○|λ)" | head -20
 
 > 새 측정 결과는 아래에 추가. 최신이 위.
 
-| 날짜 | 페이지 | Perf | A11y | BP | SEO | 비고 |
-|------|--------|------|------|----|----|------|
-| _아직 측정 없음_ | | | | | | 초기 베이스라인 필요 |
+### 2026-05-25 — Baseline + 회귀 4건 즉시 수정
+
+**측정 URL**: `https://agent-control-panel-phi.vercel.app` (옛 ACP 시절 alias.
+
+> ⚠️ **알림**: `https://web-toolkit.vercel.app` 은 우리 사이트가 아닌 빈 Next.js
+> 페이지가 점유 중이다. 모든 메타·sitemap·canonical 이 잘못된 URL 을 가리키므로
+> Vercel 대시보드에서 `web-toolkit.vercel.app` alias 를 본 프로젝트에 추가하거나
+> `NEXT_PUBLIC_SITE_URL` 환경변수를 실제 라이브 URL 로 갱신해야 한다.
+
+**Before (회귀 발견)**
+
+| 페이지 | Perf | A11y | BP | SEO | LCP(ms) | CLS | TBT(ms) |
+|--------|------|------|----|----|---------|------|--------|
+| / | 80 | 85 | 100 | 100 | 2995 | 0.147 | 264 |
+| /tools | 89 | 86 | 96 | 100 | 2935 | 0.147 | 28 |
+| /tools/compress | 85 | 82 | 100 | 100 | 3610 | 0.147 | 31 |
+| /tools/pdf/merge | 84 | 82 | 100 | 100 | 3613 | 0.147 | 23 |
+| /tools/image/resize | 85 | 82 | 100 | 100 | 3610 | 0.147 | 14 |
+| /tools/util/qr | 84 | 82 | 100 | 100 | 3685 | 0.147 | 28 |
+| /tools/video/compress | 89 | 82 | 100 | 100 | 3687 | 0.042 | 35 |
+| /tools/ocr | 85 | 82 | 100 | 100 | 3536 | 0.147 | 7 |
+
+**4건 회귀 원인**
+
+1. `meta-viewport` 의 `user-scalable=no, maximum-scale=1` — 접근성 위반 (사용자 줌 차단)
+2. `AdSlot` `<div aria-label="광고 영역">` — `<div>` 에 ARIA prohibited
+3. 광고 이미지 anchor 가 텍스트 없이 `<img>` 만 — `link-name` 실패
+4. skip link `#main-content` 가리키지만 해당 id 가 어디에도 없음
+
+**즉시 수정 (`5001484`, `15598b2`)**
+
+- `userScalable: true, maximumScale: 5`
+- `role="complementary"` landmark + image.alt 기반 link aria-label
+- root layout `<div id="main-content" tabIndex={-1}>` 추가
+- FileDropZone `aria-label` 제거 — visible text 가 자동 accessible name
+- 광고 placeholder `opacity-60` → `text-muted-foreground/80` 색대비 확보
+
+**After (수정 후 1차 재측정)**
+
+| 페이지 | Perf | A11y | BP | SEO | LCP(ms) | CLS |
+|--------|------|------|----|----|---------|------|
+| / | 93 | 100 | 100 | 100 | 1646 | 0.147 |
+| /tools | 89 | 100 | 96 | 100 | 3010 | 0.147 |
+| /tools/compress | 84 | 96 | 100 | 100 | 3684 | 0.147 |
+| /tools/pdf/merge | 85 | 96 | 100 | 100 | 3609 | 0.147 |
+| /tools/image/resize | 84 | 96 | 100 | 100 | 3613 | 0.147 |
+| /tools/util/qr | 84 | 96 | 100 | 100 | 3729 | 0.147 |
+| /tools/video/compress | 85 | 96 | 100 | 100 | 3609 | 0.147 |
+| /tools/ocr | 85 | 96 | 100 | 100 | 3535 | 0.147 |
+
+도구 페이지의 잔여 -4 점은 두 번째 수정 (`15598b2`) 으로 모두 100 달성 예상.
+
+**다음 라운드로 이월된 회귀**
+
+- **CLS 0.147** (모든 페이지 공통) — 광고 슬롯 lazy load 가 이미지 로드 시 컨테이너 높이를 늘려 layout shift. 광고 이미지 사이즈 사전 reservation 필요
+- **LCP 3.5s** (도구 페이지) — 광고 이미지가 LCP 후보. 광고 lazy 강화 또는 도구 본문을 우선 렌더링하는 layout 재구성
+- **TBT 264ms** (랜딩 페이지) — Hero 영역의 JS 부담. Hero 만 server component 로 격리, 인터랙티브는 클라이언트 컴포넌트로 분리 후보
+
+### 비고 — 모바일 preset 의 LCP 가 항상 3s+ 인 이유
+
+Lighthouse 12 의 mobile preset 은 4G slow + Moto G4 시뮬레이션이다. 실제 한국
+사용자의 평균 모바일 환경은 5G/Wi-Fi 라 실측은 1-1.5s 일 가능성이 크다. 그래도
+이 점수가 SEO 의 Core Web Vitals 신호이므로 lighthouse 기준에 맞춰야 한다.
 
 ## 부록 — Lighthouse 가 잡지 못하는 것
 
