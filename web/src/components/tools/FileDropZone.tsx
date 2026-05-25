@@ -57,7 +57,8 @@ export function FileDropZone({
     <div
       role="button"
       tabIndex={0}
-      aria-label={`${title}${description ? `. ${description}` : ''}`}
+      // aria-label 제거: 안의 <p> 텍스트가 accessible name 으로 자동 사용됨
+      // (visible label 과 mismatch 발생 방지 — WCAG 2.5.3)
       onDragOver={(e) => {
         e.preventDefault();
         setDragActive(true);

@@ -42,3 +42,5 @@ next-env.d.ts
 
 .vercel
 test-results/
+.lighthouse-tmp/
+scripts/_*.mjs

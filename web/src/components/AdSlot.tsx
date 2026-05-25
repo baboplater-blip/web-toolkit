@@ -139,7 +139,7 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
       ) : (
         <div className="text-center text-[10px] leading-tight select-none">
           <p className="font-medium">광고 영역</p>
-          <p className="opacity-60">{dims}</p>
+          <p className="text-muted-foreground/80">{dims}</p>
         </div>
       )}
     </div>
