@@ -57,6 +57,10 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
   if (config && !config.enabled) return null;
 
   const dims = isSidebar ? '160 × 600' : isInline ? '728 × 90' : '728 × 90';
+  // Lighthouse 의 image-aspect-ratio · image-size-responsive 감사 통과를 위해
+  // 표준 슬롯 크기를 명시. 실제 이미지가 다른 비율이어도 object-contain 으로 letterbox.
+  const imgWidth = isSidebar ? 160 : 970;
+  const imgHeight = isSidebar ? 600 : 90;
   const image = config?.image;
   const html = config?.html ?? '';
 
@@ -99,6 +103,8 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
             <img
               src={image!.src}
               alt={image!.alt ?? '광고'}
+              width={imgWidth}
+              height={imgHeight}
               className="block h-full w-full object-contain"
               // top slot 은 LCP 후보라 eager + high priority.
               // 다른 slot 은 viewport 외라 lazy 유지.
@@ -120,6 +126,8 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
           <img
             src={image!.src}
             alt={image!.alt ?? '광고'}
+            width={imgWidth}
+            height={imgHeight}
             className="block h-full w-full object-contain"
             loading={isTop ? 'eager' : 'lazy'}
             fetchPriority={isTop ? 'high' : 'auto'}

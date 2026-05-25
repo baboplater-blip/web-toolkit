@@ -82,8 +82,10 @@ export function ServiceWorkerRegister() {
           { once: true },
         );
       } catch (e) {
-        // 등록 실패해도 앱 동작에는 지장 없음.
-        console.warn('[SW] 등록 실패:', e);
+        // 등록 실패해도 앱 동작에는 지장 없음. 프로덕션 콘솔 오염 방지(BP).
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[SW] 등록 실패:', e);
+        }
       }
     };
 
