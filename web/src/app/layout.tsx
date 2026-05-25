@@ -24,8 +24,9 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+// BOM(U+FEFF) trim — Vercel 환경변수에 invisible 문자가 prefix 되는 사고 방어
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/^﻿/, '').replace(/\/$/, '') ??
   'https://agent-control-panel-phi.vercel.app';
 
 const SITE_DESC =

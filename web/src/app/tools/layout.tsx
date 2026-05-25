@@ -6,7 +6,9 @@ import { ToolNavigation } from '@/components/tools/ToolNavigation';
 const SITE_NAME = 'Web Toolkit';
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
-).replace(/\/$/, '');
+)
+  .replace(/^﻿/, '')
+  .replace(/\/$/, '');
 
 export const metadata: Metadata = {
   title: 'Web Toolkit — 브라우저 도구 모음',
