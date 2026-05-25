@@ -60,10 +60,10 @@ export const metadata: Metadata = {
   authors: [{ name: 'Web Toolkit' }],
   manifest: '/manifest.json',
   alternates: {
-    canonical: '/tools',
+    canonical: '/',
     languages: {
-      'ko-KR': '/tools',
-      'x-default': '/tools',
+      'ko-KR': '/',
+      'x-default': '/',
     },
   },
   openGraph: {
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     title: 'Web Toolkit — 브라우저 도구 모음',
     description: SITE_DESC,
     locale: 'ko_KR',
-    url: '/tools',
+    url: '/',
     images: [
       {
         url: '/og/default.png',

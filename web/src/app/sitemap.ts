@@ -29,10 +29,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const hub: MetadataRoute.Sitemap = [
     {
-      url: `${SITE_URL}/tools`,
+      url: `${SITE_URL}/`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
+    },
+    {
+      url: `${SITE_URL}/tools`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.95,
     },
     {
       url: `${SITE_URL}/settings`,
