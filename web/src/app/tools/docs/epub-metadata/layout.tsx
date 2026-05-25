@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"EPUB 메타데이터 편집","description":"제목·저자·언어·설명·태그 등 EPUB 메타데이터를 편집합니다.","url":"https://web-toolkit.vercel.app/tools/docs/epub-metadata","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"EPUB 메타데이터 편집","description":"제목·저자·언어·설명·태그 등 EPUB 메타데이터를 편집합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/docs/epub-metadata","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"PDF 페이지 삽입","description":"다른 PDF 의 페이지를 원하는 위치(맨 앞·맨 뒤·특정 페이지 뒤) 에 삽입.","url":"https://web-toolkit.vercel.app/tools/pdf/insert","applicationCategory":"BusinessApplication","applicationSubCategory":"PDF","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"PDF 페이지 삽입","description":"다른 PDF 의 페이지를 원하는 위치(맨 앞·맨 뒤·특정 페이지 뒤) 에 삽입.","url":"https://agent-control-panel-phi.vercel.app/tools/pdf/insert","applicationCategory":"BusinessApplication","applicationSubCategory":"PDF","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

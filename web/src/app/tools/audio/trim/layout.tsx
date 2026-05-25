@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"오디오 자르기","description":"구간 지정으로 오디오를 잘라냅니다.","url":"https://web-toolkit.vercel.app/tools/audio/trim","applicationCategory":"MultimediaApplication","applicationSubCategory":"오디오","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"오디오 자르기","description":"구간 지정으로 오디오를 잘라냅니다.","url":"https://agent-control-panel-phi.vercel.app/tools/audio/trim","applicationCategory":"MultimediaApplication","applicationSubCategory":"오디오","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

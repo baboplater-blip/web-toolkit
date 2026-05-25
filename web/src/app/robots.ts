@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
-  'https://web-toolkit.vercel.app';
+  'https://agent-control-panel-phi.vercel.app';
 
 export const dynamic = 'force-static';
 

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"비디오 포맷 변환","description":"MP4 / WebM / MOV / AVI / MKV 상호 변환.","url":"https://web-toolkit.vercel.app/tools/video/convert","applicationCategory":"MultimediaApplication","applicationSubCategory":"비디오","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"비디오 포맷 변환","description":"MP4 / WebM / MOV / AVI / MKV 상호 변환.","url":"https://agent-control-panel-phi.vercel.app/tools/video/convert","applicationCategory":"MultimediaApplication","applicationSubCategory":"비디오","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

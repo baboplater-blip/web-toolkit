@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"비밀번호 생성","description":"안전한 랜덤 비밀번호를 생성하고 강도를 평가합니다.","url":"https://web-toolkit.vercel.app/tools/dev/password","applicationCategory":"DeveloperApplication","applicationSubCategory":"개발자","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"비밀번호 생성","description":"안전한 랜덤 비밀번호를 생성하고 강도를 평가합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/password","applicationCategory":"DeveloperApplication","applicationSubCategory":"개발자","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -21,7 +21,7 @@ const REGISTRY_PATH = join(WEB_ROOT, 'src/lib/tools/registry.ts');
 
 const MARKER = '/* auto-generated metadata layout — generate-tool-metadata.mjs */';
 const SITE_NAME = 'Web Toolkit';
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app').replace(/\/$/, '');
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app').replace(/\/$/, '');
 
 const CATEGORY_LABEL = {
   image: '이미지',

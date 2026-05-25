@@ -41,5 +41,5 @@ jobs:
       - name: Ping IndexNow
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://web-toolkit.vercel.app' }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://agent-control-panel-phi.vercel.app' }}
         run: node scripts/ping-indexnow.mjs

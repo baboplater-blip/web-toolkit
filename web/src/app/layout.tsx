@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
-  'https://web-toolkit.vercel.app';
+  'https://agent-control-panel-phi.vercel.app';
 
 const SITE_DESC =
   '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 100여 종. 파일이 서버로 전송되지 않습니다.';

@@ -8,9 +8,9 @@ Web Toolkit 의 페이지를 Google·Naver·Bing 검색에 빠르게 노출시�
 
 | 항목 | 위치 |
 |------|------|
-| 사이트 URL | `https://web-toolkit.vercel.app` (또는 사용자 도메인) |
-| sitemap | `https://web-toolkit.vercel.app/sitemap.xml` |
-| robots | `https://web-toolkit.vercel.app/robots.txt` |
+| 사이트 URL | `https://agent-control-panel-phi.vercel.app` (또는 사용자 도메인) |
+| sitemap | `https://agent-control-panel-phi.vercel.app/sitemap.xml` |
+| robots | `https://agent-control-panel-phi.vercel.app/robots.txt` |
 | verification 환경변수 | Vercel `Project Settings → Environment Variables` |
 | GitHub secrets | 저장소 `Settings → Secrets and variables → Actions` |
 
@@ -21,7 +21,7 @@ Web Toolkit 의 페이지를 Google·Naver·Bing 검색에 빠르게 노출시�
 ### 1-1. 소유권 확인
 
 1. [https://search.google.com/search-console](https://search.google.com/search-console) 접속 → **속성 추가** → **URL 접두어**
-2. URL 입력: `https://web-toolkit.vercel.app`
+2. URL 입력: `https://agent-control-panel-phi.vercel.app`
 3. 확인 방법 중 **HTML 태그** 선택, content 값 복사 (예: `abc123…`)
 4. Vercel Dashboard → 프로젝트 → Settings → Environment Variables 에 추가:
 
@@ -47,7 +47,7 @@ Web Toolkit 의 페이지를 Google·Naver·Bing 검색에 빠르게 노출시�
 
 특정 페이지를 즉시 색인 큐에 넣고 싶을 때:
 
-1. GSC 상단 검색창에 URL 입력 (예: `https://web-toolkit.vercel.app/tools/pdf/merge`)
+1. GSC 상단 검색창에 URL 입력 (예: `https://agent-control-panel-phi.vercel.app/tools/pdf/merge`)
 2. **색인 생성 요청** 클릭
 3. 하루 ~10개 한도
 
@@ -132,7 +132,7 @@ Bing 점유율은 낮지만 ChatGPT·Copilot·DuckDuckGo 등이 Bing 색인을 �
    a3b1c2d4e5f6...
    ```
 
-3. master 에 커밋·푸시 → Vercel 배포 후 `https://web-toolkit.vercel.app/{KEY}.txt` 로 접근해 키가 노출되는지 확인
+3. master 에 커밋·푸시 → Vercel 배포 후 `https://agent-control-panel-phi.vercel.app/{KEY}.txt` 로 접근해 키가 노출되는지 확인
 
 ### 4-2. GitHub secret 등록
 
@@ -147,7 +147,7 @@ Value: a3b1c2d4e5f6...
 
 ```
 Name:  NEXT_PUBLIC_SITE_URL
-Value: https://web-toolkit.vercel.app
+Value: https://agent-control-panel-phi.vercel.app
 ```
 
 ### 4-3. 자동 ping 작동 확인
@@ -201,7 +201,7 @@ npm run seo:ping
 ### Q. IndexNow 가 403
 
 - 키 파일 (`/{KEY}.txt`) 의 내용과 GHA secret 의 `INDEXNOW_KEY` 가 정확히 일치하는지 확인
-- 키 파일이 `https://web-toolkit.vercel.app/{KEY}.txt` 로 접근 가능한지 (404 면 캐시·배포 누락)
+- 키 파일이 `https://agent-control-panel-phi.vercel.app/{KEY}.txt` 로 접근 가능한지 (404 면 캐시·배포 누락)
 
 ### Q. Naver 색인이 너무 느림
 

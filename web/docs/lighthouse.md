@@ -10,7 +10,7 @@ Web Toolkit 의 성능·접근성·SEO·Best Practices 를 정기적으로 측�
 
 가장 빠른 방법. 결과를 즉시 화면에서 본다.
 
-1. Chrome 에서 측정 대상 URL 을 열기 (예: `https://web-toolkit.vercel.app/tools/pdf/merge`)
+1. Chrome 에서 측정 대상 URL 을 열기 (예: `https://agent-control-panel-phi.vercel.app/tools/pdf/merge`)
 2. DevTools (`F12`) → **Lighthouse** 탭
 3. **Mode: Navigation**, **Device: Mobile**, 카테고리는 **Performance / Accessibility / Best Practices / SEO** 모두 체크
 4. **Analyze page load** 클릭
@@ -26,14 +26,14 @@ Web Toolkit 의 성능·접근성·SEO·Best Practices 를 정기적으로 측�
 npm install -g lighthouse
 
 # 단일 페이지 측정 (헤드리스, mobile preset, 결과 HTML 저장)
-lighthouse https://web-toolkit.vercel.app/ \
+lighthouse https://agent-control-panel-phi.vercel.app/ \
   --preset=mobile \
   --output=html \
   --output-path=./lh-home.html \
   --chrome-flags="--headless=new"
 
 # JSON 으로 저장 후 시계열 비교
-lighthouse https://web-toolkit.vercel.app/tools/pdf/merge \
+lighthouse https://agent-control-panel-phi.vercel.app/tools/pdf/merge \
   --preset=mobile \
   --output=json \
   --output-path=./lh-pdf-merge.json \
@@ -150,10 +150,11 @@ npm run build 2>&1 | grep -E "^\\s+(○|λ)" | head -20
 
 **측정 URL**: `https://agent-control-panel-phi.vercel.app` (옛 ACP 시절 alias.
 
-> ⚠️ **알림**: `https://web-toolkit.vercel.app` 은 우리 사이트가 아닌 빈 Next.js
-> 페이지가 점유 중이다. 모든 메타·sitemap·canonical 이 잘못된 URL 을 가리키므로
-> Vercel 대시보드에서 `web-toolkit.vercel.app` alias 를 본 프로젝트에 추가하거나
-> `NEXT_PUBLIC_SITE_URL` 환경변수를 실제 라이브 URL 로 갱신해야 한다.
+> ⚠️ **알림**: `https://web-toolkit.vercel.app` 은 다른 사용자의 빈 Next.js 데모가
+> 점유 중이라 우리가 확보할 수 없다. 본 프로젝트의 Vercel 이름은 `web-toolkit` 으로
+> 변경됐고(2026-05-25), 새 deployment 부터 `web-toolkit-*.vercel.app` 패턴의
+> alias 가 자동 발급된다. 진짜 도메인은 추후 구매 후 alias 로 연결할 예정.
+> 현재 코드의 default URL 은 `agent-control-panel-phi.vercel.app` (라이브 작동).
 
 **Before (회귀 발견)**
 

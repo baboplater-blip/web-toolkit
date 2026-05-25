@@ -4,7 +4,7 @@ import { ToolNavigation } from '@/components/tools/ToolNavigation';
 
 const SITE_NAME = 'Web Toolkit';
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
 ).replace(/\/$/, '');
 
 export const metadata: Metadata = {
