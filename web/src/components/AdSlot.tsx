@@ -62,21 +62,18 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
 
   const hasImage = !!(image && image.src);
 
-  // 이미지가 있으면 컨테이너 높이를 이미지 비율로 자동 늘림 (잘리지 않음 + 빈 공간 없음).
-  // placeholder/HTML 모드는 기본 사이즈 유지.
+  // CLS 0 보장 — 컨테이너 사이즈를 이미지 유무에 관계없이 고정.
+  // placeholder · 이미지 · HTML 모드 모두 같은 박스에 들어가고, 이미지는
+  // object-contain 으로 비율 유지 + 박스 안에 맞춤 (위아래 letterbox 발생 가능).
+  // 가변 높이 (이미지 비율 그대로) 가 필요하다면 광고 이미지 자체를 표준 비율
+  // (top/inline 970×90 · sidebar 160×600) 로 제작해 업로드.
   const containerCls = cn(
     'rounded-lg border border-dashed border-border/60 bg-muted/20 text-muted-foreground overflow-hidden',
-    hasImage
-      ? isSidebar
-        ? 'w-[160px]'
-        : isInline
-          ? 'mx-auto w-full max-w-[970px] my-3'
-          : 'mx-auto w-full max-w-[970px]'
-      : isSidebar
-        ? 'flex items-center justify-center w-[160px] h-[600px]'
-        : isInline
-          ? 'mx-auto flex items-center justify-center w-full max-w-[970px] h-[90px] min-h-[60px] my-3'
-          : 'mx-auto flex items-center justify-center w-full max-w-[970px] h-[90px] min-h-[60px]',
+    isSidebar
+      ? 'flex items-center justify-center w-[160px] h-[600px]'
+      : isInline
+        ? 'mx-auto flex items-center justify-center w-full max-w-[970px] h-[90px] min-h-[60px] my-3'
+        : 'mx-auto flex items-center justify-center w-full max-w-[970px] h-[90px] min-h-[60px]',
     className,
   );
 
@@ -124,8 +121,7 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
             src={image!.src}
             alt={image!.alt ?? '광고'}
             className={cn(
-              'block w-full h-auto',
-              isSidebar ? 'max-h-[600px] object-contain' : 'max-h-[250px] object-contain',
+              'block h-full w-full object-contain',
             )}
             loading="lazy"
           />
