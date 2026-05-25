@@ -27,37 +27,49 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
   'https://web-toolkit.vercel.app';
 
+const SITE_DESC =
+  '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 100여 종. 파일이 서버로 전송되지 않습니다.';
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'Web Toolkit — 브라우저 도구 모음',
     template: '%s · Web Toolkit',
   },
-  description:
-    '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 80여 종. 파일이 서버로 전송되지 않습니다.',
+  description: SITE_DESC,
   keywords: [
     'PDF',
     '이미지 변환',
+    '비디오 변환',
     '오디오 편집',
     'OCR',
     'AI 도구',
+    'EPUB',
+    'GIF',
+    '워터마크',
     'web tools',
     'browser tools',
     'no upload',
     '무설치',
     '온라인 도구',
+    '파일 압축',
+    'QR',
+    '암호화',
   ],
   authors: [{ name: 'Web Toolkit' }],
   manifest: '/manifest.json',
   alternates: {
     canonical: '/tools',
+    languages: {
+      'ko-KR': '/tools',
+      'x-default': '/tools',
+    },
   },
   openGraph: {
     type: 'website',
     siteName: 'Web Toolkit',
     title: 'Web Toolkit — 브라우저 도구 모음',
-    description:
-      '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 80여 종. 파일이 서버로 전송되지 않습니다.',
+    description: SITE_DESC,
     locale: 'ko_KR',
     url: '/tools',
   },
@@ -71,6 +83,44 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Toolkit',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+};
+
+const ORGANIZATION_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Web Toolkit',
+  url: SITE_URL,
+  description: SITE_DESC,
+  inLanguage: 'ko-KR',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Web Toolkit',
+    url: SITE_URL,
+  },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/tools?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
   },
 };
 
@@ -95,6 +145,12 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(ORGANIZATION_JSON_LD),
+          }}
+        />
       </head>
       <body className="antialiased">
         <a

@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `PDF 잠금 해제 — Web Toolkit`;
+const DESCRIPTION = `편집/인쇄 제한 제거 또는 열람 암호 해제 (래스터화).`;
+const URL_PATH = '/tools/pdf/unlock';
+
 export const metadata: Metadata = {
-  title: `PDF 잠금 해제 — Web Toolkit`,
-  description: `편집/인쇄 제한 제거 또는 열람 암호 해제 (래스터화).`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["unlock","decrypt","잠금","암호해제","보안","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `PDF 잠금 해제 — Web Toolkit`,
-    description: `편집/인쇄 제한 제거 또는 열람 암호 해제 (래스터화).`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `PDF 잠금 해제 — Web Toolkit`,
-    description: `편집/인쇄 제한 제거 또는 열람 암호 해제 (래스터화).`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"PDF 잠금 해제","description":"편집/인쇄 제한 제거 또는 열람 암호 해제 (래스터화).","url":"https://web-toolkit.vercel.app/tools/pdf/unlock","applicationCategory":"SecurityApplication","applicationSubCategory":"보안","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }

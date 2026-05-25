@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `GIF 만들기 — Web Toolkit`;
+const DESCRIPTION = `여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.`;
+const URL_PATH = '/tools/gif/maker';
+
 export const metadata: Metadata = {
-  title: `GIF 만들기 — Web Toolkit`,
-  description: `여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["gif","animate","maker","만들기","GIF","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `GIF 만들기 — Web Toolkit`,
-    description: `여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `GIF 만들기 — Web Toolkit`,
-    description: `여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"GIF 만들기","description":"여러 이미지를 순서대로 애니메이션 GIF 로 묶습니다.","url":"https://web-toolkit.vercel.app/tools/gif/maker","applicationCategory":"MultimediaApplication","applicationSubCategory":"GIF","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }

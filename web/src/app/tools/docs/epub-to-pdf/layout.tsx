@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `EPUB → PDF — Web Toolkit`;
+const DESCRIPTION = `EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.`;
+const URL_PATH = '/tools/docs/epub-to-pdf';
+
 export const metadata: Metadata = {
-  title: `EPUB → PDF — Web Toolkit`,
-  description: `EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["epub","pdf","전자책","ebook","convert","변환","책","문서 변환","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `EPUB → PDF — Web Toolkit`,
-    description: `EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `EPUB → PDF — Web Toolkit`,
-    description: `EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"EPUB → PDF","description":"EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.","url":"https://web-toolkit.vercel.app/tools/docs/epub-to-pdf","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }

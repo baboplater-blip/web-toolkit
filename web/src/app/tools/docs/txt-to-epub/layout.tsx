@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `텍스트 → EPUB — Web Toolkit`;
+const DESCRIPTION = `TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.`;
+const URL_PATH = '/tools/docs/txt-to-epub';
+
 export const metadata: Metadata = {
-  title: `텍스트 → EPUB — Web Toolkit`,
-  description: `TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["txt","epub","생성","만들기","create","ebook","전자책","문서 변환","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `텍스트 → EPUB — Web Toolkit`,
-    description: `TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `텍스트 → EPUB — Web Toolkit`,
-    description: `TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"텍스트 → EPUB","description":"TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.","url":"https://web-toolkit.vercel.app/tools/docs/txt-to-epub","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }

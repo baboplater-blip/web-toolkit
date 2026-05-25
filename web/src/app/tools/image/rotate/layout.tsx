@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `이미지 회전/반전 — Web Toolkit`;
+const DESCRIPTION = `90/180/270도 회전 및 좌우·상하 반전.`;
+const URL_PATH = '/tools/image/rotate';
+
 export const metadata: Metadata = {
-  title: `이미지 회전/반전 — Web Toolkit`,
-  description: `90/180/270도 회전 및 좌우·상하 반전.`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["rotate","flip","회전","반전","이미지","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `이미지 회전/반전 — Web Toolkit`,
-    description: `90/180/270도 회전 및 좌우·상하 반전.`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `이미지 회전/반전 — Web Toolkit`,
-    description: `90/180/270도 회전 및 좌우·상하 반전.`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"이미지 회전/반전","description":"90/180/270도 회전 및 좌우·상하 반전.","url":"https://web-toolkit.vercel.app/tools/image/rotate","applicationCategory":"MultimediaApplication","applicationSubCategory":"이미지","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }

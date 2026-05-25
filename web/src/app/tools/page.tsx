@@ -61,6 +61,24 @@ const SORT_LABELS: Record<SortKey, string> = {
 
 const SORT_STORAGE_KEY = 'webtoolkit:hub:sort';
 
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
+).replace(/\/$/, '');
+
+const ITEM_LIST_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Web Toolkit 도구 목록',
+  itemListOrder: 'https://schema.org/ItemListOrderDescending',
+  numberOfItems: TOOLS.filter((t) => t.status === 'ready').length,
+  itemListElement: TOOLS.filter((t) => t.status === 'ready').map((t, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `${SITE_URL}${t.href}`,
+    name: t.title,
+  })),
+};
+
 export default function ToolsHubPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ToolCategory | 'all'>('all');
@@ -240,6 +258,11 @@ export default function ToolsHubPage() {
 
   return (
     <div className="min-h-dvh bg-background pb-14 md:pb-0">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ITEM_LIST_JSON_LD) }}
+      />
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-[52px] max-w-7xl items-center gap-2 px-4">
           <LayoutGrid className="h-5 w-5" />

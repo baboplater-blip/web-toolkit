@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `CSV ↔ JSON — Web Toolkit`;
+const DESCRIPTION = `스프레드시트 데이터를 JSON 으로 변환하거나 반대로.`;
+const URL_PATH = '/tools/docs/csv-json';
+
 export const metadata: Metadata = {
-  title: `CSV ↔ JSON — Web Toolkit`,
-  description: `스프레드시트 데이터를 JSON 으로 변환하거나 반대로.`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["csv","json","tsv","스프레드시트","문서 변환","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `CSV ↔ JSON — Web Toolkit`,
-    description: `스프레드시트 데이터를 JSON 으로 변환하거나 반대로.`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `CSV ↔ JSON — Web Toolkit`,
-    description: `스프레드시트 데이터를 JSON 으로 변환하거나 반대로.`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"CSV ↔ JSON","description":"스프레드시트 데이터를 JSON 으로 변환하거나 반대로.","url":"https://web-toolkit.vercel.app/tools/docs/csv-json","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }

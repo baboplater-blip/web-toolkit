@@ -1,21 +1,41 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
 
+const TITLE = `PDF 서명 — Web Toolkit`;
+const DESCRIPTION = `마우스/터치로 직접 서명하여 PDF 에 삽입합니다.`;
+const URL_PATH = '/tools/pdf/sign';
+
 export const metadata: Metadata = {
-  title: `PDF 서명 — Web Toolkit`,
-  description: `마우스/터치로 직접 서명하여 PDF 에 삽입합니다.`,
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: ["sign","signature","서명","보안","브라우저 도구","무료","온라인","no upload"],
+  alternates: { canonical: URL_PATH },
   openGraph: {
-    title: `PDF 서명 — Web Toolkit`,
-    description: `마우스/터치로 직접 서명하여 PDF 에 삽입합니다.`,
+    title: TITLE,
+    description: DESCRIPTION,
     type: 'website',
+    siteName: 'Web Toolkit',
+    locale: 'ko_KR',
+    url: URL_PATH,
   },
   twitter: {
     card: 'summary',
-    title: `PDF 서명 — Web Toolkit`,
-    description: `마우스/터치로 직접 서명하여 PDF 에 삽입합니다.`,
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
 
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"PDF 서명","description":"마우스/터치로 직접 서명하여 PDF 에 삽입합니다.","url":"https://web-toolkit.vercel.app/tools/pdf/sign","applicationCategory":"SecurityApplication","applicationSubCategory":"보안","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://web-toolkit.vercel.app"}} as const;
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      {children}
+    </>
+  );
 }
