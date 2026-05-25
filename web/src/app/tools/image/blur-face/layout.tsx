@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `얼굴 블러 — Web Toolkit`;
 const DESCRIPTION = `AI 로 얼굴 자동 감지 + 블러/모자이크. 수동 박스 추가 가능.`;
 const URL_PATH = '/tools/image/blur-face';
+const OG_IMAGE = '/og/ai.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `얼굴 블러 — AI 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

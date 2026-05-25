@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `AI 이미지 업스케일 — Web Toolkit`;
 const DESCRIPTION = `ESRGAN 초해상도로 2x/3x/4x 확대. 1MP 이하 권장.`;
 const URL_PATH = '/tools/image/upscale';
+const OG_IMAGE = '/og/ai.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `AI 이미지 업스케일 — AI 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

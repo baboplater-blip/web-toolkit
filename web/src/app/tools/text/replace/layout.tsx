@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `일괄 찾기·치환 — Web Toolkit`;
 const DESCRIPTION = `정규식·캡처 그룹 지원 일괄 치환. 매칭 개수 실시간 표시.`;
 const URL_PATH = '/tools/text/replace';
+const OG_IMAGE = '/og/text.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `일괄 찾기·치환 — 텍스트 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

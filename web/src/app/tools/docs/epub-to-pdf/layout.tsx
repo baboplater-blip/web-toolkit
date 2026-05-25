@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB → PDF — Web Toolkit`;
 const DESCRIPTION = `EPUB 전자책을 PDF 로 변환합니다. 50 MB 이하 권장.`;
 const URL_PATH = '/tools/docs/epub-to-pdf';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `EPUB → PDF — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `단어·문자 카운트 — Web Toolkit`;
 const DESCRIPTION = `단어/문자/줄/바이트 수를 실시간 집계합니다.`;
 const URL_PATH = '/tools/text/count';
+const OG_IMAGE = '/og/text.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `단어·문자 카운트 — 텍스트 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

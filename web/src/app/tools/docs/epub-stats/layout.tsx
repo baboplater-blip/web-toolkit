@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 통계 — Web Toolkit`;
 const DESCRIPTION = `단어·문자·챕터·이미지 수와 챕터별 분량을 분석합니다.`;
 const URL_PATH = '/tools/docs/epub-stats';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `EPUB 통계 — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

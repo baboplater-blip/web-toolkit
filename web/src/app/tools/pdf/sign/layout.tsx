@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 서명 — Web Toolkit`;
 const DESCRIPTION = `마우스/터치로 직접 서명하여 PDF 에 삽입합니다.`;
 const URL_PATH = '/tools/pdf/sign';
+const OG_IMAGE = '/og/security.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `PDF 서명 — 보안 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

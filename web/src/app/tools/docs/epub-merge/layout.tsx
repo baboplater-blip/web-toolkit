@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 병합 — Web Toolkit`;
 const DESCRIPTION = `여러 EPUB 을 순서대로 하나의 EPUB 으로 묶습니다.`;
 const URL_PATH = '/tools/docs/epub-merge';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `EPUB 병합 — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

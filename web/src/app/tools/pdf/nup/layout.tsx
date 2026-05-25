@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF N-up 배치 — Web Toolkit`;
 const DESCRIPTION = `한 장에 2/4/6/9 페이지를 모아 인쇄·시안용 PDF 를 만듭니다.`;
 const URL_PATH = '/tools/pdf/nup';
+const OG_IMAGE = '/og/pdf.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `PDF N-up 배치 — PDF 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

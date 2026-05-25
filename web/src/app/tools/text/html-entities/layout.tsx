@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `HTML 엔티티 인·디코드 — Web Toolkit`;
 const DESCRIPTION = `&amp;amp; · &amp;copy; · &amp;#161; 등 엔티티 양방향 변환.`;
 const URL_PATH = '/tools/text/html-entities';
+const OG_IMAGE = '/og/text.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `HTML 엔티티 인·디코드 — 텍스트 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

@@ -148,6 +148,7 @@ function renderLayout(tool) {
   const dedupedKeywords = [...new Set(baseKeywords.filter(Boolean))];
   const keywordsLiteral = JSON.stringify(dedupedKeywords);
   const jsonLdLiteral = JSON.stringify(buildJsonLd(tool));
+  const ogImagePath = `/og/${tool.category}.png`;
 
   return `${MARKER}
 import type { Metadata } from 'next';
@@ -155,6 +156,7 @@ import type { Metadata } from 'next';
 const TITLE = \`${safeTitle} — ${SITE_NAME}\`;
 const DESCRIPTION = \`${safeDesc}\`;
 const URL_PATH = '${tool.href}';
+const OG_IMAGE = '${ogImagePath}';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -168,11 +170,20 @@ export const metadata: Metadata = {
     siteName: '${SITE_NAME}',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: \`${safeTitle} — ${categoryLabel} 도구\`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

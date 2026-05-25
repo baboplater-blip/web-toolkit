@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `DOCX → PDF — Web Toolkit`;
 const DESCRIPTION = `Word 문서를 PDF 로 변환합니다.`;
 const URL_PATH = '/tools/docs/docx-to-pdf';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `DOCX → PDF — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `비디오 자르기 — Web Toolkit`;
 const DESCRIPTION = `구간 지정으로 비디오를 잘라냅니다.`;
 const URL_PATH = '/tools/video/trim';
+const OG_IMAGE = '/og/video.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `비디오 자르기 — 비디오 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

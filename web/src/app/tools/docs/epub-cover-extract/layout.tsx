@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 표지 추출 — Web Toolkit`;
 const DESCRIPTION = `EPUB 의 표지 이미지를 원본 그대로 꺼냅니다.`;
 const URL_PATH = '/tools/docs/epub-cover-extract';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `EPUB 표지 추출 — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

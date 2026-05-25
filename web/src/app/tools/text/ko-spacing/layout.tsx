@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `한글 띄어쓰기 교정 — Web Toolkit`;
 const DESCRIPTION = `자주 빠지는 띄어쓰기를 규칙으로 자동 교정.`;
 const URL_PATH = '/tools/text/ko-spacing';
+const OG_IMAGE = '/og/text.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `한글 띄어쓰기 교정 — 텍스트 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `HEIC → JPG — Web Toolkit`;
 const DESCRIPTION = `iPhone HEIC 사진을 JPG/PNG 로 변환합니다.`;
 const URL_PATH = '/tools/image/heic-to-jpg';
+const OG_IMAGE = '/og/image.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `HEIC → JPG — 이미지 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

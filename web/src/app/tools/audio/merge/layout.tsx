@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `오디오 합치기 — Web Toolkit`;
 const DESCRIPTION = `여러 오디오 파일을 순서대로 이어붙입니다. 크로스페이드 지원.`;
 const URL_PATH = '/tools/audio/merge';
+const OG_IMAGE = '/og/audio.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `오디오 합치기 — 오디오 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

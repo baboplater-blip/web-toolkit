@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `텍스트 → EPUB — Web Toolkit`;
 const DESCRIPTION = `TXT 또는 입력한 텍스트를 EPUB 전자책으로 만듭니다.`;
 const URL_PATH = '/tools/docs/txt-to-epub';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `텍스트 → EPUB — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

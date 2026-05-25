@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `오디오 볼륨 조정 — Web Toolkit`;
 const DESCRIPTION = `dB 단위 증감 또는 LUFS 라우드니스 정규화.`;
 const URL_PATH = '/tools/audio/volume';
+const OG_IMAGE = '/og/audio.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `오디오 볼륨 조정 — 오디오 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

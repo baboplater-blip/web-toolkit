@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `URL 인코더/디코더 — Web Toolkit`;
 const DESCRIPTION = `URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.`;
 const URL_PATH = '/tools/dev/url';
+const OG_IMAGE = '/og/dev.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `URL 인코더/디코더 — 개발자 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

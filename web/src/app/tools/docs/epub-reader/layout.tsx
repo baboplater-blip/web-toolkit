@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB 리더 — Web Toolkit`;
 const DESCRIPTION = `EPUB 전자책을 브라우저에서 바로 읽습니다. 목차·테마·글자 크기 조절.`;
 const URL_PATH = '/tools/docs/epub-reader';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `EPUB 리더 — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

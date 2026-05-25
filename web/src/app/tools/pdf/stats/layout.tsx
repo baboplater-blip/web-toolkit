@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `PDF 통계 — Web Toolkit`;
 const DESCRIPTION = `페이지·단어·문자·폰트·목차·메타데이터를 분석합니다.`;
 const URL_PATH = '/tools/pdf/stats';
+const OG_IMAGE = '/og/pdf.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `PDF 통계 — PDF 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

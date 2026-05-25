@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `GIF 최적화 — Web Toolkit`;
 const DESCRIPTION = `팔레트·프레임 드롭으로 용량을 줄입니다.`;
 const URL_PATH = '/tools/gif/optimize';
+const OG_IMAGE = '/og/gif.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `GIF 최적화 — GIF 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

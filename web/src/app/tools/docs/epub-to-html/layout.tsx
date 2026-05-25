@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `EPUB → HTML — Web Toolkit`;
 const DESCRIPTION = `EPUB 을 단일 HTML(이미지 인라인) 또는 챕터별 HTML ZIP 으로 변환.`;
 const URL_PATH = '/tools/docs/epub-to-html';
+const OG_IMAGE = '/og/docs.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `EPUB → HTML — 문서 변환 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

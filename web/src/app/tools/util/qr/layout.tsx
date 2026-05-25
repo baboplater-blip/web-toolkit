@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `QR 코드 생성/읽기 — Web Toolkit`;
 const DESCRIPTION = `텍스트·URL → QR 생성, 이미지 → QR 해독.`;
 const URL_PATH = '/tools/util/qr';
+const OG_IMAGE = '/og/util.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `QR 코드 생성/읽기 — 유틸 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

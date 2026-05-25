@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `이미지 워터마크 — Web Toolkit`;
 const DESCRIPTION = `텍스트/로고 워터마크 합성.`;
 const URL_PATH = '/tools/image/watermark';
+const OG_IMAGE = '/og/image.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `이미지 워터마크 — 이미지 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

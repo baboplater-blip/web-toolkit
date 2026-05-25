@@ -20,11 +20,20 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: 'ko_KR',
     url: '/tools',
+    images: [
+      {
+        url: '/og/default.png',
+        width: 1200,
+        height: 630,
+        alt: 'Web Toolkit 도구 모음',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Web Toolkit — 브라우저 도구 모음',
     description: '브라우저에서 완결되는 무료 도구 모음. 업로드 없음.',
+    images: ['/og/default.png'],
   },
 };
 

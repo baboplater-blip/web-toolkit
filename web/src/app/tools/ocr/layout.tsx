@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 const TITLE = `OCR (이미지/PDF → 텍스트) — Web Toolkit`;
 const DESCRIPTION = `한국어 포함 이미지·PDF 의 문자를 인식합니다. Tesseract 기반.`;
 const URL_PATH = '/tools/ocr';
+const OG_IMAGE = '/og/ai.png';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -17,11 +18,20 @@ export const metadata: Metadata = {
     siteName: 'Web Toolkit',
     locale: 'ko_KR',
     url: URL_PATH,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `OCR (이미지/PDF → 텍스트) — AI 도구`,
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

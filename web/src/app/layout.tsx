@@ -72,12 +72,21 @@ export const metadata: Metadata = {
     description: SITE_DESC,
     locale: 'ko_KR',
     url: '/tools',
+    images: [
+      {
+        url: '/og/default.png',
+        width: 1200,
+        height: 630,
+        alt: 'Web Toolkit — 브라우저에서 완결되는 무료 도구 109종',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Web Toolkit — 브라우저 도구 모음',
     description:
       '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구. 업로드 없음.',
+    images: ['/og/default.png'],
   },
   appleWebApp: {
     capable: true,
