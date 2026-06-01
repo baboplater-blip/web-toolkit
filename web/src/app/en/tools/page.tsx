@@ -5,6 +5,7 @@ import {
   TOOLS,
   type ToolCategory,
 } from '@/lib/tools/registry';
+import { EN_TOOLS } from '@/lib/en-tools';
 
 /**
  * English /en/tools — catalog mirror.
@@ -115,11 +116,15 @@ export default function EnglishToolsHubPage() {
             and language-agnostic.
           </p>
           <p className="text-muted-foreground text-[12px]">
-            New: per-category guides in English are now available at{' '}
+            New: popular tools now have full English pages (marked{' '}
+            <span className="inline-flex items-center rounded bg-primary/10 px-1 text-[10px] font-medium text-primary align-middle">
+              EN
+            </span>
+            ) plus step-by-step guides at{' '}
             <a href="/en/guide" className="text-primary underline">
               /en/guide
-            </a>{' '}
-            with step-by-step instructions and FAQs.
+            </a>
+            .
           </p>
         </section>
 
@@ -142,23 +147,32 @@ export default function EnglishToolsHubPage() {
                 </a>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                {list.map((t) => (
-                  <a
-                    key={t.id}
-                    href={t.href}
-                    className="group rounded-lg border bg-card p-3 hover:border-primary transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <t.icon className="h-4 w-4 text-primary shrink-0" aria-hidden />
-                      <span className="text-sm font-medium truncate">
-                        {t.title}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                      {t.description}
-                    </p>
-                  </a>
-                ))}
+                {list.map((t) => {
+                  const en = EN_TOOLS[t.id];
+                  return (
+                    <a
+                      key={t.id}
+                      href={en ? `/en/tools/${t.id}` : t.href}
+                      hrefLang={en ? 'en' : 'ko'}
+                      className="group rounded-lg border bg-card p-3 hover:border-primary transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <t.icon className="h-4 w-4 text-primary shrink-0" aria-hidden />
+                        <span className="text-sm font-medium truncate">
+                          {en ? en.name : t.title}
+                        </span>
+                        {en && (
+                          <span className="ml-auto shrink-0 rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">
+                            EN
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                        {en ? en.tagline : t.description}
+                      </p>
+                    </a>
+                  );
+                })}
               </div>
             </section>
           );

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
+import { hasEnCopy } from '@/lib/en-tools';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/^﻿/, '').replace(/\/$/, '') ??
@@ -132,25 +133,79 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const seen = new Set<string>();
   const toolEntries: MetadataRoute.Sitemap = [];
   const guideEntries: MetadataRoute.Sitemap = [];
+  // 영문 개별 도구 페이지/가이드 (큐레이션 도구만)
+  const enEntries: MetadataRoute.Sitemap = [];
   for (const tool of TOOLS) {
     if (tool.status !== 'ready') continue;
     if (seen.has(tool.href)) continue;
     seen.add(tool.href);
+    const enabled = hasEnCopy(tool.id);
+    const prio = CATEGORY_PRIORITY[tool.category] ?? 0.7;
+
     toolEntries.push({
       url: `${SITE_URL}${tool.href}`,
       lastModified: now,
       // phase 1·2 = 안정, 그 이상 = 최근 추가 → weekly
       changeFrequency: tool.phase >= 5 ? 'weekly' : 'monthly',
-      priority: CATEGORY_PRIORITY[tool.category] ?? 0.7,
+      priority: prio,
+      // 영문 트랜잭셔널 페이지가 있으면 ko 도구 페이지 ↔ en 도구 페이지 연결
+      ...(enabled
+        ? {
+            alternates: {
+              languages: {
+                'ko-KR': `${SITE_URL}${tool.href}`,
+                en: `${SITE_URL}/en/tools/${tool.id}`,
+                'x-default': `${SITE_URL}${tool.href}`,
+              },
+            },
+          }
+        : {}),
     });
+
     // 각 도구별 가이드 페이지 (long-tail SEO)
+    const koGuide = `${SITE_URL}/guide/${tool.id}`;
+    const enGuide = `${SITE_URL}/en/guide/${tool.id}`;
     guideEntries.push({
-      url: `${SITE_URL}/guide/${tool.id}`,
+      url: koGuide,
       lastModified: now,
       changeFrequency: 'monthly',
-      priority: (CATEGORY_PRIORITY[tool.category] ?? 0.7) * 0.8,
+      priority: prio * 0.8,
+      ...(enabled
+        ? {
+            alternates: {
+              languages: { 'ko-KR': koGuide, en: enGuide, 'x-default': koGuide },
+            },
+          }
+        : {}),
     });
+
+    if (enabled) {
+      // 영문 트랜잭셔널 도구 페이지
+      enEntries.push({
+        url: `${SITE_URL}/en/tools/${tool.id}`,
+        lastModified: now,
+        changeFrequency: 'monthly',
+        priority: prio * 0.85,
+        alternates: {
+          languages: {
+            'ko-KR': `${SITE_URL}${tool.href}`,
+            en: `${SITE_URL}/en/tools/${tool.id}`,
+            'x-default': `${SITE_URL}/en/tools/${tool.id}`,
+          },
+        },
+      });
+      // 영문 도구별 가이드
+      enEntries.push({
+        url: enGuide,
+        lastModified: now,
+        changeFrequency: 'monthly',
+        priority: prio * 0.75,
+        alternates: {
+          languages: { 'ko-KR': koGuide, en: enGuide, 'x-default': koGuide },
+        },
+      });
+    }
   }
 
-  return [...hub, ...toolEntries, ...guideEntries];
+  return [...hub, ...toolEntries, ...guideEntries, ...enEntries];
 }

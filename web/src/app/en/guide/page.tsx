@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { CATEGORY_GUIDES_EN } from '@/lib/category-guide-content-en';
+import { EN_TOOLS, EN_TOOL_IDS } from '@/lib/en-tools';
 
 const CATEGORY_LABELS_EN: Record<ToolCategory, string> = {
   image: 'Image',
@@ -82,6 +83,9 @@ export default function EnglishGuideIndexPage() {
   }
   for (const list of grouped.values()) list.sort((a, b) => a.phase - b.phase);
 
+  const readyIds = new Set(readyTools.map((t) => t.id));
+  const popularGuides = EN_TOOL_IDS.filter((id) => readyIds.has(id));
+
   return (
     <div className="min-h-dvh bg-background">
       <script
@@ -150,6 +154,33 @@ export default function EnglishGuideIndexPage() {
             );
           })}
         </section>
+
+        {popularGuides.length > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-lg font-bold">Popular tool guides</h2>
+            <p className="text-[12px] text-muted-foreground">
+              Step-by-step English guides for the most-searched tools.
+            </p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {popularGuides.map((id) => {
+                const en = EN_TOOLS[id]!;
+                return (
+                  <li key={id}>
+                    <a
+                      href={`/en/guide/${id}`}
+                      className="block rounded-lg border bg-card p-3 hover:border-primary transition-colors"
+                    >
+                      <span className="text-sm font-medium">{en.name}</span>
+                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                        {en.tagline}
+                      </p>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
 
         <footer className="text-center text-xs text-muted-foreground pt-6 border-t">
           <p>All tools run in your browser. Files never uploaded.</p>
