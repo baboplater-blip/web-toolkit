@@ -29,6 +29,9 @@ const GENERATOR_KEYS = new Set([
   'totp',
   'rsa-keypair',
   'random-pick',
+  // 오피스 생성기 (Configure → Generate → Save)
+  'seal-stamp',
+  'vcard-qr',
 ]);
 
 const TEXT_ANALYSIS_KEYS = new Set([
@@ -52,6 +55,10 @@ const TEXT_ANALYSIS_KEYS = new Set([
   'color-converter',
   'timestamp-converter',
   'html-entities',
+  // 오피스 입력형 도구 (Input → Result → Copy)
+  'vat-calc',
+  'redact',
+  'excel-formula',
 ]);
 
 export function getPattern(tool: ToolMeta): GuidePattern {

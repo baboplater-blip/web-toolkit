@@ -437,6 +437,64 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Upscale and sharpen images with an in-browser AI super-resolution model — increase resolution while keeping detail. Local only.',
     keywords: ['image upscaler', 'ai upscale', 'enlarge image', 'increase image resolution', 'upscale photo'],
   },
+
+  // ── Office / business tools (globally relevant subset) ───────────────────
+  'vat-calc': {
+    name: 'VAT / Sales Tax Calculator',
+    tagline: 'Add or extract VAT from any amount, at any rate.',
+    description:
+      'Add VAT to a net amount, or extract it from a gross total, at any rate you set — instantly in your browser.',
+    keywords: ['vat calculator', 'sales tax calculator', 'add vat', 'remove vat', 'reverse vat'],
+  },
+  'seal-stamp': {
+    name: 'Round Stamp & Seal Generator',
+    tagline: 'Create a round company stamp or seal as a transparent PNG.',
+    description:
+      'Generate a round stamp or seal from a company name or initials and download it as a transparent PNG for documents and signatures.',
+    keywords: ['stamp generator', 'seal maker', 'round stamp', 'company stamp', 'digital stamp'],
+  },
+  'vcard-qr': {
+    name: 'vCard QR Code Generator',
+    tagline: 'Turn contact details into a scannable vCard QR code.',
+    description:
+      'Create a vCard QR code from a name, phone, email and company — scanning it saves the contact instantly. For business cards and email signatures.',
+    keywords: ['vcard qr code', 'contact qr code', 'business card qr', 'qr contact card', 'vcard generator'],
+  },
+  'id-photo': {
+    name: 'Passport & ID Photo Resizer',
+    tagline: 'Crop and resize photos to passport or ID specs.',
+    description:
+      'Crop and resize a photo to passport, visa or ID specifications at print quality (300dpi) with a background color — all in your browser.',
+    keywords: ['passport photo', 'id photo maker', 'passport photo size', 'visa photo', 'id photo resizer'],
+  },
+  redact: {
+    name: 'Redact Sensitive Info',
+    tagline: 'Auto-detect and mask emails, card and phone numbers.',
+    description:
+      'Automatically detect and mask emails, card numbers, phone numbers and IDs in pasted text before sharing or screenshotting. Processed locally.',
+    keywords: ['redact text', 'mask sensitive data', 'hide personal info', 'redaction tool', 'mask phone number'],
+  },
+  'excel-formula': {
+    name: 'Excel Formula Generator & Explainer',
+    tagline: 'Build VLOOKUP/SUMIFS formulas, or explain any formula.',
+    description:
+      'Generate common Excel formulas (VLOOKUP, SUMIFS, IFERROR…) by filling in the blanks, or paste a formula to see each function explained.',
+    keywords: ['excel formula generator', 'vlookup generator', 'excel formula explainer', 'sumifs formula', 'excel help'],
+  },
+  'scan-to-pdf': {
+    name: 'Scan to PDF (Photo to PDF)',
+    tagline: 'Turn document photos into one clean PDF.',
+    description:
+      'Turn photos of documents into a single clean PDF with contrast enhancement — a phone scanner in your browser. Nothing uploaded.',
+    keywords: ['scan to pdf', 'photo to pdf', 'document scanner', 'images to pdf', 'jpg to pdf scanner'],
+  },
+  'pdf-to-excel': {
+    name: 'PDF Table to Excel',
+    tagline: 'Extract tables from a PDF into xlsx or CSV.',
+    description:
+      'Extract tables from a text-based PDF into Excel (xlsx) or CSV by detecting rows and columns — processed entirely in your browser.',
+    keywords: ['pdf to excel', 'pdf table to excel', 'extract pdf table', 'pdf to xlsx', 'pdf to csv'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
