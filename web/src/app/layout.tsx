@@ -8,6 +8,7 @@ import { InstallPrompt } from '@/components/InstallPrompt';
 import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
+import { WebVitalsTracker } from '@/components/WebVitalsTracker';
 import { RecentTracker } from '@/components/tools/RecentTracker';
 import { ThemeWatcher } from '@/components/ThemeWatcher';
 import { ToastHost } from '@/components/ui/toast';
@@ -305,6 +306,7 @@ export default function RootLayout({
         <InstallPrompt />
         <ToastHost />
         <ServiceWorkerRegister />
+        <WebVitalsTracker />
         <style>{`
           :root {
             --bottom-nav-h: 3.5rem;

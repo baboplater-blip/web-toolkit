@@ -16,7 +16,7 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-51a07c1-202606011206';
+const SW_VERSION = 'webtoolkit-sw-2388304-202606011232';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const ASSET_CACHE = `${SW_VERSION}-asset`;
@@ -48,19 +48,47 @@ const PRECACHE_URLS = [
   '/ads/sidebarRight.webp',
   // 기본 OG (공유 카드 라이브 캐시)
   '/og/default.png',
-  // 인기 경량 도구 — 카테고리 다양성 + WASM 의존성 적은 것 위주
-  '/tools/compress',
-  '/tools/pdf/merge',
-  '/tools/pdf/split',
-  '/tools/pdf/rotate',
-  '/tools/image/resize',
-  '/tools/image/watermark',
+  // 영문 진입점 — 비한국어 사용자도 오프라인 셸 확보
+  '/en',
+  '/en/tools',
+  // 오프라인 도구 — 외부 WASM/CDN 다운로드 없이 동작하는 경량 도구.
+  // src/lib/offline-tools.ts 의 OFFLINE_TOOL_IDS 와 동기화 유지.
+  // (HTML 만 사전 캐시 — _next/static chunk 는 첫 온라인 방문 시 runtime 누적)
   '/tools/util/qr',
+  '/tools/util/barcode',
   '/tools/util/base64',
+  '/tools/util/json',
+  '/tools/util/palette',
   '/tools/util/hash',
-  '/tools/dev/password',
+  '/tools/util/unit',
+  '/tools/util/percentage',
+  '/tools/util/age',
+  '/tools/util/dday',
+  '/tools/dev/jwt',
   '/tools/dev/uuid',
+  '/tools/dev/password',
+  '/tools/dev/url',
+  '/tools/dev/url-parser',
+  '/tools/dev/color',
+  '/tools/dev/timestamp',
+  '/tools/dev/lorem',
+  '/tools/dev/cron',
+  '/tools/dev/sql-format',
+  '/tools/dev/jsonpath',
+  '/tools/dev/json-xml',
+  '/tools/dev/md-table',
+  '/tools/text/regex',
+  '/tools/text/diff',
+  '/tools/text/count',
   '/tools/text/case',
+  '/tools/text/sort',
+  '/tools/text/html-entities',
+  '/tools/docs/csv-json',
+  '/tools/docs/yaml-json',
+  '/tools/security/totp',
+  '/tools/security/rsa-keypair',
+  '/tools/security/text-encrypt',
+  '/tools/security/file-encrypt',
 ];
 
 self.addEventListener('install', (event) => {
