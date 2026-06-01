@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { hasEnCopy } from '@/lib/en-tools';
+import { COMPARE_SLUGS } from '@/lib/en-compares';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/^﻿/, '').replace(/\/$/, '') ??
@@ -122,6 +123,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
       ];
     }),
+    {
+      url: `${SITE_URL}/en/compare`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    ...COMPARE_SLUGS.map<MetadataRoute.Sitemap[number]>((slug) => ({
+      url: `${SITE_URL}/en/compare/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.65,
+    })),
     {
       url: `${SITE_URL}/settings`,
       lastModified: now,

@@ -123,6 +123,10 @@ export default function EnglishGuideIndexPage() {
               All tools catalog
             </a>{' '}
             ·{' '}
+            <a href="/en/compare" className="text-primary underline">
+              Compare tools
+            </a>{' '}
+            ·{' '}
             <a href="/guide" hrefLang="ko" className="underline hover:text-foreground">
               한국어 가이드
             </a>

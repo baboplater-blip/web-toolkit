@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  GitCompare,
   Lock,
   ShieldCheck,
   Sparkles,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 import { TOOLS, type ToolCategory, type ToolMeta } from '@/lib/tools/registry';
 import { EN_TOOLS, EN_TOOL_IDS, getEnCopy } from '@/lib/en-tools';
+import { comparesForTool } from '@/lib/en-compares';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -133,6 +135,8 @@ export default async function EnglishToolPage({ params }: PageProps) {
   )
     .sort((a, b) => a.phase - b.phase)
     .slice(0, 4);
+
+  const compares = comparesForTool(tool.id);
 
   const appJsonLd = {
     '@context': 'https://schema.org',
@@ -289,6 +293,29 @@ export default async function EnglishToolPage({ params }: PageProps) {
                   </a>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+        {compares.length > 0 && (
+          <section className="space-y-3">
+            <h3 className="text-lg font-bold">Compare</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {compares.map((c) => (
+                <a
+                  key={c.slug}
+                  href={`/en/compare/${c.slug}`}
+                  className="rounded-lg border bg-card p-3 hover:border-primary transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <GitCompare className="h-4 w-4 text-primary shrink-0" aria-hidden />
+                    <span className="text-sm font-medium truncate">{c.h1}</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                    {c.description}
+                  </p>
+                </a>
+              ))}
             </div>
           </section>
         )}

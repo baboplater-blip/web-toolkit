@@ -1,7 +1,8 @@
 'use client';
 
-import { Sparkles, Star } from 'lucide-react';
+import { CloudOff, Sparkles, Star } from 'lucide-react';
 import { CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
+import { isOfflineCapable } from '@/lib/offline-tools';
 import { cn } from '@/lib/utils';
 
 /** addedAt 이 이 일수 이내면 NEW 배지 표시 */
@@ -61,6 +62,7 @@ export function ToolCard({
   const Icon = tool.icon;
   const isPlanned = tool.status === 'planned';
   const isNew = !isPlanned && isRecent(tool.addedAt);
+  const offline = !isPlanned && isOfflineCapable(tool.id);
 
   const inner = (
     <div
@@ -124,11 +126,24 @@ export function ToolCard({
       <p className="line-clamp-2 flex-1 text-[11px] leading-relaxed text-muted-foreground">
         {highlight(tool.description, query)}
       </p>
-      {showCategory && (
-        <span className="mt-auto text-[11px] text-muted-foreground">
-          {CATEGORY_LABELS[tool.category]}
-        </span>
-      )}
+      <div className="mt-auto flex items-center justify-between gap-2">
+        {showCategory ? (
+          <span className="text-[11px] text-muted-foreground">
+            {CATEGORY_LABELS[tool.category]}
+          </span>
+        ) : (
+          <span />
+        )}
+        {offline && (
+          <span
+            className="inline-flex shrink-0 items-center gap-0.5 rounded bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 dark:text-sky-400"
+            title="오프라인에서도 동작 — 외부 다운로드 없이 브라우저 안에서 처리"
+          >
+            <CloudOff className="h-2.5 w-2.5" aria-hidden />
+            오프라인
+          </span>
+        )}
+      </div>
     </div>
   );
 
