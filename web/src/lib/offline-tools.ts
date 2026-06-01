@@ -54,6 +54,16 @@ export const OFFLINE_TOOL_IDS: ReadonlySet<string> = new Set([
   'rsa-keypair',
   'text-encrypt',
   'file-encrypt',
+  'redact',
+  // 오피스 계산기·생성기 (순수 JS/Canvas, 외부 다운로드 없음)
+  'salary-calc',
+  'severance-calc',
+  'leave-calc',
+  'vat-calc',
+  'seal-stamp',
+  'vcard-qr',
+  'id-photo',
+  'excel-formula',
 ]);
 
 export function isOfflineCapable(id: string): boolean {
