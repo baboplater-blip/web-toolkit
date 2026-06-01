@@ -4,7 +4,8 @@ test.describe('도구 허브', () => {
   test('도구 카드들이 표시되고 카테고리 칩 개수 배지가 있다', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.getByRole('heading', { name: '도구' })).toBeVisible();
-    await expect(page.getByText(/\d+개 사용 가능/)).toBeVisible();
+    // 전체 카운트 배지 (헤더가 첫 매치 — 카테고리별 배지와 구분)
+    await expect(page.getByText(/\d+개 사용 가능/).first()).toBeVisible();
     // 카테고리 칩 — 전체
     await expect(page.getByRole('button', { name: /전체/ })).toBeVisible();
   });

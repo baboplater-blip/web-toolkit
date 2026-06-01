@@ -7,8 +7,8 @@ test.describe('텍스트 도구', () => {
     await textarea.fill('Hello World');
     // 대문자 카드
     await expect(page.getByText('HELLO WORLD').first()).toBeVisible();
-    // snake_case 카드
-    await expect(page.getByText('hello_world')).toBeVisible();
+    // snake_case 카드 (결과 카드가 먼저 — 예시 라벨과 구분)
+    await expect(page.getByText('hello_world', { exact: true }).first()).toBeVisible();
     // PascalCase
     await expect(page.getByText('HelloWorld').first()).toBeVisible();
   });
