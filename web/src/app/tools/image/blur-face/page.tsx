@@ -198,7 +198,32 @@ async function detectAllFaces(
   onStatus?: (s: string) => void,
 ): Promise<ScoredBox[]> {
   const all: ScoredBox[] = [];
-  const collect = (
+
+  // 감지 속도 최적화 — 아주 큰 이미지는 감지용으로 한 번만 축소(detImg)해 모든
+  // 감지 패스에 재사용. 가림은 별도로 원본 해상도에 적용되므로 화질 손실 없음.
+  const DET_CAP = 2200;
+  let detImg: CanvasImageSource = img;
+  let detW = imgW;
+  let detH = imgH;
+  let outScale = 1;
+  if (Math.max(imgW, imgH) > DET_CAP) {
+    const s = DET_CAP / Math.max(imgW, imgH);
+    detW = Math.max(1, Math.round(imgW * s));
+    detH = Math.max(1, Math.round(imgH * s));
+    const dc = document.createElement('canvas');
+    dc.width = detW;
+    dc.height = detH;
+    const dctx = dc.getContext('2d');
+    if (dctx) {
+      dctx.drawImage(img, 0, 0, detW, detH);
+      detImg = dc;
+      outScale = imgW / detW;
+    }
+  }
+
+  // BlazeFace 결과(detImg 좌표계)를 모은 뒤 한 번에 원본 좌표로 환산
+  const bf: ScoredBox[] = [];
+  const collectBF = (
     dets: ReturnType<FaceDetectorLike['detect']>['detections'],
     ox: number,
     oy: number,
@@ -207,7 +232,7 @@ async function detectAllFaces(
     (dets ?? []).forEach((d) => {
       const bb = d.boundingBox;
       if (!bb) return;
-      all.push({
+      bf.push({
         x: ox + bb.originX * inv,
         y: oy + bb.originY * inv,
         w: bb.width * inv,
@@ -218,15 +243,15 @@ async function detectAllFaces(
   };
 
   // 1) 전체 이미지 (큰 얼굴)
-  collect(detector.detect(img).detections, 0, 0, 1);
+  collectBF(detector.detect(detImg).detections, 0, 0, 1);
 
   // 2) 겹치는 격자 타일 (작은·측면 얼굴) — 민감도에 따라 칸 수 조절
-  const cols = Math.min(params.maxTiles, Math.max(1, Math.round(imgW / params.tilePx)));
-  const rows = Math.min(params.maxTiles, Math.max(1, Math.round(imgH / params.tilePx)));
+  const cols = Math.min(params.maxTiles, Math.max(1, Math.round(detW / params.tilePx)));
+  const rows = Math.min(params.maxTiles, Math.max(1, Math.round(detH / params.tilePx)));
   if (cols > 1 || rows > 1) {
     const overlap = params.overlap;
-    const tw = imgW / cols;
-    const th = imgH / rows;
+    const tw = detW / cols;
+    const th = detH / rows;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (ctx) {
@@ -234,8 +259,8 @@ async function detectAllFaces(
         for (let c = 0; c < cols; c++) {
           const ox = Math.max(0, c * tw - tw * overlap);
           const oy = Math.max(0, r * th - th * overlap);
-          const ex = Math.min(imgW, (c + 1) * tw + tw * overlap);
-          const ey = Math.min(imgH, (r + 1) * th + th * overlap);
+          const ex = Math.min(detW, (c + 1) * tw + tw * overlap);
+          const ey = Math.min(detH, (r + 1) * th + th * overlap);
           const cw = ex - ox;
           const ch = ey - oy;
           const target = 800; // 타일을 적당 해상도로 (메모리·속도 균형)
@@ -243,11 +268,16 @@ async function detectAllFaces(
           canvas.width = Math.max(1, Math.round(cw * sc));
           canvas.height = Math.max(1, Math.round(ch * sc));
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, ox, oy, cw, ch, 0, 0, canvas.width, canvas.height);
-          collect(detector.detect(canvas).detections, ox, oy, 1 / sc);
+          ctx.drawImage(detImg, ox, oy, cw, ch, 0, 0, canvas.width, canvas.height);
+          collectBF(detector.detect(canvas).detections, ox, oy, 1 / sc);
         }
       }
     }
+  }
+
+  // detImg 좌표 → 원본 좌표
+  for (const b of bf) {
+    all.push({ x: b.x * outScale, y: b.y * outScale, w: b.w * outScale, h: b.h * outScale, score: b.score });
   }
 
   // 2.5) YuNet(ONNX) 보조 검출 — 측면·각도·작은 얼굴 보강 (최고 민감도)
@@ -262,24 +292,27 @@ async function detectAllFaces(
   }
 
   // 3) 얼굴 비율 필터(오검출 컷) → 마진 추가 + 클램프
+  //    여백을 넉넉히(특히 턱 방향) 줘 이마·턱·귀까지 확실히 가린다. 페더링과
+  //    함께 쓰면 실제 얼굴은 불투명 중심에, 가장자리(여백=배경/머리)는 부드럽게.
   const padded: ScoredBox[] = all
     .filter(looksLikeFace)
     .map((b) => {
-      const padX = b.w * 0.1;
-      const padY = b.h * 0.15;
+      const padX = b.w * 0.16;
+      const padTop = b.h * 0.2;
+      const padBottom = b.h * 0.3;
       const x = Math.max(0, b.x - padX);
-      const y = Math.max(0, b.y - padY);
+      const y = Math.max(0, b.y - padTop);
       return {
         x: Math.round(x),
         y: Math.round(y),
         w: Math.round(Math.min(imgW - x, b.w + padX * 2)),
-        h: Math.round(Math.min(imgH - y, b.h + padY * 2)),
+        h: Math.round(Math.min(imgH - y, b.h + padTop + padBottom)),
         score: b.score,
       };
     });
 
-  // 4) 중복 제거
-  const deduped = nms(padded, 0.35);
+  // 4) 중복 제거 (여백 확대로 박스가 커졌으므로 임계 0.45 — 인접 얼굴 병합 방지)
+  const deduped = nms(padded, 0.45);
 
   // 5) 피부톤 컷 — 색이 있는데 피부색이 거의 없는 박스 제거 (TV·벽·뒤통수 등).
   //    고신뢰(>=0.9)·흑백 영역은 보존해 진짜 얼굴 손실을 최소화.
@@ -395,7 +428,7 @@ export default function BlurFacePage() {
   }, [loaded]);
 
   const scale = loaded && displaySize ? displaySize.w / loaded.width : 1;
-  const coverOpts: CoverOptions = { style, shape, strength, autoScale, emoji, solidColor };
+  const coverOpts: CoverOptions = { style, shape, strength, autoScale, emoji, solidColor, feather: true };
   const STYLE_LABELS: Record<CoverStyle, string> = {
     blur: '블러',
     pixelate: '모자이크',

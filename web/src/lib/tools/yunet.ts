@@ -15,7 +15,9 @@
 const ORT_VERSION = '1.21.0';
 const MODEL_URL = '/models/yunet.onnx';
 const STRIDES = [8, 16, 32] as const;
-const MAX_SIDE = 768; // 입력 긴 변 (작은 얼굴 회수율 ↔ 속도 균형)
+// 입력 긴 변 — 큰 이미지(단체사진)는 1024 로 올려 작은 얼굴 회수율↑, 그 외 768.
+const MAX_SIDE_DEFAULT = 768;
+const MAX_SIDE_LARGE = 1024;
 
 export interface YuBox {
   x: number;
@@ -85,7 +87,9 @@ export async function detectYuNet(
   const ort = await getOrt();
   const session = await getSession();
 
-  const scale = Math.min(1, MAX_SIDE / Math.max(imgW, imgH));
+  const longest = Math.max(imgW, imgH);
+  const maxSide = longest > 1800 ? MAX_SIDE_LARGE : MAX_SIDE_DEFAULT;
+  const scale = Math.min(1, maxSide / longest);
   const inW = Math.max(32, Math.round((imgW * scale) / 32) * 32);
   const inH = Math.max(32, Math.round((imgH * scale) / 32) * 32);
 

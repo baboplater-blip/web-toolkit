@@ -27,6 +27,8 @@ export interface CoverOptions {
   emoji: string;
   /** style==='solid' 일 때 채울 색 */
   solidColor: string;
+  /** 경계 페더링(부드러운 가장자리). blur·pixelate·solid 에만 적용. */
+  feather?: boolean;
 }
 
 /** 박스 폭 기준 유효 강도. autoScale 시 폭에 비례(기준 160px)하고 6~120 으로 클램프. */
@@ -71,6 +73,10 @@ export function paintCover(
   opts: CoverOptions,
 ): void {
   if (box.w < 1 || box.h < 1) return;
+  if (opts.feather && (opts.style === 'blur' || opts.style === 'pixelate' || opts.style === 'solid')) {
+    paintFeathered(ctx, img, imgW, drawW, drawH, box, opts);
+    return;
+  }
   const sc = drawW / imgW;
   const x = box.x * sc;
   const y = box.y * sc;
@@ -141,4 +147,78 @@ export function paintCover(
     ctx.fillText(opts.emoji, x + w / 2, y + h / 2);
     ctx.restore();
   }
+}
+
+/**
+ * 부드러운 가장자리(페더링) 버전 — 오프스크린에 가림을 그린 뒤 방사형 알파
+ * 마스크로 경계를 흐려 원본과 자연스럽게 섞는다. blur·pixelate·solid 용.
+ */
+function paintFeathered(
+  ctx: CanvasRenderingContext2D,
+  img: CanvasImageSource,
+  imgW: number,
+  drawW: number,
+  drawH: number,
+  box: CoverBox,
+  opts: CoverOptions,
+): void {
+  const sc = drawW / imgW;
+  const x = box.x * sc;
+  const y = box.y * sc;
+  const w = box.w * sc;
+  const h = box.h * sc;
+  const strength = effStrength(box.w, opts.strength, opts.autoScale);
+  const M = Math.max(2, Math.round(Math.min(w, h) * 0.16));
+  const tw = Math.max(1, Math.ceil(w + 2 * M));
+  const th = Math.max(1, Math.ceil(h + 2 * M));
+  const ox = x - M;
+  const oy = y - M;
+
+  const tmp = document.createElement('canvas');
+  tmp.width = tw;
+  tmp.height = th;
+  const t = tmp.getContext('2d');
+  if (!t) return;
+
+  if (opts.style === 'blur') {
+    t.filter = `blur(${Math.max(1, strength * sc)}px)`;
+    t.drawImage(img, -ox, -oy, drawW, drawH);
+    t.filter = 'none';
+  } else if (opts.style === 'pixelate') {
+    const block = Math.max(3, Math.round((strength * sc) / 1.5));
+    const sw = Math.max(1, Math.floor(tw / block));
+    const sh = Math.max(1, Math.floor(th / block));
+    // tmp 영역에 해당하는 원본 좌표
+    const rx = box.x - M / sc;
+    const ry = box.y - M / sc;
+    const rw = box.w + (2 * M) / sc;
+    const rh = box.h + (2 * M) / sc;
+    const small = document.createElement('canvas');
+    small.width = sw;
+    small.height = sh;
+    const sctx = small.getContext('2d');
+    if (!sctx) return;
+    sctx.imageSmoothingEnabled = false;
+    sctx.drawImage(img, rx, ry, rw, rh, 0, 0, sw, sh);
+    t.imageSmoothingEnabled = false;
+    t.drawImage(small, 0, 0, sw, sh, 0, 0, tw, th);
+    t.imageSmoothingEnabled = true;
+  } else {
+    t.fillStyle = opts.solidColor;
+    t.fillRect(0, 0, tw, th);
+  }
+
+  // 방사형 알파 마스크 — 중심 불투명, 가장자리 투명
+  t.globalCompositeOperation = 'destination-in';
+  const cx = tw / 2;
+  const cy = th / 2;
+  const R = Math.max(tw, th) / 2;
+  const grad = t.createRadialGradient(cx, cy, R * 0.62, cx, cy, R);
+  grad.addColorStop(0, 'rgba(0,0,0,1)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  t.fillStyle = grad;
+  t.fillRect(0, 0, tw, th);
+  t.globalCompositeOperation = 'source-over';
+
+  ctx.drawImage(tmp, ox, oy);
 }
