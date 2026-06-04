@@ -10,7 +10,6 @@ import {
   Plus,
   RotateCcw,
   Scan,
-  Shapes,
   Trash2,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -37,28 +36,26 @@ import {
   type BatchOutput,
   type RelativeFile,
 } from '@/lib/tools/folder-batch';
+import {
+  paintCover,
+  type CoverBox,
+  type CoverOptions,
+  type CoverStyle,
+  type CoverShape,
+} from '@/lib/tools/cover';
 
-interface FaceBox {
+interface FaceBox extends CoverBox {
   id: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  /** 감지 결과 (자동) 인지 수동 추가인지 */
   source: 'auto' | 'manual';
-  /** 블러 적용 여부 */
   enabled: boolean;
-  /** 감지 신뢰도 (자동인 경우) */
   score?: number;
 }
 
-type BlurShape = 'rect' | 'ellipse' | 'pixelate';
-
-// MediaPipe 리소스 경로
 const WASM_CDN = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10/wasm';
 const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite';
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
+const EMOJIS = ['😎', '🙂', '😀', '🐶', '🌚', '⭐', '❤️', '🔵', '🚫', '👤'];
 
 interface RawBox {
   x: number;
@@ -77,27 +74,20 @@ interface FaceDetectorLike {
   close: () => void;
 }
 
-/** MediaPipe FaceDetector 인스턴스를 생성 (재사용 가능) */
-async function createFaceDetector(
-  onStatus?: (s: string) => void,
-): Promise<FaceDetectorLike> {
+async function createFaceDetector(onStatus?: (s: string) => void): Promise<FaceDetectorLike> {
   onStatus?.('MediaPipe 로드 중');
   const { FaceDetector, FilesetResolver } = await import('@mediapipe/tasks-vision');
   onStatus?.('WASM 초기화 중');
   const vision = await FilesetResolver.forVisionTasks(WASM_CDN);
   onStatus?.('감지 모델 로드 중 (~500KB)');
   const detector = await FaceDetector.createFromOptions(vision, {
-    baseOptions: {
-      modelAssetPath: MODEL_URL,
-      delegate: 'GPU',
-    },
+    baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
     runningMode: 'IMAGE',
     minDetectionConfidence: 0.4,
   });
   return detector as unknown as FaceDetectorLike;
 }
 
-/** 감지 결과 → RawBox[] (이미지 좌표계, 마진 포함) */
 function extractBoxes(
   detections: ReturnType<FaceDetectorLike['detect']>['detections'],
   imgW: number,
@@ -119,14 +109,13 @@ function extractBoxes(
   return out;
 }
 
-/** 캔버스에 박스 블러를 적용 후 지정 포맷으로 인코딩 */
-async function applyBlurToImage(
+/** 캔버스에 가림 효과를 적용 후 지정 포맷으로 인코딩 (전체 해상도). */
+async function applyCoverToImage(
   img: HTMLImageElement,
   width: number,
   height: number,
-  boxes: RawBox[],
-  blurShape: BlurShape,
-  blurStrength: number,
+  boxes: CoverBox[],
+  opts: CoverOptions,
   outputFormat: ImageFormat,
   quality: number,
 ): Promise<Blob> {
@@ -135,56 +124,12 @@ async function applyBlurToImage(
   canvas.height = height;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas 컨텍스트 생성 실패');
-
   if (outputFormat === 'jpeg' || outputFormat === 'avif') {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
   ctx.drawImage(img, 0, 0);
-
-  for (const box of boxes) {
-    if (blurShape === 'pixelate') {
-      const blockSize = Math.max(4, Math.round(blurStrength / 2));
-      const tmp = document.createElement('canvas');
-      const smallW = Math.max(1, Math.floor(box.w / blockSize));
-      const smallH = Math.max(1, Math.floor(box.h / blockSize));
-      tmp.width = smallW;
-      tmp.height = smallH;
-      const tctx = tmp.getContext('2d');
-      if (!tctx) throw new Error('임시 캔버스 생성 실패');
-      tctx.imageSmoothingEnabled = false;
-      tctx.drawImage(img, box.x, box.y, box.w, box.h, 0, 0, smallW, smallH);
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(box.x, box.y, box.w, box.h);
-      ctx.clip();
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(tmp, 0, 0, smallW, smallH, box.x, box.y, box.w, box.h);
-      ctx.imageSmoothingEnabled = true;
-      ctx.restore();
-    } else {
-      ctx.save();
-      ctx.beginPath();
-      if (blurShape === 'ellipse') {
-        ctx.ellipse(
-          box.x + box.w / 2,
-          box.y + box.h / 2,
-          box.w / 2,
-          box.h / 2,
-          0,
-          0,
-          Math.PI * 2,
-        );
-      } else {
-        ctx.rect(box.x, box.y, box.w, box.h);
-      }
-      ctx.clip();
-      ctx.filter = `blur(${blurStrength}px)`;
-      ctx.drawImage(img, 0, 0);
-      ctx.restore();
-    }
-  }
-
+  for (const box of boxes) paintCover(ctx, img, width, height, width, height, box, opts);
   return await canvasToBlob(canvas, outputFormat, quality / 100);
 }
 
@@ -195,10 +140,19 @@ export default function BlurFacePage() {
   const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
   const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
   const [boxes, setBoxes] = useState<FaceBox[]>([]);
-  const [blurStrength, setBlurStrength] = useState(25);
-  const [blurShape, setBlurShape] = useState<BlurShape>('rect');
+
+  // 가림 설정
+  const [style, setStyle] = useState<CoverStyle>('blur');
+  const [shape, setShape] = useState<CoverShape>('rect');
+  const [strength, setStrength] = useState(25);
+  const [autoScale, setAutoScale] = useState(true);
+  const [invert, setInvert] = useState(false);
+  const [emoji, setEmoji] = useState(EMOJIS[0]);
+  const [solidColor, setSolidColor] = useState('#111111');
+  const [target, setTarget] = useState<'face' | 'object'>('face');
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
   const [quality, setQuality] = useState(92);
+
   const [detecting, setDetecting] = useState(false);
   const [detectStatus, setDetectStatus] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -207,22 +161,28 @@ export default function BlurFacePage() {
   const [cancelling, setCancelling] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
-    null,
-  );
+  const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(null);
+  const [compare, setCompare] = useState(50);
   const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const [displaySize, setDisplaySize] = useState<{ w: number; h: number } | null>(null);
 
-  // 수동 박스 추가용 드래그 상태
-  const addDragRef = useRef<null | { startX: number; startY: number; id: string }>(null);
   const [addMode, setAddMode] = useState(false);
+  const interactionRef = useRef<
+    | null
+    | {
+        kind: 'add' | 'move' | 'resize';
+        id: string;
+        corner?: 'nw' | 'ne' | 'sw' | 'se';
+        startImg: { x: number; y: number };
+        startBox: FaceBox;
+      }
+  >(null);
 
   useEffect(() => () => loaded?.cleanup(), [loaded]);
-  useEffect(() => {
-    return () => {
-      if (result) URL.revokeObjectURL(result.url);
-    };
+  useEffect(() => () => {
+    if (result) URL.revokeObjectURL(result.url);
   }, [result]);
 
   // 표시 크기 측정
@@ -246,6 +206,26 @@ export default function BlurFacePage() {
   }, [loaded]);
 
   const scale = loaded && displaySize ? displaySize.w / loaded.width : 1;
+  const coverOpts: CoverOptions = { style, shape, strength, autoScale, emoji, solidColor };
+
+  const coverBoxes = (): FaceBox[] =>
+    invert ? boxes.filter((b) => !b.enabled) : boxes.filter((b) => b.enabled);
+
+  // 실시간 미리보기 렌더
+  useEffect(() => {
+    const cv = previewCanvasRef.current;
+    if (!cv || !loaded || !displaySize) return;
+    cv.width = Math.round(displaySize.w);
+    cv.height = Math.round(displaySize.h);
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(loaded.element, 0, 0, cv.width, cv.height);
+    for (const box of coverBoxes()) {
+      paintCover(ctx, loaded.element, loaded.width, loaded.height, cv.width, cv.height, box, coverOpts);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, displaySize, boxes, style, shape, strength, autoScale, invert, emoji, solidColor]);
 
   const detectFaces = useCallback(async (info: LoadedImage) => {
     setDetecting(true);
@@ -255,9 +235,8 @@ export default function BlurFacePage() {
     try {
       detector = await createFaceDetector(setDetectStatus);
       setDetectStatus('얼굴 분석 중');
-      const result = detector.detect(info.element);
-
-      const rawBoxes = extractBoxes(result.detections, info.width, info.height);
+      const res = detector.detect(info.element);
+      const rawBoxes = extractBoxes(res.detections, info.width, info.height);
       const detected: FaceBox[] = rawBoxes.map((b, i) => ({
         id: `auto-${Date.now()}-${i}`,
         x: b.x,
@@ -266,17 +245,15 @@ export default function BlurFacePage() {
         h: b.h,
         source: 'auto',
         enabled: true,
-        score: result.detections?.[i]?.categories?.[0]?.score,
+        score: res.detections?.[i]?.categories?.[0]?.score,
       }));
-
       setBoxes(detected);
       setDetectStatus('');
-      if (detected.length === 0) {
-        setError('얼굴이 자동 감지되지 않았습니다. "수동 박스 추가" 로 직접 지정하세요.');
-      }
+      if (detected.length === 0)
+        setError('얼굴이 자동 감지되지 않았습니다. "영역 직접 그리기"로 지정하세요.');
     } catch (err) {
       setError(
-        `자동 감지 실패: ${err instanceof Error ? err.message : '알 수 없음'}. 수동으로 박스를 추가할 수 있습니다.`,
+        `자동 감지 실패: ${err instanceof Error ? err.message : '알 수 없음'}. 영역을 직접 그릴 수 있습니다.`,
       );
     } finally {
       detector?.close();
@@ -300,8 +277,8 @@ export default function BlurFacePage() {
       setFile(f);
       setLoaded(info);
       setOutputFormat(detectFormatFromFile(f) ?? 'jpeg');
-      // 자동 감지 즉시 실행
-      await detectFaces(info);
+      if (target === 'face') await detectFaces(info);
+      else setAddMode(true); // 번호판·기타 모드는 바로 그리기
     } catch (err) {
       setError(err instanceof Error ? err.message : '이미지 로드 실패');
     }
@@ -312,10 +289,7 @@ export default function BlurFacePage() {
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setBatchResults(null);
-    const filtered = filterFiles(files, {
-      mimePrefixes: ['image/'],
-      extensions: IMAGE_EXTS,
-    });
+    const filtered = filterFiles(files, { mimePrefixes: ['image/'], extensions: IMAGE_EXTS });
     if (filtered.length === 0) {
       setError('폴더 안에 이미지가 없습니다.');
       setAllFolderFiles([]);
@@ -340,71 +314,114 @@ export default function BlurFacePage() {
     setAddMode(false);
   };
 
-  const toggleBox = (id: string) => {
-    setBoxes((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, enabled: !b.enabled } : b)),
-    );
-  };
-
-  const deleteBox = (id: string) => {
-    setBoxes((prev) => prev.filter((b) => b.id !== id));
-  };
-
+  const toggleBox = (id: string) =>
+    setBoxes((prev) => prev.map((b) => (b.id === id ? { ...b, enabled: !b.enabled } : b)));
+  const deleteBox = (id: string) => setBoxes((prev) => prev.filter((b) => b.id !== id));
   const selectAll = () => setBoxes((prev) => prev.map((b) => ({ ...b, enabled: true })));
   const deselectAll = () => setBoxes((prev) => prev.map((b) => ({ ...b, enabled: false })));
 
-  // 수동 박스 추가: 드래그로 사각형 그리기
-  const onOverlayPointerDown = (e: React.PointerEvent) => {
-    if (!addMode || !loaded || !displaySize) return;
+  // 포인터 → 이미지 좌표
+  const toImg = (e: React.PointerEvent): { x: number; y: number } => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const imgOffsetX = rect.width / 2 - displaySize.w / 2;
-    const startX = (e.clientX - rect.left - imgOffsetX) / scale;
-    const startY = (e.clientY - rect.top) / scale;
+    const imgOffsetX = rect.width / 2 - (displaySize?.w ?? 0) / 2;
+    return {
+      x: (e.clientX - rect.left - imgOffsetX) / scale,
+      y: (e.clientY - rect.top) / scale,
+    };
+  };
+
+  const onContainerPointerDown = (e: React.PointerEvent) => {
+    if (!loaded || !displaySize) return;
+    if (!addMode) return; // 박스 자체 핸들러가 move/resize 처리
+    const p = toImg(e);
     const id = `manual-${Date.now()}`;
-    const newBox: FaceBox = {
+    const nb: FaceBox = {
       id,
-      x: Math.max(0, Math.min(loaded.width, startX)),
-      y: Math.max(0, Math.min(loaded.height, startY)),
+      x: Math.max(0, Math.min(loaded.width, p.x)),
+      y: Math.max(0, Math.min(loaded.height, p.y)),
       w: 1,
       h: 1,
       source: 'manual',
       enabled: true,
     };
-    setBoxes((prev) => [...prev, newBox]);
-    addDragRef.current = { startX: newBox.x, startY: newBox.y, id };
+    setBoxes((prev) => [...prev, nb]);
+    interactionRef.current = { kind: 'add', id, startImg: p, startBox: nb };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
-  const onOverlayPointerMove = (e: React.PointerEvent) => {
-    if (!addDragRef.current || !loaded || !displaySize) return;
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const imgOffsetX = rect.width / 2 - displaySize.w / 2;
-    const curX = (e.clientX - rect.left - imgOffsetX) / scale;
-    const curY = (e.clientY - rect.top) / scale;
-    const { startX, startY, id } = addDragRef.current;
-    const x = Math.max(0, Math.min(startX, curX));
-    const y = Math.max(0, Math.min(startY, curY));
-    const w = Math.min(loaded.width - x, Math.abs(curX - startX));
-    const h = Math.min(loaded.height - y, Math.abs(curY - startY));
+  const startBoxInteraction = (
+    e: React.PointerEvent,
+    box: FaceBox,
+    kind: 'move' | 'resize',
+    corner?: 'nw' | 'ne' | 'sw' | 'se',
+  ) => {
+    if (addMode) return;
+    e.stopPropagation();
+    const p = toImg(e);
+    interactionRef.current = { kind, id: box.id, corner, startImg: p, startBox: { ...box } };
+    const overlay = containerRef.current;
+    overlay?.setPointerCapture(e.pointerId);
+  };
+
+  const onContainerPointerMove = (e: React.PointerEvent) => {
+    const it = interactionRef.current;
+    if (!it || !loaded) return;
+    const p = toImg(e);
+    const dx = p.x - it.startImg.x;
+    const dy = p.y - it.startImg.y;
+    const clampX = (v: number) => Math.max(0, Math.min(loaded.width, v));
+    const clampY = (v: number) => Math.max(0, Math.min(loaded.height, v));
+
     setBoxes((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) } : b)),
+      prev.map((b) => {
+        if (b.id !== it.id) return b;
+        const s = it.startBox;
+        if (it.kind === 'move') {
+          const nx = clampX(s.x + dx);
+          const ny = clampY(s.y + dy);
+          return { ...b, x: Math.round(Math.min(nx, loaded.width - s.w)), y: Math.round(Math.min(ny, loaded.height - s.h)) };
+        }
+        // add / resize: 코너에 따라
+        let x1 = s.x;
+        let y1 = s.y;
+        let x2 = s.x + s.w;
+        let y2 = s.y + s.h;
+        const c = it.kind === 'add' ? 'se' : it.corner;
+        if (c === 'nw') {
+          x1 = clampX(s.x + dx);
+          y1 = clampY(s.y + dy);
+        } else if (c === 'ne') {
+          x2 = clampX(s.x + s.w + dx);
+          y1 = clampY(s.y + dy);
+        } else if (c === 'sw') {
+          x1 = clampX(s.x + dx);
+          y2 = clampY(s.y + s.h + dy);
+        } else {
+          x2 = clampX(s.x + s.w + dx);
+          y2 = clampY(s.y + s.h + dy);
+        }
+        const nx = Math.min(x1, x2);
+        const ny = Math.min(y1, y2);
+        return { ...b, x: Math.round(nx), y: Math.round(ny), w: Math.round(Math.abs(x2 - x1)), h: Math.round(Math.abs(y2 - y1)) };
+      }),
     );
   };
 
-  const onOverlayPointerUp = (e: React.PointerEvent) => {
-    if (!addDragRef.current) return;
-    const { id } = addDragRef.current;
-    addDragRef.current = null;
+  const onContainerPointerUp = (e: React.PointerEvent) => {
+    const it = interactionRef.current;
+    interactionRef.current = null;
     try {
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     } catch {
       /* noop */
     }
-    // 너무 작은 박스 제거
-    setBoxes((prev) => prev.filter((b) => !(b.id === id && (b.w < 10 || b.h < 10))));
+    if (it) {
+      // 너무 작은 박스 제거
+      setBoxes((prev) => prev.filter((b) => !(b.id === it.id && (b.w < 8 || b.h < 8))));
+    }
   };
 
-  const runBlur = async () => {
+  const runCover = async () => {
     setError(null);
     setBatchResults(null);
 
@@ -429,37 +446,19 @@ export default function BlurFacePage() {
             try {
               const detection = det.detect(info.element);
               const rawBoxes = extractBoxes(detection.detections, info.width, info.height);
-              if (rawBoxes.length === 0) {
-                // 감지된 얼굴이 없으면 원본을 그대로 통과 (포맷만 일치시킴)
-                const blob = await applyBlurToImage(
-                  info.element,
-                  info.width,
-                  info.height,
-                  [],
-                  blurShape,
-                  blurStrength,
-                  outputFormat,
-                  quality,
-                );
-                return {
-                  relativePath: replaceExtension(rf.relativePath, formatExtension(outputFormat)),
-                  blob,
-                  error: '얼굴 미감지 (원본 유지)',
-                };
-              }
-              const blob = await applyBlurToImage(
+              const blob = await applyCoverToImage(
                 info.element,
                 info.width,
                 info.height,
                 rawBoxes,
-                blurShape,
-                blurStrength,
+                coverOpts,
                 outputFormat,
                 quality,
               );
               return {
                 relativePath: replaceExtension(rf.relativePath, formatExtension(outputFormat)),
                 blob,
+                ...(rawBoxes.length === 0 ? { error: '얼굴 미감지 (원본 유지)' } : {}),
               };
             } finally {
               info.cleanup();
@@ -489,35 +488,29 @@ export default function BlurFacePage() {
     }
 
     if (!file || !loaded) return;
-    const enabled = boxes.filter((b) => b.enabled);
-    if (enabled.length === 0) {
-      setError('블러를 적용할 박스를 최소 1개 선택하세요.');
+    const targets = coverBoxes();
+    if (targets.length === 0) {
+      setError(invert ? '남길 얼굴을 선택하세요 (나머지가 가려집니다).' : '가릴 영역을 최소 1개 선택하세요.');
       return;
     }
     setProcessing(true);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
-
     try {
-      const rawBoxes: RawBox[] = enabled.map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h }));
-      const blob = await applyBlurToImage(
+      const blob = await applyCoverToImage(
         loaded.element,
         loaded.width,
         loaded.height,
-        rawBoxes,
-        blurShape,
-        blurStrength,
+        targets.map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h })),
+        coverOpts,
         outputFormat,
         quality,
       );
       const newName = renameWithSuffix(file.name, '-blurred', formatExtension(outputFormat));
-      setResult({
-        blob,
-        url: URL.createObjectURL(blob),
-        fileName: newName,
-      });
+      setResult({ blob, url: URL.createObjectURL(blob), fileName: newName });
+      setCompare(50);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '블러 적용 실패');
+      setError(err instanceof Error ? err.message : '가림 적용 실패');
     } finally {
       setProcessing(false);
     }
@@ -530,12 +523,9 @@ export default function BlurFacePage() {
     }
   };
 
-  const enabledCount = boxes.filter((b) => b.enabled).length;
+  const enabledCount = coverBoxes().length;
   const imgOffsetX =
-    containerRef.current && displaySize
-      ? containerRef.current.clientWidth / 2 - displaySize.w / 2
-      : 0;
-
+    containerRef.current && displaySize ? containerRef.current.clientWidth / 2 - displaySize.w / 2 : 0;
   const folderInputSize = folderFiles.reduce((s, f) => s + f.file.size, 0);
 
   return (
@@ -552,7 +542,7 @@ export default function BlurFacePage() {
               <ArrowLeft className="h-4 w-4" />
             </a>
             <Scan className="h-5 w-5" />
-            <h1 className="font-semibold text-base">얼굴 블러</h1>
+            <h1 className="font-semibold text-base">얼굴·번호판 가리기</h1>
           </div>
           {(file || allFolderFiles.length > 0) && (
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
@@ -565,24 +555,50 @@ export default function BlurFacePage() {
 
       <main className="p-4 max-w-4xl mx-auto space-y-4">
         {!file && allFolderFiles.length === 0 && (
-          <DualDropZone
-            mode={inputMode}
-            onModeChange={(m) => {
-              setInputMode(m);
-              setError(null);
-            }}
-            fileProps={{
-              accept: 'image/*',
-              description: '얼굴이 포함된 이미지를 업로드하세요',
-              hint: 'AI 얼굴 감지 모델을 최초 실행 시 ~2MB 로드 (이후 캐시). 서버 전송 없음.',
-              onFiles: (files) => acceptFile(files[0]),
-            }}
-            folderProps={{
-              accept: 'image/*',
-              description: '폴더 안 모든 이미지에 자동 감지된 얼굴 블러를 일괄 적용합니다.',
-              onFolder: onFolderPicked,
-            }}
-          />
+          <>
+            {inputMode === 'files' && (
+              <div className="rounded-xl border bg-card p-3 flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground mr-1">대상</span>
+                {(
+                  [
+                    ['face', '얼굴 (자동 감지)'],
+                    ['object', '번호판·기타 (직접 그리기)'],
+                  ] as const
+                ).map(([v, label]) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setTarget(v)}
+                    aria-pressed={target === v}
+                    className={`h-8 px-2.5 text-xs rounded-md border ${
+                      target === v ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <DualDropZone
+              mode={inputMode}
+              onModeChange={(m) => {
+                setInputMode(m);
+                setError(null);
+              }}
+              fileProps={{
+                accept: 'image/*',
+                description:
+                  target === 'face' ? '얼굴이 포함된 이미지를 업로드하세요' : '번호판 등 가릴 영역이 있는 이미지를 업로드하세요',
+                hint: 'AI 얼굴 감지 모델 최초 1회 ~2MB 로드 (이후 캐시). 서버 전송 없음.',
+                onFiles: (files) => acceptFile(files[0]),
+              }}
+              folderProps={{
+                accept: 'image/*',
+                description: '폴더 안 모든 이미지에 자동 감지된 얼굴 가림을 일괄 적용합니다.',
+                onFolder: onFolderPicked,
+              }}
+            />
+          </>
         )}
 
         {error && (
@@ -593,131 +609,134 @@ export default function BlurFacePage() {
 
         {inputMode === 'folder' && allFolderFiles.length > 0 && (
           <>
-            <FolderPreviewPanel
-              files={allFolderFiles}
-              onSelectionChange={setFolderFiles}
-              fileKindLabel="이미지"
-            />
+            <FolderPreviewPanel files={allFolderFiles} onSelectionChange={setFolderFiles} fileKindLabel="이미지" />
             <p className="text-[10px] text-yellow-500">
-              폴더 모드는 자동 감지된 얼굴만 블러합니다. 얼굴이 감지되지 않은 파일은 원본 그대로
-              저장됩니다 (실패로 표시).
+              폴더 모드는 자동 감지된 얼굴만 가립니다. 얼굴이 감지되지 않은 파일은 원본 그대로 저장됩니다.
             </p>
           </>
         )}
 
         {inputMode === 'files' && file && loaded && (
-          <>
-            <div className="rounded-xl border bg-card p-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{file.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatBytes(file.size)} · {loaded.width}×{loaded.height} · 감지 {boxes.length}명 · 선택 {enabledCount}명
-                  </p>
-                </div>
-                {detecting && (
-                  <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    {detectStatus}
-                  </div>
-                )}
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <FileImage className="h-6 w-6 text-muted-foreground shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{file.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {formatBytes(file.size)} · {loaded.width}×{loaded.height} · 박스 {boxes.length} · {invert ? '남길' : '가릴'} {enabledCount}
+                </p>
               </div>
+              {detecting && (
+                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  {detectStatus}
+                </div>
+              )}
+            </div>
 
-              <div
-                ref={containerRef}
-                className="relative rounded-lg border bg-muted overflow-hidden"
-                style={displaySize ? { height: displaySize.h } : { minHeight: 200 }}
-                onPointerDown={onOverlayPointerDown}
-                onPointerMove={onOverlayPointerMove}
-                onPointerUp={onOverlayPointerUp}
-              >
-                {displaySize && (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={loaded.element.src}
-                      alt="원본"
-                      className="absolute"
-                      style={{
-                        width: displaySize.w,
-                        height: displaySize.h,
-                        left: imgOffsetX,
-                        top: 0,
-                      }}
-                      draggable={false}
-                    />
-                    {boxes.map((box) => (
+            <div
+              ref={containerRef}
+              className="relative rounded-lg border bg-muted overflow-hidden select-none touch-none"
+              style={displaySize ? { height: displaySize.h } : { minHeight: 200 }}
+              onPointerDown={onContainerPointerDown}
+              onPointerMove={onContainerPointerMove}
+              onPointerUp={onContainerPointerUp}
+            >
+              {displaySize && (
+                <>
+                  {/* 실시간 미리보기 캔버스 (가림 효과 반영) */}
+                  <canvas
+                    ref={previewCanvasRef}
+                    className="absolute"
+                    style={{ width: displaySize.w, height: displaySize.h, left: imgOffsetX, top: 0 }}
+                    aria-label="가림 미리보기"
+                  />
+                  {boxes.map((box) => {
+                    const active = invert ? !box.enabled : box.enabled;
+                    return (
                       <div
                         key={box.id}
-                        role="button"
-                        tabIndex={addMode ? -1 : 0}
-                        aria-pressed={box.enabled}
-                        aria-label={`얼굴 영역 ${box.enabled ? '활성' : '비활성'} — 클릭으로 토글`}
-                        onClick={(e) => {
-                          if (addMode) return;
-                          e.stopPropagation();
-                          toggleBox(box.id);
-                        }}
-                        onKeyDown={(e) => {
-                          if (addMode) return;
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleBox(box.id);
-                          }
-                        }}
-                        onPointerDown={(e) => {
-                          if (addMode) return;
-                          e.stopPropagation();
-                        }}
-                        className={`absolute border-2 transition-colors cursor-pointer ${
-                          box.enabled
+                        className={`absolute border-2 ${
+                          active
                             ? box.source === 'manual'
-                              ? 'border-yellow-500 bg-yellow-500/20'
-                              : 'border-primary bg-primary/20'
-                            : 'border-muted-foreground/50 bg-transparent'
-                        }`}
+                              ? 'border-yellow-400'
+                              : 'border-primary'
+                            : 'border-muted-foreground/50 border-dashed'
+                        } ${addMode ? '' : 'cursor-move'}`}
                         style={{
                           left: imgOffsetX + box.x * scale,
                           top: box.y * scale,
                           width: box.w * scale,
                           height: box.h * scale,
                         }}
+                        onPointerDown={(e) => startBoxInteraction(e, box, 'move')}
                       >
-                        <div className="absolute -top-5 left-0 bg-background border rounded px-1 text-[9px] font-mono flex items-center gap-1">
-                          {box.enabled && <Check className="h-2.5 w-2.5 text-green-500" />}
-                          {box.source === 'manual' ? '수동' : '자동'}
-                          {box.score && ` ${Math.round(box.score * 100)}%`}
+                        <div className="absolute -top-5 left-0 flex items-center gap-1">
+                          <button
+                            type="button"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleBox(box.id);
+                            }}
+                            className={`h-4 px-1 rounded border text-[9px] font-mono flex items-center gap-0.5 ${
+                              box.enabled ? 'bg-primary text-primary-foreground' : 'bg-background'
+                            }`}
+                            aria-label={box.enabled ? '선택 해제' : '선택'}
+                          >
+                            {box.enabled && <Check className="h-2.5 w-2.5" />}
+                            {box.source === 'manual' ? '수동' : '자동'}
+                            {box.score ? ` ${Math.round(box.score * 100)}%` : ''}
+                          </button>
+                          <button
+                            type="button"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteBox(box.id);
+                            }}
+                            className="h-4 w-4 rounded-full bg-destructive text-white text-[9px] flex items-center justify-center"
+                            aria-label="삭제"
+                          >
+                            ×
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteBox(box.id);
-                          }}
-                          onPointerDown={(e) => e.stopPropagation()}
-                          className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-destructive text-white text-[9px] flex items-center justify-center shadow"
-                        >
-                          ×
-                        </button>
+                        {/* 리사이즈 핸들 (4 코너) */}
+                        {!addMode &&
+                          (['nw', 'ne', 'sw', 'se'] as const).map((c) => (
+                            <span
+                              key={c}
+                              onPointerDown={(e) => startBoxInteraction(e, box, 'resize', c)}
+                              className="absolute h-3 w-3 rounded-full bg-white border-2 border-primary shadow"
+                              style={{
+                                left: c.includes('w') ? -6 : undefined,
+                                right: c.includes('e') ? -6 : undefined,
+                                top: c.includes('n') ? -6 : undefined,
+                                bottom: c.includes('s') ? -6 : undefined,
+                                cursor: c === 'nw' || c === 'se' ? 'nwse-resize' : 'nesw-resize',
+                              }}
+                              aria-label="크기 조절"
+                            />
+                          ))}
                       </div>
-                    ))}
-                  </>
-                )}
-              </div>
+                    );
+                  })}
+                </>
+              )}
+            </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
-                <Button
-                  variant={addMode ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => setAddMode((v) => !v)}
-                  disabled={processing}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1" />
-                  {addMode ? '추가 모드 종료' : '수동 박스 추가'}
-                </Button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button
+                variant={addMode ? 'default' : 'outline'}
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setAddMode((v) => !v)}
+                disabled={processing}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                {addMode ? '그리기 종료' : '영역 직접 그리기'}
+              </Button>
+              {target === 'face' && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -728,89 +747,147 @@ export default function BlurFacePage() {
                   <Scan className="h-3.5 w-3.5 mr-1" />
                   다시 감지
                 </Button>
-                {boxes.length > 0 && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs"
-                      onClick={selectAll}
-                      disabled={processing}
-                    >
-                      모두 선택
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs"
-                      onClick={deselectAll}
-                      disabled={processing}
-                    >
-                      모두 해제
-                    </Button>
-                  </>
-                )}
-              </div>
-              {addMode && (
-                <p className="text-[10px] text-yellow-500">
-                  이미지 위에서 드래그하여 사각형을 그리세요. 완료 후 &quot;추가 모드 종료&quot;.
-                </p>
+              )}
+              {boxes.length > 0 && (
+                <>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={selectAll} disabled={processing}>
+                    모두 선택
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={deselectAll} disabled={processing}>
+                    모두 해제
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive" onClick={() => setBoxes([])} disabled={processing}>
+                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                    전체 삭제
+                  </Button>
+                </>
               )}
             </div>
-          </>
+            {addMode && (
+              <p className="text-[10px] text-yellow-500">
+                이미지 위에서 드래그해 사각형을 그리세요. 코너 핸들로 크기 조절, 박스 안을 드래그해 이동.
+              </p>
+            )}
+          </div>
         )}
 
         {(file || allFolderFiles.length > 0) && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              블러 설정
-            </h2>
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">가림 설정</h2>
 
             <div>
-              <label className="text-xs font-medium mb-1.5 block">블러 모양</label>
-              <div className="grid grid-cols-3 gap-1.5">
+              <label className="text-xs font-medium mb-1.5 block">가림 스타일</label>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                 {(
                   [
-                    ['rect', '사각형'],
-                    ['ellipse', '타원'],
+                    ['blur', '블러'],
                     ['pixelate', '모자이크'],
+                    ['bar', '검은 막대'],
+                    ['solid', '단색'],
+                    ['emoji', '이모지'],
                   ] as const
                 ).map(([v, label]) => (
                   <button
                     key={v}
                     type="button"
-                    onClick={() => setBlurShape(v)}
+                    onClick={() => setStyle(v)}
                     disabled={processing}
-                    className={`h-9 text-xs rounded-md border flex items-center justify-center gap-1 ${
-                      blurShape === v
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background hover:bg-muted border-border'
+                    className={`h-9 text-xs rounded-md border ${
+                      style === v ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted border-border'
                     } disabled:opacity-50`}
                   >
-                    <Shapes className="h-3.5 w-3.5" />
                     {label}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium">
-                  {blurShape === 'pixelate' ? '블록 크기' : '블러 강도'}
-                </label>
-                <span className="text-xs text-muted-foreground">{blurStrength}px</span>
+            {(style === 'blur' || style === 'solid') && (
+              <div>
+                <label className="text-xs font-medium mb-1.5 block">모양</label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(
+                    [
+                      ['rect', '사각형'],
+                      ['ellipse', '타원'],
+                    ] as const
+                  ).map(([v, label]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setShape(v)}
+                      disabled={processing}
+                      className={`h-8 text-xs rounded-md border ${
+                        shape === v ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted border-border'
+                      } disabled:opacity-50`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <input
-                type="range"
-                min={5}
-                max={80}
-                step={1}
-                value={blurStrength}
-                onChange={(e) => setBlurStrength(Number(e.target.value))}
-                disabled={processing}
-                className="w-full accent-primary" aria-label="pixelate" />
-            </div>
+            )}
+
+            {style === 'emoji' && (
+              <div>
+                <label className="text-xs font-medium mb-1.5 block">이모지</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {EMOJIS.map((em) => (
+                    <button
+                      key={em}
+                      type="button"
+                      onClick={() => setEmoji(em)}
+                      className={`h-9 w-9 text-lg rounded-md border ${
+                        emoji === em ? 'bg-primary/20 border-primary' : 'bg-background hover:bg-muted'
+                      }`}
+                      aria-label={`이모지 ${em}`}
+                    >
+                      {em}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {style === 'solid' && (
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-medium" htmlFor="solid">단색 색상</label>
+                <input id="solid" type="color" value={solidColor} onChange={(e) => setSolidColor(e.target.value)} className="h-8 w-12 rounded border bg-background" aria-label="단색 색상" />
+              </div>
+            )}
+
+            {(style === 'blur' || style === 'pixelate') && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-medium">{style === 'pixelate' ? '모자이크 크기' : '블러 강도'}</label>
+                  <span className="text-xs text-muted-foreground">{strength}px</span>
+                </div>
+                <input
+                  type="range"
+                  min={5}
+                  max={80}
+                  step={1}
+                  value={strength}
+                  onChange={(e) => setStrength(Number(e.target.value))}
+                  disabled={processing}
+                  className="w-full accent-primary"
+                  aria-label="강도"
+                />
+                <label className="flex items-center gap-1.5 mt-1.5 text-[11px] text-muted-foreground">
+                  <input type="checkbox" checked={autoScale} onChange={(e) => setAutoScale(e.target.checked)} className="accent-primary" />
+                  얼굴 크기에 비례해 강도 자동 조절 (작은 얼굴도 확실히 익명화)
+                </label>
+              </div>
+            )}
+
+            {inputMode === 'files' && (
+              <label className="flex items-center gap-1.5 text-[12px] rounded-md border bg-background p-2">
+                <input type="checkbox" checked={invert} onChange={(e) => setInvert(e.target.checked)} className="accent-primary" />
+                <span>
+                  <strong>반전 모드</strong> — 선택한 얼굴만 남기고 <strong>나머지 모두 가림</strong> (행인 가리기)
+                </span>
+              </label>
+            )}
 
             <Separator />
 
@@ -824,9 +901,7 @@ export default function BlurFacePage() {
                     onClick={() => setOutputFormat(f)}
                     disabled={processing}
                     className={`h-9 text-xs rounded-md border ${
-                      outputFormat === f
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background hover:bg-muted border-border'
+                      outputFormat === f ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted border-border'
                     } disabled:opacity-50`}
                   >
                     {f.toUpperCase()}
@@ -849,7 +924,9 @@ export default function BlurFacePage() {
                   value={quality}
                   onChange={(e) => setQuality(Number(e.target.value))}
                   disabled={processing}
-                  className="w-full accent-primary" aria-label="품질" />
+                  className="w-full accent-primary"
+                  aria-label="품질"
+                />
               </div>
             )}
 
@@ -860,7 +937,7 @@ export default function BlurFacePage() {
             <Separator />
 
             <Button
-              onClick={runBlur}
+              onClick={runCover}
               disabled={
                 processing ||
                 (inputMode === 'files' && enabledCount === 0) ||
@@ -871,40 +948,41 @@ export default function BlurFacePage() {
               {processing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {inputMode === 'folder' ? '일괄 처리 중...' : '블러 적용 중...'}
+                  {inputMode === 'folder' ? '일괄 처리 중...' : '적용 중...'}
                 </>
               ) : (
                 <>
                   <Scan className="h-4 w-4" />
-                  {inputMode === 'folder'
-                    ? `${folderFiles.length}장 일괄 블러 적용`
-                    : `${enabledCount}명 얼굴에 블러 적용`}
+                  {inputMode === 'folder' ? `${folderFiles.length}장 일괄 가림 적용` : `${enabledCount}개 영역 가림 적용`}
                 </>
               )}
             </Button>
           </div>
         )}
 
-        {result && (
+        {result && loaded && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              결과
-            </h2>
-            <div className="rounded-lg border bg-muted p-3 flex items-center justify-center">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">결과 (원본 ↔ 결과 비교)</h2>
+            <div className="relative rounded-lg border overflow-hidden bg-muted" style={{ aspectRatio: `${loaded.width} / ${loaded.height}` }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={result.url}
-                alt="결과"
-                className="max-w-full max-h-[50vh] object-contain"
-              />
+              <img src={loaded.element.src} alt="원본" className="absolute inset-0 w-full h-full object-contain" draggable={false} />
+              <div className="absolute inset-0 overflow-hidden" style={{ width: `${compare}%` }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={result.url} alt="결과" className="absolute inset-0 h-full object-contain" style={{ width: `${(100 / compare) * 100}%`, maxWidth: 'none' }} draggable={false} />
+              </div>
+              <div className="absolute top-0 bottom-0 w-0.5 bg-white shadow" style={{ left: `${compare}%` }} />
             </div>
-            <p className="text-xs text-muted-foreground text-center">
-              크기: {formatBytes(result.blob.size)}
-            </p>
-            <Button
-              className="w-full"
-              onClick={() => triggerDownload(result.blob, result.fileName)}
-            >
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={compare}
+              onChange={(e) => setCompare(Number(e.target.value))}
+              className="w-full accent-primary"
+              aria-label="비교 슬라이더"
+            />
+            <p className="text-xs text-muted-foreground text-center">결과 크기: {formatBytes(result.blob.size)}</p>
+            <Button className="w-full" onClick={() => triggerDownload(result.blob, result.fileName)}>
               <Download className="h-4 w-4" />
               {result.fileName} 다운로드
             </Button>
@@ -912,14 +990,7 @@ export default function BlurFacePage() {
         )}
 
         {progress && (
-          <BatchProgressPanel
-            done={progress.done}
-            total={progress.total}
-            current={progress.current}
-            onCancel={cancelRun}
-            label="얼굴 흐림 처리 중"
-            cancelling={cancelling}
-          />
+          <BatchProgressPanel done={progress.done} total={progress.total} current={progress.current} onCancel={cancelRun} label="가림 처리 중" cancelling={cancelling} />
         )}
 
         {batchResults && (
@@ -932,7 +1003,7 @@ export default function BlurFacePage() {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-          MediaPipe Tasks Vision (Apache 2.0) · BlazeFace 모델. 모든 처리는 브라우저에서.
+          MediaPipe Tasks Vision (Apache 2.0) · BlazeFace 모델. 모든 처리는 브라우저에서 — 이미지는 전송되지 않습니다.
         </p>
       </main>
     </div>

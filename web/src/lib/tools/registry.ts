@@ -96,6 +96,7 @@ import {
   Sigma,
   ScanLine,
   FileSpreadsheet,
+  ScanFace,
 } from 'lucide-react';
 
 export type ToolCategory =
@@ -553,14 +554,14 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     id: 'blur-face',
-    title: '얼굴 블러',
-    description: 'AI 로 얼굴 자동 감지 + 블러/모자이크. 수동 박스 추가 가능.',
+    title: '얼굴·번호판 가리기',
+    description: 'AI 얼굴 자동 감지 + 블러·모자이크·이모지·검은막대. 반전·번호판 모드.',
     href: '/tools/image/blur-face',
     category: 'ai',
     icon: FileSearch,
     status: 'ready',
     phase: 4,
-    keywords: ['face', 'blur', 'privacy', '모자이크', 'mosaic'],
+    keywords: ['face', 'blur', 'privacy', '모자이크', 'mosaic', '이모지', '번호판', '익명', 'censor', 'redact', '가리기'],
   },
   {
     id: 'image-upscale',
@@ -1580,6 +1581,19 @@ export const TOOLS: ToolMeta[] = [
     phase: 7,
     keywords: ['markdown', 'stats', '통계', '단어수', 'md', '읽기시간', '분석'],
     addedAt: '2026-05-25',
+  },
+
+  {
+    id: 'video-blur-face',
+    title: '동영상 얼굴 블러',
+    description: 'AI로 영상 속 얼굴을 추적해 블러·모자이크·이모지로 가림 (오디오 유지).',
+    href: '/tools/video/blur-face',
+    category: 'video',
+    icon: ScanFace,
+    status: 'ready',
+    phase: 7,
+    keywords: ['동영상', '얼굴', '블러', '모자이크', 'video', 'face blur', '익명', 'privacy', '영상가림'],
+    addedAt: '2026-06-01',
   },
 
   // ── 오피스/회사원 실무 (2026-06-01) ──────────────────────────────────────
