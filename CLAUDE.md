@@ -149,6 +149,7 @@ web-toolkit/
 
 ## 변경 이력
 
+- 2026-06-01: **피부톤 오검출 컷** — TV·벽·뒤통수 등 비얼굴 오검출 감소. `regionSkin`: 박스를 16×16로 샘플링해 YCbCr 피부색 비율 추정. `detectAllFaces` NMS 뒤에서 "색은 있는데(colorful≥0.25) 피부색이 거의 없고(skin<0.12) 고신뢰 아님(score<0.9)"인 박스 제거. **흑백 영역·고신뢰는 보존**해 진짜 얼굴 손실 최소화, YCbCr 범위는 다양한 피부톤 포용하도록 넉넉히. **한계**: 손은 피부색이라 색만으론 못 거름. tsc·build(513)·e2e 통과.
 - 2026-06-01: **폴더 모드 샘플 미리보기** — 폴더 일괄 처리 시 강도·스타일을 미리 가늠할 수 있도록 첫 이미지를 감지·미리보기. `folderSample` 상태 + 별도 캔버스(`samplePreviewRef`)에 paintCover 로 실시간 렌더(스타일·강도 변경 즉시 반영). "다른 이미지" 버튼으로 폴더 내 다음 장 순회(`sampleIdxRef`), 민감도 변경 시 재감지. 폴더 picked 시 `loadSample` 자동 호출(감지기 1회 추가 로드, 모델은 캐시). tsc·build(513)·e2e 통과.
 - 2026-06-01: **YuNet(ONNX) 병행 — 측면·각도 얼굴 보강** — blur-face "최고" 민감도에서 BlazeFace + **YuNet** 보조 검출을 NMS 병합. `lib/tools/yunet.ts`: onnxruntime-web(동적 import, wasm 단일스레드, wasm는 jsdelivr CDN) + `public/models/yunet.onnx`(~227KB, OpenCV Zoo 2023mar, self-host). 디코드: strides 8/16/32, score=√(cls·obj), bbox=(c+dx)·s/(r+dy)·s/exp(dw)·s, 입력 [1,3,H,W] BGR 0~255 긴변768. `onnxruntime-web` package.json 명시(^1.21.0), 타입 shim `src/types/onnxruntime-web.d.ts`. **완전 guard**: try/catch 실패 시 BlazeFace만, '최고' 모드 한정(표준·높음은 영향 없음). **검증 한계**: 출력 텐서명은 표준 일치 확인했으나 라이브 추론은 헤드리스 불가 → 실기기 'max' 검증 필요. tsc·build(513)·e2e 통과.
 - 2026-06-01: **측면 얼굴 보강 + 오검출 컷 (감지 민감도 + 형태 필터)** — ① **감지 민감도 3단계**(표준 conf0.4·3×3 / 높음 conf0.3·4×4 / 최고 conf0.2·5×5·작은 타일) UI 추가 — "최고"는 측면·작은 얼굴 회수율↑(오검출 늘 수 있음). ② **얼굴 비율 필터** `looksLikeFace`(가로세로 0.4~2.2 밖 제거)로 벽·패턴 오검출 컷. `detectAllFaces`를 SensParams 로 파라미터화(단일·폴더 공용). 잘못 잡힌 박스는 기존 토글로 해제 가능. tsc·build(513)·e2e 통과.

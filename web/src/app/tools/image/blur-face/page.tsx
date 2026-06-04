@@ -149,6 +149,45 @@ function looksLikeFace(b: RawBox): boolean {
   return ratio >= 0.4 && ratio <= 2.2;
 }
 
+/**
+ * 박스 영역의 피부색 비율을 추정 (오검출 컷용).
+ * 진짜 얼굴은 피부색 픽셀이 일정 이상 — TV·벽·뒤통수(머리카락)는 거의 0.
+ * 흑백 영역은 판단 불가(colorful 낮음)로 반환해 호출부가 보존하도록 한다.
+ * YCbCr 범위는 다양한 피부톤을 포용하도록 넉넉히 잡는다.
+ */
+function regionSkin(
+  img: HTMLImageElement,
+  b: RawBox,
+): { colorful: number; skin: number } {
+  const S = 16;
+  const cv = document.createElement('canvas');
+  cv.width = S;
+  cv.height = S;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return { colorful: 1, skin: 1 };
+  try {
+    ctx.drawImage(img, b.x, b.y, b.w, b.h, 0, 0, S, S);
+    const data = ctx.getImageData(0, 0, S, S).data;
+    const n = S * S;
+    let skin = 0;
+    let colorful = 0;
+    for (let i = 0; i < n; i++) {
+      const r = data[i * 4];
+      const g = data[i * 4 + 1];
+      const bch = data[i * 4 + 2];
+      const mx = Math.max(r, g, bch);
+      const mn = Math.min(r, g, bch);
+      if (mx - mn > 18) colorful++;
+      const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * bch;
+      const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * bch;
+      if (cr >= 133 && cr <= 182 && cb >= 76 && cb <= 132 && r > g - 12 && mx > 35) skin++;
+    }
+    return { colorful: colorful / n, skin: skin / n };
+  } catch {
+    return { colorful: 1, skin: 1 };
+  }
+}
+
 async function detectAllFaces(
   detector: FaceDetectorLike,
   img: HTMLImageElement,
@@ -240,7 +279,16 @@ async function detectAllFaces(
     });
 
   // 4) 중복 제거
-  return nms(padded, 0.35);
+  const deduped = nms(padded, 0.35);
+
+  // 5) 피부톤 컷 — 색이 있는데 피부색이 거의 없는 박스 제거 (TV·벽·뒤통수 등).
+  //    고신뢰(>=0.9)·흑백 영역은 보존해 진짜 얼굴 손실을 최소화.
+  return deduped.filter((b) => {
+    if (b.score >= 0.9) return true;
+    const { colorful, skin } = regionSkin(img, b);
+    if (colorful < 0.25) return true; // 흑백/저채도 → 판단 불가, 보존
+    return skin >= 0.12;
+  });
 }
 
 /** 캔버스에 가림 효과를 적용 후 지정 포맷으로 인코딩 (전체 해상도). */
