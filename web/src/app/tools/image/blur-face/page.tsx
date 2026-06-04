@@ -303,6 +303,12 @@ export default function BlurFacePage() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const [displaySize, setDisplaySize] = useState<{ w: number; h: number } | null>(null);
 
+  // 폴더 모드 샘플 미리보기 (강도·스타일 가늠용)
+  const [folderSample, setFolderSample] = useState<{ loaded: LoadedImage; boxes: FaceBox[] } | null>(null);
+  const [sampleLoading, setSampleLoading] = useState(false);
+  const samplePreviewRef = useRef<HTMLCanvasElement>(null);
+  const sampleIdxRef = useRef(0);
+
   const [addMode, setAddMode] = useState(false);
   const interactionRef = useRef<
     | null
@@ -369,6 +375,72 @@ export default function BlurFacePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, displaySize, boxes, style, shape, strength, autoScale, invert, emoji, solidColor]);
+
+  // 폴더 샘플 미리보기 렌더 (전체 해상도 → 최대 520px 로 축소, 가림은 모든 감지 얼굴)
+  useEffect(() => {
+    const cv = samplePreviewRef.current;
+    if (!cv || !folderSample) return;
+    const { loaded: ld, boxes: bx } = folderSample;
+    const sc = Math.min(1, 520 / ld.width);
+    const dw = Math.max(1, Math.round(ld.width * sc));
+    const dh = Math.max(1, Math.round(ld.height * sc));
+    cv.width = dw;
+    cv.height = dh;
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, dw, dh);
+    ctx.drawImage(ld.element, 0, 0, dw, dh);
+    for (const box of bx) paintCover(ctx, ld.element, ld.width, ld.height, dw, dh, box, coverOpts);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [folderSample, style, shape, strength, autoScale, emoji, solidColor]);
+
+  /** 폴더에서 한 장을 골라 감지 후 샘플 미리보기로 설정. */
+  const loadSample = async (file: File) => {
+    setSampleLoading(true);
+    setFolderSample((prev) => {
+      prev?.loaded.cleanup();
+      return null;
+    });
+    let detector: FaceDetectorLike | null = null;
+    try {
+      const info = await loadImageFile(file);
+      const sp = SENS[sensitivity];
+      detector = await createFaceDetector(undefined, sp.conf);
+      const scored = await detectAllFaces(
+        detector,
+        info.element,
+        info.width,
+        info.height,
+        sp,
+        sensitivity === 'max',
+      );
+      const sboxes: FaceBox[] = scored.map((b, i) => ({
+        id: `sample-${i}`,
+        x: b.x,
+        y: b.y,
+        w: b.w,
+        h: b.h,
+        source: 'auto',
+        enabled: true,
+        score: b.score,
+      }));
+      setFolderSample({ loaded: info, boxes: sboxes });
+    } catch {
+      /* 샘플 감지 실패 — 미리보기 생략 */
+    } finally {
+      detector?.close();
+      setSampleLoading(false);
+    }
+  };
+
+  // 민감도 변경 시 폴더 샘플 재감지 (감지 결과가 달라지므로)
+  useEffect(() => {
+    if (inputMode === 'folder' && folderFiles.length > 0) {
+      const idx = Math.min(sampleIdxRef.current, folderFiles.length - 1);
+      void loadSample(folderFiles[idx].file);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sensitivity]);
 
   const detectFaces = useCallback(async (info: LoadedImage) => {
     setDetecting(true);
@@ -449,10 +521,22 @@ export default function BlurFacePage() {
     }
     setAllFolderFiles(filtered);
     setFolderFiles(filtered);
+    // 첫 이미지를 샘플로 감지·미리보기 (강도·스타일 가늠용)
+    sampleIdxRef.current = 0;
+    void loadSample(filtered[0].file);
+  };
+
+  /** 폴더의 다음 이미지를 샘플로 교체. */
+  const nextSample = () => {
+    if (folderFiles.length === 0) return;
+    sampleIdxRef.current = (sampleIdxRef.current + 1) % folderFiles.length;
+    void loadSample(folderFiles[sampleIdxRef.current].file);
   };
 
   const reset = () => {
     loaded?.cleanup();
+    folderSample?.loaded.cleanup();
+    setFolderSample(null);
     if (result) URL.revokeObjectURL(result.url);
     setFile(null);
     setLoaded(null);
@@ -782,6 +866,46 @@ export default function BlurFacePage() {
               타일 정밀 감지로 단체사진의 작은 얼굴까지 최대한 잡습니다(고해상도는 처리에 시간이 더 걸릴 수
               있습니다). 끝까지 감지되지 않은 파일은 원본 그대로 저장됩니다.
             </p>
+
+            {(sampleLoading || folderSample) && (
+              <div className="rounded-xl border bg-card p-4 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    샘플 미리보기
+                  </h2>
+                  {folderFiles.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={nextSample}
+                      disabled={sampleLoading || processing}
+                    >
+                      <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                      다른 이미지
+                    </Button>
+                  )}
+                </div>
+                {sampleLoading ? (
+                  <div className="flex items-center justify-center gap-2 py-10 text-xs text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    샘플 감지 중…
+                  </div>
+                ) : (
+                  <>
+                    <canvas
+                      ref={samplePreviewRef}
+                      className="mx-auto block max-w-full h-auto rounded border bg-muted"
+                      aria-label="샘플 미리보기"
+                    />
+                    <p className="text-[10px] text-muted-foreground">
+                      아래 설정(스타일·강도)을 바꾸면 이 미리보기에 즉시 반영됩니다. 같은 설정이 폴더 전체에
+                      일괄 적용됩니다. (이 이미지 감지 {folderSample?.boxes.length ?? 0}명)
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
           </>
         )}
 
