@@ -43,6 +43,7 @@ import {
   type CoverStyle,
   type CoverShape,
 } from '@/lib/tools/cover';
+import { detectYuNet } from '@/lib/tools/yunet';
 
 interface FaceBox extends CoverBox {
   id: string;
@@ -148,13 +149,15 @@ function looksLikeFace(b: RawBox): boolean {
   return ratio >= 0.4 && ratio <= 2.2;
 }
 
-function detectAllFaces(
+async function detectAllFaces(
   detector: FaceDetectorLike,
   img: HTMLImageElement,
   imgW: number,
   imgH: number,
   params: SensParams,
-): ScoredBox[] {
+  useYuNet: boolean,
+  onStatus?: (s: string) => void,
+): Promise<ScoredBox[]> {
   const all: ScoredBox[] = [];
   const collect = (
     dets: ReturnType<FaceDetectorLike['detect']>['detections'],
@@ -205,6 +208,17 @@ function detectAllFaces(
           collect(detector.detect(canvas).detections, ox, oy, 1 / sc);
         }
       }
+    }
+  }
+
+  // 2.5) YuNet(ONNX) 보조 검출 — 측면·각도·작은 얼굴 보강 (최고 민감도)
+  if (useYuNet) {
+    try {
+      onStatus?.('정밀 모델(YuNet) 분석 중');
+      const yu = await detectYuNet(img, imgW, imgH, 0.6);
+      for (const b of yu) all.push(b);
+    } catch {
+      /* YuNet 로드·추론 실패 시 BlazeFace 결과만 사용 */
     }
   }
 
@@ -365,7 +379,15 @@ export default function BlurFacePage() {
       const sp = SENS[sensitivity];
       detector = await createFaceDetector(setDetectStatus, sp.conf);
       setDetectStatus('얼굴 분석 중 (정밀)');
-      const scored = detectAllFaces(detector, info.element, info.width, info.height, sp);
+      const scored = await detectAllFaces(
+        detector,
+        info.element,
+        info.width,
+        info.height,
+        sp,
+        sensitivity === 'max',
+        setDetectStatus,
+      );
       const detected: FaceBox[] = scored.map((b, i) => ({
         id: `auto-${Date.now()}-${i}`,
         x: b.x,
@@ -574,7 +596,15 @@ export default function BlurFacePage() {
           async (rf) => {
             const info = await loadImageFile(rf.file);
             try {
-              const rawBoxes = detectAllFaces(det, info.element, info.width, info.height, sp);
+              const rawBoxes = await detectAllFaces(
+                det,
+                info.element,
+                info.width,
+                info.height,
+                sp,
+                sensitivity === 'max',
+                (s) => setProgressText(s),
+              );
               const blob = await applyCoverToImage(
                 info.element,
                 info.width,
@@ -922,7 +952,7 @@ export default function BlurFacePage() {
                     [
                       ['standard', '표준', '오검출 적음'],
                       ['high', '높음', '권장'],
-                      ['max', '최고', '측면·작은 얼굴'],
+                      ['max', '최고', '측면·AI 보강'],
                     ] as const
                   ).map(([v, label, hint]) => (
                     <button
@@ -941,8 +971,9 @@ export default function BlurFacePage() {
                   ))}
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  측면·먼 얼굴을 놓치면 <strong>최고</strong>로 — 대신 오검출이 늘 수 있고, 잘못 잡힌 박스는 클릭해
-                  해제하세요. {inputMode === 'files' && '변경 후 "다시 감지"를 누르세요.'}
+                  측면·먼 얼굴을 놓치면 <strong>최고</strong>로 — BlazeFace에 더해 <strong>YuNet AI 모델</strong>을
+                  추가로 돌려 측면·각도 얼굴까지 잡습니다(첫 실행 시 모델 로드로 조금 느릴 수 있고, 오검출이 늘 수
+                  있어요 — 잘못 잡힌 박스는 클릭해 해제). {inputMode === 'files' && '변경 후 "다시 감지"를 누르세요.'}
                 </p>
               </div>
             )}
