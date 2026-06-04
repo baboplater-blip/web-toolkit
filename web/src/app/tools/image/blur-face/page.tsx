@@ -122,11 +122,38 @@ function nms(boxes: ScoredBox[], thresh: number): ScoredBox[] {
  * BlazeFace 는 입력을 128px 로 축소해 처리하므로 단체사진의 작은 얼굴을 놓친다.
  * 전체 1회 + 겹치는 격자 타일별 감지 후 NMS 로 중복 제거하면 회수율이 크게 오른다.
  */
+type Sensitivity = 'standard' | 'high' | 'max';
+
+interface SensParams {
+  /** 모델 최소 신뢰도 (낮을수록 더 많이 잡음) */
+  conf: number;
+  /** 타일 1칸 목표 픽셀 (작을수록 더 촘촘) */
+  tilePx: number;
+  /** 격자 최대 칸수(가로/세로) */
+  maxTiles: number;
+  /** 타일 겹침 비율 */
+  overlap: number;
+}
+
+const SENS: Record<Sensitivity, SensParams> = {
+  standard: { conf: 0.4, tilePx: 1100, maxTiles: 3, overlap: 0.15 },
+  high: { conf: 0.3, tilePx: 1000, maxTiles: 4, overlap: 0.18 },
+  max: { conf: 0.2, tilePx: 700, maxTiles: 5, overlap: 0.22 },
+};
+
+/** 얼굴로 보기 어려운 비율(너무 길쭉/납작)을 제거 — 벽·패턴 오검출 컷. */
+function looksLikeFace(b: RawBox): boolean {
+  if (b.w < 4 || b.h < 4) return false;
+  const ratio = b.w / b.h;
+  return ratio >= 0.4 && ratio <= 2.2;
+}
+
 function detectAllFaces(
   detector: FaceDetectorLike,
   img: HTMLImageElement,
   imgW: number,
   imgH: number,
+  params: SensParams,
 ): ScoredBox[] {
   const all: ScoredBox[] = [];
   const collect = (
@@ -151,11 +178,11 @@ function detectAllFaces(
   // 1) 전체 이미지 (큰 얼굴)
   collect(detector.detect(img).detections, 0, 0, 1);
 
-  // 2) 겹치는 격자 타일 (작은 얼굴) — 약 1000px 당 1칸, 최대 4×4
-  const cols = Math.min(4, Math.max(1, Math.round(imgW / 1000)));
-  const rows = Math.min(4, Math.max(1, Math.round(imgH / 1000)));
+  // 2) 겹치는 격자 타일 (작은·측면 얼굴) — 민감도에 따라 칸 수 조절
+  const cols = Math.min(params.maxTiles, Math.max(1, Math.round(imgW / params.tilePx)));
+  const rows = Math.min(params.maxTiles, Math.max(1, Math.round(imgH / params.tilePx)));
   if (cols > 1 || rows > 1) {
-    const overlap = 0.18;
+    const overlap = params.overlap;
     const tw = imgW / cols;
     const th = imgH / rows;
     const canvas = document.createElement('canvas');
@@ -181,20 +208,22 @@ function detectAllFaces(
     }
   }
 
-  // 3) 마진 추가 + 클램프
-  const padded: ScoredBox[] = all.map((b) => {
-    const padX = b.w * 0.1;
-    const padY = b.h * 0.15;
-    const x = Math.max(0, b.x - padX);
-    const y = Math.max(0, b.y - padY);
-    return {
-      x: Math.round(x),
-      y: Math.round(y),
-      w: Math.round(Math.min(imgW - x, b.w + padX * 2)),
-      h: Math.round(Math.min(imgH - y, b.h + padY * 2)),
-      score: b.score,
-    };
-  });
+  // 3) 얼굴 비율 필터(오검출 컷) → 마진 추가 + 클램프
+  const padded: ScoredBox[] = all
+    .filter(looksLikeFace)
+    .map((b) => {
+      const padX = b.w * 0.1;
+      const padY = b.h * 0.15;
+      const x = Math.max(0, b.x - padX);
+      const y = Math.max(0, b.y - padY);
+      return {
+        x: Math.round(x),
+        y: Math.round(y),
+        w: Math.round(Math.min(imgW - x, b.w + padX * 2)),
+        h: Math.round(Math.min(imgH - y, b.h + padY * 2)),
+        score: b.score,
+      };
+    });
 
   // 4) 중복 제거
   return nms(padded, 0.35);
@@ -241,6 +270,7 @@ export default function BlurFacePage() {
   const [emoji, setEmoji] = useState(EMOJIS[0]);
   const [solidColor, setSolidColor] = useState('#111111');
   const [target, setTarget] = useState<'face' | 'object'>('face');
+  const [sensitivity, setSensitivity] = useState<Sensitivity>('high');
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
   const [quality, setQuality] = useState(92);
 
@@ -332,9 +362,10 @@ export default function BlurFacePage() {
     setError(null);
     let detector: FaceDetectorLike | null = null;
     try {
-      detector = await createFaceDetector(setDetectStatus, 0.3);
+      const sp = SENS[sensitivity];
+      detector = await createFaceDetector(setDetectStatus, sp.conf);
       setDetectStatus('얼굴 분석 중 (정밀)');
-      const scored = detectAllFaces(detector, info.element, info.width, info.height);
+      const scored = detectAllFaces(detector, info.element, info.width, info.height, sp);
       const detected: FaceBox[] = scored.map((b, i) => ({
         id: `auto-${Date.now()}-${i}`,
         x: b.x,
@@ -357,7 +388,7 @@ export default function BlurFacePage() {
       detector?.close();
       setDetecting(false);
     }
-  }, []);
+  }, [sensitivity]);
 
   const acceptFile = async (f: File) => {
     if (!f.type.startsWith('image/')) {
@@ -534,16 +565,16 @@ export default function BlurFacePage() {
       setCancelling(false);
       setProgress({ done: 0, total: folderFiles.length, current: '' });
       let detector: FaceDetectorLike | null = null;
+      const sp = SENS[sensitivity];
       try {
-        // 일괄 모드는 프라이버시 우선 — 민감도를 높여 작은/먼 얼굴도 최대한 포착
-        detector = await createFaceDetector((s) => setProgressText(s), 0.3);
+        detector = await createFaceDetector((s) => setProgressText(s), sp.conf);
         const det = detector;
         const results = await runBatch(
           folderFiles,
           async (rf) => {
             const info = await loadImageFile(rf.file);
             try {
-              const rawBoxes = detectAllFaces(det, info.element, info.width, info.height);
+              const rawBoxes = detectAllFaces(det, info.element, info.width, info.height, sp);
               const blob = await applyCoverToImage(
                 info.element,
                 info.width,
@@ -882,6 +913,39 @@ export default function BlurFacePage() {
         {(file || allFolderFiles.length > 0) && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">가림 설정</h2>
+
+            {(inputMode === 'folder' || target === 'face') && (
+              <div>
+                <label className="text-xs font-medium mb-1.5 block">감지 민감도</label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(
+                    [
+                      ['standard', '표준', '오검출 적음'],
+                      ['high', '높음', '권장'],
+                      ['max', '최고', '측면·작은 얼굴'],
+                    ] as const
+                  ).map(([v, label, hint]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setSensitivity(v)}
+                      disabled={processing}
+                      aria-pressed={sensitivity === v}
+                      className={`h-12 text-xs rounded-md border px-1 ${
+                        sensitivity === v ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted border-border'
+                      } disabled:opacity-50`}
+                    >
+                      <div className="font-semibold">{label}</div>
+                      <div className={`text-[10px] ${sensitivity === v ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{hint}</div>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  측면·먼 얼굴을 놓치면 <strong>최고</strong>로 — 대신 오검출이 늘 수 있고, 잘못 잡힌 박스는 클릭해
+                  해제하세요. {inputMode === 'files' && '변경 후 "다시 감지"를 누르세요.'}
+                </p>
+              </div>
+            )}
 
             <div>
               <label className="text-xs font-medium mb-1.5 block">가림 스타일</label>
