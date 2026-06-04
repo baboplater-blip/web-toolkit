@@ -65,13 +65,17 @@ interface RawBox {
 }
 
 interface FaceDetectorLike {
-  detect: (input: HTMLImageElement) => {
+  detect: (input: HTMLImageElement | HTMLCanvasElement) => {
     detections?: Array<{
       boundingBox?: { originX: number; originY: number; width: number; height: number };
       categories?: Array<{ score?: number }>;
     }>;
   };
   close: () => void;
+}
+
+interface ScoredBox extends RawBox {
+  score: number;
 }
 
 async function createFaceDetector(
@@ -91,25 +95,109 @@ async function createFaceDetector(
   return detector as unknown as FaceDetectorLike;
 }
 
-function extractBoxes(
-  detections: ReturnType<FaceDetectorLike['detect']>['detections'],
+function iou(a: RawBox, b: RawBox): number {
+  const x1 = Math.max(a.x, b.x);
+  const y1 = Math.max(a.y, b.y);
+  const x2 = Math.min(a.x + a.w, b.x + b.w);
+  const y2 = Math.min(a.y + a.h, b.y + b.h);
+  const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+  if (inter <= 0) return 0;
+  return inter / (a.w * a.h + b.w * b.h - inter);
+}
+
+/** Non-max suppression — 점수 높은 박스를 남기고 IoU 가 임계 이상인 중복 제거. */
+function nms(boxes: ScoredBox[], thresh: number): ScoredBox[] {
+  const sorted = [...boxes].sort((a, b) => b.score - a.score);
+  const kept: ScoredBox[] = [];
+  for (const b of sorted) {
+    if (kept.some((k) => iou(k, b) > thresh)) continue;
+    kept.push(b);
+  }
+  return kept;
+}
+
+/**
+ * 타일 분할 감지 — 큰 이미지/다수 인물에서 작은 얼굴까지 포착.
+ *
+ * BlazeFace 는 입력을 128px 로 축소해 처리하므로 단체사진의 작은 얼굴을 놓친다.
+ * 전체 1회 + 겹치는 격자 타일별 감지 후 NMS 로 중복 제거하면 회수율이 크게 오른다.
+ */
+function detectAllFaces(
+  detector: FaceDetectorLike,
+  img: HTMLImageElement,
   imgW: number,
   imgH: number,
-): RawBox[] {
-  const out: RawBox[] = [];
-  (detections ?? []).forEach((d) => {
-    const bb = d.boundingBox;
-    if (!bb) return;
-    const padX = bb.width * 0.1;
-    const padY = bb.height * 0.15;
-    out.push({
-      x: Math.max(0, Math.round(bb.originX - padX)),
-      y: Math.max(0, Math.round(bb.originY - padY)),
-      w: Math.min(imgW, Math.round(bb.width + padX * 2)),
-      h: Math.min(imgH, Math.round(bb.height + padY * 2)),
+): ScoredBox[] {
+  const all: ScoredBox[] = [];
+  const collect = (
+    dets: ReturnType<FaceDetectorLike['detect']>['detections'],
+    ox: number,
+    oy: number,
+    inv: number,
+  ) => {
+    (dets ?? []).forEach((d) => {
+      const bb = d.boundingBox;
+      if (!bb) return;
+      all.push({
+        x: ox + bb.originX * inv,
+        y: oy + bb.originY * inv,
+        w: bb.width * inv,
+        h: bb.height * inv,
+        score: d.categories?.[0]?.score ?? 1,
+      });
     });
+  };
+
+  // 1) 전체 이미지 (큰 얼굴)
+  collect(detector.detect(img).detections, 0, 0, 1);
+
+  // 2) 겹치는 격자 타일 (작은 얼굴) — 약 1000px 당 1칸, 최대 4×4
+  const cols = Math.min(4, Math.max(1, Math.round(imgW / 1000)));
+  const rows = Math.min(4, Math.max(1, Math.round(imgH / 1000)));
+  if (cols > 1 || rows > 1) {
+    const overlap = 0.18;
+    const tw = imgW / cols;
+    const th = imgH / rows;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const ox = Math.max(0, c * tw - tw * overlap);
+          const oy = Math.max(0, r * th - th * overlap);
+          const ex = Math.min(imgW, (c + 1) * tw + tw * overlap);
+          const ey = Math.min(imgH, (r + 1) * th + th * overlap);
+          const cw = ex - ox;
+          const ch = ey - oy;
+          const target = 800; // 타일을 적당 해상도로 (메모리·속도 균형)
+          const sc = Math.min(1, target / Math.max(cw, ch));
+          canvas.width = Math.max(1, Math.round(cw * sc));
+          canvas.height = Math.max(1, Math.round(ch * sc));
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, ox, oy, cw, ch, 0, 0, canvas.width, canvas.height);
+          collect(detector.detect(canvas).detections, ox, oy, 1 / sc);
+        }
+      }
+    }
+  }
+
+  // 3) 마진 추가 + 클램프
+  const padded: ScoredBox[] = all.map((b) => {
+    const padX = b.w * 0.1;
+    const padY = b.h * 0.15;
+    const x = Math.max(0, b.x - padX);
+    const y = Math.max(0, b.y - padY);
+    return {
+      x: Math.round(x),
+      y: Math.round(y),
+      w: Math.round(Math.min(imgW - x, b.w + padX * 2)),
+      h: Math.round(Math.min(imgH - y, b.h + padY * 2)),
+      score: b.score,
+    };
   });
-  return out;
+
+  // 4) 중복 제거
+  return nms(padded, 0.35);
 }
 
 /** 캔버스에 가림 효과를 적용 후 지정 포맷으로 인코딩 (전체 해상도). */
@@ -244,11 +332,10 @@ export default function BlurFacePage() {
     setError(null);
     let detector: FaceDetectorLike | null = null;
     try {
-      detector = await createFaceDetector(setDetectStatus);
-      setDetectStatus('얼굴 분석 중');
-      const res = detector.detect(info.element);
-      const rawBoxes = extractBoxes(res.detections, info.width, info.height);
-      const detected: FaceBox[] = rawBoxes.map((b, i) => ({
+      detector = await createFaceDetector(setDetectStatus, 0.3);
+      setDetectStatus('얼굴 분석 중 (정밀)');
+      const scored = detectAllFaces(detector, info.element, info.width, info.height);
+      const detected: FaceBox[] = scored.map((b, i) => ({
         id: `auto-${Date.now()}-${i}`,
         x: b.x,
         y: b.y,
@@ -256,7 +343,7 @@ export default function BlurFacePage() {
         h: b.h,
         source: 'auto',
         enabled: true,
-        score: res.detections?.[i]?.categories?.[0]?.score,
+        score: b.score,
       }));
       setBoxes(detected);
       setDetectStatus('');
@@ -456,8 +543,7 @@ export default function BlurFacePage() {
           async (rf) => {
             const info = await loadImageFile(rf.file);
             try {
-              const detection = det.detect(info.element);
-              const rawBoxes = extractBoxes(detection.detections, info.width, info.height);
+              const rawBoxes = detectAllFaces(det, info.element, info.width, info.height);
               const blob = await applyCoverToImage(
                 info.element,
                 info.width,
@@ -632,7 +718,8 @@ export default function BlurFacePage() {
           <>
             <FolderPreviewPanel files={allFolderFiles} onSelectionChange={setFolderFiles} fileKindLabel="이미지" />
             <p className="text-[10px] text-yellow-500">
-              폴더 모드는 자동 감지된 얼굴만 가립니다. 얼굴이 감지되지 않은 파일은 원본 그대로 저장됩니다.
+              타일 정밀 감지로 단체사진의 작은 얼굴까지 최대한 잡습니다(고해상도는 처리에 시간이 더 걸릴 수
+              있습니다). 끝까지 감지되지 않은 파일은 원본 그대로 저장됩니다.
             </p>
           </>
         )}
