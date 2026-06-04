@@ -555,13 +555,13 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'blur-face',
     title: '얼굴·번호판 가리기',
-    description: 'AI 얼굴 자동 감지 + 블러·모자이크·이모지·검은막대. 반전·번호판 모드.',
+    description: 'AI 얼굴 자동 감지 + 블러·모자이크·이모지·검은막대. 폴더 일괄·반전·번호판 모드.',
     href: '/tools/image/blur-face',
     category: 'ai',
     icon: FileSearch,
     status: 'ready',
     phase: 4,
-    keywords: ['face', 'blur', 'privacy', '모자이크', 'mosaic', '이모지', '번호판', '익명', 'censor', 'redact', '가리기'],
+    keywords: ['face', 'blur', 'privacy', '모자이크', 'mosaic', '이모지', '번호판', '익명', 'censor', 'redact', '가리기', '폴더', '일괄', 'batch', '단체사진'],
   },
   {
     id: 'image-upscale',

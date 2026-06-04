@@ -74,7 +74,10 @@ interface FaceDetectorLike {
   close: () => void;
 }
 
-async function createFaceDetector(onStatus?: (s: string) => void): Promise<FaceDetectorLike> {
+async function createFaceDetector(
+  onStatus?: (s: string) => void,
+  minConfidence = 0.4,
+): Promise<FaceDetectorLike> {
   onStatus?.('MediaPipe 로드 중');
   const { FaceDetector, FilesetResolver } = await import('@mediapipe/tasks-vision');
   onStatus?.('WASM 초기화 중');
@@ -83,7 +86,7 @@ async function createFaceDetector(onStatus?: (s: string) => void): Promise<FaceD
   const detector = await FaceDetector.createFromOptions(vision, {
     baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
     runningMode: 'IMAGE',
-    minDetectionConfidence: 0.4,
+    minDetectionConfidence: minConfidence,
   });
   return detector as unknown as FaceDetectorLike;
 }
@@ -207,6 +210,14 @@ export default function BlurFacePage() {
 
   const scale = loaded && displaySize ? displaySize.w / loaded.width : 1;
   const coverOpts: CoverOptions = { style, shape, strength, autoScale, emoji, solidColor };
+  const STYLE_LABELS: Record<CoverStyle, string> = {
+    blur: '블러',
+    pixelate: '모자이크',
+    bar: '검은 막대',
+    solid: '단색',
+    emoji: '이모지',
+  };
+  const styleLabel = STYLE_LABELS[style];
 
   const coverBoxes = (): FaceBox[] =>
     invert ? boxes.filter((b) => !b.enabled) : boxes.filter((b) => b.enabled);
@@ -437,7 +448,8 @@ export default function BlurFacePage() {
       setProgress({ done: 0, total: folderFiles.length, current: '' });
       let detector: FaceDetectorLike | null = null;
       try {
-        detector = await createFaceDetector((s) => setProgressText(s));
+        // 일괄 모드는 프라이버시 우선 — 민감도를 높여 작은/먼 얼굴도 최대한 포착
+        detector = await createFaceDetector((s) => setProgressText(s), 0.3);
         const det = detector;
         const results = await runBatch(
           folderFiles,
@@ -584,6 +596,8 @@ export default function BlurFacePage() {
               onModeChange={(m) => {
                 setInputMode(m);
                 setError(null);
+                // 폴더 일괄은 익명화 표준인 모자이크를 기본값으로
+                if (m === 'folder') setStyle('pixelate');
               }}
               fileProps={{
                 accept: 'image/*',
@@ -594,10 +608,17 @@ export default function BlurFacePage() {
               }}
               folderProps={{
                 accept: 'image/*',
-                description: '폴더 안 모든 이미지에 자동 감지된 얼굴 가림을 일괄 적용합니다.',
+                description: '폴더 안 모든 이미지의 얼굴을 자동 감지해 일괄 모자이크 → ZIP 다운로드',
                 onFolder: onFolderPicked,
               }}
             />
+            {inputMode === 'folder' && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
+                폴더(또는 여러 장)를 올리면 <strong className="text-foreground">모든 이미지의 인물 얼굴을 자동
+                감지</strong>해 한 번에 가립니다. 기본은 <strong className="text-foreground">모자이크</strong>이며,
+                아래 설정에서 블러·이모지 등으로 바꿀 수 있습니다. 결과는 ZIP으로 묶여 다운로드됩니다.
+              </div>
+            )}
           </>
         )}
 
@@ -953,7 +974,7 @@ export default function BlurFacePage() {
               ) : (
                 <>
                   <Scan className="h-4 w-4" />
-                  {inputMode === 'folder' ? `${folderFiles.length}장 일괄 가림 적용` : `${enabledCount}개 영역 가림 적용`}
+                  {inputMode === 'folder' ? `${folderFiles.length}장 일괄 ${styleLabel} 적용` : `${enabledCount}개 영역 ${styleLabel} 적용`}
                 </>
               )}
             </Button>
