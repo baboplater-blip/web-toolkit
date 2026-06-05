@@ -704,6 +704,312 @@ export const COMPARES: Compare[] = [
     keywords: ['aac vs mp3', 'mp3 or aac', 'best audio format', 'convert aac mp3'],
     relatedConverts: ['mp3-to-aac', 'aac-to-mp3'],
   },
+  {
+    slug: 'webp-vs-avif',
+    category: 'image',
+    title: 'WebP vs AVIF — Which Next-Gen Image Format?',
+    h1: 'WebP vs AVIF',
+    description:
+      'AVIF compresses smaller; WebP has wider support. Which next-gen image format to use — convert free in your browser.',
+    intro:
+      'WebP and AVIF are both modern formats that beat JPG and PNG on file size. AVIF (AV1-based) usually compresses smaller at the same quality and supports HDR, but encodes slower and isn’t supported everywhere yet. WebP is a few years older, so it’s supported by virtually every current browser and many editors.',
+    options: [
+      {
+        label: 'WebP',
+        toolId: 'image-convert',
+        best: 'Web images that need broad, reliable support today.',
+        pros: ['Smaller than JPG/PNG', 'Supported by all current browsers', 'Transparency and animation'],
+        cons: ['Slightly larger than AVIF', 'Not for very old software'],
+      },
+      {
+        label: 'AVIF',
+        toolId: 'image-convert',
+        best: 'Squeezing the smallest possible file at high quality.',
+        pros: ['Best-in-class compression', 'Wide color gamut and HDR', 'Transparency supported'],
+        cons: ['Slower to encode', 'Unsupported on older browsers/apps', 'Narrower editor support'],
+      },
+    ],
+    verdict:
+      'Want the smallest file and your audience is on modern browsers? Use AVIF. Want safe, broad support right now? Use WebP. Convert between them in your browser.',
+    faqs: [
+      { q: 'Is AVIF always smaller than WebP?', a: 'Usually, at the same quality AVIF is smaller — often noticeably so on detailed photos. The gap narrows on simple graphics.' },
+      { q: 'Can every browser open AVIF?', a: 'Most current browsers can, but support is newer than WebP. For maximum reach, WebP with a JPG fallback is still the safest.' },
+    ],
+    keywords: ['webp vs avif', 'avif or webp', 'next-gen image format', 'convert webp avif'],
+    relatedConverts: ['webp-to-avif', 'avif-to-webp'],
+  },
+  {
+    slug: 'svg-vs-png',
+    category: 'image',
+    title: 'SVG vs PNG — Which for Logos and Icons?',
+    h1: 'SVG vs PNG',
+    description:
+      'SVG scales to any size with no blur; PNG is a fixed-pixel raster. Which to use for logos and icons — convert free in your browser.',
+    intro:
+      'SVG and PNG solve different problems. SVG is a vector — it’s drawn from math, so it stays razor-sharp at any size and edits as code, ideal for logos, icons and simple shapes. PNG is a raster of fixed pixels with lossless quality and transparency — ideal for screenshots, detailed graphics and anything photographic SVG can’t represent.',
+    options: [
+      {
+        label: 'SVG',
+        toolId: 'image-svg-to-png',
+        best: 'Logos, icons and shapes that must scale crisply.',
+        pros: ['Infinitely sharp at any size', 'Tiny for simple shapes', 'Editable as code'],
+        cons: ['Cannot show photographs', 'Unsupported in some apps/documents', 'Heavy for complex art'],
+      },
+      {
+        label: 'PNG',
+        toolId: 'image-convert',
+        best: 'Screenshots and detailed graphics with transparency.',
+        pros: ['Lossless, no artifacts', 'Transparency supported', 'Opens everywhere'],
+        cons: ['Blurs when scaled up', 'Large for big images', 'Not a vector'],
+      },
+    ],
+    verdict:
+      'A logo or icon that must look sharp at every size? Use SVG. A screenshot or detailed image, or you need it to open everywhere? Use PNG. Rasterize SVG to PNG in your browser when you need a fixed image.',
+    faqs: [
+      { q: 'Can I convert PNG back to SVG?', a: 'Not truly — PNG is pixels, so it can only be traced approximately. Keep the original vector if you have it.' },
+      { q: 'Why does my SVG logo look blurry as PNG?', a: 'Export the PNG at a higher resolution. A raster has fixed pixels, so size it for the largest place you’ll use it.' },
+    ],
+    keywords: ['svg vs png', 'png or svg', 'logo image format', 'svg to png'],
+    relatedConverts: ['svg-to-png'],
+  },
+  {
+    slug: 'flac-vs-mp3',
+    category: 'audio',
+    title: 'FLAC vs MP3 — Lossless or Small?',
+    h1: 'FLAC vs MP3',
+    description:
+      'FLAC is lossless for archiving; MP3 is small and plays everywhere. Which to use — convert free in your browser.',
+    intro:
+      'FLAC and MP3 sit at opposite ends. FLAC is lossless — it preserves the exact original audio, perfect for archiving and editing, but the files are large. MP3 is lossy — it throws away inaudible detail to make tiny files that play on every device ever made, perfect for sharing and portable listening.',
+    options: [
+      {
+        label: 'FLAC',
+        toolId: 'audio-convert',
+        best: 'Archiving and editing where the original must be preserved.',
+        pros: ['Lossless — exact original audio', 'Smaller than WAV', 'Rich metadata and tags'],
+        cons: ['Much larger than MP3', 'Unsupported on some devices', 'Limited over Bluetooth'],
+      },
+      {
+        label: 'MP3',
+        toolId: 'audio-convert',
+        best: 'Sharing and portable listening on any device.',
+        pros: ['Plays on absolutely everything', 'Tiny files', 'Adjustable bitrate'],
+        cons: ['Lossy — below the original', 'Not for archiving masters'],
+      },
+    ],
+    verdict:
+      'Keeping a master or editing audio? Use FLAC. Sharing or filling a phone with music? Use MP3. Convert FLAC to MP3 in your browser whenever you need it small.',
+    faqs: [
+      { q: 'Can I hear the difference between FLAC and MP3?', a: 'At high MP3 bitrates (256–320kbps), most people can’t in casual listening. FLAC matters most for archiving and editing.' },
+      { q: 'Does converting MP3 to FLAC improve quality?', a: 'No. FLAC can’t restore detail MP3 already discarded. Convert to FLAC only from a lossless source.' },
+    ],
+    keywords: ['flac vs mp3', 'mp3 or flac', 'lossless vs lossy audio', 'convert flac mp3'],
+    relatedConverts: ['flac-to-mp3', 'wav-to-flac'],
+  },
+  {
+    slug: 'm4a-vs-mp3',
+    category: 'audio',
+    title: 'M4A vs MP3 — Which Audio Format?',
+    h1: 'M4A vs MP3',
+    description:
+      'M4A (AAC) sounds better per megabyte; MP3 plays on everything. Which to use — convert free in your browser.',
+    intro:
+      'M4A and MP3 are both lossy, but M4A wraps the newer AAC codec. At the same size M4A usually sounds a bit better and it’s the default in Apple’s ecosystem with chapter and metadata support. MP3 is older but plays on literally every device, app and car stereo, making it the safe choice for sharing.',
+    options: [
+      {
+        label: 'M4A',
+        toolId: 'audio-convert',
+        best: 'Apple devices and better quality per megabyte.',
+        pros: ['Better quality than MP3 at the same size', 'Default on iTunes/Apple', 'Chapters and rich metadata'],
+        cons: ['Incompatible with some old devices', 'Less universal than MP3', 'Narrower editor support'],
+      },
+      {
+        label: 'MP3',
+        toolId: 'audio-convert',
+        best: 'Maximum compatibility on any device.',
+        pros: ['Plays on absolutely everything', 'Tiny files', 'Adjustable bitrate'],
+        cons: ['Slightly worse quality per size', 'Weaker at very low bitrates'],
+      },
+    ],
+    verdict:
+      'In the Apple ecosystem or want the best sound per megabyte? Use M4A. Need a file that opens on anything, old or new? Use MP3. Convert M4A to MP3 in your browser.',
+    faqs: [
+      { q: 'Why won’t my M4A play on some devices?', a: 'Older or non-Apple devices may not support AAC/M4A. Converting to MP3 fixes compatibility everywhere.' },
+      { q: 'Does M4A → MP3 lose quality?', a: 'Both are lossy, so re-encoding adds a small loss. At high bitrates it’s hard to notice; convert from the best source.' },
+    ],
+    keywords: ['m4a vs mp3', 'mp3 or m4a', 'best audio format', 'convert m4a mp3'],
+    relatedConverts: ['m4a-to-mp3', 'm4a-to-wav'],
+  },
+  {
+    slug: 'mkv-vs-mp4',
+    category: 'video',
+    title: 'MKV vs MP4 — Which Video Container?',
+    h1: 'MKV vs MP4',
+    description:
+      'MKV is flexible for HD archives with many tracks; MP4 plays and uploads everywhere. Which to use — convert free in your browser.',
+    intro:
+      'MKV and MP4 are containers that can hold the same video. MKV is a flexible open container that stores multiple audio and subtitle tracks and almost any codec — popular for high-quality archives. MP4 is the universal delivery container that plays on every device and uploads cleanly to every platform.',
+    options: [
+      {
+        label: 'MKV',
+        toolId: 'video-convert',
+        best: 'High-quality archives with multiple audio/subtitle tracks.',
+        pros: ['Multiple audio and subtitle tracks', 'Holds almost any codec', 'Great for HD archives'],
+        cons: ['Weak device/social support', 'Limited direct browser playback', 'Convert to share'],
+      },
+      {
+        label: 'MP4',
+        toolId: 'video-convert',
+        best: 'Sharing, uploading and playing anywhere.',
+        pros: ['Plays on every device and platform', 'The upload standard', 'Good compression'],
+        cons: ['Fewer track features than MKV', 'For delivery, not archiving'],
+      },
+    ],
+    verdict:
+      'Archiving a movie with multiple audio and subtitle tracks? Use MKV. Sharing, uploading or playing on devices? Convert to MP4. The switch is quick in your browser.',
+    faqs: [
+      { q: 'Does MKV → MP4 lose quality?', a: 'If it just rewraps the same codec, quality is unchanged. Re-encoding adds a small, usually unnoticeable loss.' },
+      { q: 'Why won’t my MKV play or upload?', a: 'Many devices and platforms don’t support MKV. Converting to MP4 (H.264) is the most compatible fix.' },
+    ],
+    keywords: ['mkv vs mp4', 'mp4 or mkv', 'best video container', 'convert mkv mp4'],
+    relatedConverts: ['mkv-to-mp4', 'mkv-to-webm'],
+  },
+  {
+    slug: 'gif-vs-mp4',
+    category: 'video',
+    title: 'GIF vs MP4 — Which for Short Clips?',
+    h1: 'GIF vs MP4',
+    description:
+      'MP4 is far smaller and smoother; GIF plays inline anywhere with no controls. Which to use for short loops — convert free in your browser.',
+    intro:
+      'GIF and MP4 both show short motion, very differently. GIF is an old 256-color animation that auto-plays inline everywhere with no sound or controls — great for tiny reactions and stickers, but bloated for anything detailed. MP4 is real video: far smaller, full color and smooth, but it’s a video player rather than an inline image.',
+    options: [
+      {
+        label: 'GIF',
+        toolId: 'video-to-gif',
+        best: 'Tiny inline reactions, stickers and memes.',
+        pros: ['Auto-plays inline everywhere', 'No player or controls needed', 'Simple to embed'],
+        cons: ['Huge files for detailed clips', '256 colors, banding', 'No sound'],
+      },
+      {
+        label: 'MP4',
+        toolId: 'video-convert',
+        best: 'Anything longer, detailed or with sound.',
+        pros: ['Far smaller than GIF', 'Full color, smooth playback', 'Supports audio'],
+        cons: ['Needs a video player', 'Less “inline image” friendly'],
+      },
+    ],
+    verdict:
+      'A tiny looping reaction or sticker? GIF is fine. Anything longer, colorful or detailed? Use MP4 — it’s dramatically smaller. Convert a clip to GIF (or keep it MP4) in your browser.',
+    faqs: [
+      { q: 'Why is my GIF so large?', a: 'GIF is inefficient for detailed motion. Trim length, reduce size and colors, or keep it as MP4 — often 10× smaller.' },
+      { q: 'Can I turn an MP4 into a GIF?', a: 'Yes. Use the video-to-GIF tool; trim and downsize first to keep the GIF small.' },
+    ],
+    keywords: ['gif vs mp4', 'mp4 or gif', 'gif vs video', 'convert video to gif'],
+    relatedConverts: ['mp4-to-gif', 'webm-to-gif'],
+  },
+  {
+    slug: 'yaml-vs-json',
+    category: 'docs',
+    title: 'YAML vs JSON — Which Config Format?',
+    h1: 'YAML vs JSON',
+    description:
+      'YAML is human-friendly for config; JSON is strict and universal for data exchange. Which to use — convert free in your browser.',
+    intro:
+      'YAML and JSON describe the same kind of structured data with different priorities. YAML uses indentation and supports comments, so it reads cleanly for hand-edited config files. JSON uses braces and is strict and universal — every language parses it natively, making it the standard for APIs and data exchange.',
+    options: [
+      {
+        label: 'YAML',
+        toolId: 'yaml-json',
+        best: 'Human-edited config files (CI, Docker, app settings).',
+        pros: ['Very readable', 'Supports comments', 'Less punctuation noise'],
+        cons: ['Indentation-sensitive, easy to break', 'Unsupported in some stacks', 'Ambiguous when complex'],
+      },
+      {
+        label: 'JSON',
+        toolId: 'yaml-json',
+        best: 'APIs, data exchange and program-to-program data.',
+        pros: ['Parsed natively everywhere', 'Strict and unambiguous', 'The API/data standard'],
+        cons: ['No comments', 'Verbose punctuation', 'Less pleasant to hand-edit'],
+      },
+    ],
+    verdict:
+      'Hand-editing config with comments? Use YAML. Exchanging data between programs or an API? Use JSON. Convert between them instantly in your browser.',
+    faqs: [
+      { q: 'Is YAML a superset of JSON?', a: 'Effectively yes — valid JSON is valid YAML, so any JSON converts cleanly to YAML and back.' },
+      { q: 'Which is less error-prone?', a: 'JSON, because its braces are explicit. YAML’s indentation is friendlier to read but easier to break with a stray space.' },
+    ],
+    keywords: ['yaml vs json', 'json or yaml', 'config format', 'convert yaml json'],
+    relatedConverts: ['yaml-to-json', 'json-to-yaml'],
+  },
+  {
+    slug: 'markdown-vs-html',
+    category: 'docs',
+    title: 'Markdown vs HTML — Which to Write In?',
+    h1: 'Markdown vs HTML',
+    description:
+      'Markdown is fast, readable plain text; HTML gives full control and renders in any browser. Which to use — convert free in your browser.',
+    intro:
+      'Markdown and HTML often end up as the same web page. Markdown is lightweight plain text — fast to write, easy to read and version-control, and it converts straight to HTML. HTML is the web standard with full control over structure, styling and media, but it’s verbose to write by hand. Most people write Markdown and export HTML.',
+    options: [
+      {
+        label: 'Markdown',
+        toolId: 'md-html',
+        best: 'Writing docs, READMEs and notes quickly.',
+        pros: ['Readable plain text', 'Version-control friendly', 'Converts to HTML anywhere'],
+        cons: ['Limited for complex layout', 'Renderer differences', 'Less styling control'],
+      },
+      {
+        label: 'HTML',
+        toolId: 'md-html',
+        best: 'Full control over layout, styling and media for the web.',
+        pros: ['Opens in every browser', 'Full structure and styling', 'Links, media, scripts'],
+        cons: ['Verbose to hand-write', 'Easier to make mistakes', 'Harder to skim as source'],
+      },
+    ],
+    verdict:
+      'Writing content fast and keeping it readable? Use Markdown. Need precise layout and web features? Use HTML. Convert Markdown to HTML (and back) in your browser.',
+    faqs: [
+      { q: 'Can I mix HTML inside Markdown?', a: 'Yes — most Markdown renderers pass raw HTML through, so you can drop in HTML where you need extra control.' },
+      { q: 'Does Markdown → HTML keep my formatting?', a: 'Yes. Headings, lists, links, code and emphasis all map to their HTML equivalents with a live preview.' },
+    ],
+    keywords: ['markdown vs html', 'html or markdown', 'markdown to html', 'writing format'],
+    relatedConverts: ['md-to-html'],
+  },
+  {
+    slug: 'xlsx-vs-csv',
+    category: 'docs',
+    title: 'XLSX vs CSV — Which Spreadsheet Format?',
+    h1: 'XLSX vs CSV',
+    description:
+      'XLSX keeps formulas, formatting and multiple sheets; CSV is a plain table every tool reads. Which to use — convert free in your browser.',
+    intro:
+      'XLSX and CSV both hold tables, but at different richness. XLSX is the full Excel format — multiple sheets, formulas, formatting and types in one file. CSV is a single plain table of comma-separated values with no formatting — tiny, simple and readable by virtually every spreadsheet, database and program.',
+    options: [
+      {
+        label: 'XLSX',
+        toolId: 'xlsx-convert',
+        best: 'Real spreadsheets with formulas, formatting and sheets.',
+        pros: ['Keeps formulas and formatting', 'Multiple sheets in one file', 'Types and styling'],
+        cons: ['Overkill for plain data', 'Harder to process programmatically', 'Needs Excel/compatible app'],
+      },
+      {
+        label: 'CSV',
+        toolId: 'xlsx-convert',
+        best: 'Imports, exports and program-friendly tabular data.',
+        pros: ['Opens in every tool', 'Tiny and simple', 'Easy to generate and parse'],
+        cons: ['No formulas or formatting', 'Single sheet only', 'Encoding/delimiter pitfalls'],
+      },
+    ],
+    verdict:
+      'Working with formulas, formatting or multiple sheets? Use XLSX. Importing, exporting or feeding data to a program? Use CSV. Convert between them (and JSON) in your browser.',
+    faqs: [
+      { q: 'Does saving XLSX as CSV lose anything?', a: 'Yes — CSV keeps only the values of one sheet. Formulas, formatting and other sheets are dropped.' },
+      { q: 'Which should I send someone in Excel?', a: 'XLSX if they need formulas/formatting; CSV if they just need the raw data to import.' },
+    ],
+    keywords: ['xlsx vs csv', 'csv or excel', 'spreadsheet format', 'convert xlsx csv'],
+    relatedConverts: ['csv-to-xlsx', 'xlsx-to-csv'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);

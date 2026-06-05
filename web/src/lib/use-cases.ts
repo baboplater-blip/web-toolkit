@@ -941,6 +941,361 @@ export const USE_CASES: UseCase[] = [
       en: ['pdf table to excel', 'extract pdf table', 'pdf to xlsx', 'statement to excel'],
     },
   },
+
+  /* ── EN 활용법·비교 확대 2026-06 (3차) ── */
+  {
+    slug: 'anonymize-video-before-posting',
+    category: 'video',
+    title: { ko: '영상 올리기 전 얼굴 가리기', en: 'Blur Faces in a Video Before Posting' },
+    h1: { ko: '영상 속 얼굴 모자이크', en: 'Anonymize faces in a video' },
+    description: {
+      ko: 'SNS·유튜브에 올리기 전 영상 속 지나가는 사람들 얼굴을 추적해 블러·모자이크하세요. 필요한 구간만 잘라서, 업로드 없이 브라우저에서.',
+      en: 'Track and blur bystanders’ faces in a video before posting to social or YouTube, and trim to just the part you need. In your browser, no upload.',
+    },
+    intro: {
+      ko: 'AI가 영상 속 얼굴을 프레임마다 추적해 블러·모자이크·이모지로 가립니다. 먼저 필요 없는 앞뒤를 잘라 길이를 줄이면 처리도 빨라집니다. 오디오는 그대로 유지되며, 모든 처리는 브라우저 안에서 끝나 영상이 업로드되지 않습니다.',
+      en: 'AI tracks faces frame by frame and covers them with blur, mosaic or emoji. Trim the unneeded head and tail first to shorten it and speed up processing. The audio stays intact, and everything runs in your browser so the video is never uploaded.',
+    },
+    steps: [
+      {
+        href: '/tools/video/trim',
+        name: { ko: '필요한 구간만 자르기', en: 'Trim to what you need' },
+        text: { ko: '시작·종료 시각을 지정해 필요한 부분만 남깁니다.', en: 'Set start/end times to keep only the part you need.' },
+      },
+      {
+        href: '/tools/video/blur-face',
+        name: { ko: '얼굴 추적 + 가림', en: 'Track + cover faces' },
+        text: { ko: '영상 속 얼굴을 자동 추적해 블러·모자이크·이모지로 가립니다.', en: 'Auto-track faces and cover them with blur, mosaic or emoji.' },
+      },
+    ],
+    relatedConverts: ['mov-to-mp4', 'mkv-to-mp4'],
+    relatedCompares: ['mp4-vs-webm'],
+    faqs: [
+      {
+        q: { ko: '측면·뒷모습 얼굴도 가려지나요?', en: 'Does it cover side and back-facing faces?' },
+        a: { ko: '정면 얼굴이 가장 잘 잡힙니다. 놓친 구간은 영역을 직접 추가해 보완할 수 있습니다.', en: 'Front-facing faces are caught best. You can add regions manually to cover any that are missed.' },
+      },
+      {
+        q: { ko: '오디오는 유지되나요?', en: 'Is the audio kept?' },
+        a: { ko: '네. 화면의 얼굴만 가리고 원본 오디오는 그대로 남습니다.', en: 'Yes. Only the on-screen faces are covered; the original audio is preserved.' },
+      },
+    ],
+    keywords: {
+      ko: ['영상 얼굴 모자이크', '동영상 얼굴 블러', '영상 익명화', '행인 얼굴 가리기'],
+      en: ['blur faces in video', 'anonymize video', 'video face blur', 'hide faces video'],
+    },
+  },
+  {
+    slug: 'make-meme-gif-with-caption',
+    category: 'gif',
+    title: { ko: '자막 넣은 밈 GIF 만들기', en: 'Make a Captioned Meme GIF' },
+    h1: { ko: '자막 GIF 만들기', en: 'Make a captioned GIF' },
+    description: {
+      ko: '영상 한 구간을 GIF로 만들고 위에 자막을 얹은 뒤 용량까지 줄이세요. 업로드 없이 브라우저에서.',
+      en: 'Turn a clip into a GIF, add a caption on top, then shrink the file. In your browser, no upload.',
+    },
+    intro: {
+      ko: '밈 GIF는 세 단계면 됩니다. 영상에서 원하는 짧은 구간을 GIF로 뽑고, 텍스트 자막을 얹은 뒤, 팔레트·프레임 최적화로 용량을 줄여 어디든 올리기 좋게 만듭니다. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'A meme GIF takes three steps: pull a short clip from a video as a GIF, add a text caption, then optimize the palette and frames to shrink it for posting anywhere. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/video/to-gif',
+        name: { ko: '영상 → GIF', en: 'Clip → GIF' },
+        text: { ko: '영상에서 원하는 구간을 골라 GIF로 변환합니다.', en: 'Pick a section of the video and convert it to a GIF.' },
+      },
+      {
+        href: '/tools/gif/text',
+        name: { ko: '자막 얹기', en: 'Add a caption' },
+        text: { ko: 'GIF 위에 표시될 텍스트·자막을 추가합니다.', en: 'Add text that shows across the GIF.' },
+      },
+      {
+        href: '/tools/gif/optimize',
+        name: { ko: '용량 줄이기', en: 'Shrink the file' },
+        text: { ko: '팔레트·프레임을 최적화해 용량을 줄입니다.', en: 'Optimize palette and frames to reduce the size.' },
+      },
+    ],
+    relatedConverts: ['mp4-to-gif', 'webm-to-gif'],
+    relatedCompares: ['gif-vs-mp4'],
+    faqs: [
+      {
+        q: { ko: 'GIF가 너무 커요.', en: 'My GIF is too large.' },
+        a: { ko: '길이를 줄이고 크기·색을 낮추세요. 정교한 영상이면 GIF 대신 MP4가 훨씬 작습니다.', en: 'Trim length and lower size/colors. For detailed clips, MP4 is far smaller than GIF.' },
+      },
+      {
+        q: { ko: '자막 위치를 바꿀 수 있나요?', en: 'Can I move the caption?' },
+        a: { ko: '네. 텍스트 위치·크기를 조절해 상단·하단 어디든 배치할 수 있습니다.', en: 'Yes. Adjust the text position and size to place it top, bottom or anywhere.' },
+      },
+    ],
+    keywords: {
+      ko: ['밈 gif 만들기', 'gif 자막', '영상 gif 자막', 'gif 텍스트'],
+      en: ['make meme gif', 'caption gif', 'gif with text', 'video to gif caption'],
+    },
+  },
+  {
+    slug: 'split-pdf-into-chapters',
+    category: 'pdf',
+    title: { ko: '큰 PDF를 챕터·부분으로 나누기', en: 'Split a Big PDF into Chapters' },
+    h1: { ko: 'PDF 챕터로 나누기', en: 'Split a PDF into parts' },
+    description: {
+      ko: '두꺼운 PDF에서 필요한 페이지 범위만 따로 빼내거나 챕터별로 쪼개세요. 페이지 정리까지, 업로드 없이 브라우저에서.',
+      en: 'Pull a page range out of a thick PDF or break it into per-chapter files, then tidy the pages. In your browser, no upload.',
+    },
+    intro: {
+      ko: '큰 PDF는 통째로 다루기 불편합니다. 나누기 도구로 원하는 페이지 범위를 별도 PDF로 추출하거나 챕터 단위로 쪼갠 뒤, 페이지 정리 도구로 순서를 다듬으면 작고 다루기 쉬운 파일이 됩니다. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'A big PDF is awkward to handle whole. Use the split tool to extract a page range into its own PDF or break it into chapters, then tidy the order with the organize tool for smaller, manageable files. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/pdf/split',
+        name: { ko: '페이지 범위·챕터로 분할', en: 'Split by range or chapter' },
+        text: { ko: '원하는 페이지 범위를 별도 PDF로 추출하거나 여러 파일로 쪼갭니다.', en: 'Extract a page range into its own PDF or break it into several files.' },
+      },
+      {
+        href: '/tools/pdf/organize',
+        name: { ko: '페이지 순서 정리', en: 'Tidy the page order' },
+        text: { ko: '썸네일로 페이지를 재정렬·삭제해 마무리합니다.', en: 'Reorder or delete pages with thumbnails to finish.' },
+      },
+    ],
+    relatedCompares: ['merge-vs-split-pdf'],
+    faqs: [
+      {
+        q: { ko: '특정 페이지만 빼낼 수 있나요?', en: 'Can I pull out just specific pages?' },
+        a: { ko: '네. 페이지 범위를 지정해 그 부분만 새 PDF로 추출할 수 있습니다.', en: 'Yes. Specify a page range to extract just that part into a new PDF.' },
+      },
+      {
+        q: { ko: '나누면 화질이 떨어지나요?', en: 'Does splitting reduce quality?' },
+        a: { ko: '아니요. 기존 페이지를 재인코딩 없이 다루므로 텍스트·이미지가 원본 그대로입니다.', en: 'No. It handles existing pages without re-encoding, so text and images stay original.' },
+      },
+    ],
+    keywords: {
+      ko: ['pdf 나누기', 'pdf 분할', 'pdf 페이지 추출', 'pdf 챕터 분리'],
+      en: ['split pdf', 'extract pdf pages', 'divide pdf', 'pdf into chapters'],
+    },
+  },
+  {
+    slug: 'clean-up-podcast-audio',
+    category: 'audio',
+    title: { ko: '팟캐스트·녹음 음성 다듬기', en: 'Clean Up Podcast / Recorded Audio' },
+    h1: { ko: '녹음 음성 정리', en: 'Clean up recorded audio' },
+    description: {
+      ko: '녹음에서 무음 구간을 자동으로 잘라내고 볼륨을 고르게 맞춘 뒤 용량을 줄이세요. 업로드 없이 브라우저에서.',
+      en: 'Auto-cut silent gaps, even out the volume, then shrink the file of a recording. In your browser, no upload.',
+    },
+    intro: {
+      ko: '말소리 녹음은 세 단계로 깔끔해집니다. 말 없는 긴 구간을 자동으로 잘라 늘어짐을 없애고, 볼륨을 일정하게 맞추거나 라우드니스를 정규화한 뒤, 비트레이트를 낮춰 공유하기 좋은 용량으로 줄입니다. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'A spoken recording cleans up in three steps: auto-cut long silent gaps to tighten it, even out or normalize the loudness, then lower the bitrate for a share-friendly size. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/audio/silence-trim',
+        name: { ko: '무음 자동 제거', en: 'Auto-remove silence' },
+        text: { ko: '말 없는 긴 구간을 자동으로 잘라냅니다.', en: 'Automatically cut long silent gaps.' },
+      },
+      {
+        href: '/tools/audio/volume',
+        name: { ko: '볼륨·라우드니스 정규화', en: 'Normalize loudness' },
+        text: { ko: 'dB로 볼륨을 조정하거나 LUFS 라우드니스로 정규화합니다.', en: 'Adjust volume in dB or normalize to a LUFS target.' },
+      },
+      {
+        href: '/tools/audio/compress',
+        name: { ko: '용량 줄이기', en: 'Shrink the file' },
+        text: { ko: '비트레이트를 낮춰 공유하기 좋은 용량으로 만듭니다.', en: 'Lower the bitrate for a share-friendly size.' },
+      },
+    ],
+    relatedConverts: ['wav-to-mp3', 'm4a-to-mp3'],
+    relatedCompares: ['mp3-vs-wav'],
+    faqs: [
+      {
+        q: { ko: '무음 제거로 말이 잘리진 않나요?', en: 'Will silence removal cut into speech?' },
+        a: { ko: '임계값을 조절해 자연스러운 숨소리는 남기고 긴 공백만 줄일 수 있습니다.', en: 'Tune the threshold to keep natural breaths while trimming only long gaps.' },
+      },
+      {
+        q: { ko: '라우드니스 정규화가 왜 필요한가요?', en: 'Why normalize loudness?' },
+        a: { ko: '구간별 볼륨 편차를 줄여 듣는 사람이 볼륨을 계속 조절하지 않아도 되게 합니다.', en: 'It evens out volume swings so listeners aren’t constantly adjusting the level.' },
+      },
+    ],
+    keywords: {
+      ko: ['팟캐스트 음성 정리', '녹음 무음 제거', '오디오 볼륨 정규화', '음성 압축'],
+      en: ['clean podcast audio', 'remove silence', 'normalize audio', 'podcast cleanup'],
+    },
+  },
+  {
+    slug: 'convert-spreadsheet-formats',
+    category: 'docs',
+    title: { ko: '엑셀·CSV·JSON 자유 변환', en: 'Convert Between Excel, CSV and JSON' },
+    h1: { ko: '스프레드시트 포맷 변환', en: 'Convert spreadsheet formats' },
+    description: {
+      ko: '엑셀(XLSX)·CSV·JSON 사이를 자유롭게 변환하세요. 시트 선택부터 프로그램용 JSON까지, 업로드 없이 브라우저에서.',
+      en: 'Convert freely between Excel (XLSX), CSV and JSON — pick a sheet, get program-friendly JSON. In your browser, no upload.',
+    },
+    intro: {
+      ko: '표 데이터는 쓰임에 따라 포맷이 다릅니다. 엑셀은 사람이 보기 좋고, CSV는 어디서나 가져오기 좋고, JSON은 프로그램이 쓰기 좋습니다. 엑셀에서 원하는 시트를 골라 CSV·JSON으로 변환하거나, CSV를 다시 JSON으로 바꿔 API·코드에 넣으세요. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'Tabular data needs different formats for different jobs: Excel for people, CSV for importing anywhere, JSON for programs. Pick a sheet from Excel and convert it to CSV/JSON, or turn a CSV into JSON for an API or code. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/docs/xlsx-convert',
+        name: { ko: 'XLSX ↔ CSV ↔ JSON', en: 'XLSX ↔ CSV ↔ JSON' },
+        text: { ko: '엑셀에서 시트를 골라 CSV·JSON으로, 또는 그 반대로 변환합니다.', en: 'Pick a sheet from Excel and convert to CSV/JSON, or back.' },
+      },
+      {
+        href: '/tools/docs/csv-json',
+        name: { ko: 'CSV ↔ JSON 정밀 변환', en: 'Fine CSV ↔ JSON' },
+        text: { ko: 'CSV를 프로그램에서 쓰기 좋은 JSON으로(또는 반대로) 변환합니다.', en: 'Convert CSV into program-friendly JSON (or back).' },
+      },
+    ],
+    relatedConverts: ['csv-to-xlsx', 'xlsx-to-csv', 'csv-to-json'],
+    relatedCompares: ['xlsx-vs-csv', 'csv-vs-json'],
+    faqs: [
+      {
+        q: { ko: '여러 시트 중 하나만 변환할 수 있나요?', en: 'Can I convert just one of several sheets?' },
+        a: { ko: '네. 엑셀 변환기에서 원하는 시트를 골라 변환할 수 있습니다.', en: 'Yes. The Excel converter lets you select which sheet to convert.' },
+      },
+      {
+        q: { ko: 'CSV를 JSON으로 바꾸면 구조가 어떻게 되나요?', en: 'How is a CSV structured as JSON?' },
+        a: { ko: '각 행이 헤더를 키로 갖는 객체가 됩니다. 중첩이 필요하면 변환 후 가공하세요.', en: 'Each row becomes an object keyed by the header. Post-process if you need nesting.' },
+      },
+    ],
+    keywords: {
+      ko: ['엑셀 csv 변환', 'xlsx json 변환', 'csv json 변환', '스프레드시트 변환'],
+      en: ['excel to csv', 'xlsx to json', 'csv to json', 'convert spreadsheet'],
+    },
+  },
+  {
+    slug: 'fix-and-convert-subtitles',
+    category: 'video',
+    title: { ko: '자막 싱크 맞추고 포맷 변환·굽기', en: 'Fix Subtitle Timing, Convert & Burn In' },
+    h1: { ko: '자막 정리·변환·굽기', en: 'Fix, convert & burn subtitles' },
+    description: {
+      ko: '어긋난 자막 시간을 일괄 보정하고 플랫폼에 맞는 포맷으로 바꾼 뒤, 필요하면 영상에 영구로 구우세요. 업로드 없이 브라우저에서.',
+      en: 'Bulk-fix shifted subtitle timings, convert to the right format, then optionally burn them into the video. In your browser, no upload.',
+    },
+    intro: {
+      ko: '자막은 시간 어긋남과 포맷 호환이 흔한 문제입니다. 편집 도구로 전체 자막의 시간을 일괄 보정하고, 플랫폼이 요구하는 포맷(SRT·VTT·ASS·LRC)으로 변환한 뒤, 자막을 영상에 영구로 굽고 싶으면 마지막 단계에서 결합합니다. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'Subtitles commonly suffer from timing drift and format mismatches. Bulk-shift all cues with the editor, convert to the format a platform needs (SRT/VTT/ASS/LRC), then burn them permanently into the video as a final step if you want. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/text/subtitle-edit',
+        name: { ko: '시간 일괄 보정·편집', en: 'Bulk re-time & edit' },
+        text: { ko: '어긋난 자막 시간을 일괄로 당기거나 밀고 텍스트를 다듬습니다.', en: 'Shift all cues earlier/later in bulk and tidy the text.' },
+      },
+      {
+        href: '/tools/text/subtitle-convert',
+        name: { ko: '포맷 변환', en: 'Convert format' },
+        text: { ko: 'SRT ↔ VTT ↔ ASS ↔ LRC ↔ TXT 로 변환합니다.', en: 'Convert between SRT, VTT, ASS, LRC and TXT.' },
+      },
+      {
+        href: '/tools/video/burn-subtitle',
+        name: { ko: '영상에 자막 굽기(선택)', en: 'Burn into video (optional)' },
+        text: { ko: '자막을 영상에 영구로 결합해 어디서나 보이게 합니다.', en: 'Permanently embed the subtitles so they always show.' },
+      },
+    ],
+    relatedCompares: ['mp4-vs-webm'],
+    faqs: [
+      {
+        q: { ko: '자막이 영상보다 빠르거나 느려요.', en: 'My subtitles are ahead of or behind the video.' },
+        a: { ko: '편집 도구에서 전체 자막을 한꺼번에 +/− 초만큼 이동해 싱크를 맞출 수 있습니다.', en: 'Shift every cue by +/− seconds at once in the editor to re-sync.' },
+      },
+      {
+        q: { ko: '구운 자막은 끌 수 있나요?', en: 'Can burned-in subtitles be turned off?' },
+        a: { ko: '아니요. 영상에 영구 결합되므로, 켜고 끄려면 별도 자막 파일로 두세요.', en: 'No. They’re permanent. Keep a separate subtitle file if you need them toggleable.' },
+      },
+    ],
+    keywords: {
+      ko: ['자막 싱크', '자막 시간 보정', '자막 변환', '자막 굽기'],
+      en: ['fix subtitle timing', 'subtitle sync', 'convert subtitles', 'burn subtitles'],
+    },
+  },
+  {
+    slug: 'make-animated-sticker',
+    category: 'gif',
+    title: { ko: '움직이는 스티커 만들기', en: 'Make an Animated Sticker' },
+    h1: { ko: '애니메이션 스티커', en: 'Animated sticker' },
+    description: {
+      ko: '영상 한 구간을 GIF로 만들고 스티커 크기로 줄인 뒤 용량을 최적화하세요. 업로드 없이 브라우저에서.',
+      en: 'Turn a clip into a GIF, scale it to sticker size, then optimize the file. In your browser, no upload.',
+    },
+    intro: {
+      ko: '움직이는 스티커는 작은 GIF면 충분합니다. 영상에서 짧은 구간을 GIF로 뽑고, 스티커에 맞게 크기를 줄인 뒤, 팔레트·프레임 최적화로 용량을 작게 만들면 메신저·SNS에 올리기 좋습니다. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'An animated sticker is just a small GIF. Pull a short clip as a GIF, scale it down to sticker size, then optimize the palette and frames to keep it tiny for messengers and social. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/video/to-gif',
+        name: { ko: '영상 → GIF', en: 'Clip → GIF' },
+        text: { ko: '영상에서 짧은 구간을 골라 GIF로 변환합니다.', en: 'Pick a short section of a video and convert it to GIF.' },
+      },
+      {
+        href: '/tools/gif/resize',
+        name: { ko: '스티커 크기로 줄이기', en: 'Scale to sticker size' },
+        text: { ko: 'GIF 크기를 스티커에 맞게 줄입니다.', en: 'Resize the GIF down to sticker dimensions.' },
+      },
+      {
+        href: '/tools/gif/optimize',
+        name: { ko: '용량 최적화', en: 'Optimize the file' },
+        text: { ko: '팔레트·프레임을 최적화해 용량을 작게 만듭니다.', en: 'Optimize palette and frames to keep it small.' },
+      },
+    ],
+    relatedConverts: ['mp4-to-gif', 'gif-to-webp'],
+    relatedCompares: ['gif-vs-mp4'],
+    faqs: [
+      {
+        q: { ko: '스티커 용량 제한에 맞추려면?', en: 'How to fit a sticker size limit?' },
+        a: { ko: '크기를 더 줄이고 프레임 수·색을 낮추세요. 길이를 짧게 자르는 것도 효과적입니다.', en: 'Scale down further and lower frame count/colors; trimming the length helps too.' },
+      },
+      {
+        q: { ko: '투명 배경 스티커도 되나요?', en: 'Can I make transparent stickers?' },
+        a: { ko: 'GIF는 단순 투명만 지원합니다. 더 깔끔한 투명이 필요하면 WebP로 변환하세요.', en: 'GIF supports only simple transparency. Convert to WebP for cleaner transparency.' },
+      },
+    ],
+    keywords: {
+      ko: ['움직이는 스티커', 'gif 스티커', '애니메이션 스티커', 'gif 만들기'],
+      en: ['animated sticker', 'gif sticker', 'make sticker gif', 'create animated sticker'],
+    },
+  },
+  {
+    slug: 'extract-images-from-documents',
+    category: 'pdf',
+    title: { ko: 'PDF·전자책에서 이미지 추출하기', en: 'Extract Images from PDFs & E-books' },
+    h1: { ko: '문서에서 이미지 추출', en: 'Extract images from documents' },
+    description: {
+      ko: 'PDF나 EPUB 안에 박힌 사진·삽화를 원본 그대로 꺼내 ZIP으로 받으세요. 업로드 없이 브라우저에서.',
+      en: 'Pull the photos and illustrations embedded in a PDF or EPUB and download them as a ZIP. In your browser, no upload.',
+    },
+    intro: {
+      ko: '문서에 들어 있는 이미지를 일일이 캡처할 필요가 없습니다. PDF면 페이지에 삽입된 이미지를 PNG로, EPUB이면 표지·삽화를 통째로 꺼내 ZIP으로 받을 수 있습니다. 원본 화질 그대로 추출되며, 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'No need to screenshot images one by one. For a PDF, extract the embedded images as PNGs; for an EPUB, pull the cover and illustrations into a ZIP. They come out at original quality, and everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/pdf/image-extract',
+        name: { ko: 'PDF 이미지 추출', en: 'Extract PDF images' },
+        text: { ko: 'PDF 페이지에 삽입된 이미지를 PNG로 추출해 ZIP으로 받습니다.', en: 'Extract images embedded in PDF pages as PNGs in a ZIP.' },
+      },
+      {
+        href: '/tools/docs/epub-images-extract',
+        name: { ko: 'EPUB 이미지 추출', en: 'Extract EPUB images' },
+        text: { ko: 'EPUB 안의 표지·삽화를 모두 꺼내 ZIP으로 받습니다.', en: 'Pull every cover and illustration from an EPUB into a ZIP.' },
+      },
+    ],
+    relatedConverts: ['pdf-to-jpg'],
+    faqs: [
+      {
+        q: { ko: '원본 화질 그대로 나오나요?', en: 'Do images come out at original quality?' },
+        a: { ko: '네. 문서에 저장된 이미지를 재인코딩 없이 그대로 꺼냅니다.', en: 'Yes. The stored images are extracted as-is, without re-encoding.' },
+      },
+      {
+        q: { ko: '스캔 이미지 PDF도 되나요?', en: 'What about scanned image PDFs?' },
+        a: { ko: '페이지 자체가 이미지라면 PDF→이미지(페이지 렌더) 도구가 더 적합할 수 있습니다.', en: 'If pages are themselves images, the PDF-to-image (page render) tool may suit better.' },
+      },
+    ],
+    keywords: {
+      ko: ['pdf 이미지 추출', 'epub 이미지 추출', '문서 이미지 꺼내기', '전자책 삽화 추출'],
+      en: ['extract images from pdf', 'extract epub images', 'get images from document', 'pdf image extractor'],
+    },
+  },
 ];
 
 export const USE_CASE_SLUGS: string[] = USE_CASES.map((u) => u.slug);
