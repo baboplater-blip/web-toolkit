@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const content = buildConversionContent(conv, 'en');
   const koUrl = `/convert/${slug}`;
   const enUrl = `/en/convert/${slug}`;
+  const ogImage = `/og/convert/${slug}.png`;
   return {
     title: content.title,
     description: content.description,
@@ -48,13 +49,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'Web Toolkit',
       locale: 'en_US',
       url: enUrl,
-      images: [{ url: `/og/${content.category}.png`, width: 1200, height: 630, alt: content.h1 }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: content.h1 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: content.title,
       description: content.description,
-      images: [`/og/${content.category}.png`],
+      images: [ogImage],
     },
   };
 }

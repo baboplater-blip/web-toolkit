@@ -55,6 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!cmp) return { title: 'Comparison not found — Web Toolkit' };
   const koUrl = `/compare/${cmp.slug}`;
   const enUrl = `/en/compare/${cmp.slug}`;
+  const ogImage = `/og/compare/${cmp.slug}.en.png`;
   return {
     title: cmp.title,
     description: cmp.description,
@@ -67,9 +68,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'Web Toolkit',
       locale: 'en_US',
       url: enUrl,
-      images: [{ url: `/og/${cmp.category}.png`, width: 1200, height: 630, alt: cmp.h1 }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: cmp.h1 }],
     },
-    twitter: { card: 'summary_large_image', title: cmp.title, description: cmp.description, images: [`/og/${cmp.category}.png`] },
+    twitter: { card: 'summary_large_image', title: cmp.title, description: cmp.description, images: [ogImage] },
   };
 }
 

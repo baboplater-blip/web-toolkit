@@ -4,14 +4,20 @@
  *
  * 출력:
  *   - public/og/default.png + public/og/{category}.png (사이트·카테고리, 12장)
- *   - public/og/tools/{id}.png (도구별 117장)
+ *   - public/og/tools/{id}.png (도구별)
+ *   - public/og/convert/{slug}.png (변환, 언어 중립 "FROM → TO")
+ *   - public/og/compare/{slug}.png + {slug}.en.png (비교, ko/en)
+ *   - public/og/use/{slug}.png + {slug}.en.png (활용법, ko/en)
  *
  * 한번 실행해 PNG 를 커밋해두고 메타에서 참조한다. 빌드 시점 의존성 없음.
- * 필요할 때(브랜딩 변경, 카테고리 추가, 도구 추가)만 재실행: `npm run og:gen`
+ * 데이터 모듈(.ts)은 import 하지 않고 정규식으로 파싱한다(별칭·React 의존 회피).
+ * 필요할 때(브랜딩 변경, 카테고리/도구/변환/비교/활용법 추가)만 재실행: `npm run og:gen`
  *
  * 옵션:
- *   --no-tools    도구별 OG 생성을 건너뜀 (사이트·카테고리만 빠르게 갱신)
+ *   --no-tools    도구별 OG 생성을 건너뜀
  *   --tools-only  도구별 OG 만 생성
+ *   --no-pages    변환·비교·활용법 OG 생성을 건너뜀
+ *   --pages-only  변환·비교·활용법 OG 만 생성
  */
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -23,15 +29,32 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = join(__dirname, '..');
 const OUT_DIR = join(WEB_ROOT, 'public/og');
 const TOOLS_OUT_DIR = join(OUT_DIR, 'tools');
+const CONVERT_OUT_DIR = join(OUT_DIR, 'convert');
+const COMPARE_OUT_DIR = join(OUT_DIR, 'compare');
+const USE_OUT_DIR = join(OUT_DIR, 'use');
 const REGISTRY_PATH = join(WEB_ROOT, 'src/lib/tools/registry.ts');
+const CONVERT_MATRIX_PATH = join(WEB_ROOT, 'src/lib/convert-matrix.ts');
+const EN_COMPARES_PATH = join(WEB_ROOT, 'src/lib/en-compares.ts');
+const KO_COMPARES_PATH = join(WEB_ROOT, 'src/lib/ko-compares.ts');
+const USE_CASES_PATH = join(WEB_ROOT, 'src/lib/use-cases.ts');
 
 const NO_TOOLS = process.argv.includes('--no-tools');
 const TOOLS_ONLY = process.argv.includes('--tools-only');
+const NO_PAGES = process.argv.includes('--no-pages');
+const PAGES_ONLY = process.argv.includes('--pages-only');
 const NEW_BADGE_DAYS = 14;
 
 const SITE_NAME = 'Web Toolkit';
 const TAGLINE = '브라우저에서 완결되는 무료 도구';
+const TAGLINE_EN = 'Free tools that run in your browser';
 const ACCENT = '#7c3aed'; // 보라
+
+/** EN OG 용 카테고리 라벨 */
+const CATEGORY_LABEL_EN = {
+  image: 'Image', pdf: 'PDF', video: 'Video', gif: 'GIF', audio: 'Audio',
+  docs: 'Documents', text: 'Text', dev: 'Developer', util: 'Utility',
+  security: 'Security', ai: 'AI',
+};
 
 /**
  * 카테고리별 시각 ID — 색상은 어두운 그라데이션 두 색.
@@ -76,7 +99,7 @@ function isRecentlyAdded(addedAt) {
   return days >= 0 && days < NEW_BADGE_DAYS;
 }
 
-function buildSvg({ category, title, subtitle, label, newBadge = false }) {
+function buildSvg({ category, title, subtitle, label, newBadge = false, tagline = TAGLINE }) {
   const cat = CATEGORIES[category] ?? { from: '#0f172a', to: '#1e293b', hue: ACCENT, label: '' };
   const showLabel = label ?? cat.label;
   // title 폰트 크기: 최대 92pt, 최소 48pt, 가용폭 ~1040
@@ -139,7 +162,7 @@ function buildSvg({ category, title, subtitle, label, newBadge = false }) {
   <g transform="translate(80, 540)">
     <circle cx="14" cy="14" r="14" fill="${cat.hue}"/>
     <text x="44" y="22" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#f8fafc">${SITE_NAME}</text>
-    <text x="44" y="50" font-family="system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" font-size="18" font-weight="400" fill="#94a3b8">${escapeXml(TAGLINE)}</text>
+    <text x="44" y="50" font-family="system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" font-size="18" font-weight="400" fill="#94a3b8">${escapeXml(tagline)}</text>
   </g>
 
   <!-- right corner — no upload mark -->
@@ -196,11 +219,88 @@ function renderPng(svg) {
   return resvg.render().asPng();
 }
 
+/* ───────────────── 페이지별(변환·비교·활용법) OG 파서 ─────────────────
+ * 데이터 모듈(.ts)을 import 하지 않고 정규식으로 파싱한다(별칭·React 의존 회피).
+ * 모두 순수 객체/헬퍼 호출 리터럴이라 안정적으로 추출된다.
+ */
+
+/** convert-matrix.ts 의 FORMATS 에서 key→{label, kind} 추출 */
+function parseFormats() {
+  const src = readFileSync(CONVERT_MATRIX_PATH, 'utf-8');
+  const map = {};
+  const re = /key: '([^']+)', label: '([^']+)', ext: '[^']*', kind: '([^']+)'/g;
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    map[m[1]] = { label: m[2], kind: m[3] };
+  }
+  return map;
+}
+
+/** conversionCategory 와 동일 규칙 (video>audio>pdf>docs>image) */
+function convertCategory(formats, from, to) {
+  const kf = formats[from]?.kind, kt = formats[to]?.kind;
+  if (kf === 'video' || kt === 'video') return 'video';
+  if (kf === 'audio' || kt === 'audio') return 'audio';
+  if (from === 'pdf' || to === 'pdf') return 'pdf';
+  if (kf === 'document' || kt === 'document') return 'docs';
+  return 'image';
+}
+
+/** convert-matrix.ts 의 CONVERSIONS 에서 {from,to} 쌍 추출(헬퍼·객체 양식 모두) */
+function parseConversions() {
+  const src = readFileSync(CONVERT_MATRIX_PATH, 'utf-8');
+  // CONVERSIONS 배열 본문만 잘라낸다
+  const start = src.indexOf('export const CONVERSIONS');
+  const body = start >= 0 ? src.slice(start) : src;
+  const seen = new Set();
+  const pairs = [];
+  const add = (from, to) => {
+    const slug = `${from}-to-${to}`;
+    if (seen.has(slug)) return;
+    seen.add(slug);
+    pairs.push({ from, to, slug });
+  };
+  // imgConvert('a', 'b') / audioConvert(...) / videoConvert(...)
+  for (const m of body.matchAll(/(?:img|audio|video)Convert\('([^']+)',\s*'([^']+)'\)/g)) {
+    add(m[1], m[2]);
+  }
+  // { from: 'a', to: 'b', ... }
+  for (const m of body.matchAll(/\{\s*from: '([^']+)', to: '([^']+)',/g)) {
+    add(m[1], m[2]);
+  }
+  return pairs;
+}
+
+/** 비교 파일(en/ko)에서 slug→{h1, category} 추출 */
+function parseCompares(path) {
+  const src = readFileSync(path, 'utf-8');
+  const out = {};
+  // { slug, category, title, h1, ... } 구조에서 slug→category·h1 추출
+  const re = /\{\s*slug: '([^']+)',\s*category: '([^']+)',[\s\S]*?h1: '([^']*)'/g;
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    out[m[1]] = { category: m[2], h1: m[3] };
+  }
+  return out;
+}
+
+/** use-cases.ts 에서 slug→{category, h1:{ko,en}} 추출 */
+function parseUseCases() {
+  const src = readFileSync(USE_CASES_PATH, 'utf-8');
+  const out = {};
+  const re = /\{\s*slug: '([^']+)',\s*category: '([^']+)',[\s\S]*?h1: \{ ko: '([^']*)', en: '([^']*)'/g;
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    out[m[1]] = { category: m[2], h1: { ko: m[3], en: m[4] } };
+  }
+  return out;
+}
+
 function main() {
   mkdirSync(OUT_DIR, { recursive: true });
   let generated = 0;
 
-  if (!TOOLS_ONLY) {
+  if (!TOOLS_ONLY && !PAGES_ONLY) {
     // 1) 사이트 기본
     const tools = parseRegistryTools();
     const defaultSvg = buildSvg({
@@ -227,7 +327,7 @@ function main() {
     }
   }
 
-  if (!NO_TOOLS) {
+  if (!NO_TOOLS && !PAGES_ONLY) {
     // 3) 도구별 (117개)
     mkdirSync(TOOLS_OUT_DIR, { recursive: true });
     const tools = parseRegistryTools();
@@ -248,6 +348,65 @@ function main() {
       generated++;
     }
     console.log(`✔ 도구 OG ${tools.length}장 → public/og/tools/`);
+  }
+
+  if (!NO_PAGES && !TOOLS_ONLY) {
+    // 4) 변환 OG (slug 당 1장 — "FROM → TO" 는 언어 중립)
+    mkdirSync(CONVERT_OUT_DIR, { recursive: true });
+    const formats = parseFormats();
+    const conversions = parseConversions();
+    for (const c of conversions) {
+      const fl = formats[c.from]?.label ?? c.from.toUpperCase();
+      const tl = formats[c.to]?.label ?? c.to.toUpperCase();
+      const cat = convertCategory(formats, c.from, c.to);
+      const svg = buildSvg({
+        category: cat,
+        title: `${fl} → ${tl}`,
+        subtitle: '브라우저에서 변환 · 무료 · 업로드 없음',
+        label: CATEGORIES[cat]?.label ?? cat,
+      });
+      writeFileSync(join(CONVERT_OUT_DIR, `${c.slug}.png`), renderPng(svg));
+      generated++;
+    }
+    console.log(`✔ 변환 OG ${conversions.length}장 → public/og/convert/`);
+
+    // 5) 비교 OG (slug 당 ko·en 2장)
+    mkdirSync(COMPARE_OUT_DIR, { recursive: true });
+    const koCmp = parseCompares(KO_COMPARES_PATH);
+    const enCmp = parseCompares(EN_COMPARES_PATH);
+    const cmpSlugs = new Set([...Object.keys(koCmp), ...Object.keys(enCmp)]);
+    for (const slug of cmpSlugs) {
+      const cat = (enCmp[slug] ?? koCmp[slug]).category;
+      const ko = koCmp[slug] ?? enCmp[slug];
+      const en = enCmp[slug] ?? koCmp[slug];
+      writeFileSync(join(COMPARE_OUT_DIR, `${slug}.png`), renderPng(buildSvg({
+        category: cat, title: ko.h1, subtitle: '어느 쪽을 써야 할까? · 무료 비교', label: CATEGORIES[cat]?.label ?? cat,
+      })));
+      writeFileSync(join(COMPARE_OUT_DIR, `${slug}.en.png`), renderPng(buildSvg({
+        category: cat, title: en.h1, subtitle: 'Which should you use? · Free comparison',
+        label: CATEGORY_LABEL_EN[cat] ?? cat, tagline: TAGLINE_EN,
+      })));
+      generated += 2;
+    }
+    console.log(`✔ 비교 OG ${cmpSlugs.size * 2}장 → public/og/compare/ (ko+en)`);
+
+    // 6) 활용법 OG (slug 당 ko·en 2장)
+    mkdirSync(USE_OUT_DIR, { recursive: true });
+    const useCases = parseUseCases();
+    const useSlugs = Object.keys(useCases);
+    for (const slug of useSlugs) {
+      const u = useCases[slug];
+      const cat = u.category;
+      writeFileSync(join(USE_OUT_DIR, `${slug}.png`), renderPng(buildSvg({
+        category: cat, title: u.h1.ko, subtitle: '단계별 활용법 · 무료 브라우저 도구', label: CATEGORIES[cat]?.label ?? cat,
+      })));
+      writeFileSync(join(USE_OUT_DIR, `${slug}.en.png`), renderPng(buildSvg({
+        category: cat, title: u.h1.en, subtitle: 'Step-by-step how-to · Free browser tools',
+        label: CATEGORY_LABEL_EN[cat] ?? cat, tagline: TAGLINE_EN,
+      })));
+      generated += 2;
+    }
+    console.log(`✔ 활용법 OG ${useSlugs.length * 2}장 → public/og/use/ (ko+en)`);
   }
 
   console.log(`\nOG 이미지 총 ${generated}장 생성 완료.`);

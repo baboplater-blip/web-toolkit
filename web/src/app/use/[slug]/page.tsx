@@ -43,9 +43,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'Web Toolkit',
       locale: 'ko_KR',
       url: koUrl,
-      images: [{ url: `/og/${uc.category}.png`, width: 1200, height: 630, alt: uc.h1.ko }],
+      images: [{ url: `/og/use/${slug}.png`, width: 1200, height: 630, alt: uc.h1.ko }],
     },
-    twitter: { card: 'summary_large_image', title: uc.title.ko, description: uc.description.ko, images: [`/og/${uc.category}.png`] },
+    twitter: { card: 'summary_large_image', title: uc.title.ko, description: uc.description.ko, images: [`/og/use/${slug}.png`] },
   };
 }
 

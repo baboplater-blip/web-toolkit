@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!cmp) return { title: '비교를 찾을 수 없습니다 · Web Toolkit' };
   const koUrl = `/compare/${slug}`;
   const enUrl = `/en/compare/${slug}`;
+  const ogImage = `/og/compare/${slug}.png`;
   return {
     title: cmp.title,
     description: cmp.description,
@@ -52,9 +53,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'Web Toolkit',
       locale: 'ko_KR',
       url: koUrl,
-      images: [{ url: `/og/${cmp.category}.png`, width: 1200, height: 630, alt: cmp.h1 }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: cmp.h1 }],
     },
-    twitter: { card: 'summary_large_image', title: cmp.title, description: cmp.description, images: [`/og/${cmp.category}.png`] },
+    twitter: { card: 'summary_large_image', title: cmp.title, description: cmp.description, images: [ogImage] },
   };
 }
 
