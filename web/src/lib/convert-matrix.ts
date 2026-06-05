@@ -355,6 +355,32 @@ export const FORMATS: Record<string, FormatFact> = {
     strengths: { ko: ['화면에 맞춘 가변 레이아웃', '전자책 리더 표준', '글꼴·크기 조절'], en: ['Reflows to fit the screen', 'E-reader standard', 'Adjustable font/size'] },
     weaknesses: { ko: ['고정 레이아웃엔 부적합', '리더마다 렌더 차이', '인쇄엔 PDF가 나음'], en: ['Poor for fixed layouts', 'Renders differ by reader', 'PDF is better for print'] },
   },
+  word: {
+    key: 'word', label: 'Word', ext: 'docx', kind: 'document',
+    lossy: false, transparency: false, animation: false, vector: false,
+    weight: 'medium', universal: true,
+    summary: { ko: '마이크로소프트 워드(.docx) 문서로, 자유롭게 편집할 수 있습니다.', en: 'A Microsoft Word (.docx) document you can freely edit.' },
+    strengths: { ko: ['텍스트·서식 편집 자유로움', '오피스 표준', '협업·재사용에 적합'], en: ['Freely edit text and formatting', 'Office standard', 'Good for reuse/collaboration'] },
+    weaknesses: { ko: ['뷰어마다 레이아웃 차이', '복잡한 PDF는 완벽 재현 어려움', '워드/호환 앱 필요'], en: ['Layout varies by viewer', 'Complex PDFs may not convert perfectly', 'Needs Word or a compatible app'] },
+  },
+
+  /* ── 비디오(입력 전용) ── */
+  flv: {
+    key: 'flv', label: 'FLV', ext: 'flv', kind: 'video',
+    lossy: true, transparency: false, animation: false, vector: false,
+    weight: 'medium', universal: false,
+    summary: { ko: '옛 플래시 영상 포맷으로, 현대 환경에선 재생이 어려워 변환이 필요합니다.', en: 'An old Flash video format that modern players struggle with, so it needs converting.' },
+    strengths: { ko: ['과거 웹 스트리밍에 흔함', '오래된 영상 보관'], en: ['Common in legacy web streaming', 'Holds older footage'] },
+    weaknesses: { ko: ['브라우저·기기 재생 거의 불가', '플래시 종료로 사장', 'MP4 변환 권장'], en: ['Barely plays on browsers/devices', 'Obsolete since Flash ended', 'Convert to MP4'] },
+  },
+  wmv: {
+    key: 'wmv', label: 'WMV', ext: 'wmv', kind: 'video',
+    lossy: true, transparency: false, animation: false, vector: false,
+    weight: 'medium', universal: false,
+    summary: { ko: '윈도우 미디어 영상 포맷으로, 비윈도우 환경 호환이 약합니다.', en: 'A Windows Media video format with weak support outside Windows.' },
+    strengths: { ko: ['윈도우 환경 호환', '적당한 압축'], en: ['Works on Windows', 'Reasonable compression'] },
+    weaknesses: { ko: ['맥·모바일·웹 호환 약함', 'SNS 업로드 제약', 'MP4 변환 권장'], en: ['Weak on Mac/mobile/web', 'Limited social upload', 'Convert to MP4'] },
+  },
 };
 
 /* ───────────────────────── 변환 정의 ───────────────────────── */
@@ -458,6 +484,30 @@ export const CONVERSIONS: Conversion[] = [
   { from: 'csv', to: 'json', toolId: 'csv-json', toolHref: '/tools/docs/csv-json' },
   { from: 'json', to: 'csv', toolId: 'csv-json', toolHref: '/tools/docs/csv-json' },
   { from: 'yaml', to: 'json', toolId: 'yaml-json', toolHref: '/tools/docs/yaml-json' },
+
+  // ── 콘텐츠 확장 2026-06 ──
+  // 이미지 (image-convert)
+  imgConvert('webp', 'avif'),
+  imgConvert('avif', 'webp'),
+  imgConvert('gif', 'webp'),
+  imgConvert('bmp', 'webp'),
+  // 오디오 (audio-convert)
+  audioConvert('wav', 'm4a'),
+  audioConvert('flac', 'aac'),
+  audioConvert('aac', 'wav'),
+  audioConvert('ogg', 'm4a'),
+  // 비디오 (video-convert; flv·wmv 입력)
+  videoConvert('flv', 'mp4'),
+  videoConvert('wmv', 'mp4'),
+  videoConvert('mkv', 'mov'),
+  videoConvert('mkv', 'webm'),
+  // 문서
+  { from: 'pdf', to: 'word', toolId: 'pdf-to-word', toolHref: '/tools/pdf/to-word' },
+  { from: 'pdf', to: 'txt', toolId: 'pdf-to-txt', toolHref: '/tools/pdf/to-txt' },
+  { from: 'pdf', to: 'md', toolId: 'pdf-to-md', toolHref: '/tools/pdf/to-md' },
+  { from: 'epub', to: 'txt', toolId: 'epub-to-txt', toolHref: '/tools/docs/epub-to-txt' },
+  { from: 'epub', to: 'md', toolId: 'epub-to-md', toolHref: '/tools/docs/epub-to-md' },
+  { from: 'txt', to: 'epub', toolId: 'txt-to-epub', toolHref: '/tools/docs/txt-to-epub' },
 ];
 
 export function conversionSlug(c: Conversion): string {

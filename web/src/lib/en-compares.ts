@@ -432,6 +432,142 @@ export const COMPARES: Compare[] = [
     ],
     keywords: ['base64 vs url encoding', 'percent encoding', 'base64 url safe', 'encoding difference'],
   },
+  {
+    slug: 'mp4-vs-webm',
+    category: 'video',
+    title: 'MP4 vs WebM — Which Video Format?',
+    h1: 'MP4 vs WebM',
+    description:
+      'MP4 plays everywhere; WebM is smaller and open, great for the web. Which to use — convert free in your browser.',
+    intro:
+      'MP4 is the universal video container that plays on virtually every device and platform. WebM is a modern, royalty-free format that is smaller and supports transparency, but it is not as widely supported. The choice is compatibility versus a lighter, web-optimized file.',
+    options: [
+      {
+        label: 'MP4',
+        toolId: 'video-convert',
+        best: 'Sharing, uploading and maximum device compatibility.',
+        pros: ['Plays on every device, social app and player', 'The default for uploads', 'Good compression'],
+        cons: ['No transparent video', 'Not royalty-free'],
+      },
+      {
+        label: 'WebM',
+        toolId: 'video-convert',
+        best: 'Web pages where file size and openness matter.',
+        pros: ['Smaller files for the web', 'Open and royalty-free', 'Supports transparency'],
+        cons: ['Unsupported on some devices/editors', 'Patchy social upload support'],
+      },
+    ],
+    verdict:
+      'Need it to play anywhere or upload to social? Use MP4. Embedding on a fast website or need transparency? Use WebM. You can convert either way in your browser.',
+    faqs: [
+      { q: 'Which is better for YouTube or Instagram?', a: 'MP4. Social platforms universally accept MP4, while WebM support is inconsistent.' },
+      { q: 'Is WebM higher quality than MP4?', a: 'At the same bitrate they are comparable; WebM (VP9/AV1) can be more efficient, meaning smaller files at similar quality.' },
+    ],
+    keywords: ['mp4 vs webm', 'webm or mp4', 'best video format', 'convert mp4 webm'],
+    relatedConverts: ['webm-to-mp4', 'mp4-to-webm'],
+  },
+  {
+    slug: 'mp3-vs-wav',
+    category: 'audio',
+    title: 'MP3 vs WAV — Which Audio Format?',
+    h1: 'MP3 vs WAV',
+    description:
+      'MP3 is small and universal; WAV is lossless and big, best for editing. When to use each — convert free in your browser.',
+    intro:
+      'MP3 is the universal lossy format — small files that play everywhere, ideal for sharing and listening. WAV is uncompressed and lossless, preserving the full original audio, which is best for editing and mastering but produces very large files.',
+    options: [
+      {
+        label: 'MP3',
+        toolId: 'audio-convert',
+        best: 'Sharing, streaming and everyday listening.',
+        pros: ['Tiny files', 'Plays on every device and app', 'Adjustable bitrate'],
+        cons: ['Lossy — quality below the original', 'Not for archiving or heavy editing'],
+      },
+      {
+        label: 'WAV',
+        toolId: 'audio-convert',
+        best: 'Editing, mastering and lossless archiving.',
+        pros: ['Fully lossless original audio', 'Standard for editing', 'Broad compatibility'],
+        cons: ['Very large files', 'Inefficient for sharing/streaming'],
+      },
+    ],
+    verdict:
+      'Sharing or listening? Use MP3. Editing audio or keeping a lossless master? Use WAV — then export to MP3 when you are done. Convert either way in your browser.',
+    faqs: [
+      { q: 'Does converting WAV to MP3 lose quality?', a: 'Yes, slightly — MP3 is lossy. At higher bitrates (256–320 kbps) the difference is hard to hear.' },
+      { q: 'Can I get original quality back from an MP3?', a: 'No. Converting MP3 to WAV makes a lossless container but cannot restore detail already lost in the MP3.' },
+    ],
+    keywords: ['mp3 vs wav', 'wav or mp3', 'audio format quality', 'convert wav mp3'],
+    relatedConverts: ['wav-to-mp3', 'mp3-to-wav'],
+  },
+  {
+    slug: 'jpg-vs-webp',
+    category: 'image',
+    title: 'JPG vs WebP — Which for Photos on the Web?',
+    h1: 'JPG vs WebP',
+    description:
+      'WebP makes smaller files than JPG at similar quality and supports transparency; JPG works everywhere. Convert free in your browser.',
+    intro:
+      'JPG is the universal photo format, supported by every device, app and printer. WebP is a modern format that produces noticeably smaller files at similar quality and adds transparency and animation — ideal for the web, though not for very old software.',
+    options: [
+      {
+        label: 'JPG',
+        toolId: 'image-convert',
+        best: 'Maximum compatibility, printing and universal sharing.',
+        pros: ['Opens on every device and app', 'Accepted by every printer and site', 'Adjustable quality'],
+        cons: ['Larger than WebP at the same quality', 'No transparency'],
+      },
+      {
+        label: 'WebP',
+        toolId: 'image-convert',
+        best: 'Website photos where page weight and speed matter.',
+        pros: ['Smaller than JPG at similar quality', 'Supports transparency and animation', 'Supported by all modern browsers'],
+        cons: ['Not for very old software', 'Some print workflows prefer JPG'],
+      },
+    ],
+    verdict:
+      'Building a fast website? Use WebP to cut image weight. Need a photo that opens or prints anywhere? Use JPG. Convert between them instantly in your browser.',
+    faqs: [
+      { q: 'Is WebP always smaller than JPG?', a: 'Usually, at similar visual quality WebP is 25–35% smaller. For some images the gap is smaller, but WebP rarely loses.' },
+      { q: 'Should I switch my whole site to WebP?', a: 'For photos, WebP with a JPG fallback is a common, safe choice. Modern browsers all support WebP.' },
+    ],
+    keywords: ['jpg vs webp', 'webp or jpg', 'best web image format', 'convert jpg webp'],
+    relatedConverts: ['jpg-to-webp', 'webp-to-jpg'],
+  },
+  {
+    slug: 'epub-vs-pdf',
+    category: 'docs',
+    title: 'EPUB vs PDF — Which for E-books?',
+    h1: 'EPUB vs PDF',
+    description:
+      'EPUB reflows to any screen; PDF keeps a fixed layout. Which to use for e-books and documents — convert free in your browser.',
+    intro:
+      'EPUB and PDF solve different reading problems. EPUB reflows text to fit any screen and lets readers adjust font size — ideal for novels and long reading on e-readers and phones. PDF keeps a fixed, print-exact layout — ideal for documents where formatting must not change, like forms, reports and illustrated books.',
+    options: [
+      {
+        label: 'EPUB',
+        toolId: 'pdf-to-epub',
+        best: 'Reflowable reading on e-readers and phones (novels, long text).',
+        pros: ['Text reflows to any screen', 'Reader adjusts font and size', 'Smaller, e-reader standard'],
+        cons: ['Not for fixed layouts', 'Renders differ by reader'],
+      },
+      {
+        label: 'PDF',
+        toolId: 'epub-to-pdf',
+        best: 'Fixed layout for printing, forms and illustrated documents.',
+        pros: ['Identical layout everywhere', 'Best for print', 'Universal viewing'],
+        cons: ['Hard to read on small screens', 'No reflow or font resizing'],
+      },
+    ],
+    verdict:
+      'Reading a novel on a phone or e-reader? Use EPUB. Printing, sharing forms, or layout must stay exact? Use PDF. Convert between them in your browser.',
+    faqs: [
+      { q: 'Which is better for a phone?', a: 'EPUB. It reflows text to the screen so you are not pinching and zooming like with a fixed PDF.' },
+      { q: 'Will converting EPUB to PDF keep the layout?', a: 'It produces a fixed-layout PDF from the EPUB content. Exact pagination depends on the source, but text and images are preserved.' },
+    ],
+    keywords: ['epub vs pdf', 'pdf or epub', 'best ebook format', 'convert epub pdf'],
+    relatedConverts: ['epub-to-pdf'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);
