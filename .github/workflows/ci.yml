@@ -49,6 +49,10 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       - name: Run E2E
+        env:
+          # admin.spec.ts 는 /admin?key=test-key 로 어드민 UI 노출을 검증한다.
+          # dev 서버(webServer)가 이 env 를 상속해야 ADMIN_KEY_ENV 가 채워진다.
+          NEXT_PUBLIC_ADMIN_KEY: test-key
         run: npm run test:e2e
       - name: Upload Playwright report
         if: always()
