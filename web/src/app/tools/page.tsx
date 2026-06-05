@@ -650,7 +650,22 @@ export default function ToolsHubPage() {
           </p>
         )}
 
-        <p className="pt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
+        <p className="pt-4 text-center text-[12px] leading-relaxed text-muted-foreground">
+          <a href="/convert" className="font-medium text-primary hover:underline">
+            파일 변환 모음 →
+          </a>{' '}
+          PNG·JPG·WebP·HEIC·PDF 간 변환을 한 곳에서.{' '}
+          <a href="/compare" className="font-medium text-primary hover:underline">
+            도구 비교 →
+          </a>{' '}
+          헷갈리는 포맷·도구를 나란히.{' '}
+          <a href="/use" className="font-medium text-primary hover:underline">
+            활용법 →
+          </a>{' '}
+          자주 하는 작업을 단계별로.
+        </p>
+
+        <p className="pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
           모든 도구는 브라우저 안에서 실행됩니다. 파일은 서버로 전송되지 않습니다.
         </p>
       </main>

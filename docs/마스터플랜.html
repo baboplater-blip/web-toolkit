@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹 툴킷 마스터플랜 · 정밀·유용·바이럴 서비스 재설계</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#11151f; --panel2:#161b27; --line:#222a3a;
+    --ink:#e6edf6; --ink2:#9fb0c8; --ink3:#6b7d99;
+    --brand:#5b8cff; --brand2:#8a6bff; --good:#3fbf7f; --warn:#f2b441; --bad:#ff6b6b;
+    --chip:#1c2332; --radius:14px;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Consolas,monospace;
+    --sans:"Pretendard","Segoe UI",-apple-system,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{display:grid;grid-template-columns:280px 1fr;max-width:1480px;margin:0 auto;min-height:100vh}
+  /* ── Sidebar ── */
+  aside{position:sticky;top:0;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1019,#0b0e14);border-right:1px solid var(--line);padding:26px 18px}
+  aside .logo{font-weight:800;font-size:18px;letter-spacing:-.3px;margin-bottom:4px;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  aside .sub{font-size:12px;color:var(--ink3);margin-bottom:22px}
+  aside nav a{display:block;color:var(--ink2);text-decoration:none;font-size:13.5px;padding:7px 11px;border-radius:9px;margin:2px 0;transition:.15s}
+  aside nav a:hover{background:var(--chip);color:var(--ink)}
+  aside nav a.head{color:var(--ink3);font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-top:16px;padding-bottom:2px}
+  aside nav a .n{display:inline-block;width:22px;color:var(--brand);font-variant-numeric:tabular-nums;font-weight:700}
+  /* ── Main ── */
+  main{padding:0 0 120px}
+  .hero{padding:64px 56px 46px;background:radial-gradient(1200px 420px at 12% -10%,rgba(91,140,255,.18),transparent),radial-gradient(900px 380px at 90% 0%,rgba(138,107,255,.14),transparent);border-bottom:1px solid var(--line)}
+  .hero .kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--brand);background:rgba(91,140,255,.12);border:1px solid rgba(91,140,255,.3);padding:5px 12px;border-radius:999px;margin-bottom:18px}
+  .hero h1{font-size:40px;line-height:1.18;margin:0 0 16px;letter-spacing:-1px;font-weight:800}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{font-size:16.5px;color:var(--ink2);max-width:820px;margin:0}
+  .hero .meta{margin-top:26px;display:flex;gap:26px;flex-wrap:wrap;font-size:13px;color:var(--ink3)}
+  .hero .meta b{color:var(--ink)}
+  section{padding:52px 56px;border-bottom:1px solid var(--line);scroll-margin-top:10px}
+  section>h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--brand);margin:0 0 6px;font-weight:800}
+  section>h2 .num{color:var(--ink3);margin-right:8px}
+  section>.t{font-size:27px;font-weight:800;letter-spacing:-.6px;margin:0 0 8px}
+  section>.lead{color:var(--ink2);font-size:16px;max-width:920px;margin:0 0 28px}
+  h3{font-size:19px;font-weight:700;margin:34px 0 12px;letter-spacing:-.3px}
+  h4{font-size:15.5px;font-weight:700;margin:22px 0 8px;color:var(--ink)}
+  p{color:var(--ink2)} p strong,li strong{color:var(--ink)}
+  a.inl{color:var(--brand);text-decoration:none;border-bottom:1px dotted var(--brand)}
+  ul,ol{color:var(--ink2);padding-left:22px} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:12.5px;background:var(--chip);padding:2px 6px;border-radius:6px;color:#bcd2ff}
+  /* cards/grid */
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .card.soft{background:var(--panel2)}
+  .card h4{margin:0 0 6px}
+  .card .big{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .card .lab{font-size:12px;color:var(--ink3);margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.3px}
+  .pill.good{background:rgba(63,191,127,.14);color:#7be0ab;border:1px solid rgba(63,191,127,.3)}
+  .pill.warn{background:rgba(242,180,65,.14);color:#f5cd78;border:1px solid rgba(242,180,65,.3)}
+  .pill.bad{background:rgba(255,107,107,.13);color:#ff9b9b;border:1px solid rgba(255,107,107,.3)}
+  .pill.info{background:rgba(91,140,255,.13);color:#a8c2ff;border:1px solid rgba(91,140,255,.3)}
+  /* table */
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--ink3);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;background:var(--panel2)}
+  td{color:var(--ink2)} td b,td strong{color:var(--ink)}
+  tr:hover td{background:rgba(255,255,255,.012)}
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  .tbl-wrap table{margin:0}
+  /* callout */
+  .note{border-left:3px solid var(--brand);background:linear-gradient(90deg,rgba(91,140,255,.08),transparent);padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0;color:var(--ink2)}
+  .note.warn{border-color:var(--warn);background:linear-gradient(90deg,rgba(242,180,65,.08),transparent)}
+  .note.good{border-color:var(--good);background:linear-gradient(90deg,rgba(63,191,127,.08),transparent)}
+  .note b{color:var(--ink)}
+  /* code block */
+  pre{background:#0a0d15;border:1px solid var(--line);border-radius:12px;padding:18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.65;color:#cdd9ee;margin:14px 0}
+  pre .c{color:#5a6b85}.k{color:#c792ea}.s{color:#a5e0a0}.f{color:#82aaff}.p{color:#f7bd6b}
+  /* tree/diagram */
+  .layers{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+  .layer{display:grid;grid-template-columns:160px 1fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .layer .ll{background:var(--panel2);padding:14px 16px;font-weight:700;font-size:13px;display:flex;align-items:center;border-right:1px solid var(--line)}
+  .layer .lr{padding:14px 16px;font-size:13px;color:var(--ink2)}
+  .layer.l1 .ll{color:#a8c2ff}.layer.l2 .ll{color:#c7b3ff}.layer.l3 .ll{color:#7be0ab}.layer.l4 .ll{color:#f5cd78}.layer.l5 .ll{color:#ff9b9b}
+  /* roadmap */
+  .road{position:relative;margin:24px 0 0;padding-left:26px}
+  .road:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--brand),var(--brand2))}
+  .ph{position:relative;margin-bottom:22px}
+  .ph:before{content:"";position:absolute;left:-23px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(91,140,255,.18)}
+  .ph .ttl{font-weight:800;font-size:16px}
+  .ph .when{font-size:12px;color:var(--brand);font-weight:700;letter-spacing:.4px}
+  .ph ul{margin:8px 0 0}
+  /* score bars */
+  .bar{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .kv{display:flex;justify-content:space-between;font-size:13px;margin-top:14px}
+  .foot{padding:34px 56px;color:var(--ink3);font-size:12.5px}
+  .foot a{color:var(--ink2)}
+  .src{font-size:12px;color:var(--ink3);columns:2;column-gap:30px}
+  .src a{color:var(--ink2);text-decoration:none}
+  @media(max-width:1080px){.wrap{grid-template-columns:1fr}aside{display:none}.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.hero,section,.foot{padding-left:26px;padding-right:26px}.layer{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside>
+  <div class="logo">웹 툴킷 마스터플랜</div>
+  <div class="sub">정밀 · 유용 · 바이럴 재설계 v1.0</div>
+  <nav>
+    <a class="head">전략</a>
+    <a href="#vision"><span class="n">00</span>비전 · 요약</a>
+    <a href="#market"><span class="n">01</span>시장 · 경쟁 분석</a>
+    <a href="#viral"><span class="n">02</span>바이럴 · SEO · 수익</a>
+    <a class="head">진단</a>
+    <a href="#asis"><span class="n">03</span>현재 서비스 진단</a>
+    <a href="#patterns"><span class="n">04</span>구현방식 베스트</a>
+    <a class="head">재설계</a>
+    <a href="#arch"><span class="n">05</span>신규 아키텍처</a>
+    <a href="#module"><span class="n">06</span>툴 모듈 규약</a>
+    <a href="#discover"><span class="n">07</span>발견성 · UX 개편</a>
+    <a href="#seo"><span class="n">08</span>SEO · 국제화</a>
+    <a href="#money"><span class="n">09</span>수익화 설계</a>
+    <a class="head">실행</a>
+    <a href="#roadmap"><span class="n">10</span>로드맵</a>
+    <a href="#kpi"><span class="n">11</span>KPI · 측정</a>
+    <a href="#risk"><span class="n">12</span>리스크 · 결정사항</a>
+    <a href="#sources">출처</a>
+  </nav>
+</aside>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<main>
+<div class="hero">
+  <span class="kicker">PRODUCT STRATEGY · 2026.06</span>
+  <h1>업로드 없는 브라우저 도구로<br><em>전 세계가 공유하는 서비스</em>를 만든다</h1>
+  <p>현존 웹 툴킷(it-tools · Squoosh · iLovePDF · TinyWow · 10015.io)의 구현방식과 성장 메커니즘을 폭넓게 수집해, 우리가 이미 보유한 <b>169개 브라우저 완결 도구</b>를 다시 구조화한다. 핵심 차별점은 단 하나 — <b>"파일이 서버로 가지 않는다"</b>는 아키텍처적 보증. 이 보증을 무기로 발견성·국제화·바이럴·수익을 동시에 끌어올리는 재설계 계획서.</p>
+  <div class="meta">
+    <span>현재 도구 <b>169개</b> · 11 카테고리</span>
+    <span>정적 페이지 <b>513+</b></span>
+    <span>스택 <b>Next.js 16 · React 19 · 정적 export</b></span>
+    <span>분석일 <b>2026-06-05</b></span>
+  </div>
+</div>
+
+<!-- 00 VISION -->
+<section id="vision">
+  <h2><span class="num">00</span>EXECUTIVE SUMMARY</h2>
+  <div class="t">한 문장: "무제한·무업로드·다국어 도구 허브"</div>
+  <p class="lead">경쟁사는 <b>업로드 후 서버 처리 → 무료 제한(횟수·용량) → 유료 전환</b> 구조다. 우리는 모든 처리가 브라우저에서 끝나므로 <b>제한을 둘 이유가 없다</b>. 이 구조적 우위를 제품 포지셔닝의 1순위로 끌어올리고, 발견성·SEO·국제화의 병목을 제거하는 것이 이 계획의 골자다.</p>
+
+  <div class="grid g4">
+    <div class="card"><div class="big" style="color:var(--brand)">169</div><div class="lab">보유 도구 (자산)</div></div>
+    <div class="card"><div class="big" style="color:var(--warn)">58/169</div><div class="lab">영문화 비율 34%</div></div>
+    <div class="card"><div class="big" style="color:var(--good)">0</div><div class="lab">서버 전송 파일 (보증)</div></div>
+    <div class="card"><div class="big" style="color:var(--brand2)">229M</div><div class="lab">1위 경쟁사 월 트래픽(인도)</div></div>
+  </div>
+
+  <h3>이 계획서가 바꾸는 5가지</h3>
+  <div class="grid g2">
+    <div class="card soft">
+      <span class="pill info">1 · 구조</span>
+      <h4>모놀리식 레지스트리 → 툴 모듈 규약</h4>
+      <p>1,757줄 <code>registry.ts</code> + 분리된 <code>guide-content</code> + <code>en-tools</code>의 동기화 부채를, it-tools식 <b>자기완결 툴 모듈</b>(메타·UI·로직·가이드·i18n·테스트 1폴더)로 전환.</p>
+    </div>
+    <div class="card soft">
+      <span class="pill info">2 · 발견성</span>
+      <h4>기본 카탈로그 → ⌘K 명령 팔레트 + 작업기반 진입</h4>
+      <p>169개를 "찾아 헤매는" 구조를 퍼지검색·즐겨찾기·최근사용·유스케이스 랜딩으로 재편. 첫 클릭까지의 거리를 절반으로.</p>
+    </div>
+    <div class="card soft">
+      <span class="pill info">3 · 국제화</span>
+      <h4>큐레이션 58개 → 전 도구 자동 다국어</h4>
+      <p>per-tool 로케일로 169개 전체 EN화 + 확장 가능 구조. 프로그래매틱 SEO로 롱테일 수만 페이지 확보.</p>
+    </div>
+    <div class="card soft">
+      <span class="pill info">4 · 수익</span>
+      <h4>무포지션 → 프라이버시 프리미엄 하이브리드</h4>
+      <p>작업영역엔 광고 0, 가이드·카탈로그에만 디스플레이 + 데스크톱앱/스토리지 제휴 + 선택적 Pro(폴더·PWA·대용량).</p>
+    </div>
+    <div class="card soft" style="grid-column:span 2">
+      <span class="pill info">5 · 품질</span>
+      <h4>페이지 아키타입 표준화 + 성능예산 CI + 도구별 관측</h4>
+      <p>169개 페이지의 제각각 UI를 5개 아키타입(단일 I/O·비교·일괄·생성기·텍스트변환)으로 수렴시키고, Lighthouse 예산을 CI 게이트로, CWV를 도구 단위로 분해해 "어느 도구가 느린가"를 추적.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 01 MARKET -->
+<section id="market">
+  <h2><span class="num">01</span>MARKET &amp; COMPETITIVE LANDSCAPE</h2>
+  <div class="t">두 진영: "서버 처리 + 유료화" vs "브라우저 완결 + 무제한"</div>
+  <p class="lead">온라인 도구 시장은 거대하다. iLovePDF는 글로벌 #110, 인도에서만 월 <b>229M</b> 방문이고 트래픽의 <b>60%가 오가닉 검색</b>이다. 핵심은 두 가지 — <b>검색(SEO)</b>이 트래픽의 본류이고, <b>무료 제공 폭</b>이 진입장벽이라는 점.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>서비스</th><th>유형 / 스택</th><th>처리 위치</th><th>규모·트래픽</th><th>수익 모델</th><th>우리가 배울 점</th></tr></thead>
+    <tbody>
+      <tr><td><b>iLovePDF</b></td><td>PDF 특화 / 서버</td><td class="">서버 업로드</td><td>글로벌 #110, 인도 229M/월, 오가닉 60%</td><td>프리미엄(15MB·일일 제한)</td><td>PDF 단일 카테고리로 거대 SEO 장악 — <b>카테고리 깊이</b></td></tr>
+      <tr><td><b>Smallpdf</b></td><td>PDF·문서 / 서버</td><td>서버 업로드</td><td>월 33M+, 오가닉 60%</td><td>프리미엄(시간당 2작업)</td><td>워크플로(합치기→압축→서명) <b>연계 동선</b></td></tr>
+      <tr><td><b>TinyWow</b></td><td>올인원 / 서버</td><td>서버 업로드</td><td>광범위 무료 + 광고</td><td>디스플레이 광고</td><td>"무료·무가입" 메시지로 바이럴, <b>광범위 카테고리</b></td></tr>
+      <tr><td><b>10015.io</b></td><td>올인원 / Next.js</td><td>대부분 클라이언트</td><td>월 ~350K, 1인 사이드프로젝트</td><td>광고·후원</td><td>깨끗한 UI/UX 하나로 차별화한 <b>1인 운영 효율</b></td></tr>
+      <tr><td><b>Squoosh</b> (Google)</td><td>이미지 압축 / Preact PWA</td><td class=""><span class="pill good">브라우저 완결</span></td><td>레퍼런스급 인지도</td><td>비수익(쇼케이스)</td><td>WASM 코덱(MozJPEG·AVIF·OxiPNG)+워커, <b>"파일이 안 나간다"의 원조</b></td></tr>
+      <tr><td><b>it-tools</b></td><td>개발자 도구 / Vue3</td><td class=""><span class="pill good">브라우저 완결</span></td><td>오픈소스 28k★, 셀프호스팅</td><td>비수익(OSS)</td><td><code>defineTool()</code> 레지스트리 + 폴더 규약 — <b>확장 아키텍처의 교과서</b></td></tr>
+      <tr><td style="background:rgba(91,140,255,.06)"><b>우리 (web-toolkit)</b></td><td>올인원 / Next16 정적</td><td class=""><span class="pill good">브라우저 완결</span></td><td>169 도구 · 513 페이지</td><td>미정 (기회)</td><td>— 자산은 충분, <b>구조·발견성·국제화·수익</b>이 과제</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note good"><b>핵심 통찰.</b> 트래픽 1·2위(iLovePDF·Smallpdf)는 <b>서버 처리</b>라서 "용량·횟수 제한"이 불가피하다. 우리는 브라우저 완결이라 <b>제한 자체가 없다</b>. 즉 "무제한·무업로드"는 마케팅 카피가 아니라 <b>물리적으로 참인 보증</b> — Squoosh가 증명했듯 이건 정책이 아니라 브라우저 동작 방식이 강제하는 사실이다. 이 포지션을 1순위 메시지로 전면화한다.</p></div>
+
+  <h3>시장이 보내는 신호</h3>
+  <ul>
+    <li><b>오가닉 검색이 본류다.</b> 상위 사이트 트래픽의 60%가 검색 — 광고비가 아니라 <b>프로그래매틱 SEO</b>가 성장 엔진. (Zapier 5.8M·Wise 60M·TripAdvisor 226M이 이 방식으로 시장 장악)</li>
+    <li><b>AI 도구가 폭발 중.</b> 배경제거·업스케일·얼굴처리·OCR이 가장 많이 검색됨. 우리는 이미 ONNX/TF.js로 <b>서버 없이</b> 보유 — 경쟁사는 GPU 서버 비용을 쓰지만 우리는 0원.</li>
+    <li><b>"무료·무가입·무워터마크"가 바이럴 트리거.</b> 2026년 배경제거 시장조차 "무료로 충분"이 대세 — 무제한 무료는 우리의 천연 우위.</li>
+  </ul>
+</section>
+
+<!-- 02 VIRAL -->
+<section id="viral">
+  <h2><span class="num">02</span>VIRALITY · SEO · MONETIZATION MECHANICS</h2>
+  <div class="t">바이럴은 운이 아니라 구조다 — 세 개의 플라이휠</div>
+
+  <div class="grid g3">
+    <div class="card">
+      <span class="pill info">플라이휠 A</span>
+      <h4>검색 플라이휠 (Programmatic SEO)</h4>
+      <p>도구 1개 → 가이드 + 변환쌍(X→Y) + 비교(A vs B) + "방법" 페이지로 <b>n배 증식</b>. 롱테일은 경쟁 낮고 전환 2~3배. 169개 × 다국어 × 변환매트릭스 = 수만 페이지의 검색 표면.</p>
+    </div>
+    <div class="card">
+      <span class="pill info">플라이휠 B</span>
+      <h4>공유 플라이휠 (Product-led)</h4>
+      <p>결과물이 곧 광고. ResultCard에 <b>"이 도구로 만듦" 워터마크 옵션·공유 링크·딥링크(설정 프리필)</b>. 만족한 사용자가 결과를 공유 → 새 사용자 유입 → 다시 공유.</p>
+    </div>
+    <div class="card">
+      <span class="pill info">플라이휠 C</span>
+      <h4>신뢰 플라이휠 (Privacy)</h4>
+      <p>"파일이 안 나간다"는 개발자·기업·민감문서 사용자에게 강력. 기술 블로그·HN·Reddit에서 회자될 <b>아키텍처 서사</b>. 오픈소스 일부 공개 시 백링크 폭발.</p>
+    </div>
+  </div>
+
+  <h3>프로그래매틱 SEO: 페이지 증식 공식</h3>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>페이지 타입</th><th>템플릿 패턴</th><th>타깃 검색어 예</th><th>증식 규모</th></tr></thead>
+    <tbody>
+      <tr><td>도구 페이지</td><td><code>/tools/{cat}/{tool}</code></td><td>"png to jpg", "pdf 합치기"</td><td>169 × 2언어 = 338</td></tr>
+      <tr><td>변환 매트릭스</td><td><code>/convert/{from}-to-{to}</code></td><td>"heic to png", "webp to jpg"</td><td>포맷쌍 수백 개</td></tr>
+      <tr><td>가이드("방법")</td><td><code>/guide/{tool}</code></td><td>"how to compress pdf without losing quality"</td><td>169 × N언어</td></tr>
+      <tr><td>비교</td><td><code>/compare/{a}-vs-{b}</code></td><td>"webp vs jpeg", "mkv vs mp4"</td><td>현 8 → 수십 개</td></tr>
+      <tr><td>유스케이스</td><td><code>/use/{job}</code></td><td>"이력서 사진 만들기", "단체사진 얼굴 모자이크"</td><td>작업 시나리오 수십</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note warn"><b>품질 가드.</b> 프로그래매틱 SEO의 함정은 "얇은 양산 페이지"로 인한 패널티. 각 페이지는 <b>실제 동작하는 도구 + 고유 FAQ + 예시</b>를 담아 "도구가 곧 콘텐츠"가 되게 한다. 빈 껍데기 페이지는 만들지 않는다.</p></div>
+
+  <h3>수익화: 우리에게 맞는 하이브리드</h3>
+  <p>하이브리드(광고+제휴+프리미엄)는 단일 모델보다 3~5배 성과. 단, <b>브라우저 완결의 신뢰</b>를 훼손하지 않는 배치가 전제다.</p>
+  <div class="grid g3">
+    <div class="card soft"><h4>① 디스플레이 광고</h4><p><b>가이드·카탈로그·블로그에만.</b> 도구 작업영역(드롭존~결과)엔 광고 0 — 신뢰 보호. 트래픽이 SEO로 커질수록 비례 수익.</p></div>
+    <div class="card soft"><h4>② 제휴(Affiliate)</h4><p>"더 큰 파일·자동화가 필요하면" → 데스크톱앱·클라우드 스토리지·SaaS 제휴 링크. 무업로드 한계를 자연스러운 업셀로.</p></div>
+    <div class="card soft"><h4>③ 선택적 Pro</h4><p>폴더 일괄·PWA 오프라인 팩·대용량 워커풀·배치 프리셋 저장 = <b>편의 기능</b> 구독. 핵심 도구는 영원히 무료.</p></div>
+  </div>
+</section>
+
+<!-- 03 AS-IS -->
+<section id="asis">
+  <h2><span class="num">03</span>CURRENT SERVICE DIAGNOSIS</h2>
+  <div class="t">자산은 일류, 구조는 성장통 직전</div>
+  <p class="lead">169개 도구·513 페이지·11 E2E 스펙·정적 export·보안헤더까지 — 토대는 탄탄하다. 문제는 "더 많은 도구·더 많은 언어·더 많은 트래픽"으로 확장할 때 드러나는 <b>구조적 병목</b>이다.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h4 style="color:var(--good)">✓ 강점 (지킬 것)</h4>
+      <ul>
+        <li><b>명확한 단일 미션</b> — "파일 무전송"이 모든 결정을 일관되게 함</li>
+        <li><b>레지스트리 기반 자동화</b> — 카탈로그·사이트맵·SEO 자동 생성</li>
+        <li><b>높은 재사용성</b> — FileDropZone·ResultCard·도메인 유틸(pdf/epub/ffmpeg-common)</li>
+        <li><b>성능 토대</b> — 정적 export·WASM 동적 import·번들 분석 자동화</li>
+        <li><b>테스트·SEO·다국어 골격</b> — 11 E2E, JSON-LD, hreflang, 가이드 자동생성</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--bad)">✗ 약점 (재설계 대상)</h4>
+      <ul>
+        <li><b>발견성 낮음</b> — 169개를 카탈로그+기본검색으로만 탐색</li>
+        <li><b>동기화 부채</b> — registry / guide-content / en-tools 3중 관리</li>
+        <li><b>영문화 34%</b> — 111개가 한국어 전용 → 국제 트래픽 손실</li>
+        <li><b>페이지 일관성 부족</b> — 169 페이지 UI 패턴 제각각</li>
+        <li><b>대용량·취소 처리 불균형</b> — AbortSignal·워커풀 표준 없음</li>
+        <li><b>관측 한계</b> — CWV가 도구 단위로 분해 안 됨</li>
+        <li><b>수익 포지션 부재</b> — 무업로드 우위가 제품에 미반영</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>확장성 한계선</h3>
+  <div class="kv"><span>현재 구조로 안전한 도구 수</span><span><b>~250개</b></span></div><div class="bar"><i style="width:68%"></i></div>
+  <div class="kv"><span>그 이상: 카탈로그 검색·가이드 빌드·사이트맵이 선형 악화</span><span style="color:var(--warn)">재구조화 필요</span></div>
+  <p style="margin-top:14px">즉 지금이 <b>구조를 다시 짜기 가장 좋은 시점</b>이다. 도구가 250개를 넘기 전에 모듈 규약·발견성·국제화 골격을 바꿔두면, 이후엔 도구를 "꽂기만" 하면 SEO·다국어·테스트가 자동 상속된다.</p>
+</section>
+
+<!-- 04 PATTERNS -->
+<section id="patterns">
+  <h2><span class="num">04</span>IMPLEMENTATION BEST PRACTICES (수집 종합)</h2>
+  <div class="t">경쟁사에서 빌려올 검증된 패턴</div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>출처</th><th>패턴</th><th>핵심</th><th>우리 적용</th></tr></thead>
+    <tbody>
+      <tr><td>it-tools</td><td><b>defineTool() 레지스트리</b></td><td>도구가 자기 자신을 등록 — 플러그인식</td><td class=""><span class="pill good">채택</span> 모듈 자동 집계</td></tr>
+      <tr><td>it-tools</td><td><b>폴더 규약</b></td><td>index/ui/service/test/locales 한 폴더</td><td><span class="pill good">채택</span> §06</td></tr>
+      <tr><td>it-tools</td><td><b>create-tool 스캐폴딩</b></td><td>신규 도구 보일러플레이트 자동생성</td><td><span class="pill good">채택</span> CLI 추가</td></tr>
+      <tr><td>it-tools</td><td><b>Pinia 즐겨찾기/최근</b></td><td>도구가 아닌 스토어가 상태 관리</td><td><span class="pill good">채택</span> zustand/localStorage</td></tr>
+      <tr><td>Squoosh</td><td><b>WASM 코덱 + 워커</b></td><td>네이티브급 인코더를 워커에서</td><td><span class="pill info">강화</span> 워커풀 표준</td></tr>
+      <tr><td>Squoosh</td><td><b>아키텍처적 프라이버시</b></td><td>"정책이 아니라 동작" 메시지</td><td><span class="pill good">전면화</span> §09</td></tr>
+      <tr><td>전 사이트</td><td><b>명령 팔레트(⌘K)</b></td><td>키보드 우선 + 퍼지검색 + 최근/즐겨찾기 버킷</td><td><span class="pill good">신규</span> §07</td></tr>
+      <tr><td>iLovePDF</td><td><b>카테고리 깊이</b></td><td>PDF 한 축으로 거대 SEO</td><td><span class="pill info">집중</span> PDF·이미지 우선</td></tr>
+      <tr><td>Smallpdf</td><td><b>워크플로 연계</b></td><td>합치기→압축→서명 동선</td><td><span class="pill good">신규</span> RelatedTools 강화</td></tr>
+      <tr><td>10015.io</td><td><b>UI/UX 일관성</b></td><td>깨끗한 단일 디자인 언어</td><td><span class="pill info">강화</span> 아키타입 §06</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 05 ARCH -->
+<section id="arch">
+  <h2><span class="num">05</span>TARGET ARCHITECTURE (재설계)</h2>
+  <div class="t">5계층 — "도구를 꽂으면 나머지가 상속된다"</div>
+  <p class="lead">현재는 페이지·레지스트리·가이드·국제화가 <b>수평으로 흩어져</b> 서로 동기화돼야 한다. 목표 구조는 <b>툴 모듈을 단일 진실원</b>으로 두고, 그 위 계층들이 모듈에서 자동 파생되게 한다.</p>
+
+  <div class="layers">
+    <div class="layer l1"><div class="ll">L1 · 표현</div><div class="lr"><b>App Router (정적 export)</b> — 도구 페이지·가이드·변환매트릭스·비교·유스케이스. 모두 모듈 메타에서 <b>자동 라우팅·자동 SEO</b>. 명령 팔레트·허브·카테고리 셸.</div></div>
+    <div class="layer l2"><div class="ll">L2 · 아키타입</div><div class="lr"><b>5개 페이지 템플릿</b> — 단일 I/O · 비교(Dual) · 일괄(Folder) · 생성기 · 텍스트변환. 도구는 아키타입을 "선언"만 하면 표준 UI(드롭존·진행률·결과·취소·관련도구)를 상속.</div></div>
+    <div class="layer l3"><div class="ll">L3 · 툴 모듈</div><div class="lr"><b>단일 진실원</b> — <code>tools/&lt;id&gt;/</code>: meta · ui · logic(worker) · guide(ko/en/…) · examples · test. 레지스트리·사이트맵·i18n·가이드가 전부 여기서 파생. <b>§06</b></div></div>
+    <div class="layer l4"><div class="ll">L4 · 코어 서비스</div><div class="lr"><b>공용 엔진</b> — 워커풀 · AbortSignal 표준 · WASM 자산 매니페스트(단일 버전원) · 서비스워커 캐시 티어 · 퍼지검색 인덱스 · 사용량/즐겨찾기 스토어 · CWV(도구별).</div></div>
+    <div class="layer l5"><div class="ll">L5 · 도메인 유틸</div><div class="lr"><b>WASM/라이브러리 래퍼</b> — pdf · image · ffmpeg · onnx(yunet) · tesseract · epub · crypto · zip. 동적 import + 캐시 + 진행률 콜백 (기존 자산 재사용).</div></div>
+  </div>
+
+  <h3>핵심 전환: "수평 동기화" → "수직 파생"</h3>
+  <div class="grid g2">
+    <div class="card soft">
+      <h4 style="color:var(--bad)">AS-IS (동기화 부채)</h4>
+<pre><span class="c"># 한 도구를 추가/수정하려면 4곳을 손댄다</span>
+registry.ts          <span class="c">← 메타 1757줄 모놀리스</span>
+guide-content.ts     <span class="c">← 가이드 패턴 별도</span>
+en-tools.ts          <span class="c">← 영문 큐레이션 별도</span>
+app/.../page.tsx     <span class="c">← UI 별도</span>
+<span class="c"># → 누락/불일치 위험, EN 34%에서 정체</span></pre>
+    </div>
+    <div class="card soft">
+      <h4 style="color:var(--good)">TO-BE (단일 진실원)</h4>
+<pre><span class="c"># 한 도구 = 한 폴더. 나머지는 빌드시 자동 파생</span>
+tools/pdf-merge/
+ ├ meta.ts     <span class="c">→ registry·sitemap·search</span>
+ ├ ui.tsx      <span class="c">→ 아키타입 선언</span>
+ ├ logic.ts    <span class="c">→ worker 진입</span>
+ ├ i18n/       <span class="c">→ ko·en·… 자동 hreflang</span>
+ └ guide.ts    <span class="c">→ 가이드·FAQ·JSON-LD</span>
+<span class="c"># build: glob → 레지스트리·라우트·sitemap 생성</span></pre>
+    </div>
+  </div>
+  <div class="note"><b>마이그레이션은 점진적.</b> 기존 169 페이지를 한 번에 갈아엎지 않는다. ① 모듈 규약·코덱서비스·아키타입을 먼저 세우고 ② <b>신규 도구는 새 규약</b>으로만 ③ 기존 도구는 트래픽 상위순(PDF·이미지)으로 모듈화 ④ 레지스트리는 "수기 + 자동 집계" 병행 후 완전 자동으로 수렴.</p></div>
+</section>
+
+<!-- 06 MODULE -->
+<section id="module">
+  <h2><span class="num">06</span>TOOL MODULE SPEC &amp; PAGE ARCHETYPES</h2>
+  <div class="t">도구 한 개의 표준 형태</div>
+
+  <h4>모듈 메타 (단일 진실원)</h4>
+<pre><span class="c">// tools/pdf-merge/meta.ts</span>
+<span class="k">export const</span> meta = defineTool({
+  id: <span class="s">'pdf-merge'</span>,
+  archetype: <span class="s">'single-io'</span>,        <span class="c">// 5개 아키타입 중 택1 → UI 상속</span>
+  category: <span class="s">'pdf'</span>, phase: <span class="p">1</span>,
+  icon: Combine,
+  i18n: { ko: <span class="s">'PDF 합치기'</span>, en: <span class="s">'Merge PDF'</span>, ja: <span class="s">'PDF結合'</span> },
+  keywords: [<span class="s">'merge','combine','합치기','병합','pdf合并'</span>],
+  engines: [<span class="s">'pdf-lib'</span>],                <span class="c">// L5 의존 선언 → 프리캐시/번들 판단</span>
+  convertPairs: [],                       <span class="c">// 변환매트릭스 자동 SEO</span>
+  related: [<span class="s">'pdf-split','pdf-compress'</span>], <span class="c">// 워크플로 동선</span>
+  offline: <span class="k">true</span>,
+});</pre>
+
+  <h4>5개 페이지 아키타입</h4>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>아키타입</th><th>입력</th><th>대표 도구</th><th>상속 UI</th></tr></thead>
+    <tbody>
+      <tr><td><b>single-io</b></td><td>파일 1+ → 결과 1</td><td>PDF합치기·이미지리사이즈·압축</td><td>FileDropZone · 옵션패널 · 진행률 · ResultCard · 취소</td></tr>
+      <tr><td><b>compare</b></td><td>파일 2 → diff</td><td>PDF비교·이미지diff·텍스트diff</td><td>DualDropZone · 동기뷰어 · 차이 하이라이트</td></tr>
+      <tr><td><b>batch-folder</b></td><td>폴더 → ZIP</td><td>일괄압축·일괄얼굴모자이크</td><td>FolderDropZone · 샘플미리보기 · 진행률 · BatchResult</td></tr>
+      <tr><td><b>generator</b></td><td>폼 입력 → 산출</td><td>QR·바코드·직인·급여계산</td><td>폼 · 실시간 프리뷰 · 다운로드/복사</td></tr>
+      <tr><td><b>text-transform</b></td><td>텍스트 → 텍스트</td><td>JSON·정규식·케이스·한글교정</td><td>듀얼 텍스트에어리어 · 복사 · 통계</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note good"><b>효과.</b> 도구 작성자는 <b>로직(logic.ts)과 옵션 스키마만</b> 짠다. 드롭존·진행률·취소·결과카드·관련도구·모바일반응형·a11y는 아키타입이 보장 → 169개 UI 편차 소멸, 신규 도구 작성시간 급감.</p></div>
+
+  <h4>워커 + 취소 표준 (코어 서비스)</h4>
+<pre><span class="c">// L4 표준 인터페이스 — 모든 logic.ts 가 준수</span>
+<span class="k">interface</span> ToolWorker {
+  process(input, opts, <span class="f">onProgress</span>, signal: AbortSignal): <span class="k">Promise</span>&lt;Result&gt;;
+}
+<span class="c">// 워커풀: navigator.hardwareConcurrency 기반, 일괄/대용량 자동 분배</span>
+<span class="c">// signal.aborted → WASM 메모리 즉시 해제 (현 도구별 불균형 해소)</span></pre>
+</section>
+
+<!-- 07 DISCOVER -->
+<section id="discover">
+  <h2><span class="num">07</span>DISCOVERABILITY &amp; UX OVERHAUL</h2>
+  <div class="t">"찾아 헤매기"에서 "바로 도달"로</div>
+  <p class="lead">169개는 인간이 카탈로그를 훑어 찾기엔 많다. 명령 팔레트·작업기반 진입·개인화로 <b>첫 도구까지의 거리</b>를 줄인다.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h4>① 명령 팔레트 ⌘K (전역)</h4>
+      <p>키보드 우선. <b>퍼지검색(Fuse.js)</b>으로 오타·부분일치 허용. 결과를 <b>버킷</b>으로 — 최근 사용 · 즐겨찾기 · 도구 · 가이드 · 변환. 각 항목에 아이콘·힌트·단축키. 모바일은 큰 검색 시트.</p>
+    </div>
+    <div class="card">
+      <h4>② 작업기반 진입(Use-case)</h4>
+      <p>"무엇을 하려는가"로 라우팅. <code>/use/단체사진-얼굴-가리기</code> → 관련 도구 묶음 + 단계 안내. SEO 유스케이스 페이지가 곧 온보딩.</p>
+    </div>
+    <div class="card">
+      <h4>③ 개인화 홈</h4>
+      <p>최근 사용 5개 · 즐겨찾기 · "당신이 자주 쓰는" 추천. localStorage 기반(서버 0). 재방문자의 첫 클릭을 1초로.</p>
+    </div>
+    <div class="card">
+      <h4>④ 워크플로 동선</h4>
+      <p>결과 화면에서 "다음 단계" 제안 — 합치기→압축→서명. <code>related</code> 메타 기반. 체류·페이지뷰·SEO 내부링크 동시 강화.</p>
+    </div>
+  </div>
+
+  <h3>카테고리 허브 리치화</h3>
+  <p>현재 카테고리는 단순 그리드. 각 카테고리에 <b>설명·인기 도구·자주 묻는 질문·관련 가이드</b>를 담은 <code>CollectionPage</code>로 승격 → 정보형 검색 흡수 + 발견성 동시 해결.</p>
+</section>
+
+<!-- 08 SEO -->
+<section id="seo">
+  <h2><span class="num">08</span>SEO &amp; INTERNATIONALIZATION</h2>
+  <div class="t">34% → 100% 다국어, 그리고 페이지 증식</div>
+
+  <div class="grid g2">
+    <div class="card soft">
+      <h4>국제화 재설계</h4>
+      <ul>
+        <li>큐레이션 58개 → <b>per-tool i18n으로 169개 전체</b> EN 자동 노출</li>
+        <li>언어 확장축 추가: <b>ja·zh·es</b>(검색량 큰 순). 모듈 i18n에 키만 추가하면 hreflang·sitemap 자동</li>
+        <li>UI 문자열·가이드·FAQ를 모듈 안에 동봉 → 누락 0</li>
+      </ul>
+    </div>
+    <div class="card soft">
+      <h4>페이지 증식 (Programmatic)</h4>
+      <ul>
+        <li><b>변환 매트릭스</b> <code>/convert/heic-to-jpg</code> 류 — <code>convertPairs</code> 메타에서 자동 생성</li>
+        <li><b>비교</b> 8 → 수십 개 — 데이터 테이블 구동</li>
+        <li><b>유스케이스</b> 페이지 — 검색의도 직격</li>
+        <li>각 페이지 = <b>실동작 도구 + 고유 FAQ</b> (얇은 페이지 금지)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>구조화 데이터 · 색인 가속</h3>
+  <ul>
+    <li>도구=<code>WebApplication</code>, 가이드=<code>HowTo</code>+<code>FAQPage</code>, 비교=<code>Article</code>, 카테고리=<code>CollectionPage</code> — 리치결과 노출 극대화</li>
+    <li><b>IndexNow</b> 핑 자동화(이미 <code>seo:ping</code> 존재) — 신규/변경 페이지 즉시 색인 요청</li>
+    <li>내부링크 그래프: related·convertPairs·category로 <b>크롤 깊이 최적화</b></li>
+  </ul>
+  <div class="note good"><b>복리 효과.</b> 169 도구 × 4언어 × (도구+가이드+변환쌍+비교) ≈ <b>수천~수만 색인 페이지</b>. 각 페이지가 롱테일 1개씩만 잡아도 합산 트래픽은 단일 고볼륨 키워드를 압도한다 — Zapier·Wise가 증명한 경로.</p></div>
+</section>
+
+<!-- 09 MONEY -->
+<section id="money">
+  <h2><span class="num">09</span>MONETIZATION DESIGN</h2>
+  <div class="t">신뢰를 지키면서 버는 하이브리드</div>
+  <p class="lead">원칙: <b>도구 작업영역은 광고·과금 청정구역</b>. "파일 안 나간다"는 신뢰가 모든 수익의 전제이므로 절대 훼손하지 않는다.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>레이어</th><th>배치 위치</th><th>전제 조건</th><th>예상 기여</th></tr></thead>
+    <tbody>
+      <tr><td><b>디스플레이 광고</b></td><td>가이드·카탈로그·블로그 (작업영역 제외)</td><td>SEO 트래픽 성장</td><td>트래픽 비례, 안정적 베이스</td></tr>
+      <tr><td><b>제휴(Affiliate)</b></td><td>"한계 도달" 지점 (대용량·자동화 필요시)</td><td>무업로드 한계의 자연 업셀</td><td>고단가, 의도 명확해 전환↑</td></tr>
+      <tr><td><b>Pro 구독</b></td><td>설정·일괄·PWA 오프라인 팩</td><td>편의기능만, 핵심은 무료 유지</td><td>충성 사용자 LTV</td></tr>
+      <tr><td><b>오픈소스/스폰서</b></td><td>코어 일부 공개 → GitHub 스폰서</td><td>신뢰 플라이휠과 결합</td><td>백링크·브랜드(간접 큼)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note warn"><b>안 하는 것.</b> 강제 회원가입 · 결과물 강제 워터마크 · 작업영역 인터스티셜 광고 · 횟수/용량 인위적 제한. 이것들은 경쟁사가 <b>서버 비용 때문에</b> 하는 것 — 우리는 할 이유가 없고, 안 하는 게 차별점이다.</p></div>
+</section>
+
+<!-- 10 ROADMAP -->
+<section id="roadmap">
+  <h2><span class="num">10</span>ROADMAP</h2>
+  <div class="t">기반부터 깔고, 트래픽 엔진을 켠다</div>
+
+  <div class="road">
+    <div class="ph">
+      <div class="when">PHASE α · 기반 (2~3주)</div>
+      <div class="ttl">툴 모듈 규약 + 코어 서비스</div>
+      <ul>
+        <li><code>defineTool()</code> · glob 자동집계 빌드 · 5개 아키타입 템플릿</li>
+        <li>워커풀 · AbortSignal 표준 · WASM 자산 매니페스트(단일 버전원)</li>
+        <li>레지스트리 "수기+자동" 병행 게이트, 회귀 E2E 유지</li>
+      </ul>
+    </div>
+    <div class="ph">
+      <div class="when">PHASE β · 발견성 (1~2주)</div>
+      <div class="ttl">⌘K 명령 팔레트 + 개인화 홈 + 허브 리치화</div>
+      <ul>
+        <li>Fuse.js 퍼지검색 인덱스(모듈 메타 구동) · 즐겨찾기/최근 스토어</li>
+        <li>카테고리 CollectionPage 승격 · 워크플로 related 동선</li>
+      </ul>
+    </div>
+    <div class="ph">
+      <div class="when">PHASE γ · 국제화·SEO (2~4주, 병렬)</div>
+      <div class="ttl">169 전 도구 EN + 변환매트릭스/유스케이스 증식</div>
+      <ul>
+        <li>per-tool i18n 마이그레이션(트래픽 상위순) · ja/zh 1차 확장</li>
+        <li>convertPairs·compare·use 페이지 자동생성 · IndexNow 자동핑</li>
+      </ul>
+    </div>
+    <div class="ph">
+      <div class="when">PHASE δ · 수익·관측 (지속)</div>
+      <div class="ttl">하이브리드 수익 + 도구별 CWV/에러 추적</div>
+      <ul>
+        <li>가이드 광고 슬롯 · 제휴 지점 · Pro 편의팩 실험</li>
+        <li>도구별 CWV 분해 · Lighthouse 예산 CI 게이트 · 에러 추적</li>
+      </ul>
+    </div>
+    <div class="ph">
+      <div class="when">PHASE ε · 확장 (상시)</div>
+      <div class="ttl">스캐폴딩 CLI로 도구 양산 + 코어 OSS 공개</div>
+      <ul>
+        <li><code>create-tool</code> CLI — 신규 도구 1폴더 자동생성</li>
+        <li>코어 일부 오픈소스화 → 신뢰·백링크 플라이휠</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 KPI -->
+<section id="kpi">
+  <h2><span class="num">11</span>KPI &amp; MEASUREMENT</h2>
+  <div class="t">바이럴·정밀을 숫자로 검증</div>
+  <div class="grid g4">
+    <div class="card"><div class="lab">성장</div><h4>오가닉 세션</h4><p>주간 색인 페이지수 · 오가닉 유입 · 신규 키워드 랭킹 수</p></div>
+    <div class="card"><div class="lab">발견성</div><h4>첫 도구까지 시간</h4><p>랜딩→첫 도구실행 중앙값 · ⌘K 사용률 · 재방문 즐겨찾기율</p></div>
+    <div class="card"><div class="lab">바이럴</div><h4>공유·딥링크</h4><p>결과 공유 클릭 · 외부 백링크 증가 · 추천 유입 비중</p></div>
+    <div class="card"><div class="lab">품질</div><h4>도구별 CWV</h4><p>LCP/INP p75 by tool · 에러율 · 대용량 실패율 · 번들 예산 준수</p></div>
+  </div>
+  <div class="note"><b>측정도 무서버 원칙 준수.</b> CWV/사용량은 현행처럼 클라이언트(localStorage) + 익명 집계. 에러 추적만 민감정보 없는 범위에서 도입 검토.</p></div>
+</section>
+
+<!-- 12 RISK -->
+<section id="risk">
+  <h2><span class="num">12</span>RISKS &amp; DECISIONS NEEDED</h2>
+  <div class="t">미리 정해둘 갈림길</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>항목</th><th>리스크 / 트레이드오프</th><th>권장</th></tr></thead>
+    <tbody>
+      <tr><td><b>마이그레이션 범위</b></td><td>169개 일괄 모듈화는 회귀 위험 큼</td><td><span class="pill good">점진</span> 신규=새규약, 기존=트래픽순</td></tr>
+      <tr><td><b>i18n 번역 품질</b></td><td>자동번역은 빠르나 어색</td><td>핵심 도구 수동, 롱테일 자동+검수 큐</td></tr>
+      <tr><td><b>프로그래매틱 SEO</b></td><td>얇은 페이지 양산 시 패널티</td><td><span class="pill warn">가드</span> 실동작+고유FAQ 강제</td></tr>
+      <tr><td><b>광고 도입 시점</b></td><td>이르면 신뢰·UX 훼손</td><td>SEO 트래픽 임계 후, 작업영역 영구 청정</td></tr>
+      <tr><td><b>도메인·브랜드</b></td><td>현 <code>agent-control-panel-phi</code> 별칭</td><td>국제 확장 전 브랜드 도메인 결정</td></tr>
+      <tr><td><b>언어 확장 순서</b></td><td>리소스 분산 위험</td><td>EN 완성 → ja → zh 순차</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note good"><b>불변 원칙 (재확인).</b> ① 사용자 파일은 절대 서버로 가지 않는다 ② API Route·Node 모듈 금지 ③ 무거운 처리는 워커+동적 WASM ④ 핵심 도구는 영원히 무료·무가입·무제한. 이 네 가지는 이 계획의 모든 결정에 우선한다.</p></div>
+</section>
+
+<!-- SOURCES -->
+<section id="sources">
+  <h2>출처</h2>
+  <div class="t" style="font-size:20px">수집한 주요 레퍼런스</div>
+  <div class="src">
+    <a href="https://deepwiki.com/CorentinTh/it-tools">it-tools 아키텍처 (DeepWiki)</a><br>
+    <a href="https://github.com/CorentinTh/it-tools">CorentinTh/it-tools (GitHub)</a><br>
+    <a href="https://deepwiki.com/GoogleChromeLabs/squoosh">Squoosh 아키텍처 (DeepWiki)</a><br>
+    <a href="https://dev.to/samma1997/browser-based-image-tools-the-complete-privacy-guide-2026-9km">Browser-Based Image Tools: Privacy Guide 2026</a><br>
+    <a href="https://www.similarweb.com/website/ilovepdf.com/">iLovePDF 트래픽 (Similarweb)</a><br>
+    <a href="https://www.similarweb.com/website/ilovepdf.com/vs/smallpdf.com/">iLovePDF vs Smallpdf (Similarweb)</a><br>
+    <a href="https://tinywow.com/tools/pdf">TinyWow Tools</a><br>
+    <a href="https://10015.io/">10015.io</a><br>
+    <a href="https://www.producthunt.com/products/10015-tools">10015 Tools (Product Hunt)</a><br>
+    <a href="https://searchengineland.com/guide/programmatic-seo">Programmatic SEO 가이드 (Search Engine Land)</a><br>
+    <a href="https://guptadeepak.com/the-complete-guide-to-programmatic-seo/">Programmatic SEO: Scale to Millions</a><br>
+    <a href="https://hashmeta.com/blog/how-programmatic-seo-drives-consistent-long-tail-traffic/">Programmatic SEO &amp; Long-tail (Hashmeta)</a><br>
+    <a href="https://uxpatterns.dev/patterns/advanced/command-palette">Command Palette Pattern (UX Patterns)</a><br>
+    <a href="https://blog.superhuman.com/how-to-build-a-remarkable-command-palette/">Building a Command Palette (Superhuman)</a><br>
+    <a href="https://www.techtimes.com/articles/314482/20260205/8-website-monetization-methods-explained-proven-ways-make-money-online-2026.htm">Website Monetization 2026 (TechTimes)</a><br>
+    <a href="https://www.aiphotogenerator.net/blog/2026/03/best-ai-background-removers-2026">Best AI Background Removers 2026</a><br>
+  </div>
+</section>
+
+<div class="foot">
+  웹 툴킷 마스터플랜 · 정밀·유용·바이럴 서비스 재설계 v1.0 · 작성 2026-06-05 ·
+  대상 프로젝트 <a href="">web-toolkit</a> (브라우저 완결 도구 169종) ·
+  본 문서는 외부 레퍼런스 수집 + 현행 코드베이스 정밀분석에 기반한 전략 계획서입니다.
+</div>
+</main>
+</div>
+</body>
+</html>

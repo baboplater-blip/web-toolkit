@@ -68,6 +68,15 @@ export default function ImageConvertPage() {
     supportsAvifEncode().then(setAvifSupported);
   }, []);
 
+  // 변환 매트릭스(/convert/*-to-*) 에서 넘어온 ?to= 프리필 — 목표 포맷 선택
+  useEffect(() => {
+    const to = new URLSearchParams(window.location.search).get('to');
+    const valid: ImageFormat[] = ['jpeg', 'png', 'webp', 'avif'];
+    if (to && (valid as string[]).includes(to)) {
+      setOutputFormat(to as ImageFormat);
+    }
+  }, []);
+
   const addFiles = (files: File[]) => {
     setError(null);
     setResult(null);

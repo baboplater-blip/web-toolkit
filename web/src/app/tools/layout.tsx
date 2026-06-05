@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { InlineToolAd } from '@/components/InlineToolAd';
 import { RelatedTools } from '@/components/tools/RelatedTools';
+import { ToolConvertLinks } from '@/components/tools/ToolConvertLinks';
 import { ToolNavigation } from '@/components/tools/ToolNavigation';
 
 const SITE_NAME = 'Web Toolkit';
@@ -76,6 +77,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
       />
       <InlineToolAd />
       {children}
+      <ToolConvertLinks />
       <RelatedTools />
       <ToolNavigation />
     </>

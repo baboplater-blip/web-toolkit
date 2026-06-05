@@ -80,6 +80,13 @@ export default function VideoConvertPage() {
   );
   const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
+  // 변환 매트릭스(/convert/*-to-*)에서 넘어온 ?to= 프리필
+  useEffect(() => {
+    const to = new URLSearchParams(window.location.search).get('to');
+    const valid: TargetFormat[] = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+    if (to && (valid as string[]).includes(to)) setTarget(to as TargetFormat);
+  }, []);
+
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);

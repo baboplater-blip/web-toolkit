@@ -7,6 +7,7 @@
  */
 
 import type { LucideIcon } from 'lucide-react';
+import { searchTools } from './search';
 import {
   Archive,
   ArrowDownAZ,
@@ -1734,23 +1735,22 @@ export const TOOLS: ToolMeta[] = [
 /** status:'ready' 만 반환 */
 export const readyTools = () => TOOLS.filter((t) => t.status === 'ready');
 
-/** 검색 쿼리 + 카테고리 필터 적용 */
+/**
+ * 검색 쿼리 + 카테고리 필터 적용.
+ *
+ * 빈 쿼리: 카테고리만 필터하고 ready→phase 순 정렬(기존 동작 유지).
+ * 비어있지 않은 쿼리: 퍼지 랭커(search.ts)로 관련도 순 정렬 —
+ * 오타·어순·한글 초성("ㅇㄱㅁㅈㅇㅋ"→얼굴 모자이크)을 흡수한다.
+ */
 export function filterTools(query: string, category: ToolCategory | 'all'): ToolMeta[] {
-  const q = query.trim().toLowerCase();
-  return TOOLS.filter((t) => {
-    if (category !== 'all' && t.category !== category) return false;
-    if (!q) return true;
-    const hay = [
-      t.title,
-      t.description,
-      ...(t.keywords ?? []),
-    ]
-      .join(' ')
-      .toLowerCase();
-    return hay.includes(q);
-  }).sort((a, b) => {
-    // ready 우선, 그 다음 phase 오름차순
-    if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
-    return a.phase - b.phase;
-  });
+  const pool =
+    category === 'all' ? TOOLS : TOOLS.filter((t) => t.category === category);
+  const q = query.trim();
+  if (!q) {
+    return [...pool].sort((a, b) => {
+      if (a.status !== b.status) return a.status === 'ready' ? -1 : 1;
+      return a.phase - b.phase;
+    });
+  }
+  return searchTools(q, pool);
 }

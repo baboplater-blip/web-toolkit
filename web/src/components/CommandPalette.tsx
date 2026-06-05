@@ -8,7 +8,16 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
-import { Search, Star, Clock, CornerDownLeft } from 'lucide-react';
+import {
+  Search,
+  Star,
+  Clock,
+  CornerDownLeft,
+  ArrowRightLeft,
+  GitCompare,
+  Wrench,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +32,10 @@ import {
   type ToolCategory,
   type ToolMeta,
 } from '@/lib/tools/registry';
+import { isChoseongQuery, toChoseong } from '@/lib/tools/search';
+import { CONVERSIONS, FORMATS, conversionSlug } from '@/lib/convert-matrix';
+import { COMPARES_KO } from '@/lib/ko-compares';
+import { USE_CASES } from '@/lib/use-cases';
 import { cn } from '@/lib/utils';
 
 const CATEGORY_ORDER: ToolCategory[] = [
@@ -40,13 +53,95 @@ const CATEGORY_ORDER: ToolCategory[] = [
 ];
 
 const MAX_RESULTS = 40;
+const MAX_EXTRA = 6;
+
+/** 팔레트가 다루는 모든 이동 대상의 공통 형태 (도구·변환·비교·활용법). */
+type PaletteItem = {
+  key: string;
+  title: string;
+  subtitle?: string;
+  href: string;
+  icon: LucideIcon;
+  badge?: string;
+};
 
 type Section = {
   key: string;
   label: string;
   icon?: React.ReactNode;
-  items: ToolMeta[];
+  items: PaletteItem[];
 };
+
+function toolToItem(t: ToolMeta): PaletteItem {
+  return {
+    key: `tool-${t.id}`,
+    title: t.title,
+    subtitle: t.description,
+    href: t.href,
+    icon: t.icon,
+    badge: CATEGORY_LABELS[t.category],
+  };
+}
+
+/** 변환·비교·활용법을 한 번만 인덱싱 (검색용 haystack 동봉). */
+type ExtraEntry = PaletteItem & { hay: string; cho: string };
+
+const EXTRA_CONVERTS: ExtraEntry[] = CONVERSIONS.map((c) => {
+  const slug = conversionSlug(c);
+  const title = `${FORMATS[c.from].label} → ${FORMATS[c.to].label} 변환`;
+  const hay = `${title} ${slug} ${c.from} ${c.to} convert 변환`.toLowerCase();
+  return {
+    key: `cv-${slug}`,
+    title,
+    href: `/convert/${slug}`,
+    icon: ArrowRightLeft,
+    badge: '변환',
+    hay,
+    cho: toChoseong(hay),
+  };
+});
+
+const EXTRA_COMPARES: ExtraEntry[] = COMPARES_KO.map((c) => {
+  const hay = `${c.h1} ${c.slug} ${c.keywords.join(' ')} 비교 vs`.toLowerCase();
+  return {
+    key: `cmp-${c.slug}`,
+    title: c.h1,
+    href: `/compare/${c.slug}`,
+    icon: GitCompare,
+    badge: '비교',
+    hay,
+    cho: toChoseong(hay),
+  };
+});
+
+const EXTRA_USECASES: ExtraEntry[] = USE_CASES.map((u) => {
+  const hay = `${u.h1.ko} ${u.slug} ${u.keywords.ko.join(' ')} 활용법`.toLowerCase();
+  return {
+    key: `uc-${u.slug}`,
+    title: u.h1.ko,
+    subtitle: u.description.ko,
+    href: `/use/${u.slug}`,
+    icon: Wrench,
+    badge: '활용법',
+    hay,
+    cho: toChoseong(hay),
+  };
+});
+
+/** 토큰 AND 매칭 — 부분일치 + 한글 초성. */
+function matchEntry(e: ExtraEntry, tokens: string[]): boolean {
+  return tokens.every(
+    (tk) => e.hay.includes(tk) || (isChoseongQuery(tk) && e.cho.includes(tk)),
+  );
+}
+
+function searchExtras(entries: ExtraEntry[], tokens: string[]): PaletteItem[] {
+  if (tokens.length === 0) return [];
+  return entries
+    .filter((e) => matchEntry(e, tokens))
+    .slice(0, MAX_EXTRA)
+    .map(({ hay: _hay, cho: _cho, ...item }) => item);
+}
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -82,7 +177,6 @@ export function CommandPalette() {
     if (!open) return;
     setQuery('');
     setActiveIndex(0);
-    // 다음 프레임에 포커스 (Dialog 마운트 후)
     const id = requestAnimationFrame(() => inputRef.current?.focus());
     return () => cancelAnimationFrame(id);
   }, [open]);
@@ -121,12 +215,21 @@ export function CommandPalette() {
       }
 
       const out: Section[] = [];
+      out.push({
+        key: 'shortcuts',
+        label: '바로가기',
+        items: [
+          { key: 'sc-convert', title: '파일 변환 모음', subtitle: 'PNG·JPG·WebP·HEIC·PDF…', href: '/convert', icon: ArrowRightLeft, badge: '변환' },
+          { key: 'sc-compare', title: '도구 비교', subtitle: '헷갈리는 포맷·도구를 나란히', href: '/compare', icon: GitCompare, badge: '비교' },
+          { key: 'sc-use', title: '활용법', subtitle: '자주 하는 작업을 단계별로', href: '/use', icon: Wrench, badge: '활용법' },
+        ],
+      });
       if (favTools.length > 0) {
         out.push({
           key: 'favorites',
           label: '즐겨찾기',
           icon: <Star className="h-3.5 w-3.5" />,
-          items: favTools,
+          items: favTools.map(toolToItem),
         });
       }
       if (recentTools.length > 0) {
@@ -134,27 +237,57 @@ export function CommandPalette() {
           key: 'recent',
           label: '최근 사용',
           icon: <Clock className="h-3.5 w-3.5" />,
-          items: recentTools,
+          items: recentTools.map(toolToItem),
         });
       }
       for (const cat of CATEGORY_ORDER) {
         const list = grouped.get(cat);
         if (!list || list.length === 0) continue;
-        out.push({
-          key: cat,
-          label: CATEGORY_LABELS[cat],
-          items: list,
-        });
+        out.push({ key: cat, label: CATEGORY_LABELS[cat], items: list.map(toolToItem) });
       }
       return out;
     }
 
-    // 검색 중: 단일 섹션 (관련성 순)
-    const results = filterTools(trimmed, 'all')
+    // 검색 중: 도구 + 변환 + 비교 + 활용법 버킷
+    const tokens = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+    const out: Section[] = [];
+
+    const toolResults = filterTools(trimmed, 'all')
       .filter((t) => t.status === 'ready')
-      .slice(0, MAX_RESULTS);
-    if (results.length === 0) return [];
-    return [{ key: 'results', label: `결과 ${results.length}개`, items: results }];
+      .slice(0, MAX_RESULTS)
+      .map(toolToItem);
+    if (toolResults.length > 0) {
+      out.push({ key: 'tools', label: `도구 ${toolResults.length}개`, items: toolResults });
+    }
+
+    const convertResults = searchExtras(EXTRA_CONVERTS, tokens);
+    if (convertResults.length > 0) {
+      out.push({
+        key: 'converts',
+        label: '변환',
+        icon: <ArrowRightLeft className="h-3.5 w-3.5" />,
+        items: convertResults,
+      });
+    }
+    const compareResults = searchExtras(EXTRA_COMPARES, tokens);
+    if (compareResults.length > 0) {
+      out.push({
+        key: 'compares',
+        label: '비교',
+        icon: <GitCompare className="h-3.5 w-3.5" />,
+        items: compareResults,
+      });
+    }
+    const useResults = searchExtras(EXTRA_USECASES, tokens);
+    if (useResults.length > 0) {
+      out.push({
+        key: 'usecases',
+        label: '활용법',
+        icon: <Wrench className="h-3.5 w-3.5" />,
+        items: useResults,
+      });
+    }
+    return out;
   }, [query, favorites, recent]);
 
   /* 평탄화된 인덱스 (키보드 네비용) */
@@ -169,16 +302,13 @@ export function CommandPalette() {
     if (!open) return;
     const list = listRef.current;
     if (!list) return;
-    const el = list.querySelector<HTMLElement>(
-      `[data-cmdk-index="${activeIndex}"]`,
-    );
+    const el = list.querySelector<HTMLElement>(`[data-cmdk-index="${activeIndex}"]`);
     el?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex, open]);
 
-  const navigateTo = useCallback((tool: ToolMeta) => {
+  const navigateTo = useCallback((item: PaletteItem) => {
     setOpen(false);
-    // SPA 라우팅 대신 정적 export 호환을 위해 a href 동일하게 location.assign
-    window.location.assign(tool.href);
+    window.location.assign(item.href);
   }, []);
 
   const handleKeyDown = useCallback(
@@ -216,7 +346,7 @@ export function CommandPalette() {
       >
         <DialogTitle className="sr-only">도구 검색</DialogTitle>
         <DialogDescription className="sr-only">
-          이름·키워드로 도구를 검색하고 Enter 키로 이동합니다.
+          이름·키워드로 도구·변환·비교·활용법을 검색하고 Enter 키로 이동합니다.
         </DialogDescription>
 
         <div className="flex items-center gap-2 border-b px-4 py-3">
@@ -230,13 +360,13 @@ export function CommandPalette() {
               setActiveIndex(0);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="도구 검색…"
+            placeholder="도구·변환·활용법 검색…"
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            aria-label="도구 검색"
+            aria-label="검색"
             aria-autocomplete="list"
             aria-controls="cmdk-listbox"
             aria-activedescendant={
-              flat[activeIndex] ? `cmdk-item-${flat[activeIndex].id}` : undefined
+              flat[activeIndex] ? `cmdk-item-${flat[activeIndex].key}` : undefined
             }
           />
           <kbd className="hidden h-5 select-none items-center rounded border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground md:inline-flex">
@@ -263,42 +393,41 @@ export function CommandPalette() {
                 {section.icon}
                 <span>{section.label}</span>
               </div>
-              {section.items.map((tool) => {
+              {section.items.map((item) => {
                 const idx = cursor++;
                 const active = idx === activeIndex;
-                const Icon = tool.icon;
+                const Icon = item.icon;
                 return (
                   <button
-                    key={tool.id}
-                    id={`cmdk-item-${tool.id}`}
+                    key={item.key}
+                    id={`cmdk-item-${item.key}`}
                     role="option"
                     aria-selected={active}
                     data-cmdk-index={idx}
                     type="button"
                     onMouseEnter={() => setActiveIndex(idx)}
-                    onClick={() => navigateTo(tool)}
+                    onClick={() => navigateTo(item)}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors',
-                      active
-                        ? 'bg-accent text-accent-foreground'
-                        : 'hover:bg-muted',
+                      active ? 'bg-accent text-accent-foreground' : 'hover:bg-muted',
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate">{tool.title}</div>
-                      <div className="truncate text-xs text-muted-foreground">
-                        {tool.description}
-                      </div>
+                      <div className="truncate">{item.title}</div>
+                      {item.subtitle && (
+                        <div className="truncate text-xs text-muted-foreground">
+                          {item.subtitle}
+                        </div>
+                      )}
                     </div>
-                    <span className="hidden shrink-0 rounded border bg-background/50 px-1.5 py-0.5 text-[10px] text-muted-foreground md:inline">
-                      {CATEGORY_LABELS[tool.category]}
-                    </span>
+                    {item.badge && (
+                      <span className="hidden shrink-0 rounded border bg-background/50 px-1.5 py-0.5 text-[10px] text-muted-foreground md:inline">
+                        {item.badge}
+                      </span>
+                    )}
                     {active && (
-                      <CornerDownLeft
-                        className="h-3.5 w-3.5 text-muted-foreground"
-                        aria-hidden
-                      />
+                      <CornerDownLeft className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
                     )}
                   </button>
                 );

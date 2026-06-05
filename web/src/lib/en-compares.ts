@@ -38,6 +38,8 @@ export interface Compare {
   verdict: string;
   faqs: Array<{ q: string; a: string }>;
   keywords: string[];
+  /** 관련 변환 매트릭스 slug (compare ↔ convert 상호 링크). */
+  relatedConverts?: string[];
 }
 
 export const COMPARES: Compare[] = [
@@ -137,6 +139,7 @@ export const COMPARES: Compare[] = [
       },
     ],
     keywords: ['heic vs jpg', 'heic or jpeg', 'convert heic', 'iphone photo format'],
+    relatedConverts: ['heic-to-jpg', 'heic-to-png'],
   },
   {
     slug: 'png-vs-jpg',
@@ -184,6 +187,7 @@ export const COMPARES: Compare[] = [
       },
     ],
     keywords: ['png vs jpg', 'jpg or png', 'png jpeg difference', 'best image format'],
+    relatedConverts: ['png-to-jpg', 'jpg-to-png'],
   },
   {
     slug: 'webp-vs-png',
@@ -231,6 +235,7 @@ export const COMPARES: Compare[] = [
       },
     ],
     keywords: ['webp vs png', 'webp or png', 'convert webp', 'webp png difference'],
+    relatedConverts: ['webp-to-png', 'png-to-webp'],
   },
   {
     slug: 'jpg-to-pdf-vs-pdf-to-jpg',
@@ -278,6 +283,7 @@ export const COMPARES: Compare[] = [
       },
     ],
     keywords: ['jpg to pdf vs pdf to jpg', 'image to pdf', 'pdf to image', 'convert pdf images'],
+    relatedConverts: ['jpg-to-pdf', 'pdf-to-jpg'],
   },
   {
     slug: 'compress-vs-resize-image',
@@ -437,4 +443,9 @@ export function getCompare(slug: string): Compare | undefined {
 /** Comparisons that reference a given tool id (for cross-linking from tool pages). */
 export function comparesForTool(toolId: string): Compare[] {
   return COMPARES.filter((c) => c.options.some((o) => o.toolId === toolId));
+}
+
+/** 변환 매트릭스 slug 와 연결된 비교 (convert → compare 역링크). */
+export function compareForConvert(convertSlug: string): Compare | undefined {
+  return COMPARES.find((c) => c.relatedConverts?.includes(convertSlug));
 }

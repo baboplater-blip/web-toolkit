@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowRightLeft, BookOpen, CheckCircle2, Wrench } from 'lucide-react';
 import {
   CATEGORY_LABELS,
   TOOLS,
   type ToolCategory,
 } from '@/lib/tools/registry';
 import { CATEGORY_GUIDES } from '@/lib/category-guide-content';
+import { CONVERSIONS, FORMATS, conversionCategory, conversionSlug } from '@/lib/convert-matrix';
+import { USE_CASES } from '@/lib/use-cases';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -282,6 +284,49 @@ export default async function CategoryGuidePage({ params }: PageProps) {
             ))}
           </ul>
         </section>
+
+        {(() => {
+          const catConverts = CONVERSIONS.filter(
+            (c) => conversionCategory(FORMATS[c.from], FORMATS[c.to]) === cat,
+          ).slice(0, 8);
+          const catUses = USE_CASES.filter((u) => u.category === cat);
+          if (catConverts.length === 0 && catUses.length === 0) return null;
+          return (
+            <section className="space-y-4">
+              {catConverts.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    <ArrowRightLeft className="h-3.5 w-3.5" aria-hidden />빠른 변환
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {catConverts.map((c) => {
+                      const slug = conversionSlug(c);
+                      return (
+                        <a key={slug} href={`/convert/${slug}`} className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-[13px] font-medium hover:border-primary transition-colors">
+                          {FORMATS[c.from].label} → {FORMATS[c.to].label}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {catUses.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    <Wrench className="h-3.5 w-3.5" aria-hidden />활용법
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {catUses.map((u) => (
+                      <a key={u.slug} href={`/use/${u.slug}`} className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-[13px] font-medium hover:border-primary transition-colors">
+                        {u.h1.ko}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          );
+        })()}
 
         <section className="space-y-3">
           <h3 className="text-lg font-bold">자주 묻는 질문</h3>
