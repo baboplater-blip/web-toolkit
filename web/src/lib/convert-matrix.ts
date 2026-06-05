@@ -363,6 +363,22 @@ export const FORMATS: Record<string, FormatFact> = {
     strengths: { ko: ['텍스트·서식 편집 자유로움', '오피스 표준', '협업·재사용에 적합'], en: ['Freely edit text and formatting', 'Office standard', 'Good for reuse/collaboration'] },
     weaknesses: { ko: ['뷰어마다 레이아웃 차이', '복잡한 PDF는 완벽 재현 어려움', '워드/호환 앱 필요'], en: ['Layout varies by viewer', 'Complex PDFs may not convert perfectly', 'Needs Word or a compatible app'] },
   },
+  xlsx: {
+    key: 'xlsx', label: 'XLSX', ext: 'xlsx', kind: 'document',
+    lossy: false, transparency: false, animation: false, vector: false,
+    weight: 'medium', universal: true,
+    summary: { ko: '엑셀 스프레드시트 포맷으로, 표·수식·여러 시트를 담습니다.', en: 'The Excel spreadsheet format that holds tables, formulas and multiple sheets.' },
+    strengths: { ko: ['표·수식·서식 보존', '여러 시트를 한 파일에', '오피스·구글시트 표준'], en: ['Keeps tables, formulas and formatting', 'Many sheets in one file', 'Office/Google Sheets standard'] },
+    weaknesses: { ko: ['단순 데이터엔 과함', '프로그램 처리는 CSV·JSON이 편함', '엑셀/호환 앱 필요'], en: ['Overkill for plain data', 'CSV/JSON are easier to process programmatically', 'Needs Excel or a compatible app'] },
+  },
+  xml: {
+    key: 'xml', label: 'XML', ext: 'xml', kind: 'document',
+    lossy: false, transparency: false, animation: false, vector: false,
+    weight: 'small', universal: true,
+    summary: { ko: '태그로 구조를 표현하는 데이터 포맷으로, 설정·문서 교환에 쓰입니다.', en: 'A tag-based data format used for config and document exchange.' },
+    strengths: { ko: ['엄격한 구조·스키마 검증', '속성·중첩 표현', '광범위한 레거시 호환'], en: ['Strict structure and schema validation', 'Attributes and nesting', 'Broad legacy compatibility'] },
+    weaknesses: { ko: ['JSON보다 장황함', '파싱이 무거움', '사람이 읽기 번거로움'], en: ['More verbose than JSON', 'Heavier to parse', 'Tedious to read by hand'] },
+  },
 
   /* ── 비디오(입력 전용) ── */
   flv: {
@@ -508,6 +524,27 @@ export const CONVERSIONS: Conversion[] = [
   { from: 'epub', to: 'txt', toolId: 'epub-to-txt', toolHref: '/tools/docs/epub-to-txt' },
   { from: 'epub', to: 'md', toolId: 'epub-to-md', toolHref: '/tools/docs/epub-to-md' },
   { from: 'txt', to: 'epub', toolId: 'txt-to-epub', toolHref: '/tools/docs/txt-to-epub' },
+
+  // ── 콘텐츠 확장 2026-06 (2차) ──
+  // 이미지 (image-convert; avif 출력 확장)
+  imgConvert('gif', 'avif'),
+  imgConvert('bmp', 'avif'),
+  // 오디오 (audio-convert)
+  audioConvert('ogg', 'wav'),
+  audioConvert('mp3', 'aac'),
+  // 스프레드시트·데이터 (xlsx-convert / json-xml / yaml-json)
+  { from: 'csv', to: 'xlsx', toolId: 'xlsx-convert', toolHref: '/tools/docs/xlsx-convert' },
+  { from: 'xlsx', to: 'csv', toolId: 'xlsx-convert', toolHref: '/tools/docs/xlsx-convert' },
+  { from: 'xlsx', to: 'json', toolId: 'xlsx-convert', toolHref: '/tools/docs/xlsx-convert' },
+  { from: 'json', to: 'xlsx', toolId: 'xlsx-convert', toolHref: '/tools/docs/xlsx-convert' },
+  { from: 'json', to: 'xml', toolId: 'json-xml', toolHref: '/tools/dev/json-xml' },
+  { from: 'xml', to: 'json', toolId: 'json-xml', toolHref: '/tools/dev/json-xml' },
+  { from: 'json', to: 'yaml', toolId: 'yaml-json', toolHref: '/tools/docs/yaml-json' },
+  // 문서 (pdf-to-html / pdf-to-epub / epub-to-html / pdf-to-excel)
+  { from: 'pdf', to: 'html', toolId: 'pdf-to-html', toolHref: '/tools/pdf/to-html' },
+  { from: 'pdf', to: 'epub', toolId: 'pdf-to-epub', toolHref: '/tools/pdf/to-epub' },
+  { from: 'epub', to: 'html', toolId: 'epub-to-html', toolHref: '/tools/docs/epub-to-html' },
+  { from: 'pdf', to: 'xlsx', toolId: 'pdf-to-excel', toolHref: '/tools/pdf/to-excel' },
 ];
 
 export function conversionSlug(c: Conversion): string {

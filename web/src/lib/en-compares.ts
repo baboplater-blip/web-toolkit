@@ -568,6 +568,142 @@ export const COMPARES: Compare[] = [
     keywords: ['epub vs pdf', 'pdf or epub', 'best ebook format', 'convert epub pdf'],
     relatedConverts: ['epub-to-pdf'],
   },
+  {
+    slug: 'csv-vs-json',
+    category: 'docs',
+    title: 'CSV vs JSON — Which Data Format?',
+    h1: 'CSV vs JSON',
+    description:
+      'CSV is a flat table every spreadsheet reads; JSON holds nested structures for APIs and config. Which to use — convert free in your browser.',
+    intro:
+      'CSV and JSON store data in different shapes. CSV is a flat, comma-separated table — perfect for spreadsheets and simple row/column data that humans skim. JSON nests objects and arrays — perfect for APIs, config and anything hierarchical. The right choice depends on whether your data is a table or a tree.',
+    options: [
+      {
+        label: 'CSV',
+        toolId: 'csv-json',
+        best: 'Flat tabular data for spreadsheets, exports and imports.',
+        pros: ['Opens in every spreadsheet and database', 'Tiny and simple', 'Easy to skim and diff by row'],
+        cons: ['No nested or hierarchical data', 'No types or formatting', 'Encoding/delimiter pitfalls'],
+      },
+      {
+        label: 'JSON',
+        toolId: 'csv-json',
+        best: 'Nested data for APIs, config and app state.',
+        pros: ['Represents nested objects and arrays', 'Parsed natively by every language', 'Has basic types (number, bool, null)'],
+        cons: ['Awkward to view as a table', 'Larger than CSV', 'Tedious to bulk-edit by hand'],
+      },
+    ],
+    verdict:
+      'A simple table of rows and columns? Use CSV. Nested data, an API payload or config? Use JSON. Convert either way instantly in your browser — no upload.',
+    faqs: [
+      { q: 'Can every CSV become JSON?', a: 'Yes — each row becomes an object keyed by the header. Going back from deeply nested JSON to CSV may need flattening first.' },
+      { q: 'Which is better for Excel?', a: 'CSV. Excel opens it directly as a sheet; JSON needs importing or conversion first.' },
+    ],
+    keywords: ['csv vs json', 'json or csv', 'data format', 'convert csv json'],
+    relatedConverts: ['csv-to-json', 'json-to-csv'],
+  },
+  {
+    slug: 'mp4-vs-mov',
+    category: 'video',
+    title: 'MP4 vs MOV — Which Video Format?',
+    h1: 'MP4 vs MOV',
+    description:
+      'MOV is great for editing on Apple devices; MP4 plays and uploads everywhere. Which to use — convert free in your browser.',
+    intro:
+      'MOV and MP4 are close cousins — both often hold the same H.264/H.265 video. MOV is Apple’s QuickTime container, the default for iPhone recording and smooth in Mac editing. MP4 is the universal delivery container that plays on every device and uploads cleanly to every platform.',
+    options: [
+      {
+        label: 'MOV',
+        toolId: 'video-convert',
+        best: 'Recording and editing in the Apple ecosystem.',
+        pros: ['Default for iPhone recording', 'Smooth in Mac editing apps', 'Holds high-quality footage'],
+        cons: ['Weak support on Windows and the web', 'Larger files', 'Patchy on social uploads'],
+      },
+      {
+        label: 'MP4',
+        toolId: 'video-convert',
+        best: 'Sharing, uploading and playing anywhere.',
+        pros: ['Plays on every device and platform', 'The upload standard for social and web', 'Good compression'],
+        cons: ['For delivery more than editing', 'Transparency not supported'],
+      },
+    ],
+    verdict:
+      'Editing on a Mac or straight off an iPhone? MOV is fine. Sharing, uploading or playing across devices? Convert to MP4. The switch is quick in your browser.',
+    faqs: [
+      { q: 'Does converting MOV to MP4 lose quality?', a: 'If it just rewraps the same codec, quality is essentially unchanged. Re-encoding adds a small, usually unnoticeable loss.' },
+      { q: 'Why won’t my MOV upload?', a: 'Some platforms reject MOV or its codec. Converting to MP4 (H.264) is the most compatible fix.' },
+    ],
+    keywords: ['mp4 vs mov', 'mov or mp4', 'best video format', 'convert mov mp4'],
+    relatedConverts: ['mov-to-mp4', 'mp4-to-mov'],
+  },
+  {
+    slug: 'docx-vs-pdf',
+    category: 'docs',
+    title: 'DOCX vs PDF — Which to Send?',
+    h1: 'DOCX vs PDF',
+    description:
+      'DOCX stays editable; PDF locks the layout so it looks identical everywhere. Which to send — convert free in your browser.',
+    intro:
+      'DOCX and PDF sit at two ends of a document’s life. DOCX (Word) is for writing and collaboration — fully editable, with tracked changes and comments. PDF is for delivery — a fixed layout that looks identical on every device and can’t be accidentally altered. Most documents start as DOCX and ship as PDF.',
+    options: [
+      {
+        label: 'DOCX',
+        toolId: 'docx-to-pdf',
+        best: 'Writing, editing and collaborating on a document.',
+        pros: ['Fully editable text and formatting', 'Comments and tracked changes', 'The Office standard for drafts'],
+        cons: ['Layout shifts between viewers', 'Needs Word or a compatible app', 'Easy to alter by accident'],
+      },
+      {
+        label: 'PDF',
+        toolId: 'pdf-to-word',
+        best: 'Sending a final document that must look the same everywhere.',
+        pros: ['Identical layout on every device', 'Standard for sharing, printing, signing', 'Hard to alter accidentally'],
+        cons: ['Not made for free editing', 'Needs converting to edit again'],
+      },
+    ],
+    verdict:
+      'Still writing or collaborating? Keep it as DOCX. Sending a final version for review, print or signature? Export to PDF. Need to edit a PDF again? Convert it back to Word in your browser.',
+    faqs: [
+      { q: 'Will DOCX → PDF keep my formatting?', a: 'Yes — PDF freezes the current layout, so it looks the same everywhere. That’s exactly why it’s preferred for sending.' },
+      { q: 'Can I turn a PDF back into Word?', a: 'Yes. The PDF → Word tool extracts the text into an editable .doc you can open in Word or Hancom.' },
+    ],
+    keywords: ['docx vs pdf', 'word or pdf', 'send document format', 'convert docx pdf'],
+    relatedConverts: ['docx-to-pdf', 'pdf-to-word'],
+  },
+  {
+    slug: 'aac-vs-mp3',
+    category: 'audio',
+    title: 'AAC vs MP3 — Which Audio Format?',
+    h1: 'AAC vs MP3',
+    description:
+      'AAC sounds better at low bitrates; MP3 plays on absolutely everything. Which to use — convert free in your browser.',
+    intro:
+      'AAC and MP3 are both lossy audio formats, but AAC is the newer successor. At the same bitrate AAC usually sounds better, especially at low bitrates, which is why it’s the default for streaming and Apple devices. MP3 is older but plays on literally every device, app and car stereo ever made.',
+    options: [
+      {
+        label: 'AAC',
+        toolId: 'audio-convert',
+        best: 'Streaming, Apple devices and low-bitrate audio.',
+        pros: ['Better quality than MP3 at the same size', 'The streaming/broadcast standard', 'Efficient at low bitrates'],
+        cons: ['Slightly less universal than MP3', 'Raw AAC has a bare container', 'Patchy on very old devices'],
+      },
+      {
+        label: 'MP3',
+        toolId: 'audio-convert',
+        best: 'Maximum compatibility across every device.',
+        pros: ['Plays on absolutely everything', 'Adjustable bitrate', 'Tiny, well-understood files'],
+        cons: ['Slightly worse quality per size than AAC', 'Weaker at very low bitrates'],
+      },
+    ],
+    verdict:
+      'Want the best sound per megabyte or you live in Apple’s ecosystem? Use AAC. Need a file that plays on any device, old or new? Use MP3. Convert either way in your browser.',
+    faqs: [
+      { q: 'Is AAC noticeably better than MP3?', a: 'At low bitrates, yes — AAC holds detail MP3 loses. At high bitrates both sound great and the difference is hard to hear.' },
+      { q: 'Does converting MP3 to AAC improve quality?', a: 'No. Both are lossy, so converting can’t add back detail already lost. Convert from the highest-quality source you have.' },
+    ],
+    keywords: ['aac vs mp3', 'mp3 or aac', 'best audio format', 'convert aac mp3'],
+    relatedConverts: ['mp3-to-aac', 'aac-to-mp3'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);

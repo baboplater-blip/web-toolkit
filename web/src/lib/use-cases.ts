@@ -678,6 +678,269 @@ export const USE_CASES: UseCase[] = [
       en: ['watermark photo', 'add logo', 'prevent theft', 'image watermark'],
     },
   },
+
+  /* ── 콘텐츠 확장 2026-06 (2차) ── */
+  {
+    slug: 'photos-into-one-pdf',
+    category: 'pdf',
+    title: { ko: '여러 사진을 PDF 한 권으로 묶기', en: 'Combine Many Photos into One PDF' },
+    h1: { ko: '사진 여러 장을 PDF로', en: 'Many photos into one PDF' },
+    description: {
+      ko: '영수증·문서·사진 여러 장을 순서대로 묶어 하나의 PDF로 만드세요. 용량까지 줄여 메일·제출에 딱. 업로드 없음.',
+      en: 'Bundle receipts, documents or photos in order into a single PDF, then shrink it for email and uploads. No upload.',
+    },
+    intro: {
+      ko: '사진을 한 장씩 보내는 대신 한 권의 PDF로 묶으면 정리·제출이 훨씬 쉽습니다. 먼저 너무 큰 사진은 가볍게 줄이고, 원하는 순서로 PDF에 합친 뒤, 페이지를 재배열하면 끝입니다. 모든 처리는 브라우저 안에서 이뤄져 파일이 업로드되지 않습니다.',
+      en: 'Instead of sending photos one by one, bundling them into a single PDF makes them easy to organize and submit. Shrink oversized photos first, combine them into a PDF in the order you want, then reorder pages. Everything runs in your browser — files are never uploaded.',
+    },
+    steps: [
+      {
+        href: '/tools/image/batch-compress',
+        name: { ko: '큰 사진 미리 줄이기', en: 'Shrink large photos first' },
+        text: { ko: '용량이 큰 사진들을 일괄 압축해 최종 PDF를 가볍게 만듭니다.', en: 'Batch-compress heavy photos so the final PDF stays light.' },
+      },
+      {
+        href: '/tools/pdf/from-jpg',
+        name: { ko: '사진을 순서대로 PDF에 묶기', en: 'Combine photos into a PDF' },
+        text: { ko: 'JPG·PNG·HEIC 여러 장을 원하는 순서로 하나의 PDF로 만듭니다.', en: 'Merge several JPG/PNG/HEIC images into one PDF in the order you want.' },
+      },
+      {
+        href: '/tools/pdf/organize',
+        name: { ko: '페이지 순서 다듬기', en: 'Fine-tune page order' },
+        text: { ko: '썸네일을 보며 페이지를 재정렬·삭제해 마무리합니다.', en: 'Reorder or delete pages with thumbnails to finish.' },
+      },
+    ],
+    relatedConverts: ['jpg-to-pdf', 'png-to-pdf'],
+    relatedCompares: ['jpg-to-pdf-vs-pdf-to-jpg'],
+    faqs: [
+      {
+        q: { ko: '사진 순서를 바꿀 수 있나요?', en: 'Can I change the photo order?' },
+        a: { ko: '네. PDF로 묶을 때 순서를 정하고, 이후 페이지 정리 도구로 다시 재배열할 수 있습니다.', en: 'Yes. Set the order when combining, then rearrange again with the page-organize tool.' },
+      },
+      {
+        q: { ko: '아이폰 HEIC 사진도 되나요?', en: 'Does it work with iPhone HEIC photos?' },
+        a: { ko: '네. HEIC를 포함해 JPG·PNG·WebP를 그대로 PDF로 묶을 수 있습니다.', en: 'Yes. HEIC, JPG, PNG and WebP can all be bundled into a PDF directly.' },
+      },
+    ],
+    keywords: {
+      ko: ['사진 pdf로 묶기', '여러 사진 pdf', '이미지 pdf 합치기', '영수증 pdf'],
+      en: ['photos to pdf', 'combine images pdf', 'jpg to pdf multiple', 'receipts to pdf'],
+    },
+  },
+  {
+    slug: 'password-protect-pdf',
+    category: 'pdf',
+    title: { ko: 'PDF에 암호 걸어 안전하게 보내기', en: 'Password-Protect a PDF Before Sending' },
+    h1: { ko: 'PDF 암호 설정', en: 'Password-protect a PDF' },
+    description: {
+      ko: '계약서·명세서 PDF에 열람 암호와 인쇄·편집 권한을 설정해 안전하게 공유하세요. 업로드 없이 브라우저에서.',
+      en: 'Add an open password and print/edit permissions to contracts and statements before sharing. In your browser, no upload.',
+    },
+    intro: {
+      ko: '민감한 PDF를 메일로 보낼 때는 열람 암호를 걸어 두는 것이 안전합니다. 필요하면 먼저 서명을 넣고, 암호와 인쇄·편집·복사 권한을 설정한 뒤 공유하세요. 암호 설정은 브라우저 안에서 처리되어 원본 파일이 서버로 올라가지 않습니다.',
+      en: 'When emailing a sensitive PDF, an open password keeps it safe. Sign it first if needed, then set a password and print/edit/copy permissions before sharing. Protection happens in your browser — the original file is never uploaded.',
+    },
+    steps: [
+      {
+        href: '/tools/pdf/sign',
+        name: { ko: '필요하면 서명 먼저', en: 'Sign first if needed' },
+        text: { ko: '계약서라면 마우스·터치로 서명을 넣어 둡니다.', en: 'For a contract, add your signature by mouse or touch.' },
+      },
+      {
+        href: '/tools/pdf/protect',
+        name: { ko: '암호·권한 설정', en: 'Set password and permissions' },
+        text: { ko: '열람 암호와 인쇄·편집·복사 권한을 지정해 저장합니다.', en: 'Set an open password and print/edit/copy permissions, then save.' },
+      },
+    ],
+    relatedCompares: ['merge-vs-split-pdf'],
+    faqs: [
+      {
+        q: { ko: '암호를 잊으면 풀 수 있나요?', en: 'Can I unlock it if I forget the password?' },
+        a: { ko: '본인이 아는 암호로 보호된 PDF는 잠금 해제 도구로 풀 수 있지만, 모르는 암호는 복구할 수 없습니다.', en: 'A PDF you protected can be unlocked with the unlock tool if you know the password, but a forgotten password cannot be recovered.' },
+      },
+      {
+        q: { ko: '인쇄만 막고 열람은 허용할 수 있나요?', en: 'Can I block printing but allow viewing?' },
+        a: { ko: '네. 권한 암호로 인쇄·편집·복사를 개별로 제한하면서 열람은 허용할 수 있습니다.', en: 'Yes. A permissions password can restrict printing/editing/copying individually while still allowing viewing.' },
+      },
+    ],
+    keywords: {
+      ko: ['pdf 암호 설정', 'pdf 비밀번호', 'pdf 보호', 'pdf 권한'],
+      en: ['password protect pdf', 'pdf password', 'secure pdf', 'pdf permissions'],
+    },
+  },
+  {
+    slug: 'iphone-photos-for-windows',
+    category: 'image',
+    title: { ko: '아이폰 HEIC 사진 윈도우에서 열기', en: 'Open iPhone HEIC Photos on Windows' },
+    h1: { ko: '아이폰 사진 변환', en: 'Convert iPhone photos' },
+    description: {
+      ko: '윈도우·웹에서 안 열리는 아이폰 HEIC 사진을 JPG로 일괄 변환하고, 위치정보(EXIF)까지 지워 안전하게 공유하세요.',
+      en: 'Batch-convert iPhone HEIC photos that won’t open on Windows/web to JPG, and strip location (EXIF) data for safe sharing.',
+    },
+    intro: {
+      ko: '아이폰은 사진을 HEIC로 저장해 용량을 아끼지만, 윈도우·일부 웹·구형 앱은 이를 열지 못합니다. JPG로 일괄 변환하면 어디서나 열리고, 공유 전 GPS·촬영정보를 지우면 위치 노출도 막을 수 있습니다. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'iPhones save photos as HEIC to save space, but Windows, some websites and old apps can’t open them. Batch-convert to JPG so they open anywhere, and strip GPS/EXIF before sharing to avoid leaking your location. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/image/heic-to-jpg',
+        name: { ko: 'HEIC → JPG 일괄 변환', en: 'Batch HEIC → JPG' },
+        text: { ko: 'HEIC 사진을 여러 장 올려 한 번에 JPG로 변환합니다.', en: 'Drop several HEIC photos to convert them to JPG at once.' },
+      },
+      {
+        href: '/tools/image/exif-batch',
+        name: { ko: '위치정보(EXIF) 일괄 제거', en: 'Strip location (EXIF)' },
+        text: { ko: '공유 전 GPS·촬영정보를 여러 장에서 한꺼번에 지웁니다.', en: 'Remove GPS/EXIF from many photos at once before sharing.' },
+      },
+    ],
+    relatedConverts: ['heic-to-jpg', 'heic-to-png'],
+    relatedCompares: ['heic-vs-jpg'],
+    faqs: [
+      {
+        q: { ko: '여러 장을 한 번에 변환하나요?', en: 'Can I convert many at once?' },
+        a: { ko: '네. HEIC 여러 장을 올려 일괄 변환하고 ZIP으로 받을 수 있습니다.', en: 'Yes. Drop multiple HEIC files to batch-convert and download as a ZIP.' },
+      },
+      {
+        q: { ko: '화질이 떨어지나요?', en: 'Does quality drop?' },
+        a: { ko: 'JPG로 재인코딩하며 작은 손실이 생기지만 높은 품질 설정에선 거의 알아챌 수 없습니다.', en: 'Re-encoding to JPG adds a small loss that is hard to notice at high quality settings.' },
+      },
+    ],
+    keywords: {
+      ko: ['heic jpg 변환', '아이폰 사진 윈도우', 'heic 안열림', '아이폰 사진 변환'],
+      en: ['heic to jpg windows', 'open iphone photos', 'convert heic', 'heic not opening'],
+    },
+  },
+  {
+    slug: 'compress-video-for-upload',
+    category: 'video',
+    title: { ko: '영상 용량 줄여 업로드하기', en: 'Compress a Video for Upload' },
+    h1: { ko: '영상 압축해서 올리기', en: 'Compress a video to upload' },
+    description: {
+      ko: '용량 제한에 걸리는 영상을 필요한 구간만 잘라내고 압축해 가볍게 만드세요. 업로드 없이 브라우저에서.',
+      en: 'Trim to the part you need and compress videos that hit upload limits. In your browser, no upload.',
+    },
+    intro: {
+      ko: '메신저·게시판·메일은 영상 용량에 제한이 있습니다. 먼저 필요 없는 앞뒤 구간을 잘라내 길이를 줄이고, 해상도·비트레이트를 낮춰 압축하면 화질을 크게 해치지 않고 용량을 줄일 수 있습니다. 모든 처리는 브라우저 안에서 끝나 영상이 업로드되지 않습니다.',
+      en: 'Messengers, forums and email cap video size. Trim the unneeded head and tail to shorten it, then lower the resolution/bitrate to compress — cutting size without ruining quality. Everything runs in your browser, so the video is never uploaded.',
+    },
+    steps: [
+      {
+        href: '/tools/video/trim',
+        name: { ko: '필요한 구간만 자르기', en: 'Trim to what you need' },
+        text: { ko: '시작·종료 시각을 지정해 필요한 구간만 남깁니다.', en: 'Set start/end times to keep only the part you need.' },
+      },
+      {
+        href: '/tools/video/compress',
+        name: { ko: '해상도·비트레이트 낮춰 압축', en: 'Compress by resolution/bitrate' },
+        text: { ko: '해상도와 비트레이트를 조정해 용량 제한에 맞춥니다.', en: 'Adjust resolution and bitrate to fit the size limit.' },
+      },
+    ],
+    relatedConverts: ['mov-to-mp4', 'mkv-to-mp4'],
+    relatedCompares: ['mp4-vs-webm'],
+    faqs: [
+      {
+        q: { ko: '화질을 최대한 지키며 줄이려면?', en: 'How to shrink while keeping quality?' },
+        a: { ko: '먼저 불필요한 구간을 잘라 길이를 줄이고, 해상도는 그대로 두되 비트레이트만 낮추면 화질 손실을 줄일 수 있습니다.', en: 'Trim first to shorten length, then keep the resolution but lower only the bitrate to minimize quality loss.' },
+      },
+      {
+        q: { ko: 'MOV·MKV 영상도 되나요?', en: 'Does it work with MOV/MKV?' },
+        a: { ko: '네. 다양한 포맷을 다루며, 업로드 호환을 위해 MP4로 변환해 두면 더 안전합니다.', en: 'Yes. It handles many formats; converting to MP4 first makes uploads more compatible.' },
+      },
+    ],
+    keywords: {
+      ko: ['영상 용량 줄이기', '동영상 압축', '영상 업로드 용량', 'mp4 압축'],
+      en: ['compress video upload', 'reduce video size', 'shrink mp4', 'video too large'],
+    },
+  },
+  {
+    slug: 'read-pdf-on-ereader',
+    category: 'docs',
+    title: { ko: 'PDF를 전자책 리더에서 편하게 읽기', en: 'Read a PDF Comfortably on an E-reader' },
+    h1: { ko: 'PDF를 EPUB으로', en: 'PDF to e-reader EPUB' },
+    description: {
+      ko: '작은 화면에서 확대·축소가 불편한 PDF를 EPUB으로 바꿔 글자가 화면에 맞춰 흐르게 만드세요. 업로드 없이 브라우저에서.',
+      en: 'Turn a pinch-and-zoom PDF into an EPUB whose text reflows to fit any screen. In your browser, no upload.',
+    },
+    intro: {
+      ko: 'PDF는 레이아웃이 고정돼 작은 폰·전자책 단말에서는 확대·축소를 반복해야 합니다. EPUB으로 변환하면 글자가 화면 크기에 맞춰 재배치되어 글꼴·크기를 조절하며 편하게 읽을 수 있습니다. 변환 후 제목·저자 정보를 정리하면 서재 정렬도 깔끔해집니다.',
+      en: 'A PDF’s fixed layout forces constant pinch-and-zoom on phones and e-readers. Converting to EPUB reflows the text to the screen so you can adjust font and size and read comfortably. Tidying the title/author afterward keeps your library organized.',
+    },
+    steps: [
+      {
+        href: '/tools/pdf/to-epub',
+        name: { ko: 'PDF → EPUB 변환', en: 'Convert PDF → EPUB' },
+        text: { ko: 'PDF 텍스트를 추출해 챕터가 나뉜 EPUB 전자책으로 만듭니다.', en: 'Extract the PDF text into a chaptered EPUB e-book.' },
+      },
+      {
+        href: '/tools/docs/epub-metadata',
+        name: { ko: '제목·저자 정보 정리', en: 'Tidy title/author' },
+        text: { ko: '제목·저자·언어를 채워 리더 서재에서 깔끔하게 정렬되게 합니다.', en: 'Fill in title/author/language so it sorts neatly in your reader.' },
+      },
+      {
+        href: '/tools/docs/epub-reader',
+        name: { ko: '브라우저에서 바로 확인', en: 'Preview in the browser' },
+        text: { ko: '변환 결과를 EPUB 리더로 열어 목차·글자 크기를 확인합니다.', en: 'Open the result in the EPUB reader to check the table of contents and font size.' },
+      },
+    ],
+    relatedConverts: ['pdf-to-epub', 'epub-to-pdf'],
+    relatedCompares: ['epub-vs-pdf'],
+    faqs: [
+      {
+        q: { ko: '표·이미지가 많은 PDF도 잘 되나요?', en: 'Does it handle PDFs with many tables/images?' },
+        a: { ko: 'EPUB은 글이 흐르는 책에 가장 적합합니다. 도표가 정확히 고정돼야 한다면 PDF가 더 낫습니다.', en: 'EPUB suits flowing text best. If charts must stay exactly placed, PDF is better.' },
+      },
+      {
+        q: { ko: '다시 PDF로 되돌릴 수 있나요?', en: 'Can I convert it back to PDF?' },
+        a: { ko: '네. EPUB→PDF 변환으로 다시 고정 레이아웃 문서로 만들 수 있습니다.', en: 'Yes. An EPUB→PDF conversion turns it back into a fixed-layout document.' },
+      },
+    ],
+    keywords: {
+      ko: ['pdf epub 변환', 'pdf 전자책', '전자책 리더 pdf', 'pdf 흐름 읽기'],
+      en: ['pdf to epub', 'read pdf ereader', 'pdf reflow', 'pdf ebook'],
+    },
+  },
+  {
+    slug: 'pdf-table-to-spreadsheet',
+    category: 'pdf',
+    title: { ko: 'PDF 표를 엑셀로 뽑아내기', en: 'Pull a PDF Table into a Spreadsheet' },
+    h1: { ko: 'PDF 표 → 엑셀', en: 'PDF table to spreadsheet' },
+    description: {
+      ko: '명세서·보고서 PDF 속 표를 인식해 엑셀(XLSX)·CSV로 추출하세요. 다시 타이핑할 필요 없이, 업로드 없이 브라우저에서.',
+      en: 'Detect tables inside statements and reports and extract them to Excel (XLSX)/CSV — no retyping, in your browser.',
+    },
+    intro: {
+      ko: 'PDF에 박힌 표를 손으로 다시 옮겨 적는 건 번거롭고 실수가 잦습니다. 표 인식 도구로 행·열을 그대로 XLSX·CSV로 뽑아내면, 바로 계산·정렬·필터를 적용할 수 있습니다. 필요하면 CSV를 JSON 등 다른 데이터 포맷으로 다시 변환하세요. 모든 처리는 브라우저 안에서 끝납니다.',
+      en: 'Retyping a table locked inside a PDF is tedious and error-prone. A table-detection tool pulls the rows and columns straight into XLSX/CSV so you can calculate, sort and filter right away. Convert the CSV to JSON or other data formats if needed. Everything runs in your browser.',
+    },
+    steps: [
+      {
+        href: '/tools/pdf/to-excel',
+        name: { ko: 'PDF 표 인식 → 엑셀 추출', en: 'Detect PDF tables → Excel' },
+        text: { ko: 'PDF 속 표를 인식해 XLSX·CSV로 추출합니다.', en: 'Detect tables in the PDF and extract them to XLSX/CSV.' },
+      },
+      {
+        href: '/tools/docs/csv-json',
+        name: { ko: '필요하면 JSON으로 변환', en: 'Convert to JSON if needed' },
+        text: { ko: '추출한 CSV를 프로그램에서 쓰기 좋은 JSON으로 바꿉니다.', en: 'Turn the extracted CSV into program-friendly JSON.' },
+      },
+    ],
+    relatedConverts: ['pdf-to-xlsx', 'csv-to-json'],
+    relatedCompares: ['csv-vs-json'],
+    faqs: [
+      {
+        q: { ko: '복잡한 표도 정확히 추출되나요?', en: 'Does it handle complex tables accurately?' },
+        a: { ko: '단순한 격자 표일수록 정확합니다. 병합 셀이 많으면 추출 후 약간의 정리가 필요할 수 있습니다.', en: 'Plain grid tables extract most accurately. Heavily merged cells may need a little cleanup afterward.' },
+      },
+      {
+        q: { ko: '스캔한 이미지 PDF도 되나요?', en: 'What about scanned image PDFs?' },
+        a: { ko: '텍스트가 들어 있는 PDF에서 가장 잘 동작합니다. 스캔 이미지라면 먼저 OCR로 텍스트화하는 것이 좋습니다.', en: 'It works best on PDFs that contain real text. For scans, run OCR to extract text first.' },
+      },
+    ],
+    keywords: {
+      ko: ['pdf 표 엑셀', 'pdf 표 추출', 'pdf 엑셀 변환', '명세서 엑셀'],
+      en: ['pdf table to excel', 'extract pdf table', 'pdf to xlsx', 'statement to excel'],
+    },
+  },
 ];
 
 export const USE_CASE_SLUGS: string[] = USE_CASES.map((u) => u.slug);
