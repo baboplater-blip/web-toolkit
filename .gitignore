@@ -8,6 +8,8 @@ dist/
 Thumbs.db
 supabase/.temp/
 package-lock.json
+# CI(npm ci·cache)가 web 락파일을 참조하므로 반드시 커밋한다
+!web/package-lock.json
 
 .vercel
 agent/agent.pid
