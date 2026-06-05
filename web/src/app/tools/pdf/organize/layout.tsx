@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: URL_PATH,
     languages: {
       'ko-KR': URL_PATH,
-      'en': '/en/tools',
+      'en': '/en/tools/pdf-organize',
       'x-default': URL_PATH,
     },
   },

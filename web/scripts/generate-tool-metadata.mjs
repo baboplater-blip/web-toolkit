@@ -20,6 +20,26 @@ const TOOL_OG_DIR_REL = 'public/og/tools';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = join(__dirname, '..');
 const REGISTRY_PATH = join(WEB_ROOT, 'src/lib/tools/registry.ts');
+const EN_TOOLS_PATH = join(WEB_ROOT, 'src/lib/en-tools.ts');
+
+/**
+ * en-tools.ts 의 EN_TOOLS 객체에서 영문 카피가 있는 도구 id 집합을 추출.
+ * 이 도구들의 ko 페이지는 영어 alternate 를 카탈로그(/en/tools) 가 아니라
+ * 개별 영문 페이지(/en/tools/{id}) 로 연결해야 한다(hreflang 정합성).
+ */
+function parseEnToolIds() {
+  const src = readFileSync(EN_TOOLS_PATH, 'utf-8');
+  // EN_TOOLS 객체 본문만 잘라 최상위(2-space 들여쓰기) 키만 수집
+  const start = src.indexOf('export const EN_TOOLS');
+  const body = start >= 0 ? src.slice(start) : src;
+  const ids = new Set();
+  for (const m of body.matchAll(/^ {2}'?([a-zA-Z0-9-]+)'?:\s*\{/gm)) {
+    ids.add(m[1]);
+  }
+  return ids;
+}
+
+const EN_TOOL_IDS = parseEnToolIds();
 
 const MARKER = '/* auto-generated metadata layout — generate-tool-metadata.mjs */';
 const SITE_NAME = 'Web Toolkit';
@@ -208,6 +228,8 @@ function renderLayout(tool) {
   const keywordsLiteral = JSON.stringify(dedupedKeywords);
   const jsonLdLiteral = JSON.stringify(buildJsonLd(tool));
   const howToJsonLdLiteral = JSON.stringify(buildHowToJsonLd(tool));
+  // 영문 카피가 있으면 개별 영문 페이지로, 없으면 영문 카탈로그로 연결
+  const enHref = EN_TOOL_IDS.has(tool.id) ? `/en/tools/${tool.id}` : '/en/tools';
   // 도구별 OG PNG 가 commit 되어 있으면 그것을 우선, 없으면 카테고리 폴백
   const toolOgPath = join(WEB_ROOT, TOOL_OG_DIR_REL, `${tool.id}.png`);
   const ogImagePath = existsSync(toolOgPath)
@@ -230,7 +252,7 @@ export const metadata: Metadata = {
     canonical: URL_PATH,
     languages: {
       'ko-KR': URL_PATH,
-      'en': '/en/tools',
+      'en': '${enHref}',
       'x-default': URL_PATH,
     },
   },
