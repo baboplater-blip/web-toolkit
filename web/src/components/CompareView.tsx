@@ -24,6 +24,8 @@ interface Props {
   /** 관련 변환 매트릭스 (slug + 라벨) */
   relatedConverts: Array<{ slug: string; label: string }>;
   otherCompares: OtherCompare[];
+  /** 이 비교를 참조하는 활용법 (compare → use-case 역링크) */
+  relatedUses?: Array<{ slug: string; label: string }>;
 }
 
 export function CompareView({
@@ -34,6 +36,7 @@ export function CompareView({
   optionHrefs,
   relatedConverts,
   otherCompares,
+  relatedUses = [],
 }: Props) {
   const ko = lang === 'ko';
   const base = ko ? '/compare' : '/en/compare';
@@ -179,6 +182,24 @@ export function CompareView({
                 >
                   <ArrowRightLeft className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden />
                   {r.label}
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {relatedUses.length > 0 && (
+          <section className="space-y-3">
+            <h3 className="text-lg font-bold">{ko ? '관련 활용법' : 'Related how-tos'}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {relatedUses.map((u) => (
+                <a
+                  key={u.slug}
+                  href={`${ko ? '/use' : '/en/use'}/${u.slug}`}
+                  className="flex items-center gap-2 rounded-lg border bg-card p-3 hover:border-primary transition-colors"
+                >
+                  <Wrench className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden />
+                  <span className="text-sm font-medium truncate">{u.label}</span>
                 </a>
               ))}
             </div>

@@ -11,6 +11,7 @@ import {
 } from '@/lib/convert-matrix';
 import { compareForConvert } from '@/lib/en-compares';
 import { getCompareKo } from '@/lib/ko-compares';
+import { useCasesForConvert } from '@/lib/use-cases';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -70,6 +71,7 @@ export default async function ConvertPage({ params }: PageProps) {
   }));
   const cmp = compareForConvert(slug);
   const relatedCompare = cmp ? { slug: cmp.slug, label: getCompareKo(cmp.slug)?.h1 ?? cmp.h1 } : undefined;
+  const relatedUses = useCasesForConvert(slug).map((u) => ({ slug: u.slug, label: u.h1.ko }));
 
   return (
     <ConvertPageView
@@ -80,6 +82,7 @@ export default async function ConvertPage({ params }: PageProps) {
       toolHref={conv.toolHref}
       related={related}
       relatedCompare={relatedCompare}
+      relatedUses={relatedUses}
     />
   );
 }

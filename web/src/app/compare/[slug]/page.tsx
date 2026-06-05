@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CompareView } from '@/components/CompareView';
 import { CATEGORY_LABELS, TOOLS } from '@/lib/tools/registry';
-import { COMPARE_SLUGS, getCompare, type CompareOption } from '@/lib/en-compares';
-import { COMPARES_KO, getCompareKo } from '@/lib/ko-compares';
+import { COMPARE_SLUGS, getCompare, relatedCompares, type CompareOption } from '@/lib/en-compares';
+import { getCompareKo } from '@/lib/ko-compares';
 import { FORMATS } from '@/lib/convert-matrix';
+import { useCasesForCompare } from '@/lib/use-cases';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -66,9 +67,12 @@ export default async function ComparePageKo({ params }: PageProps) {
     slug: s,
     label: convertLabel(s),
   }));
-  const otherCompares = COMPARES_KO.filter((c) => c.slug !== slug)
-    .slice(0, 4)
-    .map((c) => ({ slug: c.slug, h1: c.h1, description: c.description }));
+  // 같은 카테고리 비교 우선, 부족하면 ko 라벨로 매핑
+  const otherCompares = relatedCompares(slug).map((c) => {
+    const ko = getCompareKo(c.slug);
+    return { slug: c.slug, h1: ko?.h1 ?? c.h1, description: ko?.description ?? c.description };
+  });
+  const relatedUses = useCasesForCompare(slug).map((u) => ({ slug: u.slug, label: u.h1.ko }));
 
   return (
     <CompareView
@@ -79,6 +83,7 @@ export default async function ComparePageKo({ params }: PageProps) {
       optionHrefs={cmp.options.map(optionHref)}
       relatedConverts={relatedConverts}
       otherCompares={otherCompares}
+      relatedUses={relatedUses}
     />
   );
 }

@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import { CompareView } from '@/components/CompareView';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { EN_TOOLS } from '@/lib/en-tools';
-import { COMPARES, COMPARE_SLUGS, getCompare, type CompareOption } from '@/lib/en-compares';
+import { COMPARE_SLUGS, getCompare, relatedCompares, type CompareOption } from '@/lib/en-compares';
 import { FORMATS } from '@/lib/convert-matrix';
+import { useCasesForCompare } from '@/lib/use-cases';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -78,9 +79,12 @@ export default async function ComparePage({ params }: PageProps) {
   if (!cmp) notFound();
 
   const relatedConverts = (cmp.relatedConverts ?? []).map((s) => ({ slug: s, label: convertLabel(s) }));
-  const otherCompares = COMPARES.filter((c) => c.slug !== slug)
-    .slice(0, 4)
-    .map((c) => ({ slug: c.slug, h1: c.h1, description: c.description }));
+  const otherCompares = relatedCompares(slug).map((c) => ({
+    slug: c.slug,
+    h1: c.h1,
+    description: c.description,
+  }));
+  const relatedUses = useCasesForCompare(slug).map((u) => ({ slug: u.slug, label: u.h1.en }));
 
   return (
     <CompareView
@@ -91,6 +95,7 @@ export default async function ComparePage({ params }: PageProps) {
       optionHrefs={cmp.options.map(optionHref)}
       relatedConverts={relatedConverts}
       otherCompares={otherCompares}
+      relatedUses={relatedUses}
     />
   );
 }

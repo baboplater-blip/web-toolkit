@@ -21,9 +21,11 @@ interface Props {
   related: RelatedLink[];
   /** 연결된 비교 페이지 (convert → compare 역링크) */
   relatedCompare?: { slug: string; label: string };
+  /** 이 변환을 쓰는 활용법 (convert → use-case 역링크) */
+  relatedUses?: RelatedLink[];
 }
 
-export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, related, relatedCompare }: Props) {
+export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, related, relatedCompare, relatedUses = [] }: Props) {
   const ko = lang === 'ko';
   const base = ko ? '/convert' : '/en/convert';
   const home = ko ? '/' : '/en';
@@ -228,6 +230,24 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
               <span className="text-sm font-medium">{relatedCompare.label}</span>
               <ArrowRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" aria-hidden />
             </a>
+          </section>
+        )}
+
+        {relatedUses.length > 0 && (
+          <section className="space-y-3">
+            <h3 className="text-lg font-bold">{ko ? '이 변환을 쓰는 활용법' : 'How-tos that use this'}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {relatedUses.map((u) => (
+                <a
+                  key={u.slug}
+                  href={`${ko ? '/use' : '/en/use'}/${u.slug}`}
+                  className="flex items-center gap-2 rounded-lg border bg-card p-3 hover:border-primary transition-colors"
+                >
+                  <Wrench className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden />
+                  <span className="text-sm font-medium truncate">{u.label}</span>
+                </a>
+              ))}
+            </div>
           </section>
         )}
 

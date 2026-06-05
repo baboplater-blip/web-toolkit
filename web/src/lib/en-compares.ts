@@ -1027,3 +1027,16 @@ export function comparesForTool(toolId: string): Compare[] {
 export function compareForConvert(convertSlug: string): Compare | undefined {
   return COMPARES.find((c) => c.relatedConverts?.includes(convertSlug));
 }
+
+/**
+ * 다른 비교 (compare → compare 내부 링크).
+ * 같은 카테고리를 우선 노출하고, 부족하면 다른 카테고리로 채워 빈 섹션을 방지한다.
+ */
+export function relatedCompares(slug: string, limit = 4): Compare[] {
+  const self = COMPARES.find((c) => c.slug === slug);
+  if (!self) return [];
+  const sameCat = COMPARES.filter((c) => c.slug !== slug && c.category === self.category);
+  if (sameCat.length >= limit) return sameCat.slice(0, limit);
+  const others = COMPARES.filter((c) => c.slug !== slug && c.category !== self.category);
+  return [...sameCat, ...others].slice(0, limit);
+}

@@ -1309,3 +1309,13 @@ export function useCasesForHref(href: string): UseCase[] {
   const base = href.split('?')[0];
   return USE_CASES.filter((u) => u.steps.some((s) => s.href.split('?')[0] === base));
 }
+
+/** 특정 변환 slug 를 relatedConverts 로 참조하는 유스케이스 (변환 → 유스케이스 역링크). */
+export function useCasesForConvert(convertSlug: string): UseCase[] {
+  return USE_CASES.filter((u) => u.relatedConverts?.includes(convertSlug));
+}
+
+/** 특정 비교 slug 를 relatedCompares 로 참조하는 유스케이스 (비교 → 유스케이스 역링크). */
+export function useCasesForCompare(compareSlug: string): UseCase[] {
+  return USE_CASES.filter((u) => u.relatedCompares?.includes(compareSlug));
+}

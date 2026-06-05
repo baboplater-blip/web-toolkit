@@ -10,6 +10,7 @@ import {
   relatedConversions,
 } from '@/lib/convert-matrix';
 import { compareForConvert } from '@/lib/en-compares';
+import { useCasesForConvert } from '@/lib/use-cases';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -69,6 +70,7 @@ export default async function ConvertPageEn({ params }: PageProps) {
   }));
   const cmp = compareForConvert(slug);
   const relatedCompare = cmp ? { slug: cmp.slug, label: cmp.h1 } : undefined;
+  const relatedUses = useCasesForConvert(slug).map((u) => ({ slug: u.slug, label: u.h1.en }));
 
   return (
     <ConvertPageView
@@ -79,6 +81,7 @@ export default async function ConvertPageEn({ params }: PageProps) {
       toolHref={conv.toolHref}
       related={related}
       relatedCompare={relatedCompare}
+      relatedUses={relatedUses}
     />
   );
 }
