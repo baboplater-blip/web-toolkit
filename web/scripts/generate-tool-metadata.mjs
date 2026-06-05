@@ -163,12 +163,25 @@ function buildJsonLd(tool) {
  *
  * Google rich results 의 HowTo carousel 노출 후보.
  */
+// guide-content.ts 의 getPattern 과 동기화 (calc·viewer 단계 문안 일치용)
+const CALC_IDS = new Set([
+  'age-calc', 'dday', 'timer-stopwatch', 'percentage', 'unit-converter',
+  'color-converter', 'timestamp-converter', 'vat-calc', 'salary-calc',
+  'severance-calc', 'leave-calc',
+]);
+const VIEWER_IDS = new Set([
+  'epub-reader', 'image-exif-view', 'hwpx-viewer', 'pdf-bookmarks',
+  'pdf-stats', 'epub-stats',
+]);
+
 function buildHowToJsonLd(tool) {
   const url = `${SITE_URL}${tool.href}`;
-  const fileBased = ['image', 'pdf', 'video', 'gif', 'audio', 'docs'].includes(
+  const isCalc = CALC_IDS.has(tool.id);
+  const isViewer = VIEWER_IDS.has(tool.id);
+  const fileBased = !isCalc && !isViewer && ['image', 'pdf', 'video', 'gif', 'audio', 'docs'].includes(
     tool.category,
   );
-  const generator = ['security', 'util'].includes(tool.category) && (
+  const generator = !isCalc && !isViewer && ['security', 'util'].includes(tool.category) && (
     tool.id.includes('-gen') ||
     tool.id.includes('keypair') ||
     tool.id.includes('totp') ||
@@ -176,7 +189,19 @@ function buildHowToJsonLd(tool) {
     tool.id.includes('password') ||
     tool.id.includes('qr')
   );
-  const steps = fileBased
+  const steps = isViewer
+    ? [
+        { name: '파일 열기', text: `도구 페이지를 열고 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 열리며 서버로 전송되지 않습니다.` },
+        { name: '내용 보기', text: `${tool.title}이(가) 본문·메타데이터·목차 등을 화면에 표시합니다. 변환·저장 없이 바로 확인할 수 있습니다.` },
+        { name: '필요하면 내보내기', text: '도구에 따라 표시된 내용을 텍스트·마크다운·이미지로 내보낼 수 있습니다. 확인만 한다면 그대로 닫으면 됩니다.' },
+      ]
+    : isCalc
+    ? [
+        { name: '값 입력', text: '날짜·금액·수치·단위 등 필요한 값을 입력칸에 넣습니다. 텍스트를 붙여넣는 것이 아니라 항목별로 값을 채웁니다.' },
+        { name: '실시간 계산', text: '입력을 바꾸는 즉시 결과가 다시 계산되어 화면에 표시됩니다.' },
+        { name: '결과 복사', text: '계산된 결과값을 클립보드에 복사해 바로 활용합니다.' },
+      ]
+    : fileBased
     ? [
         { name: '파일 업로드', text: '도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.' },
         { name: '옵션 설정', text: `${tool.title}에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.` },

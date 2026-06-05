@@ -17,7 +17,7 @@
 
 import type { ToolMeta } from '@/lib/tools/registry';
 
-export type GuidePattern = 'file' | 'generator' | 'text';
+export type GuidePattern = 'file' | 'generator' | 'text' | 'calc' | 'viewer';
 
 const GENERATOR_KEYS = new Set([
   'qr-code',
@@ -34,6 +34,39 @@ const GENERATOR_KEYS = new Set([
   'vcard-qr',
 ]);
 
+/**
+ * 값·날짜·단위를 입력칸에 넣어 결과를 계산·환산하는 도구.
+ * "텍스트를 붙여넣으세요" 안내가 맞지 않으므로 별도 패턴으로 분리한다
+ * (입력 → 계산 결과 → 복사).
+ */
+const CALC_KEYS = new Set([
+  'age-calc',
+  'dday',
+  'timer-stopwatch',
+  'percentage',
+  'unit-converter',
+  'color-converter',
+  'timestamp-converter',
+  'vat-calc',
+  'salary-calc',
+  'severance-calc',
+  'leave-calc',
+]);
+
+/**
+ * 파일을 열어 내용·정보를 읽기만 하는 뷰어/인스펙터.
+ * 결과 파일을 "다운로드"하는 흐름이 아니므로 별도 패턴으로 분리한다
+ * (파일 열기 → 보기 → 필요 시 내보내기).
+ */
+const VIEWER_KEYS = new Set([
+  'epub-reader',
+  'image-exif-view',
+  'hwpx-viewer',
+  'pdf-bookmarks',
+  'pdf-stats',
+  'epub-stats',
+]);
+
 const TEXT_ANALYSIS_KEYS = new Set([
   'text-diff',
   'text-count',
@@ -47,22 +80,16 @@ const TEXT_ANALYSIS_KEYS = new Set([
   'url-encoder',
   'jsonpath',
   'sql-format',
-  'percentage',
-  'age-calc',
-  'dday',
-  'timer-stopwatch',
-  'unit-converter',
-  'color-converter',
-  'timestamp-converter',
   'html-entities',
   // 오피스 입력형 도구 (Input → Result → Copy)
-  'vat-calc',
   'redact',
   'excel-formula',
 ]);
 
 export function getPattern(tool: ToolMeta): GuidePattern {
   if (GENERATOR_KEYS.has(tool.id)) return 'generator';
+  if (CALC_KEYS.has(tool.id)) return 'calc';
+  if (VIEWER_KEYS.has(tool.id)) return 'viewer';
   if (TEXT_ANALYSIS_KEYS.has(tool.id)) return 'text';
   // text 카테고리 + 자체 입력형 도구는 대부분 text-analysis
   if (tool.category === 'text' || tool.category === 'dev' || tool.category === 'util') {
@@ -161,6 +188,22 @@ function buildFeatures(
       '모바일에서도 풀 기능. 키보드 단축키로 빠른 작업.',
     ];
   }
+  if (pattern === 'calc') {
+    return [
+      ...base,
+      '값·날짜·단위를 입력하면 결과가 실시간으로 계산·환산됩니다 — 별도 버튼이 없어도 됩니다.',
+      '계산식이 아닌 실제 결과값을 바로 보여주며, 한 번의 클릭으로 복사할 수 있습니다.',
+      '모바일에서도 풀 기능. 자주 쓰는 입력은 즉시 다시 계산됩니다.',
+    ];
+  }
+  if (pattern === 'viewer') {
+    return [
+      ...base,
+      `${cat} 파일을 열면 내용·정보를 바로 화면에서 확인할 수 있습니다 — 변환·저장 과정이 필요 없습니다.`,
+      '파일은 브라우저 안에서만 열리며 어디로도 업로드되지 않습니다.',
+      '도구에 따라 본문·메타데이터·목차 등을 텍스트·마크다운으로 내보낼 수 있습니다.',
+    ];
+  }
   return [
     ...base,
     '입력하면 결과가 실시간으로 갱신됩니다 — 별도 "변환" 버튼이 없어도 됩니다.',
@@ -203,6 +246,38 @@ function buildSteps(
       {
         title: '복사·저장',
         body: '결과를 한 번의 클릭으로 클립보드에 복사하거나, PEM·PNG·SVG·TXT 등 도구에 맞는 형식으로 파일 저장할 수 있습니다. 보안 키는 안전한 위치에 보관하세요.',
+      },
+    ];
+  }
+  if (pattern === 'calc') {
+    return [
+      {
+        title: '값 입력',
+        body: `${tool.title}에 필요한 값(날짜·금액·수치·단위 등)을 입력칸에 넣습니다. 텍스트를 붙여넣는 것이 아니라 항목별로 값을 채우는 방식이라, 모바일에서도 빠르게 입력할 수 있습니다.`,
+      },
+      {
+        title: '실시간 계산 결과',
+        body: '입력을 바꾸는 즉시 결과가 다시 계산됩니다. 여러 항목을 동시에 다루는 도구는 각 결과를 한 화면에서 함께 보여줍니다.',
+      },
+      {
+        title: '결과 복사·활용',
+        body: '계산된 결과값을 클립보드에 복사해 메모·문서·메시지에 바로 붙여 쓸 수 있습니다. 화면을 새로고침하면 입력이 초기화됩니다.',
+      },
+    ];
+  }
+  if (pattern === 'viewer') {
+    return [
+      {
+        title: `${cat} 파일 열기`,
+        body: `도구 페이지를 열고 ${cat} 파일을 드롭존에 끌어다 놓거나 파일 선택 버튼을 누릅니다. 파일은 브라우저 안에서만 열리며 서버로 전송되지 않습니다.`,
+      },
+      {
+        title: '내용·정보 보기',
+        body: `${tool.title}이(가) 본문·메타데이터·목차·구조 등을 화면에 표시합니다. 변환·저장 과정 없이 바로 확인할 수 있고, 필요한 부분을 찾아 살펴볼 수 있습니다.`,
+      },
+      {
+        title: '필요하면 내보내기',
+        body: '도구에 따라 표시된 내용을 텍스트·마크다운·이미지 등으로 내보낼 수 있습니다. 단순히 확인만 할 거라면 그대로 닫으면 됩니다 — 아무것도 남지 않습니다.',
       },
     ];
   }
@@ -267,6 +342,32 @@ function buildFaqs(
       {
         q: '생성 결과가 어디에 저장되나요?',
         a: '아무 데도 저장되지 않습니다. 화면을 새로고침하면 결과가 사라지므로, 필요하다면 복사하거나 파일로 저장하세요.',
+      },
+    ];
+  }
+  if (pattern === 'calc') {
+    return [
+      ...common,
+      {
+        q: '계산 결과가 정확한가요?',
+        a: `${tool.title}은(는) 표준 계산식을 그대로 구현해 브라우저 안에서 계산합니다. 다만 세금·급여처럼 제도·요율이 바뀌는 항목은 적용 기준(연도·요율)을 함께 확인하세요.`,
+      },
+      {
+        q: '입력한 값이 저장되나요?',
+        a: '아니요. 입력값은 브라우저 안에서만 쓰이고 어디에도 전송·저장되지 않습니다. 새로고침하면 초기화됩니다.',
+      },
+    ];
+  }
+  if (pattern === 'viewer') {
+    return [
+      ...common,
+      {
+        q: '파일이 서버로 올라가나요?',
+        a: '아니요. 파일은 브라우저 안에서만 열려 내용을 표시하며, 어디로도 업로드되지 않습니다. 민감한 문서도 안전하게 열어볼 수 있습니다.',
+      },
+      {
+        q: '내용을 따로 저장할 수 있나요?',
+        a: `${tool.title}은(는) 도구에 따라 표시된 본문·메타데이터·목차 등을 텍스트·마크다운·이미지로 내보낼 수 있습니다. 단순 확인만 한다면 저장 없이 닫아도 됩니다.`,
       },
     ];
   }

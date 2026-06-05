@@ -95,6 +95,22 @@ function buildFeatures(pattern: GuidePattern, cat: string): string[] {
       'Full functionality on mobile, with keyboard shortcuts for fast work.',
     ];
   }
+  if (pattern === 'calc') {
+    return [
+      ...base,
+      'Enter values, dates or units and the result is calculated live — no separate button needed.',
+      'Shows the actual result, not just a formula, and copies to your clipboard in one click.',
+      'Full functionality on mobile; changing any field recalculates instantly.',
+    ];
+  }
+  if (pattern === 'viewer') {
+    return [
+      ...base,
+      `Open a ${cat} file and read its contents and information right on screen — no conversion or saving needed.`,
+      'The file is opened only inside your browser and is never uploaded anywhere.',
+      'Depending on the tool, export the text, metadata or outline as text/Markdown.',
+    ];
+  }
   return [
     ...base,
     'Results update live as you type — no separate "convert" button needed.',
@@ -138,6 +154,38 @@ function buildSteps(
       {
         title: 'Copy or save',
         body: 'Copy the result to your clipboard with one click, or save it as a file (PEM, PNG, SVG, TXT, etc.) where appropriate. Store any secret keys somewhere safe.',
+      },
+    ];
+  }
+  if (pattern === 'calc') {
+    return [
+      {
+        title: 'Enter your values',
+        body: `Type the values ${en.name} needs (dates, amounts, numbers, units, and so on) into the fields. You fill in fields rather than pasting text, so it’s quick even on mobile.`,
+      },
+      {
+        title: 'See the result live',
+        body: 'The result recalculates the moment you change an input. Tools that handle several items at once show every result together on one screen.',
+      },
+      {
+        title: 'Copy & use the result',
+        body: 'Copy the calculated result to your clipboard and paste it straight into a note, document or message. Refreshing the page clears your inputs.',
+      },
+    ];
+  }
+  if (pattern === 'viewer') {
+    return [
+      {
+        title: `Open your ${cat} file`,
+        body: `Open the tool and drop your ${cat} file into the drop zone, or use the file picker. The file opens only inside your browser and is never sent to a server.`,
+      },
+      {
+        title: 'Browse the contents',
+        body: `${en.name} displays the contents, metadata, outline or structure on screen. There’s no convert-and-download step — read or inspect it directly and find what you need.`,
+      },
+      {
+        title: 'Export if you need to',
+        body: 'Depending on the tool, you can export what’s shown as text, Markdown or images. If you only wanted to view it, just close the page — nothing is left behind.',
       },
     ];
   }
@@ -203,6 +251,32 @@ function buildFaqs(
       {
         q: 'Where are the results stored?',
         a: 'Nowhere. Refreshing the page clears them, so copy or save anything you need to keep.',
+      },
+    ];
+  }
+  if (pattern === 'calc') {
+    return [
+      ...common,
+      {
+        q: 'Are the results accurate?',
+        a: `${en.name} implements the standard formulas and computes them in your browser. For items that depend on changing rules or rates (tax, payroll), check the basis (year, rate) shown alongside the result.`,
+      },
+      {
+        q: 'Are my inputs saved?',
+        a: 'No. Your inputs are used only inside your browser and are never transmitted or stored. Refreshing the page resets them.',
+      },
+    ];
+  }
+  if (pattern === 'viewer') {
+    return [
+      ...common,
+      {
+        q: 'Is my file uploaded to a server?',
+        a: 'No. The file is opened only inside your browser to display its contents and is never uploaded — safe even for sensitive documents.',
+      },
+      {
+        q: 'Can I save the contents?',
+        a: `${en.name} can export the shown text, metadata or outline as text, Markdown or images, depending on the tool. If you only wanted to view it, just close the page.`,
       },
     ];
   }
