@@ -56,8 +56,9 @@ test.describe('어드민 페이지', () => {
   test('이미지 업로드 UI가 슬롯마다 표시', async ({ page }) => {
     await page.goto('/admin?key=test-key');
     const uploadLabels = page.getByText('이미지 업로드');
-    await expect(uploadLabels).toHaveCount(3);
-    await expect(page.getByText(/PNG · JPG · WebP/)).toHaveCount(3);
+    // 슬롯 4종: top · sidebarLeft · sidebarRight · inline
+    await expect(uploadLabels).toHaveCount(4);
+    await expect(page.getByText(/PNG · JPG · WebP/)).toHaveCount(4);
   });
 
   test('이미지 파일 업로드 → WebP 자동 변환 + 슬롯 사이즈 적용', async ({ page }) => {
