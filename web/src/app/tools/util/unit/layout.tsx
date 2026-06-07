@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/unit-converter',
+      'ja': '/ja/tools/unit-converter',
       'x-default': URL_PATH,
     },
   },

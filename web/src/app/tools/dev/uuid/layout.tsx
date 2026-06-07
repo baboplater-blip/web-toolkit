@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/uuid-gen',
+      'ja': '/ja/tools/uuid-gen',
       'x-default': URL_PATH,
     },
   },

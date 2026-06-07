@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/favicon-gen',
+      'ja': '/ja/tools/favicon-gen',
       'x-default': URL_PATH,
     },
   },

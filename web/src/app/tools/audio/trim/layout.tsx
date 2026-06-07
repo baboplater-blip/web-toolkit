@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-trim',
+      'ja': '/ja/tools/audio-trim',
       'x-default': URL_PATH,
     },
   },

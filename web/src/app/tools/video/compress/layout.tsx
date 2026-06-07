@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-compress',
+      'ja': '/ja/tools/video-compress',
       'x-default': URL_PATH,
     },
   },

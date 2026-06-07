@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/mic-record',
+      'ja': '/ja/tools/mic-record',
       'x-default': URL_PATH,
     },
   },

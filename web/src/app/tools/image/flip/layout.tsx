@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-flip',
+      'ja': '/ja/tools/image-flip',
       'x-default': URL_PATH,
     },
   },

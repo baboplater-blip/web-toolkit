@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
-  GitCompare,
   Lock,
   ShieldCheck,
   Sparkles,
@@ -12,9 +11,8 @@ import {
   Zap,
 } from 'lucide-react';
 import { TOOLS, type ToolCategory, type ToolMeta } from '@/lib/tools/registry';
-import { EN_TOOLS, EN_TOOL_IDS, getEnCopy } from '@/lib/en-tools';
-import { hasJaCopy } from '@/lib/ja-tools';
-import { comparesForTool } from '@/lib/en-compares';
+import { JA_TOOLS, JA_TOOL_IDS, getJaCopy } from '@/lib/ja-tools';
+import { hasEnCopy } from '@/lib/en-tools';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -22,22 +20,22 @@ const SITE_URL = (
   .replace(/^﻿/, '')
   .replace(/\/$/, '');
 
-const CATEGORY_LABELS_EN: Record<ToolCategory, string> = {
-  image: 'Image',
+const CATEGORY_LABELS_JA: Record<ToolCategory, string> = {
+  image: '画像',
   pdf: 'PDF',
-  video: 'Video',
+  video: '動画',
   gif: 'GIF',
-  audio: 'Audio',
-  docs: 'Documents',
-  text: 'Text',
-  dev: 'Developer',
-  util: 'Utility',
-  security: 'Security',
+  audio: '音声',
+  docs: '文書',
+  text: 'テキスト',
+  dev: '開発者向け',
+  util: 'ユーティリティ',
+  security: 'セキュリティ',
   ai: 'AI',
 };
 
 export function generateStaticParams() {
-  return EN_TOOL_IDS.filter((id) =>
+  return JA_TOOL_IDS.filter((id) =>
     TOOLS.some((t) => t.id === id && t.status === 'ready'),
   ).map((slug) => ({ slug }));
 }
@@ -47,34 +45,34 @@ interface PageProps {
 }
 
 function findTool(slug: string): ToolMeta | undefined {
-  if (!getEnCopy(slug)) return undefined;
+  if (!getJaCopy(slug)) return undefined;
   return TOOLS.find((t) => t.id === slug && t.status === 'ready');
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const tool = findTool(slug);
-  const en = getEnCopy(slug);
-  if (!tool || !en) {
-    return { title: 'Tool not found — Web Toolkit' };
+  const ja = getJaCopy(slug);
+  if (!tool || !ja) {
+    return { title: 'ツールが見つかりません — Web Toolkit' };
   }
-  const canonical = `/en/tools/${tool.id}`;
-  const title = `${en.name} — Free Online, No Upload`;
-  const description = `${en.description} Free, no signup, runs entirely in your browser.`.slice(
+  const canonical = `/ja/tools/${tool.id}`;
+  const title = `${ja.name} — 無料・オンライン・アップロード不要`;
+  const description = `${ja.description} 無料・登録不要、すべてブラウザ内で動作します。`.slice(
     0,
     155,
   );
   return {
     title,
     description,
-    keywords: [...en.keywords, 'free', 'online', 'no upload', 'browser tool', 'no signup'],
+    keywords: [...ja.keywords, '無料', 'オンライン', 'アップロード不要', 'ブラウザ ツール', '登録不要'],
     alternates: {
       canonical,
       languages: {
         'ko-KR': tool.href,
-        en: canonical,
-        ...(hasJaCopy(tool.id) ? { ja: `/ja/tools/${tool.id}` } : {}),
-        'x-default': canonical,
+        en: hasEnCopy(tool.id) ? `/en/tools/${tool.id}` : '/en/tools',
+        ja: canonical,
+        'x-default': tool.href,
       },
     },
     openGraph: {
@@ -82,10 +80,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       type: 'website',
       siteName: 'Web Toolkit',
-      locale: 'en_US',
+      locale: 'ja_JP',
       url: canonical,
       images: [
-        { url: `/og/tools/${tool.id}.png`, width: 1200, height: 630, alt: en.name },
+        { url: `/og/tools/${tool.id}.png`, width: 1200, height: 630, alt: ja.name },
       ],
     },
     twitter: {
@@ -100,57 +98,55 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 const WHY_USE: ReadonlyArray<{ icon: typeof Zap; title: string; body: string }> = [
   {
     icon: ShieldCheck,
-    title: 'Private by design',
-    body: 'Everything runs in your browser with Web Workers and WebAssembly. Your data is never uploaded to a server.',
+    title: '設計からプライベート',
+    body: 'すべてWeb WorkerとWebAssemblyでブラウザ内処理。データがサーバーにアップロードされることはありません。',
   },
   {
     icon: Zap,
-    title: 'Instant & free',
-    body: 'No signup, no installation, no usage limits. Open the page and start working immediately.',
+    title: '即時・無料',
+    body: '登録もインストールも利用制限もありません。ページを開けばすぐに作業を始められます。',
   },
   {
     icon: Lock,
-    title: 'Works offline',
-    body: 'Once loaded it keeps working without a connection, and you can install it as a PWA to your home screen.',
+    title: 'オフライン対応',
+    body: '一度読み込めば接続なしでも動作し、PWAとしてホーム画面にインストールできます。',
   },
   {
     icon: Sparkles,
-    title: 'Mobile-ready',
-    body: 'Designed mobile-first and verified on iOS Safari and Android Chrome — full functionality on any device.',
+    title: 'モバイル対応',
+    body: 'モバイルファーストで設計し、iOS SafariとAndroid Chromeで検証済み。どの端末でもフル機能です。',
   },
 ];
 
-export default async function EnglishToolPage({ params }: PageProps) {
+export default async function JapaneseToolPage({ params }: PageProps) {
   const { slug } = await params;
   const tool = findTool(slug);
-  const en = getEnCopy(slug);
-  if (!tool || !en) notFound();
+  const ja = getJaCopy(slug);
+  if (!tool || !ja) notFound();
 
-  const categoryLabel = CATEGORY_LABELS_EN[tool.category];
+  const categoryLabel = CATEGORY_LABELS_JA[tool.category];
 
   const related = TOOLS.filter(
     (t) =>
       t.status === 'ready' &&
       t.category === tool.category &&
       t.id !== tool.id &&
-      EN_TOOLS[t.id],
+      JA_TOOLS[t.id],
   )
     .sort((a, b) => a.phase - b.phase)
     .slice(0, 4);
 
-  const compares = comparesForTool(tool.id);
-
   const appJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: en.name,
-    description: en.description,
-    url: `${SITE_URL}/en/tools/${tool.id}`,
+    name: ja.name,
+    description: ja.description,
+    url: `${SITE_URL}/ja/tools/${tool.id}`,
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Any (web browser)',
-    inLanguage: 'en',
+    inLanguage: 'ja',
     browserRequirements: 'Requires a modern web browser with JavaScript.',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
     publisher: { '@type': 'Organization', name: 'Web Toolkit', url: SITE_URL },
     image: `${SITE_URL}/og/tools/${tool.id}.png`,
   };
@@ -159,9 +155,9 @@ export default async function EnglishToolPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Web Toolkit', item: `${SITE_URL}/en` },
-      { '@type': 'ListItem', position: 2, name: 'Tools', item: `${SITE_URL}/en/tools` },
-      { '@type': 'ListItem', position: 3, name: en.name, item: `${SITE_URL}/en/tools/${tool.id}` },
+      { '@type': 'ListItem', position: 1, name: 'Web Toolkit', item: `${SITE_URL}/ja` },
+      { '@type': 'ListItem', position: 2, name: 'ツール', item: `${SITE_URL}/ja/tools` },
+      { '@type': 'ListItem', position: 3, name: ja.name, item: `${SITE_URL}/ja/tools/${tool.id}` },
     ],
   };
 
@@ -181,25 +177,25 @@ export default async function EnglishToolPage({ params }: PageProps) {
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-[52px] max-w-3xl items-center gap-2 px-4">
           <a
-            href="/en/tools"
+            href="/ja/tools"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
-            aria-label="All tools"
-            title="All tools"
+            aria-label="すべてのツール"
+            title="すべてのツール"
           >
             <ArrowLeft className="h-4 w-4" />
           </a>
           <tool.icon className="h-5 w-5" />
-          <h1 className="text-sm sm:text-base font-semibold truncate">{en.name}</h1>
+          <h1 className="text-sm sm:text-base font-semibold truncate">{ja.name}</h1>
         </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6 space-y-8">
         <nav aria-label="breadcrumb" className="text-[11px] text-muted-foreground">
-          <a href="/en" className="hover:text-foreground">Home</a>
+          <a href="/ja" className="hover:text-foreground">ホーム</a>
           <span className="mx-1">/</span>
-          <a href="/en/tools" className="hover:text-foreground">Tools</a>
+          <a href="/ja/tools" className="hover:text-foreground">ツール</a>
           <span className="mx-1">/</span>
-          <span className="text-foreground">{en.name}</span>
+          <span className="text-foreground">{ja.name}</span>
           <span className="mx-2 text-muted-foreground/60">·</span>
           <a href={tool.href} hrefLang="ko" className="underline hover:text-foreground">
             한국어
@@ -211,10 +207,10 @@ export default async function EnglishToolPage({ params }: PageProps) {
             {categoryLabel}
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
-            {en.name} — free, in your browser
+            {ja.name} — 無料・ブラウザ内で完結
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            {en.tagline} {en.description}
+            {ja.tagline} {ja.description}
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <a
@@ -222,18 +218,18 @@ export default async function EnglishToolPage({ params }: PageProps) {
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
             >
               <Wrench className="h-4 w-4" />
-              Open the tool
+              ツールを開く
             </a>
             <a
-              href={`/en/guide/${tool.id}`}
+              href={`/ja/guide/${tool.id}`}
               className="inline-flex items-center gap-1.5 rounded-md border px-5 py-2.5 text-sm font-semibold hover:bg-muted"
             >
               <BookOpen className="h-4 w-4" />
-              How-to guide
+              使い方ガイド
             </a>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            No signup · no upload · files never leave your device.
+            登録不要・アップロード不要・ファイルは端末から外に出ません。
           </p>
         </section>
 
@@ -251,10 +247,10 @@ export default async function EnglishToolPage({ params }: PageProps) {
 
         <section className="rounded-xl border bg-card p-5 space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            What you can search for
+            検索キーワード
           </h3>
           <div className="flex flex-wrap gap-1.5">
-            {en.keywords.map((k) => (
+            {ja.keywords.map((k) => (
               <span
                 key={k}
                 className="rounded-full bg-muted px-2.5 py-1 text-[11px] text-muted-foreground"
@@ -264,25 +260,24 @@ export default async function EnglishToolPage({ params }: PageProps) {
             ))}
           </div>
           <p className="text-[12px] text-muted-foreground leading-relaxed">
-            Looking for step-by-step instructions and answers to common
-            questions?{' '}
-            <a href={`/en/guide/${tool.id}`} className="text-primary underline">
-              Read the {en.name} guide
+            手順やよくある質問をお探しですか？{' '}
+            <a href={`/ja/guide/${tool.id}`} className="text-primary underline">
+              {ja.name}の使い方ガイドを読む
             </a>
-            .
+            。
           </p>
         </section>
 
         {related.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">More {categoryLabel} tools</h3>
+            <h3 className="text-lg font-bold">他の{categoryLabel}ツール</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {related.map((t) => {
-                const rc = EN_TOOLS[t.id]!;
+                const rc = JA_TOOLS[t.id]!;
                 return (
                   <a
                     key={t.id}
-                    href={`/en/tools/${t.id}`}
+                    href={`/ja/tools/${t.id}`}
                     className="rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                   >
                     <div className="flex items-center gap-2">
@@ -299,40 +294,17 @@ export default async function EnglishToolPage({ params }: PageProps) {
           </section>
         )}
 
-        {compares.length > 0 && (
-          <section className="space-y-3">
-            <h3 className="text-lg font-bold">Compare</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {compares.map((c) => (
-                <a
-                  key={c.slug}
-                  href={`/en/compare/${c.slug}`}
-                  className="rounded-lg border bg-card p-3 hover:border-primary transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <GitCompare className="h-4 w-4 text-primary shrink-0" aria-hidden />
-                    <span className="text-sm font-medium truncate">{c.h1}</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                    {c.description}
-                  </p>
-                </a>
-              ))}
-            </div>
-          </section>
-        )}
-
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 text-center space-y-3">
-          <p className="text-sm font-medium">Use {en.name} now — it's free.</p>
+          <p className="text-sm font-medium">{ja.name}を今すぐ使う — 無料です。</p>
           <a
             href={tool.href}
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Open the tool
+            ツールを開く
             <ArrowRight className="h-4 w-4" />
           </a>
           <p className="text-[11px] text-muted-foreground">
-            Browser-only · files never uploaded.
+            ブラウザのみ・ファイルはアップロードされません。
           </p>
         </section>
       </main>

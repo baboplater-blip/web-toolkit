@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/color-palette',
+      'ja': '/ja/tools/color-palette',
       'x-default': URL_PATH,
     },
   },

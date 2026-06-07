@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/meme-gen',
+      'ja': '/ja/tools/meme-gen',
       'x-default': URL_PATH,
     },
   },

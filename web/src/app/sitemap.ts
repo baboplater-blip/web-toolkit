@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { hasEnCopy } from '@/lib/en-tools';
+import { hasJaCopy } from '@/lib/ja-tools';
 import { COMPARE_SLUGS, getCompare } from '@/lib/en-compares';
 import { CONVERT_SLUGS, FORMATS, conversionCategory, getConversion } from '@/lib/convert-matrix';
 import { USE_CASE_SLUGS, getUseCase } from '@/lib/use-cases';
@@ -75,6 +76,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/`,
           en: `${SITE_URL}/en`,
+          ja: `${SITE_URL}/ja`,
           'x-default': `${SITE_URL}/`,
         },
       },
@@ -88,6 +90,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/tools`,
           en: `${SITE_URL}/en/tools`,
+          ja: `${SITE_URL}/ja/tools`,
           'x-default': `${SITE_URL}/tools`,
         },
       },
@@ -105,6 +108,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/ja`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/`,
+          en: `${SITE_URL}/en`,
+          ja: `${SITE_URL}/ja`,
+          'x-default': `${SITE_URL}/`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/ja/tools`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/tools`,
+          en: `${SITE_URL}/en/tools`,
+          ja: `${SITE_URL}/ja/tools`,
+          'x-default': `${SITE_URL}/tools`,
+        },
+      },
+    },
+    {
       url: `${SITE_URL}/guide`,
       lastModified: now,
       changeFrequency: 'weekly',
@@ -113,6 +144,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/guide`,
           en: `${SITE_URL}/en/guide`,
+          ja: `${SITE_URL}/ja/guide`,
           'x-default': `${SITE_URL}/guide`,
         },
       },
@@ -126,6 +158,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/guide`,
           en: `${SITE_URL}/en/guide`,
+          ja: `${SITE_URL}/ja/guide`,
+          'x-default': `${SITE_URL}/guide`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/ja/guide`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/guide`,
+          en: `${SITE_URL}/en/guide`,
+          ja: `${SITE_URL}/ja/guide`,
           'x-default': `${SITE_URL}/guide`,
         },
       },
@@ -279,67 +326,66 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const guideEntries: MetadataRoute.Sitemap = [];
   // 영문 개별 도구 페이지/가이드 (큐레이션 도구만)
   const enEntries: MetadataRoute.Sitemap = [];
+  // 일본어 개별 도구 페이지/가이드 (큐레이션 도구만)
+  const jaEntries: MetadataRoute.Sitemap = [];
   for (const tool of TOOLS) {
     if (tool.status !== 'ready') continue;
     if (seen.has(tool.href)) continue;
     seen.add(tool.href);
     const enabled = hasEnCopy(tool.id);
+    const jaEnabled = hasJaCopy(tool.id);
     const prio = CATEGORY_PRIORITY[tool.category] ?? 0.7;
     // 실제 추가일을 lastmod 로 — 신선도 신호 정확화(없으면 baseline)
     const toolLastMod = tool.addedAt ? new Date(tool.addedAt) : SITE_BASELINE;
     // 최근 추가(60일 이내)면 weekly, 아니면 monthly
     const toolFreq = isRecent(tool.addedAt) || tool.phase >= 5 ? 'weekly' : 'monthly';
 
+    const koHref = `${SITE_URL}${tool.href}`;
+    const enHref = `${SITE_URL}/en/tools/${tool.id}`;
+    const jaHref = `${SITE_URL}/ja/tools/${tool.id}`;
+    const koGuide = `${SITE_URL}/guide/${tool.id}`;
+    const enGuide = `${SITE_URL}/en/guide/${tool.id}`;
+    const jaGuide = `${SITE_URL}/ja/guide/${tool.id}`;
+
+    // 언어 카피 보유 여부에 따라 alternate 언어 맵 구성 (큐레이션된 언어만 연결)
+    const toolLangs: Record<string, string> = { 'ko-KR': koHref };
+    if (enabled) toolLangs.en = enHref;
+    if (jaEnabled) toolLangs.ja = jaHref;
+    const guideLangs: Record<string, string> = { 'ko-KR': koGuide };
+    if (enabled) guideLangs.en = enGuide;
+    if (jaEnabled) guideLangs.ja = jaGuide;
+    const hasAltTool = enabled || jaEnabled;
+
     toolEntries.push({
-      url: `${SITE_URL}${tool.href}`,
+      url: koHref,
       lastModified: toolLastMod,
       changeFrequency: toolFreq,
       priority: prio,
-      // 영문 트랜잭셔널 페이지가 있으면 ko 도구 페이지 ↔ en 도구 페이지 연결
-      ...(enabled
-        ? {
-            alternates: {
-              languages: {
-                'ko-KR': `${SITE_URL}${tool.href}`,
-                en: `${SITE_URL}/en/tools/${tool.id}`,
-                'x-default': `${SITE_URL}${tool.href}`,
-              },
-            },
-          }
+      // 다른 언어 트랜잭셔널 페이지가 있으면 상호 연결
+      ...(hasAltTool
+        ? { alternates: { languages: { ...toolLangs, 'x-default': koHref } } }
         : {}),
     });
 
     // 각 도구별 가이드 페이지 (long-tail SEO)
-    const koGuide = `${SITE_URL}/guide/${tool.id}`;
-    const enGuide = `${SITE_URL}/en/guide/${tool.id}`;
     guideEntries.push({
       url: koGuide,
       lastModified: toolLastMod,
       changeFrequency: 'monthly',
       priority: Math.round(prio * 0.8 * 100) / 100,
-      ...(enabled
-        ? {
-            alternates: {
-              languages: { 'ko-KR': koGuide, en: enGuide, 'x-default': koGuide },
-            },
-          }
+      ...(hasAltTool
+        ? { alternates: { languages: { ...guideLangs, 'x-default': koGuide } } }
         : {}),
     });
 
     if (enabled) {
       // 영문 트랜잭셔널 도구 페이지
       enEntries.push({
-        url: `${SITE_URL}/en/tools/${tool.id}`,
+        url: enHref,
         lastModified: toolLastMod,
         changeFrequency: toolFreq,
         priority: Math.round(prio * 0.85 * 100) / 100,
-        alternates: {
-          languages: {
-            'ko-KR': `${SITE_URL}${tool.href}`,
-            en: `${SITE_URL}/en/tools/${tool.id}`,
-            'x-default': `${SITE_URL}/en/tools/${tool.id}`,
-          },
-        },
+        alternates: { languages: { ...toolLangs, 'x-default': enHref } },
       });
       // 영문 도구별 가이드
       enEntries.push({
@@ -347,12 +393,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: toolLastMod,
         changeFrequency: 'monthly',
         priority: Math.round(prio * 0.75 * 100) / 100,
-        alternates: {
-          languages: { 'ko-KR': koGuide, en: enGuide, 'x-default': koGuide },
-        },
+        alternates: { languages: { ...guideLangs, 'x-default': enGuide } },
+      });
+    }
+
+    if (jaEnabled) {
+      // 일본어 트랜잭셔널 도구 페이지
+      jaEntries.push({
+        url: jaHref,
+        lastModified: toolLastMod,
+        changeFrequency: toolFreq,
+        priority: Math.round(prio * 0.85 * 100) / 100,
+        alternates: { languages: { ...toolLangs, 'x-default': jaHref } },
+      });
+      // 일본어 도구별 가이드
+      jaEntries.push({
+        url: jaGuide,
+        lastModified: toolLastMod,
+        changeFrequency: 'monthly',
+        priority: Math.round(prio * 0.75 * 100) / 100,
+        alternates: { languages: { ...guideLangs, 'x-default': jaGuide } },
       });
     }
   }
 
-  return [...hub, ...toolEntries, ...guideEntries, ...enEntries];
+  return [...hub, ...toolEntries, ...guideEntries, ...enEntries, ...jaEntries];
 }

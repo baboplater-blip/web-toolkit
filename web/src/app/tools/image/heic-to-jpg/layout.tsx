@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-heic-to-jpg',
+      'ja': '/ja/tools/image-heic-to-jpg',
       'x-default': URL_PATH,
     },
   },
