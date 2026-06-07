@@ -1,8 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Search, Settings2 } from 'lucide-react';
+import { LayoutGrid, Layers, Search, Settings2, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  getStoredTheme,
+  setTheme,
+  subscribeTheme,
+  type ThemeMode,
+} from '@/lib/theme';
 
 const TABS = [
   { href: '/tools', icon: LayoutGrid, label: '도구', match: /^\/tools/ },
@@ -15,13 +22,63 @@ function openPalette() {
   window.dispatchEvent(new CustomEvent('webtoolkit:open-palette'));
 }
 
+function openCategoryDrawer() {
+  window.dispatchEvent(new CustomEvent('webtoolkit:open-category-drawer'));
+}
+
+/**
+ * 데스크탑 레일용 테마 토글 버튼 — `lib/theme.ts` 의 공식 API(setTheme /
+ * getStoredTheme, 키 `acp:theme`, `<html>.dark` 클래스)를 그대로 사용해
+ * THEME_BOOT_SCRIPT · ThemeWatcher 와 100% 일치한다. 'system' 모드는
+ * 현재 해상도(dark/light)를 뒤집어 명시적 모드로 전환한다.
+ */
+function RailThemeToggle() {
+  const [mode, setMode] = useState<ThemeMode>('system');
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMode(getStoredTheme());
+    const unsubscribe = subscribeTheme(setMode);
+    return unsubscribe;
+  }, []);
+
+  const isDark =
+    mode === 'dark' ||
+    (mode === 'system' &&
+      typeof window !== 'undefined' &&
+      document.documentElement.classList.contains('dark'));
+
+  const toggle = () => {
+    setTheme(isDark ? 'light' : 'dark');
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title="테마 전환"
+      aria-label="테마 전환"
+      className="flex h-12 w-12 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+    >
+      {isDark ? (
+        <Sun className="h-5 w-5" strokeWidth={2} aria-hidden />
+      ) : (
+        <Moon className="h-5 w-5" strokeWidth={2} aria-hidden />
+      )}
+    </button>
+  );
+}
+
 export function BottomNav() {
   const pathname = usePathname() ?? '';
   if (HIDDEN_PATHS.some((p) => p.test(pathname))) return null;
 
+  const toolsActive = /^\/tools/.test(pathname);
+  const settingsActive = /^\/settings/.test(pathname);
+
   return (
     <>
-      {/* 모바일: 하단 탭바 — 도구 / 검색 / 설정 */}
+      {/* 모바일: 하단 탭바 — 도구 / 카테고리 / 검색 / 설정 */}
       <nav
         className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
@@ -31,27 +88,33 @@ export function BottomNav() {
           <li className="flex-1">
             <a
               href="/tools"
-              aria-current={/^\/tools/.test(pathname) ? 'page' : undefined}
+              aria-current={toolsActive ? 'page' : undefined}
               className={cn(
                 'flex h-full w-full flex-col items-center justify-center gap-0.5 transition-colors',
-                /^\/tools/.test(pathname)
+                toolsActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground',
               )}
             >
               <LayoutGrid
                 className="h-5 w-5"
-                strokeWidth={/^\/tools/.test(pathname) ? 2.25 : 2}
+                strokeWidth={toolsActive ? 2.25 : 2}
               />
-              <span
-                className={cn(
-                  'text-[11px]',
-                  /^\/tools/.test(pathname) && 'font-semibold',
-                )}
-              >
+              <span className={cn('text-[11px]', toolsActive && 'font-semibold')}>
                 도구
               </span>
             </a>
+          </li>
+          <li className="flex-1">
+            <button
+              type="button"
+              onClick={openCategoryDrawer}
+              aria-label="카테고리 둘러보기 열기"
+              className="flex h-full w-full flex-col items-center justify-center gap-0.5 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Layers className="h-5 w-5" strokeWidth={2} />
+              <span className="text-[11px]">카테고리</span>
+            </button>
           </li>
           <li className="flex-1">
             <button
@@ -67,23 +130,20 @@ export function BottomNav() {
           <li className="flex-1">
             <a
               href="/settings"
-              aria-current={/^\/settings/.test(pathname) ? 'page' : undefined}
+              aria-current={settingsActive ? 'page' : undefined}
               className={cn(
                 'flex h-full w-full flex-col items-center justify-center gap-0.5 transition-colors',
-                /^\/settings/.test(pathname)
+                settingsActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground',
               )}
             >
               <Settings2
                 className="h-5 w-5"
-                strokeWidth={/^\/settings/.test(pathname) ? 2.25 : 2}
+                strokeWidth={settingsActive ? 2.25 : 2}
               />
               <span
-                className={cn(
-                  'text-[11px]',
-                  /^\/settings/.test(pathname) && 'font-semibold',
-                )}
+                className={cn('text-[11px]', settingsActive && 'font-semibold')}
               >
                 설정
               </span>
@@ -92,12 +152,12 @@ export function BottomNav() {
         </ul>
       </nav>
 
-      {/* 데스크탑: 좌측 아이콘 레일 — 도구 / 검색 / 설정 */}
+      {/* 데스크탑: 좌측 아이콘 레일 — 도구 / 검색 / 카테고리 / 설정 / 테마 */}
       <nav
         className="fixed left-0 top-0 bottom-0 z-40 hidden w-16 flex-col items-center border-r bg-background py-3 md:flex"
         aria-label="주요 내비게이션"
       >
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-1 flex-col gap-1">
           {TABS.slice(0, 1).map(({ href, icon: Icon, label, match }) => {
             const active = match.test(pathname);
             return (
@@ -115,10 +175,7 @@ export function BottomNav() {
                 >
                   <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 2} />
                   <span
-                    className={cn(
-                      'mt-0.5 text-[10px]',
-                      active && 'font-semibold',
-                    )}
+                    className={cn('mt-0.5 text-[10px]', active && 'font-semibold')}
                   >
                     {label}
                   </span>
@@ -141,6 +198,20 @@ export function BottomNav() {
             </button>
           </li>
 
+          {/* 카테고리 버튼 */}
+          <li>
+            <button
+              type="button"
+              onClick={openCategoryDrawer}
+              title="카테고리 둘러보기"
+              aria-label="카테고리 둘러보기 열기"
+              className="flex h-12 w-12 flex-col items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <Layers className="h-5 w-5" strokeWidth={2} />
+              <span className="mt-0.5 text-[10px]">분류</span>
+            </button>
+          </li>
+
           {TABS.slice(1).map(({ href, icon: Icon, label, match }) => {
             const active = match.test(pathname);
             return (
@@ -158,10 +229,7 @@ export function BottomNav() {
                 >
                   <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 2} />
                   <span
-                    className={cn(
-                      'mt-0.5 text-[10px]',
-                      active && 'font-semibold',
-                    )}
+                    className={cn('mt-0.5 text-[10px]', active && 'font-semibold')}
                   >
                     {label}
                   </span>
@@ -170,6 +238,9 @@ export function BottomNav() {
             );
           })}
         </ul>
+
+        {/* 레일 하단: 테마 토글 */}
+        <RailThemeToggle />
       </nav>
     </>
   );

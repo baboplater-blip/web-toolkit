@@ -10,8 +10,6 @@ import {
   Lock,
   Sparkles,
   Settings2,
-  KeyRound,
-  Hexagon,
   ShieldCheck,
   Zap,
   HeartHandshake,
@@ -23,6 +21,9 @@ import {
   type ToolCategory,
   type ToolMeta,
 } from '@/lib/tools/registry';
+import { SUPER_CATEGORIES } from '@/lib/tools/super-categories';
+import { HomeSearch } from '@/components/home/HomeSearch';
+import { HomePersonalized } from '@/components/home/HomePersonalized';
 
 /**
  * 사이트 루트 (/). 이전 버전은 /tools 로 즉시 redirect 했지만, 첫 방문자에게
@@ -89,20 +90,6 @@ const CATEGORY_ACCENT: Record<ToolCategory, string> = {
   ai: 'from-sky-500/15 to-sky-500/5 text-sky-400 border-sky-500/30',
 };
 
-const CATEGORY_ORDER: ToolCategory[] = [
-  'pdf',
-  'image',
-  'video',
-  'audio',
-  'docs',
-  'gif',
-  'text',
-  'dev',
-  'util',
-  'security',
-  'ai',
-];
-
 /** 인기 도구 ID — 트래픽·범용성 기준 수기 선정 */
 const FEATURED_TOOL_IDS = [
   'compress',
@@ -164,16 +151,18 @@ export default function Home() {
             지금 바로 사용하세요.
           </p>
 
-          <div className="mt-7 flex flex-col items-center justify-center gap-2 sm:flex-row">
+          <HomeSearch />
+
+          <div className="mt-4 flex flex-col items-center justify-center gap-2 sm:flex-row">
             <a
               href="/tools"
-              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md border bg-card px-5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
-              도구 둘러보기
+              전체 도구 둘러보기
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
             <span className="hidden text-xs text-muted-foreground sm:inline">
-              또는{' '}
+              어디서나{' '}
               <kbd className="rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px]">
                 Ctrl
               </kbd>
@@ -181,7 +170,7 @@ export default function Home() {
               <kbd className="rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px]">
                 K
               </kbd>{' '}
-              로 바로 검색
+              로 검색
             </span>
           </div>
 
@@ -209,6 +198,9 @@ export default function Home() {
           </ul>
         </div>
       </section>
+
+      {/* 개인화 — 즐겨찾기·최근 (데이터 있을 때만, 클라이언트) */}
+      <HomePersonalized />
 
       {/* Featured tools */}
       <section className="mx-auto max-w-6xl px-4 py-12 md:py-16">
@@ -255,48 +247,73 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Categories — 5개 슈퍼카테고리로 묶어 표시 */}
       <section className="border-t bg-muted/20">
         <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
           <h2 className="text-xl font-bold md:text-2xl">카테고리</h2>
           <p className="mt-1 text-xs text-muted-foreground md:text-sm">
             필요한 작업으로 바로 이동하세요.
           </p>
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-            {CATEGORY_ORDER.map((cat) => {
-              const list = byCategory.get(cat);
-              if (!list || list.length === 0) return null;
-              const Icon = CATEGORY_ICON[cat] ?? FileText;
-              const accent = CATEGORY_ACCENT[cat];
-              const sample = list.slice(0, 3);
+
+          <div className="mt-6 space-y-8">
+            {SUPER_CATEGORIES.map((sc) => {
+              const cats = sc.categories.filter(
+                (c) => (byCategory.get(c)?.length ?? 0) > 0,
+              );
+              if (cats.length === 0) return null;
+              const SuperIcon = sc.icon;
+              const total = cats.reduce(
+                (n, c) => n + (byCategory.get(c)?.length ?? 0),
+                0,
+              );
               return (
-                <a
-                  key={cat}
-                  href={`/tools?category=${cat}`}
-                  className={`group relative flex flex-col gap-2 rounded-xl border bg-gradient-to-br p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${accent}`}
-                >
+                <div key={sc.key} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                    <h3 className="text-sm font-bold text-foreground">
-                      {CATEGORY_LABELS[cat]}
-                    </h3>
-                    <span className="ml-auto rounded bg-background/40 px-1.5 py-0.5 text-[10px] font-medium text-foreground">
-                      {list.length}
+                    <SuperIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    <h3 className="text-sm font-bold">{sc.label}</h3>
+                    <span className="text-[11px] text-muted-foreground">{sc.blurb}</span>
+                    <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      {total}개
                     </span>
                   </div>
-                  <ul className="mt-1 space-y-0.5 text-[11px] text-foreground/80">
-                    {sample.map((t) => (
-                      <li key={t.id} className="truncate">
-                        · {t.title}
-                      </li>
-                    ))}
-                    {list.length > sample.length && (
-                      <li className="text-[10px] text-foreground/60">
-                        외 {list.length - sample.length}개
-                      </li>
-                    )}
-                  </ul>
-                </a>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {cats.map((cat) => {
+                      const list = byCategory.get(cat)!;
+                      const Icon = CATEGORY_ICON[cat] ?? FileText;
+                      const accent = CATEGORY_ACCENT[cat];
+                      const sample = list.slice(0, 3);
+                      return (
+                        <a
+                          key={cat}
+                          href={`/tools?category=${cat}`}
+                          className={`group relative flex flex-col gap-2 rounded-xl border bg-gradient-to-br p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${accent}`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-5 w-5" aria-hidden="true" />
+                            <h4 className="text-sm font-bold text-foreground">
+                              {CATEGORY_LABELS[cat]}
+                            </h4>
+                            <span className="ml-auto rounded bg-background/40 px-1.5 py-0.5 text-[10px] font-medium text-foreground">
+                              {list.length}
+                            </span>
+                          </div>
+                          <ul className="mt-1 space-y-0.5 text-[11px] text-foreground/80">
+                            {sample.map((t) => (
+                              <li key={t.id} className="truncate">
+                                · {t.title}
+                              </li>
+                            ))}
+                            {list.length > sample.length && (
+                              <li className="text-[10px] text-foreground/60">
+                                외 {list.length - sample.length}개
+                              </li>
+                            )}
+                          </ul>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ToolCard } from '@/components/tools/ToolCard';
+import { ReorderableFavorites } from '@/components/tools/ReorderableFavorites';
 import {
   CATEGORY_LABELS,
   filterTools,
@@ -23,6 +24,7 @@ import {
   type ToolCategory,
   type ToolMeta,
 } from '@/lib/tools/registry';
+import { SUPER_CATEGORIES } from '@/lib/tools/super-categories';
 import { useFavorites, useRecent, useUsageStats } from '@/lib/hooks/useUsage';
 import { cn } from '@/lib/utils';
 
@@ -166,7 +168,7 @@ export default function ToolsHubPage() {
   const [showHelp, setShowHelp] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('relevance');
 
-  const { favorites, toggle, isFavorite } = useFavorites();
+  const { favorites, order: favoriteOrder, toggle, reorder, isFavorite } = useFavorites();
   const recent = useRecent();
   const usage = useUsageStats();
 
@@ -245,12 +247,12 @@ export default function ToolsHubPage() {
   /* 즐겨찾기 도구 (검색·필터 없을 때만 노출) */
   const favoriteTools = useMemo<ToolMeta[]>(() => {
     if (isSearching || isFiltered) return [];
-    if (favorites.size === 0) return [];
+    if (favoriteOrder.length === 0) return [];
     const map = new Map(TOOLS.map((t) => [t.id, t]));
-    return [...favorites]
+    return favoriteOrder
       .map((id) => map.get(id))
       .filter((t): t is ToolMeta => t !== undefined && t.status === 'ready');
-  }, [favorites, isSearching, isFiltered]);
+  }, [favoriteOrder, isSearching, isFiltered]);
 
   /* 최근 사용 도구 (즐겨찾기와 중복 제외) */
   const recentTools = useMemo<ToolMeta[]>(() => {
@@ -299,6 +301,18 @@ export default function ToolsHubPage() {
       (c) => [c, map.get(c)!] as const,
     );
   }, [isSearching, isFiltered, sortKey, usage]);
+
+  /* 슈퍼카테고리로 한 번 더 묶기 (브라우즈 뷰 가독성) */
+  const superGrouped = useMemo(() => {
+    if (!grouped) return null;
+    const byCat = new Map(grouped);
+    return SUPER_CATEGORIES.map((sc) => ({
+      sc,
+      entries: sc.categories
+        .filter((c) => byCat.has(c))
+        .map((c) => [c, byCat.get(c)!] as const),
+    })).filter((g) => g.entries.length > 0);
+  }, [grouped]);
 
   /* 키보드 단축키 */
   useEffect(() => {
@@ -522,19 +536,15 @@ export default function ToolsHubPage() {
                 즐겨찾기
               </h2>
               <span className="text-[11px] text-muted-foreground">
+                {favoriteTools.length > 1 ? '드래그로 순서 변경 · ' : ''}
                 {favoriteTools.length}개
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-              {favoriteTools.map((tool) => (
-                <ToolCard
-                  key={`fav-${tool.id}`}
-                  tool={tool}
-                  favorite={isFavorite(tool.id)}
-                  onToggleFavorite={toggle}
-                />
-              ))}
-            </div>
+            <ReorderableFavorites
+              tools={favoriteTools}
+              onReorder={reorder}
+              onRemove={toggle}
+            />
           </section>
         )}
 
@@ -605,30 +615,51 @@ export default function ToolsHubPage() {
               </button>
             )}
           </div>
-        ) : grouped ? (
-          <div className="space-y-6">
-            {grouped.map(([cat, list]) => (
-              <section key={cat} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {CATEGORY_LABELS[cat]}
-                  </h2>
-                  <span className="text-[11px] text-muted-foreground">
-                    {list.filter((t) => t.status === 'ready').length}개 사용 가능
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                  {list.map((tool) => (
-                    <ToolCard
-                      key={tool.id}
-                      tool={tool}
-                      favorite={isFavorite(tool.id)}
-                      onToggleFavorite={toggle}
-                    />
+        ) : superGrouped ? (
+          <div className="space-y-10">
+            {superGrouped.map(({ sc, entries }) => {
+              const SuperIcon = sc.icon;
+              const superTotal = entries.reduce(
+                (n, [, list]) => n + list.filter((t) => t.status === 'ready').length,
+                0,
+              );
+              return (
+                <div key={sc.key} className="space-y-5">
+                  <div className="flex items-center gap-2 border-b pb-2">
+                    <SuperIcon className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <h2 className="text-sm font-bold">{sc.label}</h2>
+                    <span className="hidden text-[11px] text-muted-foreground sm:inline">
+                      {sc.blurb}
+                    </span>
+                    <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      {superTotal}개
+                    </span>
+                  </div>
+                  {entries.map(([cat, list]) => (
+                    <section key={cat} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          {CATEGORY_LABELS[cat]}
+                        </h3>
+                        <span className="text-[11px] text-muted-foreground">
+                          {list.filter((t) => t.status === 'ready').length}개 사용 가능
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                        {list.map((tool) => (
+                          <ToolCard
+                            key={tool.id}
+                            tool={tool}
+                            favorite={isFavorite(tool.id)}
+                            onToggleFavorite={toggle}
+                          />
+                        ))}
+                      </div>
+                    </section>
                   ))}
                 </div>
-              </section>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">

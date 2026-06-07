@@ -7,6 +7,7 @@ import {
   ChevronRight,
   LayoutGrid,
   ListChecks,
+  Search,
   Sparkles,
 } from 'lucide-react';
 import {
@@ -37,8 +38,10 @@ function isRecentlyAdded(addedAt: string | undefined): boolean {
 export function ToolNavigation() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [filter, setFilter] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const filterRef = useRef<HTMLInputElement>(null);
 
   // 메뉴 외부 클릭 + Esc 키로 닫기
   useEffect(() => {
@@ -57,6 +60,11 @@ export function ToolNavigation() {
     };
   }, [menuOpen]);
 
+  // 메뉴 닫히면 필터 초기화
+  useEffect(() => {
+    if (!menuOpen) setFilter('');
+  }, [menuOpen]);
+
   const current = useMemo<ToolMeta | undefined>(() => {
     if (!pathname) return undefined;
     return TOOLS.find((t) => t.href === pathname);
@@ -70,6 +78,16 @@ export function ToolNavigation() {
   const idx = current ? siblings.findIndex((t) => t.id === current.id) : -1;
   const prev = idx > 0 ? siblings[idx - 1] : null;
   const next = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : null;
+
+  // 도구가 많은 카테고리(예: 유틸·문서)에서는 드롭다운 안에 검색 필터 노출
+  const showFilter = siblings.length > 12;
+  const filteredSiblings = useMemo(() => {
+    const q = filter.trim().toLowerCase();
+    if (!q) return siblings;
+    return siblings.filter(
+      (t) => t.title.toLowerCase().includes(q) || t.id.includes(q),
+    );
+  }, [siblings, filter]);
 
   // Alt+←/→ 단축키로 이전/다음 도구 이동 (입력 필드에서는 비활성)
   useEffect(() => {
@@ -95,16 +113,21 @@ export function ToolNavigation() {
     return () => window.removeEventListener('keydown', handler);
   }, [current, prev, next]);
 
-  // 메뉴 열릴 때 현재 도구 항목으로 자동 스크롤
+  // 메뉴 열릴 때: 검색 필터가 있으면 포커스, 없으면 현재 도구로 스크롤
   useEffect(() => {
-    if (!menuOpen || !listRef.current) return;
+    if (!menuOpen) return;
+    if (showFilter) {
+      filterRef.current?.focus();
+      return;
+    }
+    if (!listRef.current) return;
     const activeEl = listRef.current.querySelector<HTMLElement>(
       '[aria-current="page"]',
     );
     if (activeEl) {
       activeEl.scrollIntoView({ block: 'center' });
     }
-  }, [menuOpen]);
+  }, [menuOpen, showFilter]);
 
   if (!current) return null;
   if (siblings.length <= 1) return null;
@@ -161,11 +184,35 @@ export function ToolNavigation() {
               aria-label={`${CATEGORY_LABELS[current.category]} 도구 목록`}
               className="absolute right-0 bottom-full mb-2 w-64 max-h-80 overflow-y-auto rounded-lg border bg-popover shadow-lg z-20"
             >
-              <div className="sticky top-0 px-3 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b bg-popover">
-                {CATEGORY_LABELS[current.category]} ({siblings.length}개)
+              <div className="sticky top-0 z-10 border-b bg-popover">
+                <div className="px-3 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {CATEGORY_LABELS[current.category]} ({siblings.length}개)
+                </div>
+                {showFilter && (
+                  <div className="relative px-2 pb-2">
+                    <Search
+                      className="pointer-events-none absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <input
+                      ref={filterRef}
+                      type="text"
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                      placeholder="이 카테고리에서 검색…"
+                      aria-label="카테고리 안에서 도구 검색"
+                      className="h-8 w-full rounded-md border bg-background pl-7 pr-2 text-xs outline-none focus:border-primary"
+                    />
+                  </div>
+                )}
               </div>
               <ul className="py-1" ref={listRef}>
-                {siblings.map((t) => {
+                {filteredSiblings.length === 0 && (
+                  <li className="px-3 py-3 text-center text-[11px] text-muted-foreground">
+                    일치하는 도구가 없습니다
+                  </li>
+                )}
+                {filteredSiblings.map((t) => {
                   const isNew = isRecentlyAdded(t.addedAt);
                   return (
                     <li key={t.id}>

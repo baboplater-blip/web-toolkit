@@ -59,6 +59,24 @@ export function toggleFavorite(id: string): string[] {
   return next;
 }
 
+/**
+ * 즐겨찾기 순서를 통째로 교체한다(드래그 재정렬용). 넘어온 배열에서 중복을
+ * 제거하고 그대로 저장 — 즐겨찾기 목록의 표시 순서가 곧 이 배열 순서가 된다.
+ */
+export function setFavorites(ids: string[]): string[] {
+  if (typeof window === 'undefined') return [];
+  const seen = new Set<string>();
+  const next: string[] = [];
+  for (const id of ids) {
+    if (seen.has(id)) continue;
+    seen.add(id);
+    next.push(id);
+  }
+  localStorage.setItem(FAVS_KEY, JSON.stringify(next));
+  emit(FAVS_EVENT, next);
+  return next;
+}
+
 /* ---------- recent ---------- */
 
 export function getRecent(): RecentEntry[] {
