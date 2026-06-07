@@ -8,6 +8,7 @@ import {
 } from '@/lib/tools/registry';
 import { buildGuide } from '@/lib/guide-content';
 import { hasEnCopy } from '@/lib/en-tools';
+import { SponsoredTip } from '@/components/SponsoredTip';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -322,6 +323,8 @@ export default async function GuidePage({ params }: PageProps) {
             </div>
           </section>
         )}
+
+        <SponsoredTip toolId={tool.id} category={tool.category} />
 
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 text-center space-y-3">
           <p className="text-sm font-medium">
