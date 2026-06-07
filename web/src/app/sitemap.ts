@@ -182,10 +182,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ).flatMap<MetadataRoute.Sitemap[number]>((cat) => {
       const koUrl = `${SITE_URL}/guide/category/${cat}`;
       const enUrl = `${SITE_URL}/en/guide/category/${cat}`;
+      const jaUrl = `${SITE_URL}/ja/guide/category/${cat}`;
       const alternates = {
         languages: {
           'ko-KR': koUrl,
           en: enUrl,
+          ja: jaUrl,
           'x-default': koUrl,
         },
       };
@@ -199,6 +201,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
         {
           url: enUrl,
+          lastModified: CONTENT_REVISION,
+          changeFrequency: 'monthly' as const,
+          priority: Math.round((CATEGORY_PRIORITY[cat] ?? 0.7) * 0.85 * 100) / 100,
+          alternates,
+        },
+        {
+          url: jaUrl,
           lastModified: CONTENT_REVISION,
           changeFrequency: 'monthly' as const,
           priority: Math.round((CATEGORY_PRIORITY[cat] ?? 0.7) * 0.85 * 100) / 100,

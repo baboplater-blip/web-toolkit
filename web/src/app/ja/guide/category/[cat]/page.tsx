@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2 } from 'lucide-react';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
-import { CATEGORY_GUIDES_EN } from '@/lib/category-guide-content-en';
+import { CATEGORY_GUIDES_JA } from '@/lib/category-guide-content-ja';
+import { JA_TOOLS, hasJaCopy } from '@/lib/ja-tools';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -24,17 +25,17 @@ const ALL_CATEGORIES: ToolCategory[] = [
   'ai',
 ];
 
-const CATEGORY_LABELS_EN: Record<ToolCategory, string> = {
-  image: 'Image',
+const CATEGORY_LABELS_JA: Record<ToolCategory, string> = {
+  image: '画像',
   pdf: 'PDF',
-  video: 'Video',
+  video: '動画',
   gif: 'GIF',
-  audio: 'Audio',
-  docs: 'Documents',
-  text: 'Text',
-  dev: 'Developer',
-  util: 'Utility',
-  security: 'Security',
+  audio: '音声',
+  docs: '文書',
+  text: 'テキスト',
+  dev: '開発者向け',
+  util: 'ユーティリティ',
+  security: 'セキュリティ',
   ai: 'AI',
 };
 
@@ -53,27 +54,27 @@ function isCategory(v: string): v is ToolCategory {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { cat } = await params;
   if (!isCategory(cat)) {
-    return { title: 'Category not found — Web Toolkit' };
+    return { title: 'カテゴリが見つかりません — Web Toolkit' };
   }
-  const guide = CATEGORY_GUIDES_EN[cat];
-  const canonical = `/en/guide/category/${cat}`;
+  const guide = CATEGORY_GUIDES_JA[cat];
+  const canonical = `/ja/guide/category/${cat}`;
   return {
     title: guide.metaTitle,
     description: guide.metaDescription,
     keywords: [
       ...guide.keywords,
-      CATEGORY_LABELS_EN[cat],
-      'browser tools',
-      'free',
-      'online',
-      'no upload',
+      CATEGORY_LABELS_JA[cat],
+      'ブラウザ ツール',
+      '無料',
+      'オンライン',
+      'アップロード不要',
     ],
     alternates: {
       canonical,
       languages: {
         'ko-KR': `/guide/category/${cat}`,
-        en: canonical,
-        ja: `/ja/guide/category/${cat}`,
+        en: `/en/guide/category/${cat}`,
+        ja: canonical,
         'x-default': `/guide/category/${cat}`,
       },
     },
@@ -82,7 +83,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: guide.metaDescription,
       type: 'website',
       siteName: 'Web Toolkit',
-      locale: 'en_US',
+      locale: 'ja_JP',
       url: canonical,
       images: [
         {
@@ -102,12 +103,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function EnglishCategoryGuidePage({ params }: PageProps) {
+export default async function JapaneseCategoryGuidePage({ params }: PageProps) {
   const { cat } = await params;
   if (!isCategory(cat)) notFound();
 
-  const guide = CATEGORY_GUIDES_EN[cat];
-  const categoryLabel = CATEGORY_LABELS_EN[cat];
+  const guide = CATEGORY_GUIDES_JA[cat];
+  const categoryLabel = CATEGORY_LABELS_JA[cat];
   const tools = TOOLS.filter((t) => t.status === 'ready' && t.category === cat).sort(
     (a, b) => a.phase - b.phase,
   );
@@ -127,17 +128,27 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
   };
   const related = RELATED_MAP[cat];
 
+  // Resolve the best link target for a tool card.
+  // ja-copy tools get the dedicated /ja/tools/{id} landing; the rest fall back
+  // to the Korean tool page (icon-driven, language-agnostic).
+  const toolHref = (id: string, koHref: string) =>
+    hasJaCopy(id) ? `/ja/tools/${id}` : koHref;
+  const toolName = (id: string, koTitle: string) =>
+    hasJaCopy(id) ? JA_TOOLS[id]!.name : koTitle;
+  const toolTagline = (id: string, koDesc: string) =>
+    hasJaCopy(id) ? JA_TOOLS[id]!.tagline : koDesc;
+
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Web Toolkit', item: `${SITE_URL}/en` },
-      { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE_URL}/en/guide` },
+      { '@type': 'ListItem', position: 1, name: 'Web Toolkit', item: `${SITE_URL}/ja` },
+      { '@type': 'ListItem', position: 2, name: 'ガイド', item: `${SITE_URL}/ja/guide` },
       {
         '@type': 'ListItem',
         position: 3,
-        name: `${categoryLabel} Guide`,
-        item: `${SITE_URL}/en/guide/category/${cat}`,
+        name: `${categoryLabel} ガイド`,
+        item: `${SITE_URL}/ja/guide/category/${cat}`,
       },
     ],
   };
@@ -145,20 +156,20 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `${categoryLabel} Tools Collection`,
+    name: `${categoryLabel} ツール一覧`,
     numberOfItems: tools.length,
     itemListElement: tools.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `${SITE_URL}${t.href}`,
-      name: t.title,
+      url: `${SITE_URL}${toolHref(t.id, t.href)}`,
+      name: toolName(t.id, t.title),
     })),
   };
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    inLanguage: 'en',
+    inLanguage: 'ja',
     mainEntity: guide.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
@@ -171,10 +182,10 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
     '@type': 'CollectionPage',
     name: guide.h1,
     description: guide.metaDescription,
-    inLanguage: 'en',
+    inLanguage: 'ja',
     isPartOf: { '@type': 'WebSite', name: 'Web Toolkit', url: SITE_URL },
-    url: `${SITE_URL}/en/guide/category/${cat}`,
-    mainEntity: { '@id': `${SITE_URL}/en/guide/category/${cat}#tools` },
+    url: `${SITE_URL}/ja/guide/category/${cat}`,
+    mainEntity: { '@id': `${SITE_URL}/ja/guide/category/${cat}#tools` },
   };
 
   return (
@@ -203,16 +214,16 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-[52px] max-w-5xl items-center gap-2 px-4">
           <a
-            href="/en/guide"
+            href="/ja/guide"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
-            aria-label="All guides"
-            title="All guides"
+            aria-label="すべてのガイド"
+            title="すべてのガイド"
           >
             <ArrowLeft className="h-4 w-4" />
           </a>
           <BookOpen className="h-5 w-5" />
           <h1 className="text-sm sm:text-base font-semibold truncate">
-            {categoryLabel} Tools Guide
+            {categoryLabel} ツールガイド
           </h1>
           <span className="ml-auto text-[11px] text-muted-foreground">{tools.length}</span>
         </div>
@@ -220,9 +231,9 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
 
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-8">
         <nav aria-label="breadcrumb" className="text-[11px] text-muted-foreground">
-          <a href="/en" className="hover:text-foreground">Home</a>
+          <a href="/ja" className="hover:text-foreground">ホーム</a>
           <span className="mx-1">/</span>
-          <a href="/en/guide" className="hover:text-foreground">Guides</a>
+          <a href="/ja/guide" className="hover:text-foreground">ガイド</a>
           <span className="mx-1">/</span>
           <span className="text-foreground">{categoryLabel}</span>
           <span className="mx-2 text-muted-foreground/60">·</span>
@@ -232,6 +243,14 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
             className="underline hover:text-foreground"
           >
             한국어
+          </a>
+          <span className="mx-1 text-muted-foreground/60">·</span>
+          <a
+            href={`/en/guide/category/${cat}`}
+            hrefLang="en"
+            className="underline hover:text-foreground"
+          >
+            English
           </a>
         </nav>
 
@@ -245,24 +264,24 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
           </p>
           <div className="flex flex-wrap gap-2 pt-2">
             <a
-              href={`/tools?category=${cat}`}
+              href="/ja/tools"
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
             >
-              Browse {categoryLabel} tools
+              {categoryLabel} ツールを見る
               <ArrowRight className="h-4 w-4" />
             </a>
             <a
-              href="/en/guide"
+              href="/ja/guide"
               className="inline-flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
             >
-              All guides
+              すべてのガイド
             </a>
           </div>
         </section>
 
         <section className="rounded-xl border bg-card p-5 space-y-2">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            What you can do
+            このカテゴリでできること
           </h3>
           <ul className="space-y-1.5">
             {guide.highlights.map((h, i) => (
@@ -276,7 +295,7 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
 
         <section id="tools" className="space-y-3">
           <h3 className="text-lg font-bold">
-            All {categoryLabel} Tools
+            {categoryLabel} ツール一覧
             <span className="text-xs font-normal text-muted-foreground ml-2">
               {tools.length}
             </span>
@@ -285,28 +304,29 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
             {tools.map((t) => (
               <li key={t.id}>
                 <a
-                  href={t.href}
+                  href={toolHref(t.id, t.href)}
                   className="block rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <t.icon className="h-4 w-4 text-primary shrink-0" aria-hidden />
-                    <span className="text-sm font-medium truncate">{t.title}</span>
+                    <span className="text-sm font-medium truncate">
+                      {toolName(t.id, t.title)}
+                    </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                    {t.description}
+                    {toolTagline(t.id, t.description)}
                   </p>
                 </a>
               </li>
             ))}
           </ul>
           <p className="text-[11px] text-muted-foreground pt-1">
-            Tool pages are currently bilingual where possible; UI labels may still be
-            in Korean. Most are icon-driven and language-agnostic.
+            ツールページは可能な範囲で多言語対応しています。UIラベルが韓国語のままの場合もありますが、ほとんどはアイコン中心で言語に依存しません。
           </p>
         </section>
 
         <section className="space-y-3">
-          <h3 className="text-lg font-bold">Frequently asked</h3>
+          <h3 className="text-lg font-bold">よくある質問</h3>
           <div className="space-y-2">
             {guide.faqs.map((f, i) => (
               <details
@@ -327,22 +347,22 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
 
         {related.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">Related guides</h3>
+            <h3 className="text-lg font-bold">関連ガイド</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {related.map((rc) => (
                 <a
                   key={rc}
-                  href={`/en/guide/category/${rc}`}
+                  href={`/ja/guide/category/${rc}`}
                   className="rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-primary shrink-0" aria-hidden />
                     <span className="text-sm font-medium">
-                      {CATEGORY_LABELS_EN[rc]} Guide
+                      {CATEGORY_LABELS_JA[rc]} ガイド
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                    {CATEGORY_GUIDES_EN[rc].metaDescription}
+                    {CATEGORY_GUIDES_JA[rc].metaDescription}
                   </p>
                 </a>
               ))}
@@ -352,17 +372,17 @@ export default async function EnglishCategoryGuidePage({ params }: PageProps) {
 
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 text-center space-y-3">
           <p className="text-sm font-medium">
-            Every {categoryLabel} tool here is free.
+            ここにある{categoryLabel}ツールはすべて無料です。
           </p>
           <a
-            href={`/tools?category=${cat}`}
+            href="/ja/tools"
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Start using
+            使ってみる
             <ArrowRight className="h-4 w-4" />
           </a>
           <p className="text-[11px] text-muted-foreground">
-            No signup · files never leave your browser.
+            登録不要 · ファイルはブラウザの外に出ません。
           </p>
         </section>
       </main>

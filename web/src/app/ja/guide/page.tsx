@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { JA_TOOLS, JA_TOOL_IDS } from '@/lib/ja-tools';
+import { CATEGORY_GUIDES_JA } from '@/lib/category-guide-content-ja';
 
 const CATEGORY_LABELS_JA: Record<ToolCategory, string> = {
   image: '画像',
@@ -89,6 +90,12 @@ export default function JapaneseGuideIndexPage() {
     grouped.set(tool.category, arr);
   }
 
+  // Ready-tool count per category for the category-guide cards.
+  const categoryCount = new Map<ToolCategory, number>();
+  for (const tool of readyTools) {
+    categoryCount.set(tool.category, (categoryCount.get(tool.category) ?? 0) + 1);
+  }
+
   return (
     <div className="min-h-dvh bg-background">
       <script
@@ -129,6 +136,36 @@ export default function JapaneseGuideIndexPage() {
               한국어ガイド
             </a>
           </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold">カテゴリ別ガイド</h2>
+          <p className="text-[12px] text-muted-foreground">
+            カテゴリを選ぶと、各ツールの仕組み・重要なオプション・自分のケースに合う選び方を解説します。
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {CATEGORY_ORDER.map((cat) => {
+              const guide = CATEGORY_GUIDES_JA[cat];
+              const count = categoryCount.get(cat) ?? 0;
+              return (
+                <a
+                  key={cat}
+                  href={`/ja/guide/category/${cat}`}
+                  className="block rounded-xl border bg-card p-4 hover:border-primary transition-colors space-y-2"
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h3 className="text-base font-bold">
+                      {CATEGORY_LABELS_JA[cat]} ガイド
+                    </h3>
+                    <span className="text-[11px] text-muted-foreground">{count}</span>
+                  </div>
+                  <p className="text-[12px] text-muted-foreground line-clamp-3 leading-relaxed">
+                    {guide.metaDescription}
+                  </p>
+                </a>
+              );
+            })}
+          </div>
         </section>
 
         {CATEGORY_ORDER.filter((c) => grouped.has(c)).map((cat) => {
