@@ -1142,6 +1142,272 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Track D-day countdowns to multiple events on one screen — days until exams, trips and deadlines, all in your browser.',
     keywords: ['d-day calculator', 'countdown calculator', 'days until date', 'event countdown', 'days between dates'],
   },
+  'base-converter': {
+    name: 'Number Base Converter',
+    tagline: 'Convert between binary, octal, decimal and hexadecimal instantly.',
+    description:
+      'Convert numbers between base 2, 8, 10 and 16 and see the bit representation. Runs entirely in your browser.',
+    keywords: ['base converter', 'binary to decimal', 'hex converter', 'decimal to hex', 'number base'],
+  },
+  'json-to-ts': {
+    name: 'JSON to TypeScript',
+    tagline: 'Generate TypeScript interfaces from any JSON payload.',
+    description:
+      'Paste JSON and get clean TypeScript interfaces with inferred types. Nothing is uploaded — it runs locally.',
+    keywords: ['json to typescript', 'generate interface', 'json to type', 'typescript generator'],
+  },
+  'color-contrast': {
+    name: 'Color Contrast Checker',
+    tagline: 'Check WCAG AA/AAA contrast ratio between two colors.',
+    description:
+      'Enter foreground and background colors to get the WCAG contrast ratio and pass/fail for AA and AAA. Browser-only.',
+    keywords: ['color contrast checker', 'wcag contrast', 'aa aaa ratio', 'accessibility contrast'],
+  },
+  'css-gradient': {
+    name: 'CSS Gradient Generator',
+    tagline: 'Design linear and radial CSS gradients and copy the code.',
+    description:
+      'Pick colors and angle, preview the gradient live and copy the CSS. Everything runs in your browser.',
+    keywords: ['css gradient generator', 'linear gradient', 'radial gradient', 'background gradient css'],
+  },
+  'html-format': {
+    name: 'HTML Formatter',
+    tagline: 'Beautify or minify HTML with proper indentation.',
+    description:
+      'Paste messy HTML and pretty-print it with clean indentation, or minify it to a single line. Local-only.',
+    keywords: ['html formatter', 'beautify html', 'prettify html', 'html minifier'],
+  },
+  'favicon-gen': {
+    name: 'Favicon Generator',
+    tagline: 'Turn any image into favicon.ico and all the PWA icon sizes.',
+    description:
+      'Upload an image and download a complete favicon set (16/32/48/180/512px + favicon.ico) as a zip. Browser-only.',
+    keywords: ['favicon generator', 'create favicon', 'ico generator', 'apple touch icon', 'pwa icons'],
+  },
+  'meme-gen': {
+    name: 'Meme Generator',
+    tagline: 'Add top and bottom captions to any image to make a meme.',
+    description:
+      'Upload an image, type top and bottom text in the classic Impact style, and download your meme. Nothing uploaded.',
+    keywords: ['meme generator', 'caption image', 'impact font meme', 'make a meme'],
+  },
+  'image-flip': {
+    name: 'Image Flip',
+    tagline: 'Flip an image horizontally or vertically.',
+    description:
+      'Mirror an image left-right or top-bottom and download the result. Runs entirely in your browser.',
+    keywords: ['flip image', 'mirror image', 'flip horizontal', 'flip vertical'],
+  },
+  'image-split': {
+    name: 'Image Splitter',
+    tagline: 'Cut an image into an N×M grid of tiles.',
+    description:
+      'Split a photo into a grid (e.g. for an Instagram carousel) and download every tile as a zip. Local-only.',
+    keywords: ['image splitter', 'split image grid', 'instagram grid maker', 'cut image into pieces'],
+  },
+  'image-base64': {
+    name: 'Image to Base64',
+    tagline: 'Convert images to Base64 data URIs and back.',
+    description:
+      'Encode an image as a Base64 data URI for inlining in CSS/HTML, or decode a data URI back to an image. Browser-only.',
+    keywords: ['image to base64', 'base64 to image', 'data uri encoder', 'inline image base64'],
+  },
+  'image-round-corners': {
+    name: 'Round Image Corners',
+    tagline: 'Add rounded corners to an image with transparency.',
+    description:
+      'Round the corners of an image by an adjustable radius and export a transparent PNG. Runs locally.',
+    keywords: ['round image corners', 'rounded corners png', 'image radius', 'circle crop'],
+  },
+  'video-crop': {
+    name: 'Crop Video',
+    tagline: 'Crop a video to a rectangular region in your browser.',
+    description:
+      'Select a rectangle and keep only that area of your video. Powered by FFmpeg.wasm — nothing is uploaded.',
+    keywords: ['crop video', 'trim video frame', 'cut video area', 'reframe video'],
+  },
+  'video-speed': {
+    name: 'Change Video Speed',
+    tagline: 'Speed up or slow down a video from 0.25× to 4×.',
+    description:
+      'Adjust playback speed with synced audio pitch using FFmpeg.wasm. Make slow-motion or timelapse clips locally.',
+    keywords: ['change video speed', 'speed up video', 'slow motion video', 'video timelapse'],
+  },
+  'video-mute': {
+    name: 'Mute Video',
+    tagline: 'Remove the audio track from a video.',
+    description:
+      'Strip the sound from a video and export a silent clip. Powered by FFmpeg.wasm, fully in your browser.',
+    keywords: ['mute video', 'remove audio from video', 'silent video', 'strip sound'],
+  },
+  'video-watermark': {
+    name: 'Add Watermark to Video',
+    tagline: 'Overlay a logo or text watermark onto a video.',
+    description:
+      'Place a logo image or text watermark on your video with adjustable position and opacity. FFmpeg.wasm, local-only.',
+    keywords: ['video watermark', 'add logo to video', 'overlay watermark', 'brand video'],
+  },
+  'screen-record': {
+    name: 'Screen Recorder',
+    tagline: 'Record your screen, tab or window to a webm file.',
+    description:
+      'Capture your screen with optional microphone audio and download a webm — no upload, no install, browser-only.',
+    keywords: ['screen recorder', 'record screen browser', 'free screen recording', 'webm screen capture'],
+  },
+  'dedupe-lines': {
+    name: 'Remove Duplicate Lines',
+    tagline: 'Delete duplicate lines while keeping the original order.',
+    description:
+      'Paste a list and remove repeated lines, optionally ignoring case and trimming whitespace. Runs locally.',
+    keywords: ['remove duplicate lines', 'unique lines', 'dedupe text', 'delete repeated lines'],
+  },
+  'whitespace-clean': {
+    name: 'Whitespace Cleaner',
+    tagline: 'Trim trailing spaces, collapse blank lines and fix tabs.',
+    description:
+      'Clean up messy text: strip trailing whitespace, collapse multiple blank lines and normalize indentation. Local-only.',
+    keywords: ['whitespace cleaner', 'trim spaces', 'remove blank lines', 'clean text'],
+  },
+  'slugify': {
+    name: 'Slugify Text',
+    tagline: 'Convert titles into clean URL slugs.',
+    description:
+      'Turn any text into a URL-safe slug (kebab-case), transliterating accents. Great for permalinks. Runs locally.',
+    keywords: ['slugify', 'url slug generator', 'text to slug', 'permalink generator'],
+  },
+  'word-frequency': {
+    name: 'Word Frequency Counter',
+    tagline: 'Count how often each word appears in your text.',
+    description:
+      'Paste text to see word counts ranked by frequency, with optional stopword filtering. Everything stays local.',
+    keywords: ['word frequency counter', 'count word occurrences', 'word frequency analysis', 'keyword density'],
+  },
+  'column-extract': {
+    name: 'Column Extractor',
+    tagline: 'Pull specific columns out of delimited text.',
+    description:
+      'Split text by a delimiter and extract only the columns you choose, reordering as needed. Browser-only.',
+    keywords: ['column extractor', 'extract column from text', 'delimited text columns', 'cut columns'],
+  },
+  'bmi-calc': {
+    name: 'BMI Calculator',
+    tagline: 'Calculate your Body Mass Index from height and weight.',
+    description:
+      'Enter height and weight to get your BMI and the WHO category. Supports metric and imperial. Runs locally.',
+    keywords: ['bmi calculator', 'body mass index', 'calculate bmi', 'bmi metric imperial'],
+  },
+  'loan-calc': {
+    name: 'Loan Calculator',
+    tagline: 'Estimate monthly payments and total interest on a loan.',
+    description:
+      'Enter principal, rate and term to get the monthly payment and total interest (amortized). Browser-only.',
+    keywords: ['loan calculator', 'monthly payment calculator', 'amortization', 'mortgage calculator'],
+  },
+  'aspect-ratio': {
+    name: 'Aspect Ratio Calculator',
+    tagline: 'Compute width or height for a target aspect ratio.',
+    description:
+      'Lock an aspect ratio like 16:9 and get the matching dimension when you change width or height. Runs locally.',
+    keywords: ['aspect ratio calculator', '16:9 calculator', 'resize ratio', 'resolution calculator'],
+  },
+  'pomodoro': {
+    name: 'Pomodoro Timer',
+    tagline: 'Focus with 25-minute work and 5-minute break cycles.',
+    description:
+      'A simple Pomodoro timer that alternates focus and break sessions with a notification. Browser-only, no signup.',
+    keywords: ['pomodoro timer', 'focus timer', '25 minute timer', 'productivity timer'],
+  },
+  'roman-numeral': {
+    name: 'Roman Numeral Converter',
+    tagline: 'Convert between Arabic numbers and Roman numerals.',
+    description:
+      'Translate numbers to Roman numerals (I, V, X, L, C, D, M) and back. Runs entirely in your browser.',
+    keywords: ['roman numeral converter', 'number to roman', 'roman to number', 'roman numerals'],
+  },
+  'text-hash': {
+    name: 'Text Hash Generator',
+    tagline: 'Generate MD5, SHA-1, SHA-256 and SHA-512 of any text.',
+    description:
+      'Hash text with MD5, SHA-1, SHA-256 and SHA-512 instantly. All hashing happens locally in your browser.',
+    keywords: ['text hash generator', 'md5 generator', 'sha256 hash', 'sha512 online'],
+  },
+  'password-strength': {
+    name: 'Password Strength Checker',
+    tagline: 'Estimate password entropy and crack time.',
+    description:
+      'Check how strong a password is — entropy bits and estimated crack time — without sending it anywhere. Local-only.',
+    keywords: ['password strength checker', 'password entropy', 'how strong is my password', 'crack time'],
+  },
+  'diceware': {
+    name: 'Diceware Passphrase Generator',
+    tagline: 'Create memorable word-based passphrases with strong randomness.',
+    description:
+      'Generate Diceware-style passphrases using cryptographically secure randomness. Choose word count. Browser-only.',
+    keywords: ['diceware generator', 'passphrase generator', 'memorable password', 'word password'],
+  },
+  'jwt-encoder': {
+    name: 'JWT Encoder',
+    tagline: 'Build and sign HS256 JSON Web Tokens.',
+    description:
+      'Create a signed JWT from a header, payload and secret using HMAC-SHA256 — all locally in your browser.',
+    keywords: ['jwt encoder', 'sign jwt', 'create jwt', 'hs256 token generator'],
+  },
+  'xml-format': {
+    name: 'XML Formatter',
+    tagline: 'Beautify or minify XML with proper indentation.',
+    description:
+      'Pretty-print messy XML with clean indentation or minify it. Validates structure as it formats. Runs locally.',
+    keywords: ['xml formatter', 'beautify xml', 'prettify xml', 'xml minifier'],
+  },
+  'csv-viewer': {
+    name: 'CSV Viewer',
+    tagline: 'Preview CSV files as a sortable, searchable table.',
+    description:
+      'Open a CSV in your browser and view it as a table with column sorting and search. Nothing is uploaded.',
+    keywords: ['csv viewer', 'open csv online', 'view csv as table', 'csv preview'],
+  },
+  'ical-gen': {
+    name: 'iCal (.ics) Generator',
+    tagline: 'Create downloadable calendar events as .ics files.',
+    description:
+      'Fill in a title, time and location to generate an .ics file that adds the event to any calendar app. Local-only.',
+    keywords: ['ics generator', 'ical file creator', 'calendar event file', 'add to calendar ics'],
+  },
+  'vcard-parse': {
+    name: 'vCard (.vcf) Parser',
+    tagline: 'Read .vcf contact files and export them as CSV.',
+    description:
+      'Open a vCard file to view its contacts (name, phone, email) in a table and export them to CSV. Browser-only.',
+    keywords: ['vcard parser', 'vcf to csv', 'read vcf file', 'contact file viewer'],
+  },
+  'audio-reverse': {
+    name: 'Reverse Audio',
+    tagline: 'Play and export audio in reverse.',
+    description:
+      'Reverse an audio clip in time and download the result. Powered by FFmpeg.wasm, fully in your browser.',
+    keywords: ['reverse audio', 'play audio backwards', 'reverse mp3', 'backwards audio'],
+  },
+  'audio-normalize': {
+    name: 'Normalize Audio',
+    tagline: 'Even out audio loudness to a consistent level.',
+    description:
+      'Apply loudness normalization (EBU R128 loudnorm) so quiet and loud parts match. FFmpeg.wasm, local-only.',
+    keywords: ['normalize audio', 'audio loudness', 'loudnorm', 'level audio volume'],
+  },
+  'tone-gen': {
+    name: 'Tone Generator',
+    tagline: 'Generate sine, square and triangle test tones.',
+    description:
+      'Create a pure tone at any frequency, waveform and duration and download it as WAV. Uses the Web Audio API locally.',
+    keywords: ['tone generator', 'frequency generator', 'test tone', 'sine wave generator hz'],
+  },
+  'mic-record': {
+    name: 'Microphone Recorder',
+    tagline: 'Record audio from your microphone and download it.',
+    description:
+      'Record voice from your mic and save it as an audio file — no upload, no install, runs in your browser.',
+    keywords: ['microphone recorder', 'record audio online', 'voice recorder browser', 'mic to file'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
