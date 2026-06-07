@@ -15,15 +15,22 @@ argument-hint: <category>/<slug> "<도구명>"
 
 ## 절차
 
-1. **카테고리 검증** — `image / pdf / video / gif / audio / docs / text / dev / util / security / ai` 중 하나인가
-2. **슬러그 충돌 확인** — `registry.ts` 에 동일 id 가 이미 있는지 grep
-3. **tool-architect 호출** — 어떤 라이브러리·워커가 필요한지 설계
-4. **tool-builder 호출** — 다음 세 파일을 생성/수정:
-   - `web/src/app/tools/{category}/{slug}/page.tsx` (tool-page-template 스킬)
-   - `web/src/workers/{slug}.worker.ts` (워커 필요시, web-worker-template 스킬)
-   - `web/src/lib/tools/registry.ts` (registry-add 스킬)
-5. **검증** — `cd web && npm run build` 통과 확인
-6. **결과 보고** — 추가된 파일 목록 + 허브에서 보이는지 확인 안내
+스캐폴딩은 **`create-tool` CLI** 가 일괄 처리한다. 손으로 파일을 짜지 말 것.
+
+1. **tool-architect 호출** — 어떤 라이브러리·워커·아키타입(calc/text/generator/file/viewer)이 필요한지 설계.
+2. **CLI 스캐폴드** — `cd web && node scripts/create-tool.mjs` (또는 `npm run tool:new`):
+   ```
+   node scripts/create-tool.mjs \
+     --id pdf-shrink --route pdf/shrink --category pdf \
+     --title "PDF 용량 줄이기" --desc "..." --icon FileMinus \
+     --keywords "압축,shrink,용량" --archetype file --worker
+   ```
+   배치는 `--spec tools.json` (객체/배열). CLI 가 page.tsx(+worker.ts)·registry 항목·lucide import·EN 카피(`--en`)를 한 번에 생성·삽입한다. 가이드·HowTo·OG 는 prebuild + `og:gen` 이 자동 파생.
+3. **핵심 로직 구현** — 생성된 page.tsx(+worker)의 `// TODO` 를 실제 처리로 교체 (wasm-engineer / tool-builder).
+4. **검증** — `npm run build` (tsc + next build) 통과 확인. 필요 시 `npm run og:gen`.
+5. **결과 보고** — 추가된 파일 목록 + 허브에서 보이는지 확인 안내.
+
+CLI 가 자동 검증하는 것: 카테고리 유효성, id 충돌(registry grep), route 디렉터리 존재(--force 로 덮어쓰기).
 
 ## 출력 형식
 
