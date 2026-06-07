@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/vcard-qr',
+      'ja': '/ja/tools/vcard-qr',
       'x-default': URL_PATH,
     },
   },

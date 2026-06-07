@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-volume',
+      'ja': '/ja/tools/audio-volume',
       'x-default': URL_PATH,
     },
   },

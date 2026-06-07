@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-crop',
+      'ja': '/ja/tools/pdf-crop',
       'x-default': URL_PATH,
     },
   },

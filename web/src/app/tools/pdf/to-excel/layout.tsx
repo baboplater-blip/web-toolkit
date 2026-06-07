@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-to-excel',
+      'ja': '/ja/tools/pdf-to-excel',
       'x-default': URL_PATH,
     },
   },

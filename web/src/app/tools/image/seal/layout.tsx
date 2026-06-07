@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/seal-stamp',
+      'ja': '/ja/tools/seal-stamp',
       'x-default': URL_PATH,
     },
   },

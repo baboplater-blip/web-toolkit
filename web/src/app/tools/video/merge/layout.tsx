@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-merge',
+      'ja': '/ja/tools/video-merge',
       'x-default': URL_PATH,
     },
   },

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-replace',
+      'ja': '/ja/tools/text-replace',
       'x-default': URL_PATH,
     },
   },

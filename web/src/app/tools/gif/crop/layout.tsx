@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-crop',
+      'ja': '/ja/tools/gif-crop',
       'x-default': URL_PATH,
     },
   },

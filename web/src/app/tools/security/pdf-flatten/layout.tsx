@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-flatten',
+      'ja': '/ja/tools/pdf-flatten',
       'x-default': URL_PATH,
     },
   },

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-speed',
+      'ja': '/ja/tools/video-speed',
       'x-default': URL_PATH,
     },
   },

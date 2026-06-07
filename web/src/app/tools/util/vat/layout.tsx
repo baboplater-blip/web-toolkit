@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/vat-calc',
+      'ja': '/ja/tools/vat-calc',
       'x-default': URL_PATH,
     },
   },

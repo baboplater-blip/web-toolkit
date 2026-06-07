@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/bmi-calc',
+      'ja': '/ja/tools/bmi-calc',
       'x-default': URL_PATH,
     },
   },

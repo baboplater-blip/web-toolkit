@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-count',
+      'ja': '/ja/tools/text-count',
       'x-default': URL_PATH,
     },
   },

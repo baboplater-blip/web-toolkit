@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/tone-gen',
+      'ja': '/ja/tools/tone-gen',
       'x-default': URL_PATH,
     },
   },

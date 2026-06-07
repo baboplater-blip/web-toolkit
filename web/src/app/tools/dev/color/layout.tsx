@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/color-converter',
+      'ja': '/ja/tools/color-converter',
       'x-default': URL_PATH,
     },
   },

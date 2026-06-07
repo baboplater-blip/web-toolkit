@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-resize',
+      'ja': '/ja/tools/gif-resize',
       'x-default': URL_PATH,
     },
   },

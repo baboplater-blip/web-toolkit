@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-encrypt',
+      'ja': '/ja/tools/text-encrypt',
       'x-default': URL_PATH,
     },
   },

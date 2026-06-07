@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-watermark',
+      'ja': '/ja/tools/pdf-watermark',
       'x-default': URL_PATH,
     },
   },

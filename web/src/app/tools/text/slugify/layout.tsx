@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/slugify',
+      'ja': '/ja/tools/slugify',
       'x-default': URL_PATH,
     },
   },

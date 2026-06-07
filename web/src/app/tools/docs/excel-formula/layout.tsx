@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/excel-formula',
+      'ja': '/ja/tools/excel-formula',
       'x-default': URL_PATH,
     },
   },

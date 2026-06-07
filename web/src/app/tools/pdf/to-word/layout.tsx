@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-to-word',
+      'ja': '/ja/tools/pdf-to-word',
       'x-default': URL_PATH,
     },
   },

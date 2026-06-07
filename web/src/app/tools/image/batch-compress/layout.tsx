@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-batch-compress',
+      'ja': '/ja/tools/image-batch-compress',
       'x-default': URL_PATH,
     },
   },

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/epub-split',
+      'ja': '/ja/tools/epub-split',
       'x-default': URL_PATH,
     },
   },

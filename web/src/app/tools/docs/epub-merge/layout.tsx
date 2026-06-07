@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/epub-merge',
+      'ja': '/ja/tools/epub-merge',
       'x-default': URL_PATH,
     },
   },

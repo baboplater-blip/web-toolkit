@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/timer-stopwatch',
+      'ja': '/ja/tools/timer-stopwatch',
       'x-default': URL_PATH,
     },
   },

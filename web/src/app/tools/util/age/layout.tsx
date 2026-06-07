@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/age-calc',
+      'ja': '/ja/tools/age-calc',
       'x-default': URL_PATH,
     },
   },

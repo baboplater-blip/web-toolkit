@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-exif-strip',
+      'ja': '/ja/tools/image-exif-strip',
       'x-default': URL_PATH,
     },
   },

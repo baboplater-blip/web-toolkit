@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-round-corners',
+      'ja': '/ja/tools/image-round-corners',
       'x-default': URL_PATH,
     },
   },

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-repair',
+      'ja': '/ja/tools/pdf-repair',
       'x-default': URL_PATH,
     },
   },

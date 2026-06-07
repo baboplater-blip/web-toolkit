@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/docx-to-md',
+      'ja': '/ja/tools/docx-to-md',
       'x-default': URL_PATH,
     },
   },

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-rotate',
+      'ja': '/ja/tools/video-rotate',
       'x-default': URL_PATH,
     },
   },

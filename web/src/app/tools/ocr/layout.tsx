@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ocr',
+      'ja': '/ja/tools/ocr',
       'x-default': URL_PATH,
     },
   },

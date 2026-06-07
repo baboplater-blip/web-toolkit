@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/timestamp-converter',
+      'ja': '/ja/tools/timestamp-converter',
       'x-default': URL_PATH,
     },
   },

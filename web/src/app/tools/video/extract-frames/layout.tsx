@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-extract-frames',
+      'ja': '/ja/tools/video-extract-frames',
       'x-default': URL_PATH,
     },
   },

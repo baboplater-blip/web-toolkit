@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pomodoro',
+      'ja': '/ja/tools/pomodoro',
       'x-default': URL_PATH,
     },
   },

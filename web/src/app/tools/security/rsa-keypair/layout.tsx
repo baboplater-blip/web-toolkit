@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/rsa-keypair',
+      'ja': '/ja/tools/rsa-keypair',
       'x-default': URL_PATH,
     },
   },
