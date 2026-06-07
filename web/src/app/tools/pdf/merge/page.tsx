@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ArrowUp,
   FileText,
+  GripVertical,
   Loader2,
   Merge,
   Plus,
@@ -90,6 +91,18 @@ export default function PdfMergePage() {
       if (target < 0 || target >= prev.length) return prev;
       const next = [...prev];
       [next[idx], next[target]] = [next[target], next[idx]];
+      return next;
+    });
+  };
+
+  // 드래그로 순서 재정렬 (위/아래 버튼의 마우스 대안).
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const reorder = (from: number, to: number) => {
+    setItems((prev) => {
+      if (from === to || from < 0 || to < 0 || from >= prev.length || to >= prev.length) return prev;
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
       return next;
     });
   };
@@ -336,8 +349,20 @@ export default function PdfMergePage() {
               {items.map((it, idx) => (
                 <div
                   key={it.id}
-                  className="flex items-center gap-2 rounded-lg border p-2"
+                  draggable={!processing}
+                  onDragStart={() => setDragIdx(idx)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragIdx !== null) reorder(dragIdx, idx);
+                    setDragIdx(null);
+                  }}
+                  onDragEnd={() => setDragIdx(null)}
+                  className={`flex items-center gap-2 rounded-lg border p-2 ${
+                    dragIdx === idx ? 'opacity-50' : ''
+                  } ${processing ? '' : 'cursor-grab active:cursor-grabbing'}`}
                 >
+                  <GripVertical className="h-4 w-4 text-muted-foreground/60 shrink-0" aria-hidden />
                   <span className="shrink-0 w-5 text-center text-xs text-muted-foreground font-mono">
                     {idx + 1}
                   </span>

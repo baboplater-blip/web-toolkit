@@ -40,6 +40,17 @@ const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
 
 type Mode = 'pixel' | 'percent' | 'target-kb';
 
+/** 자주 쓰는 SNS·화면 규격 프리셋 (가로×세로). */
+const SIZE_PRESETS: { label: string; w: number; h: number }[] = [
+  { label: '인스타 정사각 1080²', w: 1080, h: 1080 },
+  { label: '인스타 세로 1080×1350', w: 1080, h: 1350 },
+  { label: '스토리·릴스 1080×1920', w: 1080, h: 1920 },
+  { label: '유튜브 썸네일 1280×720', w: 1280, h: 720 },
+  { label: 'OG·트위터 1200×630', w: 1200, h: 630 },
+  { label: '프로필 400²', w: 400, h: 400 },
+  { label: 'FHD 1920×1080', w: 1920, h: 1080 },
+];
+
 export default function ImageResizePage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [file, setFile] = useState<File | null>(null);
@@ -470,6 +481,24 @@ export default function ImageResizePage() {
                       disabled={processing}
                       className="h-9" aria-label="세로 (px)" />
                   </div>
+                </div>
+                <div className="flex flex-wrap gap-1.5" role="group" aria-label="크기 프리셋">
+                  {SIZE_PRESETS.map((p) => (
+                    <button
+                      key={p.label}
+                      type="button"
+                      onClick={() => {
+                        setTargetW(p.w);
+                        setTargetH(p.h);
+                        setKeepRatio(false);
+                      }}
+                      disabled={processing}
+                      title={`${p.w}×${p.h}`}
+                      className="h-7 rounded-md border border-border bg-background px-2 text-[11px] hover:bg-muted disabled:opacity-50"
+                    >
+                      {p.label}
+                    </button>
+                  ))}
                 </div>
                 <label className="flex items-center gap-2 text-xs">
                   <input
