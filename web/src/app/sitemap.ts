@@ -286,6 +286,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/compare`,
           en: `${SITE_URL}/en/compare`,
+          ja: `${SITE_URL}/ja/compare`,
           'x-default': `${SITE_URL}/compare`,
         },
       },
@@ -299,18 +300,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/compare`,
           en: `${SITE_URL}/en/compare`,
+          ja: `${SITE_URL}/ja/compare`,
           'x-default': `${SITE_URL}/en/compare`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/ja/compare`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/compare`,
+          en: `${SITE_URL}/en/compare`,
+          ja: `${SITE_URL}/ja/compare`,
+          'x-default': `${SITE_URL}/compare`,
         },
       },
     },
     ...COMPARE_SLUGS.flatMap<MetadataRoute.Sitemap[number]>((slug) => {
       const koUrl = `${SITE_URL}/compare/${slug}`;
       const enUrl = `${SITE_URL}/en/compare/${slug}`;
-      const alternates = { languages: { 'ko-KR': koUrl, en: enUrl, 'x-default': koUrl } };
+      const jaUrl = `${SITE_URL}/ja/compare/${slug}`;
+      const alternates = { languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } };
       const cat = (getCompare(slug)?.category ?? 'util') as ToolCategory;
       return [
         { url: koUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: progPriority(cat), alternates },
         { url: enUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: progPriority(cat, true), alternates },
+        { url: jaUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: progPriority(cat, true), alternates },
       ];
     }),
     // 변환 매트릭스 (ko ↔ en hreflang)
@@ -323,6 +341,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/convert`,
           en: `${SITE_URL}/en/convert`,
+          ja: `${SITE_URL}/ja/convert`,
           'x-default': `${SITE_URL}/convert`,
         },
       },
@@ -336,20 +355,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           'ko-KR': `${SITE_URL}/convert`,
           en: `${SITE_URL}/en/convert`,
+          ja: `${SITE_URL}/ja/convert`,
           'x-default': `${SITE_URL}/en/convert`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/ja/convert`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.75,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/convert`,
+          en: `${SITE_URL}/en/convert`,
+          ja: `${SITE_URL}/ja/convert`,
+          'x-default': `${SITE_URL}/convert`,
         },
       },
     },
     ...CONVERT_SLUGS.flatMap<MetadataRoute.Sitemap[number]>((slug) => {
       const koUrl = `${SITE_URL}/convert/${slug}`;
       const enUrl = `${SITE_URL}/en/convert/${slug}`;
+      const jaUrl = `${SITE_URL}/ja/convert/${slug}`;
       const alternates = {
-        languages: { 'ko-KR': koUrl, en: enUrl, 'x-default': koUrl },
+        languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl },
       };
       const cat = convertCategory(slug);
       return [
         { url: koUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: progPriority(cat), alternates },
         { url: enUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: progPriority(cat, true), alternates },
+        { url: jaUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: progPriority(cat, true), alternates },
       ];
     }),
     // 유스케이스 (활용법, ko ↔ en hreflang)
@@ -359,7 +395,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
       alternates: {
-        languages: { 'ko-KR': `${SITE_URL}/use`, en: `${SITE_URL}/en/use`, 'x-default': `${SITE_URL}/use` },
+        languages: { 'ko-KR': `${SITE_URL}/use`, en: `${SITE_URL}/en/use`, ja: `${SITE_URL}/ja/use`, 'x-default': `${SITE_URL}/use` },
       },
     },
     {
@@ -368,13 +404,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.75,
       alternates: {
-        languages: { 'ko-KR': `${SITE_URL}/use`, en: `${SITE_URL}/en/use`, 'x-default': `${SITE_URL}/en/use` },
+        languages: { 'ko-KR': `${SITE_URL}/use`, en: `${SITE_URL}/en/use`, ja: `${SITE_URL}/ja/use`, 'x-default': `${SITE_URL}/en/use` },
+      },
+    },
+    {
+      url: `${SITE_URL}/ja/use`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.75,
+      alternates: {
+        languages: { 'ko-KR': `${SITE_URL}/use`, en: `${SITE_URL}/en/use`, ja: `${SITE_URL}/ja/use`, 'x-default': `${SITE_URL}/use` },
       },
     },
     ...USE_CASE_SLUGS.flatMap<MetadataRoute.Sitemap[number]>((slug) => {
       const koUrl = `${SITE_URL}/use/${slug}`;
       const enUrl = `${SITE_URL}/en/use/${slug}`;
-      const alternates = { languages: { 'ko-KR': koUrl, en: enUrl, 'x-default': koUrl } };
+      const jaUrl = `${SITE_URL}/ja/use/${slug}`;
+      const alternates = { languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } };
       const cat = (getUseCase(slug)?.category ?? 'util') as ToolCategory;
       // 활용법은 작업 의도(상업적 가치)가 높아 변환·비교보다 살짝 가중
       const koP = Math.round(Math.min(0.78, progPriority(cat) + 0.02) * 100) / 100;
@@ -382,6 +428,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       return [
         { url: koUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: koP, alternates },
         { url: enUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: enP, alternates },
+        { url: jaUrl, lastModified: CONTENT_REVISION, changeFrequency: 'monthly' as const, priority: enP, alternates },
       ];
     }),
     {

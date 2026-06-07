@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     'PNG vs JPG, HEIC vs JPG, MD5 vs SHA-256 등 헷갈리는 포맷·도구를 나란히 비교합니다. 업로드 없이 브라우저에서 바로 변환·계산.',
   keywords: ['포맷 비교', 'png jpg', 'webp png', 'md5 sha256', '도구 비교', '무엇이 다른가'],
-  alternates: { canonical: '/compare', languages: { 'ko-KR': '/compare', en: '/en/compare', 'x-default': '/compare' } },
+  alternates: { canonical: '/compare', languages: { 'ko-KR': '/compare', en: '/en/compare', ja: '/ja/compare', 'x-default': '/compare' } },
 };
 
 export default function CompareIndexKo() {

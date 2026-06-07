@@ -31,11 +31,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!uc) return { title: '활용법을 찾을 수 없습니다 · Web Toolkit' };
   const koUrl = `/use/${slug}`;
   const enUrl = `/en/use/${slug}`;
+  const jaUrl = `/ja/use/${slug}`;
   return {
     title: uc.title.ko,
     description: uc.description.ko,
     keywords: [...uc.keywords.ko, '무료', '온라인', '브라우저'],
-    alternates: { canonical: koUrl, languages: { 'ko-KR': koUrl, en: enUrl, 'x-default': koUrl } },
+    alternates: { canonical: koUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } },
     openGraph: {
       title: uc.title.ko,
       description: uc.description.ko,

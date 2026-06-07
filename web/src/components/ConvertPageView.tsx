@@ -27,9 +27,12 @@ interface Props {
 
 export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, related, relatedCompare, relatedUses = [] }: Props) {
   const ko = lang === 'ko';
-  const base = ko ? '/convert' : '/en/convert';
-  const home = ko ? '/' : '/en';
-  const allToolsHref = ko ? '/tools' : '/en/tools';
+  const ja = lang === 'ja';
+  const base = ko ? '/convert' : ja ? '/ja/convert' : '/en/convert';
+  const home = ko ? '/' : ja ? '/ja' : '/en';
+  const allToolsHref = ko ? '/tools' : ja ? '/ja/tools' : '/en/tools';
+  const compareBase = ko ? '/compare' : ja ? '/ja/compare' : '/en/compare';
+  const useBase = ko ? '/use' : ja ? '/ja/use' : '/en/use';
   const slug = `${conv.from}-to-${conv.to}`;
   const canonical = `${siteUrl}${base}/${slug}`;
 
@@ -47,7 +50,21 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
         browseAll: '모든 도구 보기',
         privacy: '업로드 없음 · 브라우저에서 변환 · 무료',
       }
-    : {
+    : ja
+      ? {
+          home: 'ホーム',
+          convert: '変換',
+          allConvert: 'すべての変換',
+          about: 'フォーマットについて',
+          good: '長所',
+          bad: '短所',
+          whatChanges: '',
+          faq: 'よくある質問',
+          more: '関連する変換',
+          browseAll: 'すべてのツールを見る',
+          privacy: 'アップロードなし · ブラウザで変換 · 無料',
+        }
+      : {
         home: 'Home',
         convert: 'Convert',
         allConvert: 'All conversions',
@@ -62,36 +79,41 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
       };
 
   /* ── JSON-LD: HowTo + FAQ + Breadcrumb ── */
+  const inLanguage = ko ? 'ko' : ja ? 'ja' : 'en';
   const howToJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
     name: content.h1,
     description: content.description,
-    inLanguage: ko ? 'ko' : 'en',
+    inLanguage,
     step: [
       {
         '@type': 'HowToStep',
         position: 1,
-        name: ko ? '파일 선택' : 'Select your file',
+        name: ko ? '파일 선택' : ja ? 'ファイルを選択' : 'Select your file',
         text: ko
           ? `${content.fromFact.label} 파일을 끌어다 놓거나 클릭해 엽니다.`
-          : `Drag in or click to open your ${content.fromFact.label} file.`,
+          : ja
+            ? `${content.fromFact.label}ファイルをドラッグするか、クリックして開きます。`
+            : `Drag in or click to open your ${content.fromFact.label} file.`,
         url: canonical,
       },
       {
         '@type': 'HowToStep',
         position: 2,
-        name: ko ? '변환 실행' : 'Convert',
+        name: ko ? '변환 실행' : ja ? '変換する' : 'Convert',
         text: ko
           ? `${content.toFact.label} 형식으로 변환합니다. 처리는 브라우저에서 이뤄집니다.`
-          : `Convert to ${content.toFact.label}. Processing happens in your browser.`,
+          : ja
+            ? `${content.toFact.label}形式に変換します。処理はブラウザ内で行われます。`
+            : `Convert to ${content.toFact.label}. Processing happens in your browser.`,
         url: canonical,
       },
       {
         '@type': 'HowToStep',
         position: 3,
-        name: ko ? '내려받기' : 'Download',
-        text: ko ? '결과 파일을 내려받습니다.' : 'Download the result.',
+        name: ko ? '내려받기' : ja ? 'ダウンロード' : 'Download',
+        text: ko ? '결과 파일을 내려받습니다.' : ja ? '結果ファイルをダウンロードします。' : 'Download the result.',
         url: canonical,
       },
     ],
@@ -99,7 +121,7 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    inLanguage: ko ? 'ko' : 'en',
+    inLanguage,
     mainEntity: content.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
@@ -119,8 +141,8 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
   const FormatCard = ({ which }: { which: 'from' | 'to' }) => {
     const f = which === 'from' ? content.fromFact : content.toFact;
     const role = which === 'from'
-      ? (ko ? '원본' : 'From')
-      : (ko ? '대상' : 'To');
+      ? (ko ? '원본' : ja ? '元' : 'From')
+      : (ko ? '대상' : ja ? '先' : 'To');
     return (
       <div className="rounded-xl border bg-card p-4 space-y-3 flex flex-col">
         <div className="flex items-center justify-between">
@@ -129,15 +151,15 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
             {role}
           </span>
         </div>
-        <p className="text-[12px] text-muted-foreground leading-relaxed">{f.summary[lang]}</p>
+        <p className="text-[12px] text-muted-foreground leading-relaxed">{f.summary[lang] ?? f.summary.en}</p>
         <ul className="space-y-1">
-          {f.strengths[lang].map((p, j) => (
+          {(f.strengths[lang] ?? f.strengths.en).map((p, j) => (
             <li key={j} className="flex items-start gap-2 text-[13px]">
               <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" aria-hidden />
               <span>{p}</span>
             </li>
           ))}
-          {f.weaknesses[lang].map((c, j) => (
+          {(f.weaknesses[lang] ?? f.weaknesses.en).map((c, j) => (
             <li key={`w${j}`} className="flex items-start gap-2 text-[13px] text-muted-foreground">
               <Minus className="h-3.5 w-3.5 text-rose-500 shrink-0 mt-0.5" aria-hidden />
               <span>{c}</span>
@@ -193,7 +215,7 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
 
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 space-y-2">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">
-            {ko ? '변환하면 무엇이 바뀌나' : 'What changes when you convert'}
+            {ko ? '변환하면 무엇이 바뀌나' : ja ? '変換すると何が変わるか' : 'What changes when you convert'}
           </h3>
           <ul className="space-y-1.5">
             {content.changes.map((c, i) => (
@@ -223,7 +245,7 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
         {relatedCompare && (
           <section>
             <a
-              href={`${ko ? '/compare' : '/en/compare'}/${relatedCompare.slug}`}
+              href={`${compareBase}/${relatedCompare.slug}`}
               className="flex items-center gap-2 rounded-xl border bg-card p-4 hover:border-primary transition-colors"
             >
               <GitCompare className="h-4 w-4 text-primary shrink-0" aria-hidden />
@@ -235,12 +257,12 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
 
         {relatedUses.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">{ko ? '이 변환을 쓰는 활용법' : 'How-tos that use this'}</h3>
+            <h3 className="text-lg font-bold">{ko ? '이 변환을 쓰는 활용법' : ja ? 'この変換を使う活用法' : 'How-tos that use this'}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {relatedUses.map((u) => (
                 <a
                   key={u.slug}
-                  href={`${ko ? '/use' : '/en/use'}/${u.slug}`}
+                  href={`${useBase}/${u.slug}`}
                   className="flex items-center gap-2 rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                 >
                   <Wrench className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden />

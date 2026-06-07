@@ -6,7 +6,7 @@
 import { ArrowLeft, ArrowRight, ArrowRightLeft, Check, GitCompare, Minus, Wrench } from 'lucide-react';
 import type { Compare, CompareOption } from '@/lib/en-compares';
 
-type Lang = 'ko' | 'en';
+type Lang = 'ko' | 'en' | 'ja';
 
 interface OtherCompare {
   slug: string;
@@ -39,10 +39,12 @@ export function CompareView({
   relatedUses = [],
 }: Props) {
   const ko = lang === 'ko';
-  const base = ko ? '/compare' : '/en/compare';
-  const home = ko ? '/' : '/en';
-  const convertBase = ko ? '/convert' : '/en/convert';
-  const allToolsHref = ko ? '/tools' : '/en/tools';
+  const ja = lang === 'ja';
+  const base = ko ? '/compare' : ja ? '/ja/compare' : '/en/compare';
+  const home = ko ? '/' : ja ? '/ja' : '/en';
+  const convertBase = ko ? '/convert' : ja ? '/ja/convert' : '/en/convert';
+  const useBase = ko ? '/use' : ja ? '/ja/use' : '/en/use';
+  const allToolsHref = ko ? '/tools' : ja ? '/ja/tools' : '/en/tools';
   const canonical = `${siteUrl}${base}/${cmp.slug}`;
 
   const L = ko
@@ -52,7 +54,14 @@ export function CompareView({
         verdict: '어느 쪽을 써야 하나', faq: '자주 묻는 질문',
         more: '다른 비교', converts: '바로 변환하기', browseAll: '모든 도구 보기',
       }
-    : {
+    : ja
+      ? {
+          home: 'ホーム', compare: '比較', all: 'すべての比較',
+          best: 'おすすめ: ', open: (n: string) => `${n}を開く`,
+          verdict: 'どちらを使うべきか', faq: 'よくある質問',
+          more: '他の比較', converts: 'すぐに変換', browseAll: 'すべてのツールを見る',
+        }
+      : {
         home: 'Home', compare: 'Compare', all: 'All comparisons',
         best: 'Best for: ', open: (n: string) => `Open ${n}`,
         verdict: 'Which should you use?', faq: 'Frequently asked',
@@ -64,7 +73,7 @@ export function CompareView({
     '@type': 'Article',
     headline: cmp.title,
     description: cmp.description,
-    inLanguage: ko ? 'ko' : 'en',
+    inLanguage: ko ? 'ko' : ja ? 'ja' : 'en',
     author: { '@type': 'Organization', name: 'Web Toolkit', url: siteUrl },
     publisher: { '@type': 'Organization', name: 'Web Toolkit', url: siteUrl },
     mainEntityOfPage: canonical,
@@ -82,7 +91,7 @@ export function CompareView({
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    inLanguage: ko ? 'ko' : 'en',
+    inLanguage: ko ? 'ko' : ja ? 'ja' : 'en',
     mainEntity: cmp.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
@@ -190,12 +199,12 @@ export function CompareView({
 
         {relatedUses.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">{ko ? '관련 활용법' : 'Related how-tos'}</h3>
+            <h3 className="text-lg font-bold">{ko ? '관련 활용법' : ja ? '関連する活用法' : 'Related how-tos'}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {relatedUses.map((u) => (
                 <a
                   key={u.slug}
-                  href={`${ko ? '/use' : '/en/use'}/${u.slug}`}
+                  href={`${useBase}/${u.slug}`}
                   className="flex items-center gap-2 rounded-lg border bg-card p-3 hover:border-primary transition-colors"
                 >
                   <Wrench className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden />

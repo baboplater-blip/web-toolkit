@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CompareView } from '@/components/CompareView';
-import { CATEGORY_LABELS, TOOLS } from '@/lib/tools/registry';
-import { COMPARE_SLUGS, getCompare, relatedCompares, type CompareOption } from '@/lib/en-compares';
-import { getCompareKo } from '@/lib/ko-compares';
+import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
+import { type CompareOption } from '@/lib/en-compares';
+import { COMPARE_SLUGS, getCompareJa, relatedCompares } from '@/lib/ja-compares';
+import { hasJaCopy } from '@/lib/ja-tools';
 import { FORMATS } from '@/lib/convert-matrix';
 import { useCasesForCompare } from '@/lib/use-cases';
 
@@ -13,9 +14,24 @@ const SITE_URL = (
   .replace(/^﻿/, '')
   .replace(/\/$/, '');
 
-/** KO CTA: 한국어 도구 페이지로 직접 연결. */
+const CATEGORY_LABELS_JA: Record<ToolCategory, string> = {
+  image: '画像',
+  pdf: 'PDF',
+  video: '動画',
+  gif: 'GIF',
+  audio: '音声',
+  docs: '文書',
+  text: 'テキスト',
+  dev: '開発者',
+  util: 'ユーティリティ',
+  security: 'セキュリティ',
+  ai: 'AI',
+};
+
+/** ja の CTA: ja カピー保有なら /ja/tools/{id}、無ければ ko 道具ページ。 */
 function optionHref(opt: CompareOption): string | undefined {
   if (!opt.toolId) return undefined;
+  if (hasJaCopy(opt.toolId)) return `/ja/tools/${opt.toolId}`;
   return TOOLS.find((t) => t.id === opt.toolId && t.status === 'ready')?.href;
 }
 
@@ -36,8 +52,8 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const cmp = getCompareKo(slug);
-  if (!cmp) return { title: '비교를 찾을 수 없습니다 · Web Toolkit' };
+  const cmp = getCompareJa(slug);
+  if (!cmp) return { title: '比較が見つかりません — Web Toolkit' };
   const koUrl = `/compare/${slug}`;
   const enUrl = `/en/compare/${slug}`;
   const jaUrl = `/ja/compare/${slug}`;
@@ -45,43 +61,40 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: cmp.title,
     description: cmp.description,
-    keywords: [...cmp.keywords, '비교', '차이', '무료', '온라인'],
-    alternates: { canonical: koUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } },
+    keywords: [...cmp.keywords, '比較', '違い', '無料', 'オンライン'],
+    alternates: { canonical: jaUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } },
     openGraph: {
       title: cmp.title,
       description: cmp.description,
       type: 'article',
       siteName: 'Web Toolkit',
-      locale: 'ko_KR',
-      url: koUrl,
+      locale: 'ja_JP',
+      url: jaUrl,
       images: [{ url: ogImage, width: 1200, height: 630, alt: cmp.h1 }],
     },
     twitter: { card: 'summary_large_image', title: cmp.title, description: cmp.description, images: [ogImage] },
   };
 }
 
-export default async function ComparePageKo({ params }: PageProps) {
+export default async function ComparePageJa({ params }: PageProps) {
   const { slug } = await params;
-  const cmp = getCompareKo(slug);
+  const cmp = getCompareJa(slug);
   if (!cmp) notFound();
 
-  const relatedConverts = (getCompare(slug)?.relatedConverts ?? []).map((s) => ({
-    slug: s,
-    label: convertLabel(s),
-  }));
-  // 같은 카테고리 비교 우선, 부족하면 ko 라벨로 매핑
+  const relatedConverts = (cmp.relatedConverts ?? []).map((s) => ({ slug: s, label: convertLabel(s) }));
+  // 같은 카테고리 비교 우선, ja 라벨로 매핑
   const otherCompares = relatedCompares(slug).map((c) => {
-    const ko = getCompareKo(c.slug);
-    return { slug: c.slug, h1: ko?.h1 ?? c.h1, description: ko?.description ?? c.description };
+    const ja = getCompareJa(c.slug);
+    return { slug: c.slug, h1: ja?.h1 ?? c.h1, description: ja?.description ?? c.description };
   });
-  const relatedUses = useCasesForCompare(slug).map((u) => ({ slug: u.slug, label: u.h1.ko }));
+  const relatedUses = useCasesForCompare(slug).map((u) => ({ slug: u.slug, label: u.h1.ja ?? u.h1.en }));
 
   return (
     <CompareView
       compare={cmp}
-      lang="ko"
+      lang="ja"
       siteUrl={SITE_URL}
-      categoryLabel={CATEGORY_LABELS[cmp.category]}
+      categoryLabel={CATEGORY_LABELS_JA[cmp.category]}
       optionHrefs={cmp.options.map(optionHref)}
       relatedConverts={relatedConverts}
       otherCompares={otherCompares}

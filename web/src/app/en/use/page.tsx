@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     'Step-by-step guides for common tasks: make an ID photo, blur faces in group photos, scan paper to PDF and more. Free, in your browser, no upload.',
   keywords: ['how to guides', 'id photo', 'blur faces', 'scan to pdf', 'optimize photo'],
-  alternates: { canonical: '/en/use', languages: { 'ko-KR': '/use', en: '/en/use', 'x-default': '/en/use' } },
+  alternates: { canonical: '/en/use', languages: { 'ko-KR': '/use', en: '/en/use', ja: '/ja/use', 'x-default': '/en/use' } },
 };
 
 export default function UseIndexEn() {

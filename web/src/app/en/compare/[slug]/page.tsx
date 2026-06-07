@@ -55,12 +55,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!cmp) return { title: 'Comparison not found — Web Toolkit' };
   const koUrl = `/compare/${cmp.slug}`;
   const enUrl = `/en/compare/${cmp.slug}`;
+  const jaUrl = `/ja/compare/${cmp.slug}`;
   const ogImage = `/og/compare/${cmp.slug}.en.png`;
   return {
     title: cmp.title,
     description: cmp.description,
     keywords: [...cmp.keywords, 'vs', 'comparison', 'which is better', 'free', 'online'],
-    alternates: { canonical: enUrl, languages: { 'ko-KR': koUrl, en: enUrl, 'x-default': enUrl } },
+    alternates: { canonical: enUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': enUrl } },
     openGraph: {
       title: cmp.title,
       description: cmp.description,

@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const content = buildConversionContent(conv, 'ko');
   const koUrl = `/convert/${slug}`;
   const enUrl = `/en/convert/${slug}`;
+  const jaUrl = `/ja/convert/${slug}`;
   const ogImage = `/og/convert/${slug}.png`;
   return {
     title: content.title,
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     keywords: content.keywords,
     alternates: {
       canonical: koUrl,
-      languages: { 'ko-KR': koUrl, en: enUrl, 'x-default': koUrl },
+      languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl },
     },
     openGraph: {
       title: content.title,
