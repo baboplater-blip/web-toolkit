@@ -24,14 +24,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, '..', 'out');
 
 // 대표 페이지 + 카테고리별 1개. 라벨, html 경로(out 기준), 예산(gzip KB).
-// 2026-06-07: 4개국어(ko·en·ja·zh) 다국어 SEO 데이터 완성으로 베이스라인 상향.
+// 2026-06-07: 검색 라이트 인덱스 분리로 베이스라인 대폭 하향.
 // CommandPalette·ToolConvertLinks(클라이언트, 전 페이지/도구 페이지 마운트)가
-// convert-matrix(FORMATS)·use-cases(USE_CASES)·ko-compares 를 import 하면서
-// 다국어 본문이 공유 청크에 포함된다. zh 추가로 +약 15KB(gzip).
-// TODO(perf): 두 클라이언트 컴포넌트를 다국어 프로즈에서 분리(경량 인덱스 import)해
-//             원복 추진 — 별도 perf 라운드. 분리 후 이 예산을 다시 내릴 것.
-const TOOL_BUDGET = 385; // 도구 페이지 (다국어 4개국 베이스라인)
-const HUB_BUDGET = 380; // 허브·인덱스·홈 (다국어 4개국 베이스라인)
+// convert-matrix·use-cases·ko/en-compares 의 4개국어 SEO 본문을 통째로 끌어오던 것을,
+// 빌드 시 생성하는 라이트 인덱스(src/lib/search-index.generated.ts, slug·라벨·ko 제목만)로
+// 교체 → 무거운 데이터가 서버 전용이 되어 페이지당 약 65~80KB(gzip) 절감.
+// 이전(다국어 프로즈 포함) 베이스라인 365/360 → 현 측정 ~285~296/~280~292KB.
+const TOOL_BUDGET = 320; // 도구 페이지
+const HUB_BUDGET = 315; // 허브·인덱스·홈
 
 const SAMPLES = [
   { label: 'home /', html: 'index.html', budget: HUB_BUDGET },

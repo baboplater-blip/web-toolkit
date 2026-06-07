@@ -33,9 +33,7 @@ import {
   type ToolMeta,
 } from '@/lib/tools/registry';
 import { isChoseongQuery, toChoseong } from '@/lib/tools/search';
-import { CONVERSIONS, FORMATS, conversionSlug } from '@/lib/convert-matrix';
-import { COMPARES_KO } from '@/lib/ko-compares';
-import { USE_CASES } from '@/lib/use-cases';
+import { CONVERT_INDEX, COMPARE_INDEX, USECASE_INDEX } from '@/lib/search-index.generated';
 import { cn } from '@/lib/utils';
 
 const CATEGORY_ORDER: ToolCategory[] = [
@@ -86,14 +84,13 @@ function toolToItem(t: ToolMeta): PaletteItem {
 /** 변환·비교·활용법을 한 번만 인덱싱 (검색용 haystack 동봉). */
 type ExtraEntry = PaletteItem & { hay: string; cho: string };
 
-const EXTRA_CONVERTS: ExtraEntry[] = CONVERSIONS.map((c) => {
-  const slug = conversionSlug(c);
-  const title = `${FORMATS[c.from].label} → ${FORMATS[c.to].label} 변환`;
-  const hay = `${title} ${slug} ${c.from} ${c.to} convert 변환`.toLowerCase();
+const EXTRA_CONVERTS: ExtraEntry[] = CONVERT_INDEX.map((e) => {
+  const title = `${e.label} 변환`;
+  const hay = `${title} ${e.slug} ${e.from} ${e.to} convert 변환`.toLowerCase();
   return {
-    key: `cv-${slug}`,
+    key: `cv-${e.slug}`,
     title,
-    href: `/convert/${slug}`,
+    href: `/convert/${e.slug}`,
     icon: ArrowRightLeft,
     badge: '변환',
     hay,
@@ -101,12 +98,12 @@ const EXTRA_CONVERTS: ExtraEntry[] = CONVERSIONS.map((c) => {
   };
 });
 
-const EXTRA_COMPARES: ExtraEntry[] = COMPARES_KO.map((c) => {
-  const hay = `${c.h1} ${c.slug} ${c.keywords.join(' ')} 비교 vs`.toLowerCase();
+const EXTRA_COMPARES: ExtraEntry[] = COMPARE_INDEX.map((e) => {
+  const hay = `${e.h1} ${e.slug} ${e.keywords.join(' ')} 비교 vs`.toLowerCase();
   return {
-    key: `cmp-${c.slug}`,
-    title: c.h1,
-    href: `/compare/${c.slug}`,
+    key: `cmp-${e.slug}`,
+    title: e.h1,
+    href: `/compare/${e.slug}`,
     icon: GitCompare,
     badge: '비교',
     hay,
@@ -114,13 +111,13 @@ const EXTRA_COMPARES: ExtraEntry[] = COMPARES_KO.map((c) => {
   };
 });
 
-const EXTRA_USECASES: ExtraEntry[] = USE_CASES.map((u) => {
-  const hay = `${u.h1.ko} ${u.slug} ${u.keywords.ko.join(' ')} 활용법`.toLowerCase();
+const EXTRA_USECASES: ExtraEntry[] = USECASE_INDEX.map((e) => {
+  const hay = `${e.h1} ${e.slug} ${e.keywords.join(' ')} 활용법`.toLowerCase();
   return {
-    key: `uc-${u.slug}`,
-    title: u.h1.ko,
-    subtitle: u.description.ko,
-    href: `/use/${u.slug}`,
+    key: `uc-${e.slug}`,
+    title: e.h1,
+    subtitle: e.description,
+    href: `/use/${e.slug}`,
     icon: Wrench,
     badge: '활용법',
     hay,

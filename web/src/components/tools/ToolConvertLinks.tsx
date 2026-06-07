@@ -4,10 +4,7 @@ import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { ArrowRightLeft, Wrench, Scale } from 'lucide-react';
 import { TOOLS } from '@/lib/tools/registry';
-import { CONVERSIONS, FORMATS, conversionSlug } from '@/lib/convert-matrix';
-import { useCasesForHref } from '@/lib/use-cases';
-import { comparesForTool } from '@/lib/en-compares';
-import { getCompareKo } from '@/lib/ko-compares';
+import { CONVERT_INDEX, COMPARE_INDEX, USECASE_INDEX } from '@/lib/search-index.generated';
 
 /**
  * 도구 페이지 하단의 역링크 — 변환 매트릭스(/convert/*)와 활용법(/use/*)으로
@@ -21,18 +18,22 @@ export function ToolConvertLinks() {
 
   const { convertLinks, useLinks, compareLinks } = useMemo(() => {
     if (!pathname) return { convertLinks: [], useLinks: [], compareLinks: [] };
+    const base = pathname.split('?')[0];
     const tool = TOOLS.find((t) => t.href === pathname);
     const convertLinks = tool
-      ? CONVERSIONS.filter((c) => c.toolId === tool.id).map((c) => ({
-          slug: conversionSlug(c),
-          label: `${FORMATS[c.from].label} → ${FORMATS[c.to].label}`,
+      ? CONVERT_INDEX.filter((e) => e.toolId === tool.id).map((e) => ({
+          slug: e.slug,
+          label: e.label,
         }))
       : [];
-    const useLinks = useCasesForHref(pathname).map((u) => ({ slug: u.slug, label: u.h1.ko }));
+    const useLinks = USECASE_INDEX.filter((e) => e.stepHrefs.includes(base)).map((e) => ({
+      slug: e.slug,
+      label: e.h1,
+    }));
     const compareLinks = tool
-      ? comparesForTool(tool.id).map((c) => ({
-          slug: c.slug,
-          label: getCompareKo(c.slug)?.h1 ?? c.h1,
+      ? COMPARE_INDEX.filter((e) => e.toolIds.includes(tool.id)).map((e) => ({
+          slug: e.slug,
+          label: e.h1,
         }))
       : [];
     return { convertLinks, useLinks, compareLinks };
