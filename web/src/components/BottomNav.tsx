@@ -208,7 +208,7 @@ export function BottomNav() {
               className="flex h-12 w-12 flex-col items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <Layers className="h-5 w-5" strokeWidth={2} />
-              <span className="mt-0.5 text-[10px]">분류</span>
+              <span className="mt-0.5 text-[10px]">카테고리</span>
             </button>
           </li>
 
