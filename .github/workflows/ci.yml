@@ -25,6 +25,9 @@ jobs:
       - run: npm ci
       - name: Type check
         run: npx tsc --noEmit
+      - name: Registry audit
+        # registry ↔ 페이지 정합성(고아 항목·고아 페이지·중복 id·아이콘 import) 검사.
+        run: npm run audit
       - name: Production build
         env:
           # admin.spec.ts 가 정적 산출물에서 /admin?key=test-key 를 검증하므로
