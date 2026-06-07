@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/scan-to-pdf',
       'ja': '/ja/tools/scan-to-pdf',
+      'zh': '/zh/tools/scan-to-pdf',
       'x-default': URL_PATH,
     },
   },

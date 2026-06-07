@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-diff',
       'ja': '/ja/tools/text-diff',
+      'zh': '/zh/tools/text-diff',
       'x-default': URL_PATH,
     },
   },

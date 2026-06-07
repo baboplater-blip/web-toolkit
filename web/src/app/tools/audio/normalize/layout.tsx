@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-normalize',
       'ja': '/ja/tools/audio-normalize',
+      'zh': '/zh/tools/audio-normalize',
       'x-default': URL_PATH,
     },
   },

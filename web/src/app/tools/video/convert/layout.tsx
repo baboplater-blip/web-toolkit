@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-convert',
       'ja': '/ja/tools/video-convert',
+      'zh': '/zh/tools/video-convert',
       'x-default': URL_PATH,
     },
   },

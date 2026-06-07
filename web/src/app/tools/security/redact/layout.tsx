@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/redact',
       'ja': '/ja/tools/redact',
+      'zh': '/zh/tools/redact',
       'x-default': URL_PATH,
     },
   },

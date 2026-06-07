@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/epub-cover-extract',
       'ja': '/ja/tools/epub-cover-extract',
+      'zh': '/zh/tools/epub-cover-extract',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/totp',
       'ja': '/ja/tools/totp',
+      'zh': '/zh/tools/totp',
       'x-default': URL_PATH,
     },
   },

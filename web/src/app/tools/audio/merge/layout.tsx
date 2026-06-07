@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-merge',
       'ja': '/ja/tools/audio-merge',
+      'zh': '/zh/tools/audio-merge',
       'x-default': URL_PATH,
     },
   },

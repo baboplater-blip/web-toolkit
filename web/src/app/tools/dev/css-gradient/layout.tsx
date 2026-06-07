@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-gradient',
       'ja': '/ja/tools/css-gradient',
+      'zh': '/zh/tools/css-gradient',
       'x-default': URL_PATH,
     },
   },

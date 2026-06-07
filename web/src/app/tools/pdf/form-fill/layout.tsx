@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-form-fill',
       'ja': '/ja/tools/pdf-form-fill',
+      'zh': '/zh/tools/pdf-form-fill',
       'x-default': URL_PATH,
     },
   },

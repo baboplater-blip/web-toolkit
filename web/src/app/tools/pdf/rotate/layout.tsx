@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-rotate',
       'ja': '/ja/tools/pdf-rotate',
+      'zh': '/zh/tools/pdf-rotate',
       'x-default': URL_PATH,
     },
   },

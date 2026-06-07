@@ -22,6 +22,7 @@ const WEB_ROOT = join(__dirname, '..');
 const REGISTRY_PATH = join(WEB_ROOT, 'src/lib/tools/registry.ts');
 const EN_TOOLS_PATH = join(WEB_ROOT, 'src/lib/en-tools.ts');
 const JA_TOOLS_PATH = join(WEB_ROOT, 'src/lib/ja-tools.ts');
+const ZH_TOOLS_PATH = join(WEB_ROOT, 'src/lib/zh-tools.ts');
 
 /**
  * 카피 모듈(en-tools.ts·ja-tools.ts)의 객체에서 카피가 있는 도구 id 집합 추출.
@@ -42,6 +43,7 @@ function parseCopyToolIds(path, constName) {
 
 const EN_TOOL_IDS = parseCopyToolIds(EN_TOOLS_PATH, 'EN_TOOLS');
 const JA_TOOL_IDS = parseCopyToolIds(JA_TOOLS_PATH, 'JA_TOOLS');
+const ZH_TOOL_IDS = parseCopyToolIds(ZH_TOOLS_PATH, 'ZH_TOOLS');
 
 const MARKER = '/* auto-generated metadata layout — generate-tool-metadata.mjs */';
 const SITE_NAME = 'Web Toolkit';
@@ -260,6 +262,9 @@ function renderLayout(tool) {
   // 일본어 카피가 있는 도구만 ja alternate 를 개별 페이지로 추가
   const jaHref = JA_TOOL_IDS.has(tool.id) ? `/ja/tools/${tool.id}` : null;
   const jaLangLine = jaHref ? `\n      'ja': '${jaHref}',` : '';
+  // 중국어 간체 카피가 있는 도구만 zh alternate 를 개별 페이지로 추가
+  const zhHref = ZH_TOOL_IDS.has(tool.id) ? `/zh/tools/${tool.id}` : null;
+  const zhLangLine = zhHref ? `\n      'zh': '${zhHref}',` : '';
   // 도구별 OG PNG 가 commit 되어 있으면 그것을 우선, 없으면 카테고리 폴백
   const toolOgPath = join(WEB_ROOT, TOOL_OG_DIR_REL, `${tool.id}.png`);
   const ogImagePath = existsSync(toolOgPath)
@@ -282,7 +287,7 @@ export const metadata: Metadata = {
     canonical: URL_PATH,
     languages: {
       'ko-KR': URL_PATH,
-      'en': '${enHref}',${jaLangLine}
+      'en': '${enHref}',${jaLangLine}${zhLangLine}
       'x-default': URL_PATH,
     },
   },

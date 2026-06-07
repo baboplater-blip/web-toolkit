@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/remove-background',
       'ja': '/ja/tools/remove-background',
+      'zh': '/zh/tools/remove-background',
       'x-default': URL_PATH,
     },
   },

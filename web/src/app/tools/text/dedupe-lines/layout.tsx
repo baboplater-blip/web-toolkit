@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/dedupe-lines',
       'ja': '/ja/tools/dedupe-lines',
+      'zh': '/zh/tools/dedupe-lines',
       'x-default': URL_PATH,
     },
   },

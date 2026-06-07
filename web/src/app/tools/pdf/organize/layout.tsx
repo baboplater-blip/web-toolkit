@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-organize',
       'ja': '/ja/tools/pdf-organize',
+      'zh': '/zh/tools/pdf-organize',
       'x-default': URL_PATH,
     },
   },

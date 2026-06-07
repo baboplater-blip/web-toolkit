@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-compress',
       'ja': '/ja/tools/audio-compress',
+      'zh': '/zh/tools/audio-compress',
       'x-default': URL_PATH,
     },
   },

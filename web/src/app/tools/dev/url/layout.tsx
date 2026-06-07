@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/url-encoder',
       'ja': '/ja/tools/url-encoder',
+      'zh': '/zh/tools/url-encoder',
       'x-default': URL_PATH,
     },
   },

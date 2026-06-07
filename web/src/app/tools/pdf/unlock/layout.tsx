@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-unlock',
       'ja': '/ja/tools/pdf-unlock',
+      'zh': '/zh/tools/pdf-unlock',
       'x-default': URL_PATH,
     },
   },

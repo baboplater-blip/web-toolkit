@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-effects',
       'ja': '/ja/tools/gif-effects',
+      'zh': '/zh/tools/gif-effects',
       'x-default': URL_PATH,
     },
   },

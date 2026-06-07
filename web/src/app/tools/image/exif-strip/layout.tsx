@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-exif-strip',
       'ja': '/ja/tools/image-exif-strip',
+      'zh': '/zh/tools/image-exif-strip',
       'x-default': URL_PATH,
     },
   },

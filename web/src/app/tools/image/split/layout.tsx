@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-split',
       'ja': '/ja/tools/image-split',
+      'zh': '/zh/tools/image-split',
       'x-default': URL_PATH,
     },
   },

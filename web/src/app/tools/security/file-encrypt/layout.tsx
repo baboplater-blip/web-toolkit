@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/file-encrypt',
       'ja': '/ja/tools/file-encrypt',
+      'zh': '/zh/tools/file-encrypt',
       'x-default': URL_PATH,
     },
   },

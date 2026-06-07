@@ -13,6 +13,7 @@ import {
 import { TOOLS, type ToolCategory, type ToolMeta } from '@/lib/tools/registry';
 import { JA_TOOLS, JA_TOOL_IDS, getJaCopy } from '@/lib/ja-tools';
 import { hasEnCopy } from '@/lib/en-tools';
+import { hasZhCopy } from '@/lib/zh-tools';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -72,6 +73,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         'ko-KR': tool.href,
         en: hasEnCopy(tool.id) ? `/en/tools/${tool.id}` : '/en/tools',
         ja: canonical,
+        ...(hasZhCopy(tool.id) ? { zh: `/zh/tools/${tool.id}` } : {}),
         'x-default': tool.href,
       },
     },

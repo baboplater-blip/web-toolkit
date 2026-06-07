@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/qr-code',
       'ja': '/ja/tools/qr-code',
+      'zh': '/zh/tools/qr-code',
       'x-default': URL_PATH,
     },
   },

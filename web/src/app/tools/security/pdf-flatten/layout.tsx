@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-flatten',
       'ja': '/ja/tools/pdf-flatten',
+      'zh': '/zh/tools/pdf-flatten',
       'x-default': URL_PATH,
     },
   },

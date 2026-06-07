@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Wrench } from 'lucide-re
 import { TOOLS, type ToolCategory, type ToolMeta } from '@/lib/tools/registry';
 import { JA_TOOLS, JA_TOOL_IDS, getJaCopy } from '@/lib/ja-tools';
 import { hasEnCopy } from '@/lib/en-tools';
+import { hasZhCopy } from '@/lib/zh-tools';
 import { buildGuideJa } from '@/lib/guide-content-ja';
 
 const SITE_URL = (
@@ -61,6 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         'ko-KR': `/guide/${tool.id}`,
         en: hasEnCopy(tool.id) ? `/en/guide/${tool.id}` : '/en/guide',
         ja: canonical,
+        ...(hasZhCopy(tool.id) ? { zh: `/zh/guide/${tool.id}` } : {}),
         'x-default': `/guide/${tool.id}`,
       },
     },

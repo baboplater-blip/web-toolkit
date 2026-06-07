@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/cron-explainer',
       'ja': '/ja/tools/cron-explainer',
+      'zh': '/zh/tools/cron-explainer',
       'x-default': URL_PATH,
     },
   },

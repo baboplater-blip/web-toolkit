@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-merge',
       'ja': '/ja/tools/pdf-merge',
+      'zh': '/zh/tools/pdf-merge',
       'x-default': URL_PATH,
     },
   },

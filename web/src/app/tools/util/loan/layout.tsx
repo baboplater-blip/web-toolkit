@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/loan-calc',
       'ja': '/ja/tools/loan-calc',
+      'zh': '/zh/tools/loan-calc',
       'x-default': URL_PATH,
     },
   },

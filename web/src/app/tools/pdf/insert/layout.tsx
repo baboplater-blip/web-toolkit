@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-insert',
       'ja': '/ja/tools/pdf-insert',
+      'zh': '/zh/tools/pdf-insert',
       'x-default': URL_PATH,
     },
   },

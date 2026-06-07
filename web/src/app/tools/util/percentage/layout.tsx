@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/percentage',
       'ja': '/ja/tools/percentage',
+      'zh': '/zh/tools/percentage',
       'x-default': URL_PATH,
     },
   },

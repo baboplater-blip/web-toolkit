@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-trim',
       'ja': '/ja/tools/video-trim',
+      'zh': '/zh/tools/video-trim',
       'x-default': URL_PATH,
     },
   },

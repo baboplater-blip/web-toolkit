@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/csv-viewer',
       'ja': '/ja/tools/csv-viewer',
+      'zh': '/zh/tools/csv-viewer',
       'x-default': URL_PATH,
     },
   },

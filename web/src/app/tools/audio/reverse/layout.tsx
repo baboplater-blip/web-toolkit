@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-reverse',
       'ja': '/ja/tools/audio-reverse',
+      'zh': '/zh/tools/audio-reverse',
       'x-default': URL_PATH,
     },
   },

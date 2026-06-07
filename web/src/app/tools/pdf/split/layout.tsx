@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-split',
       'ja': '/ja/tools/pdf-split',
+      'zh': '/zh/tools/pdf-split',
       'x-default': URL_PATH,
     },
   },

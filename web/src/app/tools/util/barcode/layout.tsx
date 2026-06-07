@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/barcode',
       'ja': '/ja/tools/barcode',
+      'zh': '/zh/tools/barcode',
       'x-default': URL_PATH,
     },
   },

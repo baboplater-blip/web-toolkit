@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ical-gen',
       'ja': '/ja/tools/ical-gen',
+      'zh': '/zh/tools/ical-gen',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-speed',
       'ja': '/ja/tools/audio-speed',
+      'zh': '/zh/tools/audio-speed',
       'x-default': URL_PATH,
     },
   },

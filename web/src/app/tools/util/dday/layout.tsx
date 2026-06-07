@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/dday',
       'ja': '/ja/tools/dday',
+      'zh': '/zh/tools/dday',
       'x-default': URL_PATH,
     },
   },

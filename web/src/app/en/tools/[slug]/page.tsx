@@ -14,6 +14,7 @@ import {
 import { TOOLS, type ToolCategory, type ToolMeta } from '@/lib/tools/registry';
 import { EN_TOOLS, EN_TOOL_IDS, getEnCopy } from '@/lib/en-tools';
 import { hasJaCopy } from '@/lib/ja-tools';
+import { hasZhCopy } from '@/lib/zh-tools';
 import { comparesForTool } from '@/lib/en-compares';
 
 const SITE_URL = (
@@ -74,6 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         'ko-KR': tool.href,
         en: canonical,
         ...(hasJaCopy(tool.id) ? { ja: `/ja/tools/${tool.id}` } : {}),
+        ...(hasZhCopy(tool.id) ? { zh: `/zh/tools/${tool.id}` } : {}),
         'x-default': canonical,
       },
     },

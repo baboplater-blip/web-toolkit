@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-upscale',
       'ja': '/ja/tools/image-upscale',
+      'zh': '/zh/tools/image-upscale',
       'x-default': URL_PATH,
     },
   },

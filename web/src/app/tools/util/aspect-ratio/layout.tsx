@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/aspect-ratio',
       'ja': '/ja/tools/aspect-ratio',
+      'zh': '/zh/tools/aspect-ratio',
       'x-default': URL_PATH,
     },
   },

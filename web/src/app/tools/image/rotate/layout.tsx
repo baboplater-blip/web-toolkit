@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-rotate',
       'ja': '/ja/tools/image-rotate',
+      'zh': '/zh/tools/image-rotate',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-watermark',
       'ja': '/ja/tools/image-watermark',
+      'zh': '/zh/tools/image-watermark',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/diceware',
       'ja': '/ja/tools/diceware',
+      'zh': '/zh/tools/diceware',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/password-gen',
       'ja': '/ja/tools/password-gen',
+      'zh': '/zh/tools/password-gen',
       'x-default': URL_PATH,
     },
   },

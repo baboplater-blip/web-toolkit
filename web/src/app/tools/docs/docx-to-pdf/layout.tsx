@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/docx-to-pdf',
       'ja': '/ja/tools/docx-to-pdf',
+      'zh': '/zh/tools/docx-to-pdf',
       'x-default': URL_PATH,
     },
   },

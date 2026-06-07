@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/screen-record',
       'ja': '/ja/tools/screen-record',
+      'zh': '/zh/tools/screen-record',
       'x-default': URL_PATH,
     },
   },

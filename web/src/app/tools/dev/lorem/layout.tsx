@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/lorem-ipsum',
       'ja': '/ja/tools/lorem-ipsum',
+      'zh': '/zh/tools/lorem-ipsum',
       'x-default': URL_PATH,
     },
   },

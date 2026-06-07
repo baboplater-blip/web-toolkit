@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/compress',
       'ja': '/ja/tools/compress',
+      'zh': '/zh/tools/compress',
       'x-default': URL_PATH,
     },
   },

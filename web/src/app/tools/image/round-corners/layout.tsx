@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-round-corners',
       'ja': '/ja/tools/image-round-corners',
+      'zh': '/zh/tools/image-round-corners',
       'x-default': URL_PATH,
     },
   },

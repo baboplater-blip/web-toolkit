@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-page-numbers',
       'ja': '/ja/tools/pdf-page-numbers',
+      'zh': '/zh/tools/pdf-page-numbers',
       'x-default': URL_PATH,
     },
   },

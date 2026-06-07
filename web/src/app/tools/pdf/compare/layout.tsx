@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-compare',
       'ja': '/ja/tools/pdf-compare',
+      'zh': '/zh/tools/pdf-compare',
       'x-default': URL_PATH,
     },
   },

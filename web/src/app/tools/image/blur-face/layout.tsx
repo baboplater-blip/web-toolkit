@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/blur-face',
       'ja': '/ja/tools/blur-face',
+      'zh': '/zh/tools/blur-face',
       'x-default': URL_PATH,
     },
   },

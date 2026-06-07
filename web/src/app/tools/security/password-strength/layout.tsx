@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/password-strength',
       'ja': '/ja/tools/password-strength',
+      'zh': '/zh/tools/password-strength',
       'x-default': URL_PATH,
     },
   },

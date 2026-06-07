@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-trim',
       'ja': '/ja/tools/gif-trim',
+      'zh': '/zh/tools/gif-trim',
       'x-default': URL_PATH,
     },
   },

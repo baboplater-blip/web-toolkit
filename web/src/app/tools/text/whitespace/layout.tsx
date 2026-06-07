@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/whitespace-clean',
       'ja': '/ja/tools/whitespace-clean',
+      'zh': '/zh/tools/whitespace-clean',
       'x-default': URL_PATH,
     },
   },

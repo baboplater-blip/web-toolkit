@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-crop',
       'ja': '/ja/tools/image-crop',
+      'zh': '/zh/tools/image-crop',
       'x-default': URL_PATH,
     },
   },

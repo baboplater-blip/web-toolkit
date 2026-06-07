@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/color-contrast',
       'ja': '/ja/tools/color-contrast',
+      'zh': '/zh/tools/color-contrast',
       'x-default': URL_PATH,
     },
   },

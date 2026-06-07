@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/roman-numeral',
       'ja': '/ja/tools/roman-numeral',
+      'zh': '/zh/tools/roman-numeral',
       'x-default': URL_PATH,
     },
   },

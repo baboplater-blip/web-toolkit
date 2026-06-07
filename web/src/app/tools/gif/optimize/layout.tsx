@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-optimize',
       'ja': '/ja/tools/gif-optimize',
+      'zh': '/zh/tools/gif-optimize',
       'x-default': URL_PATH,
     },
   },

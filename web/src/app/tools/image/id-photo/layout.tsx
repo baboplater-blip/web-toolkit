@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/id-photo',
       'ja': '/ja/tools/id-photo',
+      'zh': '/zh/tools/id-photo',
       'x-default': URL_PATH,
     },
   },

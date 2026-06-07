@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-case',
       'ja': '/ja/tools/text-case',
+      'zh': '/zh/tools/text-case',
       'x-default': URL_PATH,
     },
   },

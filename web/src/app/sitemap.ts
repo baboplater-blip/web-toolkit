@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { hasEnCopy } from '@/lib/en-tools';
 import { hasJaCopy } from '@/lib/ja-tools';
+import { hasZhCopy } from '@/lib/zh-tools';
 import { COMPARE_SLUGS, getCompare } from '@/lib/en-compares';
 import { CONVERT_SLUGS, FORMATS, conversionCategory, getConversion } from '@/lib/convert-matrix';
 import { USE_CASE_SLUGS, getUseCase } from '@/lib/use-cases';
@@ -77,6 +78,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/`,
           en: `${SITE_URL}/en`,
           ja: `${SITE_URL}/ja`,
+          zh: `${SITE_URL}/zh`,
           'x-default': `${SITE_URL}/`,
         },
       },
@@ -91,6 +93,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/tools`,
           en: `${SITE_URL}/en/tools`,
           ja: `${SITE_URL}/ja/tools`,
+          zh: `${SITE_URL}/zh/tools`,
           'x-default': `${SITE_URL}/tools`,
         },
       },
@@ -117,6 +120,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/`,
           en: `${SITE_URL}/en`,
           ja: `${SITE_URL}/ja`,
+          zh: `${SITE_URL}/zh`,
           'x-default': `${SITE_URL}/`,
         },
       },
@@ -131,6 +135,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/tools`,
           en: `${SITE_URL}/en/tools`,
           ja: `${SITE_URL}/ja/tools`,
+          zh: `${SITE_URL}/zh/tools`,
+          'x-default': `${SITE_URL}/tools`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/zh`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/`,
+          en: `${SITE_URL}/en`,
+          ja: `${SITE_URL}/ja`,
+          zh: `${SITE_URL}/zh`,
+          'x-default': `${SITE_URL}/`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/zh/tools`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/tools`,
+          en: `${SITE_URL}/en/tools`,
+          ja: `${SITE_URL}/ja/tools`,
+          zh: `${SITE_URL}/zh/tools`,
           'x-default': `${SITE_URL}/tools`,
         },
       },
@@ -145,6 +180,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/guide`,
           en: `${SITE_URL}/en/guide`,
           ja: `${SITE_URL}/ja/guide`,
+          zh: `${SITE_URL}/zh/guide`,
           'x-default': `${SITE_URL}/guide`,
         },
       },
@@ -159,6 +195,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/guide`,
           en: `${SITE_URL}/en/guide`,
           ja: `${SITE_URL}/ja/guide`,
+          zh: `${SITE_URL}/zh/guide`,
           'x-default': `${SITE_URL}/guide`,
         },
       },
@@ -173,6 +210,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
           'ko-KR': `${SITE_URL}/guide`,
           en: `${SITE_URL}/en/guide`,
           ja: `${SITE_URL}/ja/guide`,
+          zh: `${SITE_URL}/zh/guide`,
+          'x-default': `${SITE_URL}/guide`,
+        },
+      },
+    },
+    {
+      url: `${SITE_URL}/zh/guide`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          'ko-KR': `${SITE_URL}/guide`,
+          en: `${SITE_URL}/en/guide`,
+          ja: `${SITE_URL}/ja/guide`,
+          zh: `${SITE_URL}/zh/guide`,
           'x-default': `${SITE_URL}/guide`,
         },
       },
@@ -183,11 +236,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       const koUrl = `${SITE_URL}/guide/category/${cat}`;
       const enUrl = `${SITE_URL}/en/guide/category/${cat}`;
       const jaUrl = `${SITE_URL}/ja/guide/category/${cat}`;
+      const zhUrl = `${SITE_URL}/zh/guide/category/${cat}`;
       const alternates = {
         languages: {
           'ko-KR': koUrl,
           en: enUrl,
           ja: jaUrl,
+          zh: zhUrl,
           'x-default': koUrl,
         },
       };
@@ -208,6 +263,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
         {
           url: jaUrl,
+          lastModified: CONTENT_REVISION,
+          changeFrequency: 'monthly' as const,
+          priority: Math.round((CATEGORY_PRIORITY[cat] ?? 0.7) * 0.85 * 100) / 100,
+          alternates,
+        },
+        {
+          url: zhUrl,
           lastModified: CONTENT_REVISION,
           changeFrequency: 'monthly' as const,
           priority: Math.round((CATEGORY_PRIORITY[cat] ?? 0.7) * 0.85 * 100) / 100,
@@ -337,12 +399,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const enEntries: MetadataRoute.Sitemap = [];
   // 일본어 개별 도구 페이지/가이드 (큐레이션 도구만)
   const jaEntries: MetadataRoute.Sitemap = [];
+  // 중국어 간체 개별 도구 페이지/가이드 (큐레이션 도구만)
+  const zhEntries: MetadataRoute.Sitemap = [];
   for (const tool of TOOLS) {
     if (tool.status !== 'ready') continue;
     if (seen.has(tool.href)) continue;
     seen.add(tool.href);
     const enabled = hasEnCopy(tool.id);
     const jaEnabled = hasJaCopy(tool.id);
+    const zhEnabled = hasZhCopy(tool.id);
     const prio = CATEGORY_PRIORITY[tool.category] ?? 0.7;
     // 실제 추가일을 lastmod 로 — 신선도 신호 정확화(없으면 baseline)
     const toolLastMod = tool.addedAt ? new Date(tool.addedAt) : SITE_BASELINE;
@@ -352,18 +417,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const koHref = `${SITE_URL}${tool.href}`;
     const enHref = `${SITE_URL}/en/tools/${tool.id}`;
     const jaHref = `${SITE_URL}/ja/tools/${tool.id}`;
+    const zhHref = `${SITE_URL}/zh/tools/${tool.id}`;
     const koGuide = `${SITE_URL}/guide/${tool.id}`;
     const enGuide = `${SITE_URL}/en/guide/${tool.id}`;
     const jaGuide = `${SITE_URL}/ja/guide/${tool.id}`;
+    const zhGuide = `${SITE_URL}/zh/guide/${tool.id}`;
 
     // 언어 카피 보유 여부에 따라 alternate 언어 맵 구성 (큐레이션된 언어만 연결)
     const toolLangs: Record<string, string> = { 'ko-KR': koHref };
     if (enabled) toolLangs.en = enHref;
     if (jaEnabled) toolLangs.ja = jaHref;
+    if (zhEnabled) toolLangs.zh = zhHref;
     const guideLangs: Record<string, string> = { 'ko-KR': koGuide };
     if (enabled) guideLangs.en = enGuide;
     if (jaEnabled) guideLangs.ja = jaGuide;
-    const hasAltTool = enabled || jaEnabled;
+    if (zhEnabled) guideLangs.zh = zhGuide;
+    const hasAltTool = enabled || jaEnabled || zhEnabled;
 
     toolEntries.push({
       url: koHref,
@@ -424,7 +493,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
         alternates: { languages: { ...guideLangs, 'x-default': jaGuide } },
       });
     }
+
+    if (zhEnabled) {
+      // 중국어 간체 트랜잭셔널 도구 페이지
+      zhEntries.push({
+        url: zhHref,
+        lastModified: toolLastMod,
+        changeFrequency: toolFreq,
+        priority: Math.round(prio * 0.85 * 100) / 100,
+        alternates: { languages: { ...toolLangs, 'x-default': zhHref } },
+      });
+      // 중국어 간체 도구별 가이드
+      zhEntries.push({
+        url: zhGuide,
+        lastModified: toolLastMod,
+        changeFrequency: 'monthly',
+        priority: Math.round(prio * 0.75 * 100) / 100,
+        alternates: { languages: { ...guideLangs, 'x-default': zhGuide } },
+      });
+    }
   }
 
-  return [...hub, ...toolEntries, ...guideEntries, ...enEntries, ...jaEntries];
+  return [...hub, ...toolEntries, ...guideEntries, ...enEntries, ...jaEntries, ...zhEntries];
 }

@@ -75,6 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         'ko-KR': `/guide/category/${cat}`,
         en: `/en/guide/category/${cat}`,
         ja: canonical,
+        zh: `/zh/guide/category/${cat}`,
         'x-default': `/guide/category/${cat}`,
       },
     },

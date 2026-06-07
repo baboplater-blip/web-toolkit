@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-svg-to-png',
       'ja': '/ja/tools/image-svg-to-png',
+      'zh': '/zh/tools/image-svg-to-png',
       'x-default': URL_PATH,
     },
   },

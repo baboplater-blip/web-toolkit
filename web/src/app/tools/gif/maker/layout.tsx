@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-maker',
       'ja': '/ja/tools/gif-maker',
+      'zh': '/zh/tools/gif-maker',
       'x-default': URL_PATH,
     },
   },
