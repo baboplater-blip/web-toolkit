@@ -1408,6 +1408,314 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Record voice from your mic and save it as an audio file — no upload, no install, runs in your browser.',
     keywords: ['microphone recorder', 'record audio online', 'voice recorder browser', 'mic to file'],
   },
+  'json-diff': {
+    name: 'JSON Diff',
+    tagline: 'Compare two JSON documents structurally.',
+    description:
+      'Find added, removed and changed keys between two JSON objects with a structural diff. Runs in your browser.',
+    keywords: ['json diff', 'compare json', 'json compare tool', 'structural diff'],
+  },
+  'box-shadow': {
+    name: 'CSS Box Shadow Generator',
+    tagline: 'Design and copy CSS box-shadow visually.',
+    description:
+      'Adjust offset, blur, spread and color to build a box-shadow, preview it live and copy the CSS. Browser-only.',
+    keywords: ['box shadow generator', 'css box-shadow', 'shadow css', 'box shadow maker'],
+  },
+  'cubic-bezier': {
+    name: 'Cubic Bezier Editor',
+    tagline: 'Craft CSS easing curves with a draggable bezier.',
+    description:
+      'Drag control points to design a cubic-bezier timing function for CSS transitions and copy the value. Local-only.',
+    keywords: ['cubic bezier', 'easing editor', 'css timing function', 'bezier curve css'],
+  },
+  'mock-data': {
+    name: 'Mock Data Generator',
+    tagline: 'Generate fake names, emails and records as JSON or CSV.',
+    description:
+      'Create realistic mock data (names, emails, addresses, dates) and export as JSON or CSV for testing. Browser-only.',
+    keywords: ['mock data generator', 'fake data', 'test data generator', 'dummy json csv'],
+  },
+  'svg-optimize': {
+    name: 'SVG Optimizer',
+    tagline: 'Shrink SVG files by stripping cruft.',
+    description:
+      'Remove editor metadata, redundant whitespace and excess precision from SVG markup to reduce size. Local-only.',
+    keywords: ['svg optimizer', 'optimize svg', 'minify svg', 'svg cleaner'],
+  },
+  'gitignore-gen': {
+    name: '.gitignore Generator',
+    tagline: 'Build a .gitignore from languages, frameworks and OS.',
+    description:
+      'Pick stacks and platforms to assemble a ready-to-use .gitignore file. Generated locally, nothing uploaded.',
+    keywords: ['gitignore generator', 'create gitignore', 'git ignore template', 'gitignore.io alternative'],
+  },
+  'image-filters': {
+    name: 'Image Filters',
+    tagline: 'Apply Instagram-style filters to a photo.',
+    description:
+      'Add grayscale, sepia, vintage and other filters to an image and download the result. Runs in your browser.',
+    keywords: ['image filters', 'photo filter online', 'instagram filter', 'sepia grayscale filter'],
+  },
+  'image-duotone': {
+    name: 'Duotone Image',
+    tagline: 'Map an image to a two-color duotone.',
+    description:
+      'Convert a photo into a stylish duotone using two custom colors mapped to shadows and highlights. Local-only.',
+    keywords: ['duotone generator', 'duotone image', 'two tone photo', 'gradient map'],
+  },
+  'avatar-crop': {
+    name: 'Circle Avatar Crop',
+    tagline: 'Crop an image into a circular profile picture.',
+    description:
+      'Crop a photo to a circle and export a transparent PNG, perfect for avatars and profile pictures. Browser-only.',
+    keywords: ['circle crop', 'avatar maker', 'profile picture crop', 'round image'],
+  },
+  'image-target-size': {
+    name: 'Compress Image to Target Size',
+    tagline: 'Shrink an image to a target file size.',
+    description:
+      'Automatically tune quality so a JPEG/WebP lands under your chosen size (e.g. 200 KB). Runs in your browser.',
+    keywords: ['compress image to size', 'target file size', 'resize to kb', 'image under 200kb'],
+  },
+  'image-color-picker': {
+    name: 'Image Color Picker',
+    tagline: 'Pick HEX/RGB colors from any image.',
+    description:
+      'Upload an image and click anywhere to read the pixel\'s HEX and RGB color. Everything stays in your browser.',
+    keywords: ['image color picker', 'pick color from image', 'eyedropper online', 'hex from image'],
+  },
+  'gradient-image': {
+    name: 'Gradient Image Generator',
+    tagline: 'Create gradient background images as PNG.',
+    description:
+      'Pick colors, direction and size to generate a gradient background image and download it as PNG. Local-only.',
+    keywords: ['gradient image generator', 'gradient background png', 'gradient wallpaper', 'create gradient image'],
+  },
+  'morse-code': {
+    name: 'Morse Code Translator',
+    tagline: 'Translate text to Morse code and back, with sound.',
+    description:
+      'Convert between text and Morse code and play it as audio beeps. Runs entirely in your browser.',
+    keywords: ['morse code translator', 'text to morse', 'morse to text', 'morse code audio'],
+  },
+  'binary-text': {
+    name: 'Text to Binary',
+    tagline: 'Convert text to binary and binary to text.',
+    description:
+      'Encode text as binary (UTF-8) or decode binary back to text. Everything runs locally in your browser.',
+    keywords: ['text to binary', 'binary to text', 'binary translator', 'ascii binary'],
+  },
+  'fancy-text': {
+    name: 'Fancy Text Generator',
+    tagline: 'Turn text into stylish Unicode fonts.',
+    description:
+      'Convert plain text into bold, italic, script and other Unicode font styles for social bios. Browser-only.',
+    keywords: ['fancy text generator', 'unicode fonts', 'instagram fonts', 'cool text'],
+  },
+  'caesar-cipher': {
+    name: 'Caesar Cipher / ROT13',
+    tagline: 'Encode and decode Caesar shift and ROT13.',
+    description:
+      'Apply a Caesar shift cipher or ROT13 to text and decode it back. Adjustable shift. Runs in your browser.',
+    keywords: ['caesar cipher', 'rot13', 'shift cipher', 'encode decode text'],
+  },
+  'nato-phonetic': {
+    name: 'NATO Phonetic Alphabet',
+    tagline: 'Spell text with the NATO phonetic alphabet.',
+    description:
+      'Convert any text into the NATO phonetic alphabet (Alfa, Bravo, Charlie…) for clear spelling. Browser-only.',
+    keywords: ['nato phonetic alphabet', 'phonetic spelling', 'alfa bravo charlie', 'spell with nato'],
+  },
+  'tts': {
+    name: 'Text to Speech',
+    tagline: 'Read text aloud with browser voices.',
+    description:
+      'Type text and have your browser speak it using built-in voices, with adjustable rate and pitch. Local-only.',
+    keywords: ['text to speech', 'tts online', 'read aloud', 'browser speech synthesis'],
+  },
+  'toml-json': {
+    name: 'TOML to JSON',
+    tagline: 'Convert between TOML and JSON.',
+    description:
+      'Convert TOML config to JSON and back, in your browser. Useful for editing and inspecting config files. Local-only.',
+    keywords: ['toml to json', 'json to toml', 'toml converter', 'convert toml'],
+  },
+  'ini-json': {
+    name: 'INI to JSON',
+    tagline: 'Convert between INI config and JSON.',
+    description:
+      'Parse INI files into JSON and serialize JSON back to INI. Runs entirely in your browser.',
+    keywords: ['ini to json', 'json to ini', 'ini converter', 'parse ini'],
+  },
+  'csv-to-md': {
+    name: 'CSV to Markdown Table',
+    tagline: 'Turn CSV into a GitHub-flavored Markdown table.',
+    description:
+      'Paste CSV and get a clean Markdown table with aligned columns, ready for README files. Browser-only.',
+    keywords: ['csv to markdown table', 'markdown table generator', 'csv to md', 'convert csv markdown'],
+  },
+  'markdown-preview': {
+    name: 'Markdown Preview',
+    tagline: 'Live-render Markdown as you type.',
+    description:
+      'Write Markdown and see the rendered output and HTML side by side in real time. Runs in your browser.',
+    keywords: ['markdown preview', 'markdown editor online', 'live markdown', 'md to html preview'],
+  },
+  'json-escape': {
+    name: 'JSON Escape / Unescape',
+    tagline: 'Escape and unescape strings for JSON.',
+    description:
+      'Escape text into a JSON-safe string (quotes, newlines, unicode) or unescape it back. Browser-only.',
+    keywords: ['json escape', 'json unescape', 'escape string json', 'json string escape'],
+  },
+  'timezone': {
+    name: 'Time Zone Converter',
+    tagline: 'Convert times between time zones.',
+    description:
+      'Pick two time zones to convert a time and see the offset. Uses your browser\'s built-in time zone data. Local-only.',
+    keywords: ['time zone converter', 'timezone calculator', 'world clock', 'utc converter'],
+  },
+  'tdee': {
+    name: 'TDEE & Calorie Calculator',
+    tagline: 'Estimate BMR and daily calorie needs.',
+    description:
+      'Enter height, weight, age and activity level to compute BMR and TDEE (daily calories). Runs in your browser.',
+    keywords: ['tdee calculator', 'calorie calculator', 'bmr calculator', 'daily calorie needs'],
+  },
+  'number-to-words': {
+    name: 'Number to Words',
+    tagline: 'Spell numbers out in words.',
+    description:
+      'Convert a number into its English words (and amount style), e.g. 1234 → one thousand two hundred thirty-four. Local-only.',
+    keywords: ['number to words', 'spell number', 'number to text', 'write number in words'],
+  },
+  'discount': {
+    name: 'Discount Calculator',
+    tagline: 'Calculate sale price and savings.',
+    description:
+      'Enter price and discount to get the final price and amount saved, or work out the discount rate. Browser-only.',
+    keywords: ['discount calculator', 'sale price calculator', 'percent off', 'savings calculator'],
+  },
+  'date-diff': {
+    name: 'Date Calculator',
+    tagline: 'Days between dates, or add/subtract days.',
+    description:
+      'Find the number of days between two dates, or add/subtract days from a date. Runs entirely in your browser.',
+    keywords: ['date calculator', 'days between dates', 'date difference', 'add days to date'],
+  },
+  'gpa': {
+    name: 'GPA Calculator',
+    tagline: 'Compute your grade point average.',
+    description:
+      'Enter courses with credits and grades to calculate a weighted GPA (4.0/4.5 scales). Browser-only.',
+    keywords: ['gpa calculator', 'grade point average', 'weighted gpa', 'college gpa'],
+  },
+  'video-reverse': {
+    name: 'Reverse Video',
+    tagline: 'Play and export a video in reverse.',
+    description:
+      'Reverse a clip in time using FFmpeg.wasm and download it. Everything runs in your browser, nothing uploaded.',
+    keywords: ['reverse video', 'play video backwards', 'video reverser', 'backwards video'],
+  },
+  'video-loop': {
+    name: 'Loop Video',
+    tagline: 'Repeat a video N times into one file.',
+    description:
+      'Concatenate a clip to itself a chosen number of times to make a seamless loop. Powered by FFmpeg.wasm, local-only.',
+    keywords: ['loop video', 'repeat video', 'video loop maker', 'loop mp4'],
+  },
+  'video-resize': {
+    name: 'Resize Video',
+    tagline: 'Change a video\'s resolution (720p, 1080p…).',
+    description:
+      'Re-encode a video to a target resolution while keeping the aspect ratio. FFmpeg.wasm, runs in your browser.',
+    keywords: ['resize video', 'change video resolution', 'scale video', 'video 720p 1080p'],
+  },
+  'webcam-record': {
+    name: 'Webcam Recorder',
+    tagline: 'Record video from your webcam.',
+    description:
+      'Capture your webcam and microphone and download a webm — no upload, no install, runs in your browser.',
+    keywords: ['webcam recorder', 'record webcam online', 'camera recorder', 'webm webcam'],
+  },
+  'video-flip': {
+    name: 'Flip Video',
+    tagline: 'Flip a video horizontally or vertically.',
+    description:
+      'Mirror a video left-right or top-bottom and re-encode it. Powered by FFmpeg.wasm, fully in your browser.',
+    keywords: ['flip video', 'mirror video', 'flip video horizontal', 'flip mp4'],
+  },
+  'typing-speed': {
+    name: 'Typing Speed Test',
+    tagline: 'Measure your typing speed in WPM.',
+    description:
+      'Type the prompt to measure words-per-minute and accuracy. Runs entirely in your browser, no signup.',
+    keywords: ['typing speed test', 'wpm test', 'typing test online', 'words per minute'],
+  },
+  'reaction-time': {
+    name: 'Reaction Time Test',
+    tagline: 'Test how fast you react in milliseconds.',
+    description:
+      'Click as soon as the signal changes to measure your reaction time across several rounds. Browser-only.',
+    keywords: ['reaction time test', 'reflex test', 'reaction speed', 'click reaction'],
+  },
+  'color-blind': {
+    name: 'Color Blindness Simulator',
+    tagline: 'Preview an image as color-blind viewers see it.',
+    description:
+      'Simulate protanopia, deuteranopia and tritanopia on an image to check accessibility. Runs in your browser.',
+    keywords: ['color blindness simulator', 'color blind test image', 'protanopia deuteranopia', 'accessibility colors'],
+  },
+  'screen-ruler': {
+    name: 'Screen Ruler & PPI',
+    tagline: 'Measure pixels and compute screen PPI.',
+    description:
+      'Calculate your display\'s PPI from resolution and diagonal size, with an on-screen pixel ruler. Browser-only.',
+    keywords: ['screen ruler', 'ppi calculator', 'pixel ruler', 'screen dpi'],
+  },
+  'qr-logo': {
+    name: 'QR Code with Logo',
+    tagline: 'Generate a QR code with a logo in the center.',
+    description:
+      'Create a QR code from text or a URL and overlay your logo in the middle, with error correction. Local-only.',
+    keywords: ['qr code with logo', 'custom qr code', 'branded qr', 'logo qr generator'],
+  },
+  'htpasswd': {
+    name: '.htpasswd Generator',
+    tagline: 'Create Apache .htpasswd credential lines.',
+    description:
+      'Generate .htpasswd entries (bcrypt/APR1-MD5/SHA) from a username and password, all locally in your browser.',
+    keywords: ['htpasswd generator', 'apache htpasswd', 'basic auth password', 'htpasswd bcrypt'],
+  },
+  'secret-split': {
+    name: 'Secret Splitter (Shamir)',
+    tagline: 'Split a secret into shares, recombine some to restore.',
+    description:
+      'Use Shamir\'s Secret Sharing to split a secret into N shares where any K recombine it. Runs in your browser.',
+    keywords: ['shamir secret sharing', 'split secret', 'secret sharing tool', 'key splitting'],
+  },
+  'summarize': {
+    name: 'Text Summarizer',
+    tagline: 'Extractive summary — pick the key sentences.',
+    description:
+      'Score sentences and extract the most important ones to summarize text, with no model or upload. Browser-only.',
+    keywords: ['text summarizer', 'summarize text', 'extractive summary', 'summary generator'],
+  },
+  'language-detect': {
+    name: 'Language Detector',
+    tagline: 'Detect what language a text is written in.',
+    description:
+      'Estimate the language of a snippet using character and n-gram heuristics, entirely in your browser.',
+    keywords: ['language detector', 'detect language', 'what language is this', 'identify language'],
+  },
+  'sentiment': {
+    name: 'Sentiment Analysis',
+    tagline: 'Score text as positive or negative.',
+    description:
+      'Estimate sentiment with a lexicon-based scorer — no model, no upload. Highlights positive and negative words. Local-only.',
+    keywords: ['sentiment analysis', 'positive negative text', 'sentiment scorer', 'text sentiment'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
