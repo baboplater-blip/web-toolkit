@@ -28,11 +28,12 @@ interface Props {
 export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, related, relatedCompare, relatedUses = [] }: Props) {
   const ko = lang === 'ko';
   const ja = lang === 'ja';
-  const base = ko ? '/convert' : ja ? '/ja/convert' : '/en/convert';
-  const home = ko ? '/' : ja ? '/ja' : '/en';
-  const allToolsHref = ko ? '/tools' : ja ? '/ja/tools' : '/en/tools';
-  const compareBase = ko ? '/compare' : ja ? '/ja/compare' : '/en/compare';
-  const useBase = ko ? '/use' : ja ? '/ja/use' : '/en/use';
+  const zh = lang === 'zh';
+  const base = ko ? '/convert' : ja ? '/ja/convert' : zh ? '/zh/convert' : '/en/convert';
+  const home = ko ? '/' : ja ? '/ja' : zh ? '/zh' : '/en';
+  const allToolsHref = ko ? '/tools' : ja ? '/ja/tools' : zh ? '/zh/tools' : '/en/tools';
+  const compareBase = ko ? '/compare' : ja ? '/ja/compare' : zh ? '/zh/compare' : '/en/compare';
+  const useBase = ko ? '/use' : ja ? '/ja/use' : zh ? '/zh/use' : '/en/use';
   const slug = `${conv.from}-to-${conv.to}`;
   const canonical = `${siteUrl}${base}/${slug}`;
 
@@ -64,7 +65,21 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
           browseAll: 'すべてのツールを見る',
           privacy: 'アップロードなし · ブラウザで変換 · 無料',
         }
-      : {
+      : zh
+        ? {
+            home: '首页',
+            convert: '转换',
+            allConvert: '全部转换',
+            about: '关于格式',
+            good: '优点',
+            bad: '缺点',
+            whatChanges: '',
+            faq: '常见问题',
+            more: '相关转换',
+            browseAll: '查看全部工具',
+            privacy: '无需上传 · 在浏览器中转换 · 免费',
+          }
+        : {
         home: 'Home',
         convert: 'Convert',
         allConvert: 'All conversions',
@@ -79,7 +94,7 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
       };
 
   /* ── JSON-LD: HowTo + FAQ + Breadcrumb ── */
-  const inLanguage = ko ? 'ko' : ja ? 'ja' : 'en';
+  const inLanguage = ko ? 'ko' : ja ? 'ja' : zh ? 'zh' : 'en';
   const howToJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
@@ -90,30 +105,34 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
       {
         '@type': 'HowToStep',
         position: 1,
-        name: ko ? '파일 선택' : ja ? 'ファイルを選択' : 'Select your file',
+        name: ko ? '파일 선택' : ja ? 'ファイルを選択' : zh ? '选择文件' : 'Select your file',
         text: ko
           ? `${content.fromFact.label} 파일을 끌어다 놓거나 클릭해 엽니다.`
           : ja
             ? `${content.fromFact.label}ファイルをドラッグするか、クリックして開きます。`
-            : `Drag in or click to open your ${content.fromFact.label} file.`,
+            : zh
+              ? `拖入或点击打开您的 ${content.fromFact.label} 文件。`
+              : `Drag in or click to open your ${content.fromFact.label} file.`,
         url: canonical,
       },
       {
         '@type': 'HowToStep',
         position: 2,
-        name: ko ? '변환 실행' : ja ? '変換する' : 'Convert',
+        name: ko ? '변환 실행' : ja ? '変換する' : zh ? '执行转换' : 'Convert',
         text: ko
           ? `${content.toFact.label} 형식으로 변환합니다. 처리는 브라우저에서 이뤄집니다.`
           : ja
             ? `${content.toFact.label}形式に変換します。処理はブラウザ内で行われます。`
-            : `Convert to ${content.toFact.label}. Processing happens in your browser.`,
+            : zh
+              ? `转换为 ${content.toFact.label} 格式。处理在您的浏览器中完成。`
+              : `Convert to ${content.toFact.label}. Processing happens in your browser.`,
         url: canonical,
       },
       {
         '@type': 'HowToStep',
         position: 3,
-        name: ko ? '내려받기' : ja ? 'ダウンロード' : 'Download',
-        text: ko ? '결과 파일을 내려받습니다.' : ja ? '結果ファイルをダウンロードします。' : 'Download the result.',
+        name: ko ? '내려받기' : ja ? 'ダウンロード' : zh ? '下载' : 'Download',
+        text: ko ? '결과 파일을 내려받습니다.' : ja ? '結果ファイルをダウンロードします。' : zh ? '下载结果文件。' : 'Download the result.',
         url: canonical,
       },
     ],
@@ -141,8 +160,8 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
   const FormatCard = ({ which }: { which: 'from' | 'to' }) => {
     const f = which === 'from' ? content.fromFact : content.toFact;
     const role = which === 'from'
-      ? (ko ? '원본' : ja ? '元' : 'From')
-      : (ko ? '대상' : ja ? '先' : 'To');
+      ? (ko ? '원본' : ja ? '元' : zh ? '源' : 'From')
+      : (ko ? '대상' : ja ? '先' : zh ? '目标' : 'To');
     return (
       <div className="rounded-xl border bg-card p-4 space-y-3 flex flex-col">
         <div className="flex items-center justify-between">
@@ -215,7 +234,7 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
 
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 space-y-2">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">
-            {ko ? '변환하면 무엇이 바뀌나' : ja ? '変換すると何が変わるか' : 'What changes when you convert'}
+            {ko ? '변환하면 무엇이 바뀌나' : ja ? '変換すると何が変わるか' : zh ? '转换后会有什么变化' : 'What changes when you convert'}
           </h3>
           <ul className="space-y-1.5">
             {content.changes.map((c, i) => (
@@ -257,7 +276,7 @@ export function ConvertPageView({ content, conv, lang, siteUrl, toolHref, relate
 
         {relatedUses.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">{ko ? '이 변환을 쓰는 활용법' : ja ? 'この変換を使う活用法' : 'How-tos that use this'}</h3>
+            <h3 className="text-lg font-bold">{ko ? '이 변환을 쓰는 활용법' : ja ? 'この変換を使う活用法' : zh ? '使用此转换的教程' : 'How-tos that use this'}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {relatedUses.map((u) => (
                 <a

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   keywords: ['フォーマット 比較', 'png jpg', 'webp png', 'md5 sha256', 'ツール 比較', '違い'],
   alternates: {
     canonical: '/ja/compare',
-    languages: { 'ko-KR': '/compare', en: '/en/compare', ja: '/ja/compare', 'x-default': '/compare' },
+    languages: { 'ko-KR': '/compare', en: '/en/compare', ja: '/ja/compare', zh: '/zh/compare', 'x-default': '/compare' },
   },
   openGraph: {
     title: 'ツール比較 — Web Toolkit',

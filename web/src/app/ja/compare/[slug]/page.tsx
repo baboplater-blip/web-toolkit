@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: cmp.title,
     description: cmp.description,
     keywords: [...cmp.keywords, '比較', '違い', '無料', 'オンライン'],
-    alternates: { canonical: jaUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } },
+    alternates: { canonical: jaUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, zh: `/zh/compare/${slug}`, 'x-default': koUrl } },
     openGraph: {
       title: cmp.title,
       description: cmp.description,

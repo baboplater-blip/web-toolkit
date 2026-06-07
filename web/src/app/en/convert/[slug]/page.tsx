@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     keywords: content.keywords,
     alternates: {
       canonical: enUrl,
-      languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': enUrl },
+      languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, zh: `/zh/convert/${slug}`, 'x-default': enUrl },
     },
     openGraph: {
       title: content.title,

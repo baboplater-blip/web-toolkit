@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   keywords: ['ファイル 変換', '画像 変換', 'png jpg', 'heic 変換', 'webp 変換', 'pdf 変換', '無料 変換', 'オンライン 変換'],
   alternates: {
     canonical: '/ja/convert',
-    languages: { 'ko-KR': '/convert', en: '/en/convert', ja: '/ja/convert', 'x-default': '/convert' },
+    languages: { 'ko-KR': '/convert', en: '/en/convert', ja: '/ja/convert', zh: '/zh/convert', 'x-default': '/convert' },
   },
 };
 

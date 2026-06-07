@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     '이력서 사진 만들기, 단체사진 얼굴 모자이크, 서류 PDF로 묶기 등 자주 하는 작업을 단계별로. 업로드 없이 브라우저에서 무료로.',
   keywords: ['활용법', '이력서 사진', '얼굴 모자이크', 'pdf 만들기', '사진 최적화'],
-  alternates: { canonical: '/use', languages: { 'ko-KR': '/use', en: '/en/use', ja: '/ja/use', 'x-default': '/use' } },
+  alternates: { canonical: '/use', languages: { 'ko-KR': '/use', en: '/en/use', ja: '/ja/use', zh: '/zh/use', 'x-default': '/use' } },
 };
 
 export default function UseIndexKo() {

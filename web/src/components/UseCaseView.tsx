@@ -24,11 +24,12 @@ interface Props {
 export function UseCaseView({ uc, lang, siteUrl, categoryLabel, relatedConverts, relatedCompares, others }: Props) {
   const ko = lang === 'ko';
   const ja = lang === 'ja';
-  const base = ko ? '/use' : ja ? '/ja/use' : '/en/use';
-  const home = ko ? '/' : ja ? '/ja' : '/en';
-  const convertBase = ko ? '/convert' : ja ? '/ja/convert' : '/en/convert';
-  const compareBase = ko ? '/compare' : ja ? '/ja/compare' : '/en/compare';
-  const allToolsHref = ko ? '/tools' : ja ? '/ja/tools' : '/en/tools';
+  const zh = lang === 'zh';
+  const base = ko ? '/use' : ja ? '/ja/use' : zh ? '/zh/use' : '/en/use';
+  const home = ko ? '/' : ja ? '/ja' : zh ? '/zh' : '/en';
+  const convertBase = ko ? '/convert' : ja ? '/ja/convert' : zh ? '/zh/convert' : '/en/convert';
+  const compareBase = ko ? '/compare' : ja ? '/ja/compare' : zh ? '/zh/compare' : '/en/compare';
+  const allToolsHref = ko ? '/tools' : ja ? '/ja/tools' : zh ? '/zh/tools' : '/en/tools';
   const canonical = `${siteUrl}${base}/${uc.slug}`;
 
   const L = ko
@@ -47,7 +48,15 @@ export function UseCaseView({ uc, lang, siteUrl, categoryLabel, relatedConverts,
           more: '他の活用法', browseAll: 'すべてのツールを見る',
           privacy: 'アップロードなし · ブラウザで処理 · 無料',
         }
-      : {
+      : zh
+        ? {
+            home: '首页', use: '教程', all: '全部教程',
+            steps: '操作步骤', open: '打开工具',
+            converts: '相关转换', compares: '相关对比', faq: '常见问题',
+            more: '其他教程', browseAll: '查看全部工具',
+            privacy: '无需上传 · 在浏览器中处理 · 免费',
+          }
+        : {
         home: 'Home', use: 'Guides', all: 'All guides',
         steps: 'Steps', open: 'Open tool',
         converts: 'Related conversions', compares: 'Related comparisons', faq: 'Frequently asked',
@@ -55,7 +64,7 @@ export function UseCaseView({ uc, lang, siteUrl, categoryLabel, relatedConverts,
         privacy: 'No upload · Runs in your browser · Free',
       };
 
-  const inLanguage = ko ? 'ko' : ja ? 'ja' : 'en';
+  const inLanguage = ko ? 'ko' : ja ? 'ja' : zh ? 'zh' : 'en';
   const howToJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',

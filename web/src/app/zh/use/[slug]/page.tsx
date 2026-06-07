@@ -4,7 +4,7 @@ import { UseCaseView } from '@/components/UseCaseView';
 import { type ToolCategory } from '@/lib/tools/registry';
 import { USE_CASES, USE_CASE_SLUGS, getUseCase } from '@/lib/use-cases';
 import { FORMATS } from '@/lib/convert-matrix';
-import { getCompare } from '@/lib/en-compares';
+import { getCompareZh } from '@/lib/zh-compares';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
@@ -12,9 +12,9 @@ const SITE_URL = (
   .replace(/^﻿/, '')
   .replace(/\/$/, '');
 
-const CATEGORY_LABELS_EN: Record<ToolCategory, string> = {
-  image: 'Image', pdf: 'PDF', video: 'Video', gif: 'GIF', audio: 'Audio',
-  docs: 'Documents', text: 'Text', dev: 'Developer', util: 'Utility', security: 'Security', ai: 'AI',
+const CATEGORY_LABELS_ZH: Record<ToolCategory, string> = {
+  image: '图片', pdf: 'PDF', video: '视频', gif: 'GIF', audio: '音频',
+  docs: '文档', text: '文本', dev: '开发者', util: '实用工具', security: '安全', ai: 'AI',
 };
 
 function convertLabel(slug: string): string {
@@ -33,45 +33,51 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const uc = getUseCase(slug);
-  if (!uc) return { title: 'Guide not found — Web Toolkit' };
+  if (!uc) return { title: '未找到该教程 — Web Toolkit' };
   const koUrl = `/use/${slug}`;
   const enUrl = `/en/use/${slug}`;
   const jaUrl = `/ja/use/${slug}`;
+  const zhUrl = `/zh/use/${slug}`;
   return {
-    title: uc.title.en,
-    description: uc.description.en,
-    keywords: [...uc.keywords.en, 'free', 'online', 'browser'],
-    alternates: { canonical: enUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, zh: `/zh/use/${slug}`, 'x-default': enUrl } },
+    title: uc.title.zh ?? uc.title.en,
+    description: uc.description.zh ?? uc.description.en,
+    keywords: [...(uc.keywords.zh ?? uc.keywords.en), '免费', '在线', '浏览器'],
+    alternates: { canonical: zhUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, zh: zhUrl, 'x-default': koUrl } },
     openGraph: {
-      title: uc.title.en,
-      description: uc.description.en,
+      title: uc.title.zh ?? uc.title.en,
+      description: uc.description.zh ?? uc.description.en,
       type: 'article',
       siteName: 'Web Toolkit',
-      locale: 'en_US',
-      url: enUrl,
-      images: [{ url: `/og/use/${slug}.en.png`, width: 1200, height: 630, alt: uc.h1.en }],
+      locale: 'zh_CN',
+      url: zhUrl,
+      images: [{ url: `/og/use/${slug}.png`, width: 1200, height: 630, alt: uc.h1.zh ?? uc.h1.en }],
     },
-    twitter: { card: 'summary_large_image', title: uc.title.en, description: uc.description.en, images: [`/og/use/${slug}.en.png`] },
+    twitter: {
+      card: 'summary_large_image',
+      title: uc.title.zh ?? uc.title.en,
+      description: uc.description.zh ?? uc.description.en,
+      images: [`/og/use/${slug}.png`],
+    },
   };
 }
 
-export default async function UseCasePageEn({ params }: PageProps) {
+export default async function UseCasePageZh({ params }: PageProps) {
   const { slug } = await params;
   const uc = getUseCase(slug);
   if (!uc) notFound();
 
   const relatedConverts = (uc.relatedConverts ?? []).map((s) => ({ slug: s, label: convertLabel(s) }));
-  const relatedCompares = (uc.relatedCompares ?? []).map((s) => ({ slug: s, label: getCompare(s)?.h1 ?? s }));
+  const relatedCompares = (uc.relatedCompares ?? []).map((s) => ({ slug: s, label: getCompareZh(s)?.h1 ?? s }));
   const others = USE_CASES.filter((u) => u.slug !== slug)
     .slice(0, 4)
-    .map((u) => ({ slug: u.slug, title: u.h1.en, description: u.description.en }));
+    .map((u) => ({ slug: u.slug, title: u.h1.zh ?? u.h1.en, description: u.description.zh ?? u.description.en }));
 
   return (
     <UseCaseView
       uc={uc}
-      lang="en"
+      lang="zh"
       siteUrl={SITE_URL}
-      categoryLabel={CATEGORY_LABELS_EN[uc.category]}
+      categoryLabel={CATEGORY_LABELS_ZH[uc.category]}
       relatedConverts={relatedConverts}
       relatedCompares={relatedCompares}
       others={others}

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   keywords: ['파일 변환', '이미지 변환', 'png jpg', 'heic 변환', 'webp 변환', 'pdf 변환', '무료 변환', '온라인 변환'],
   alternates: {
     canonical: '/convert',
-    languages: { 'ko-KR': '/convert', en: '/en/convert', ja: '/ja/convert', 'x-default': '/convert' },
+    languages: { 'ko-KR': '/convert', en: '/en/convert', ja: '/ja/convert', zh: '/zh/convert', 'x-default': '/convert' },
   },
 };
 

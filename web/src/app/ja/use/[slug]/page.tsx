@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: uc.title.ja ?? uc.title.en,
     description: uc.description.ja ?? uc.description.en,
     keywords: [...(uc.keywords.ja ?? uc.keywords.en), '無料', 'オンライン', 'ブラウザ'],
-    alternates: { canonical: jaUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, 'x-default': koUrl } },
+    alternates: { canonical: jaUrl, languages: { 'ko-KR': koUrl, en: enUrl, ja: jaUrl, zh: `/zh/use/${slug}`, 'x-default': koUrl } },
     openGraph: {
       title: uc.title.ja ?? uc.title.en,
       description: uc.description.ja ?? uc.description.en,

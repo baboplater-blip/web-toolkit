@@ -8,25 +8,25 @@ import {
 } from '@/lib/convert-matrix';
 
 const GROUPS: Array<{ key: string; title: string }> = [
-  { key: 'image', title: 'Image conversions' },
-  { key: 'audio', title: 'Audio conversions' },
-  { key: 'video', title: 'Video conversions' },
-  { key: 'docs', title: 'Document conversions' },
-  { key: 'pdf', title: 'PDF conversions' },
+  { key: 'image', title: '图片转换' },
+  { key: 'audio', title: '音频转换' },
+  { key: 'video', title: '视频转换' },
+  { key: 'docs', title: '文档转换' },
+  { key: 'pdf', title: 'PDF 转换' },
 ];
 
 export const metadata: Metadata = {
-  title: 'File Converters — Free, in Your Browser',
+  title: '文件转换工具集 — 免费、在浏览器中',
   description:
-    'Convert between PNG, JPG, WebP, AVIF, HEIC, SVG and PDF in one place. Free converters that run in your browser with no upload.',
-  keywords: ['file converter', 'image converter', 'png to jpg', 'heic to jpg', 'webp converter', 'pdf converter', 'free', 'online'],
+    '在一处转换 PNG、JPG、WebP、AVIF、HEIC、SVG、PDF 等格式。无需上传，在浏览器中处理的免费转换工具集。',
+  keywords: ['文件 转换', '图片 转换', 'png jpg', 'heic 转换', 'webp 转换', 'pdf 转换', '免费 转换', '在线 转换'],
   alternates: {
-    canonical: '/en/convert',
-    languages: { 'ko-KR': '/convert', en: '/en/convert', ja: '/ja/convert', zh: '/zh/convert', 'x-default': '/en/convert' },
+    canonical: '/zh/convert',
+    languages: { 'ko-KR': '/convert', en: '/en/convert', ja: '/ja/convert', zh: '/zh/convert', 'x-default': '/convert' },
   },
 };
 
-export default function ConvertIndexEn() {
+export default function ConvertIndexZh() {
   const byCat = (cat: string) =>
     CONVERSIONS.filter((c) => conversionCategory(FORMATS[c.from], FORMATS[c.to]) === cat);
 
@@ -39,7 +39,7 @@ export default function ConvertIndexEn() {
           return (
             <a
               key={slug}
-              href={`/en/convert/${slug}`}
+              href={`/zh/convert/${slug}`}
               className="rounded-lg border bg-card p-3 hover:border-primary transition-colors"
             >
               <div className="flex items-center gap-1.5">
@@ -59,16 +59,16 @@ export default function ConvertIndexEn() {
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-[52px] max-w-3xl items-center gap-2 px-4">
-          <a href="/en/tools" className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted" aria-label="All tools">
+          <a href="/zh/tools" className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted" aria-label="全部工具">
             <ArrowLeft className="h-4 w-4" />
           </a>
           <ArrowRightLeft className="h-5 w-5" />
-          <h1 className="text-sm sm:text-base font-semibold">File Converters</h1>
+          <h1 className="text-sm sm:text-base font-semibold">文件转换工具集</h1>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6 space-y-8">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Convert image, audio, video and document formats both ways. Every conversion finishes inside your browser — files are never uploaded.
+          在图片、音频、视频、文档格式之间相互转换。所有转换都在浏览器中完成，文件不会上传到服务器。
         </p>
         {GROUPS.map((g) => {
           const items = byCat(g.key);

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     '証明写真の作成、集合写真の顔モザイク、書類のPDFまとめなど、よくある作業を手順つきで。アップロードなしでブラウザで無料で。',
   keywords: ['活用法', '証明写真', '顔 モザイク', 'pdf 作成', '写真 最適化'],
-  alternates: { canonical: '/ja/use', languages: { 'ko-KR': '/use', en: '/en/use', ja: '/ja/use', 'x-default': '/use' } },
+  alternates: { canonical: '/ja/use', languages: { 'ko-KR': '/use', en: '/en/use', ja: '/ja/use', zh: '/zh/use', 'x-default': '/use' } },
 };
 
 export default function UseIndexJa() {
