@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/image-batch-compress.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["batch","bulk","일괄","zip","이미지","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["batch","bulk","일괄","zip","이미지 일괄 압축","여러 장 압축","batch compress","사진 압축","이미지","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

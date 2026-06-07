@@ -196,7 +196,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Merge,
     status: 'ready',
     phase: 1,
-    keywords: ['merge', 'combine', '병합'],
+    keywords: ['merge', 'combine', '병합', 'pdf 합치기', 'pdf merge', '여러 pdf', 'join pdf', '문서 병합'],
   },
   {
     id: 'pdf-split',
@@ -207,7 +207,7 @@ export const TOOLS: ToolMeta[] = [
     icon: SplitSquareHorizontal,
     status: 'ready',
     phase: 1,
-    keywords: ['split', 'divide', '분할', '나누기'],
+    keywords: ['split', 'divide', '분할', '나누기', 'pdf split', 'pdf 분할', '페이지 범위', 'extract pages'],
   },
   {
     id: 'pdf-rotate',
@@ -240,7 +240,7 @@ export const TOOLS: ToolMeta[] = [
     icon: FileImage,
     status: 'ready',
     phase: 1,
-    keywords: ['extract', 'image', '이미지 추출', '변환'],
+    keywords: ['extract', 'image', '이미지 추출', '변환', 'pdf to jpg', 'pdf를 이미지로', 'pdf jpg', '페이지 이미지'],
   },
   {
     id: 'pdf-from-jpg',
@@ -262,7 +262,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Layers,
     status: 'ready',
     phase: 1,
-    keywords: ['number', 'paginate', '페이지번호'],
+    keywords: ['number', 'paginate', '페이지번호', 'page number', '쪽번호', '번호 매기기', 'pagination'],
   },
   {
     id: 'pdf-watermark',
@@ -273,7 +273,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Stamp,
     status: 'ready',
     phase: 1,
-    keywords: ['watermark', '워터마크'],
+    keywords: ['watermark', '워터마크', 'pdf watermark', '스탬프', 'stamp', '도장', 'pdf 워터마크', '로고'],
   },
   {
     id: 'pdf-crop',
@@ -284,7 +284,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Crop,
     status: 'ready',
     phase: 1,
-    keywords: ['crop', 'trim', '여백'],
+    keywords: ['crop', 'trim', '여백', 'pdf crop', '여백 자르기', '여백 제거', 'margin', '페이지 자르기'],
   },
 
   // ---- 2026-05-23 PDF 대폭 확장 (변환·편집·분석) ----
@@ -453,7 +453,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Maximize2,
     status: 'ready',
     phase: 2,
-    keywords: ['resize', '크기', '조정'],
+    keywords: ['resize', '크기', '조정', 'image resize', '이미지 크기 조정', '사진 크기', 'scale', '픽셀 크기'],
   },
   {
     id: 'image-crop',
@@ -464,7 +464,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Scissors,
     status: 'ready',
     phase: 2,
-    keywords: ['crop', '자르기'],
+    keywords: ['crop', '자르기', '이미지 자르기', 'image crop', 'trim', '잘라내기', '비율 자르기', '사진 자르기'],
   },
   {
     id: 'image-rotate',
@@ -475,7 +475,7 @@ export const TOOLS: ToolMeta[] = [
     icon: RotateCw,
     status: 'ready',
     phase: 2,
-    keywords: ['rotate', 'flip', '회전', '반전'],
+    keywords: ['rotate', 'flip', '회전', '반전', 'image rotate', '이미지 회전', '90도', 'mirror'],
   },
   {
     id: 'image-convert',
@@ -508,7 +508,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Archive,
     status: 'ready',
     phase: 2,
-    keywords: ['batch', 'bulk', '일괄', 'zip'],
+    keywords: ['batch', 'bulk', '일괄', 'zip', '이미지 일괄 압축', '여러 장 압축', 'batch compress', '사진 압축'],
   },
 
   // ---- Phase 3: 보안/편집 ----
@@ -521,7 +521,7 @@ export const TOOLS: ToolMeta[] = [
     icon: ShieldOff,
     status: 'ready',
     phase: 3,
-    keywords: ['unlock', 'decrypt', '잠금', '암호해제'],
+    keywords: ['unlock', 'decrypt', '잠금', '암호해제', 'pdf unlock', 'pdf 암호 제거', 'remove password', '제한 해제'],
   },
   {
     id: 'pdf-protect',
@@ -532,7 +532,7 @@ export const TOOLS: ToolMeta[] = [
     icon: FileLock,
     status: 'ready',
     phase: 3,
-    keywords: ['protect', 'encrypt', 'password', '암호설정'],
+    keywords: ['protect', 'encrypt', 'password', '암호설정', 'pdf 암호', 'pdf password', 'pdf 보호', '권한 설정'],
   },
   {
     id: 'pdf-sign',
@@ -543,7 +543,7 @@ export const TOOLS: ToolMeta[] = [
     icon: PenTool,
     status: 'ready',
     phase: 3,
-    keywords: ['sign', 'signature', '서명'],
+    keywords: ['sign', 'signature', '서명', 'pdf sign', 'pdf 서명', '전자서명', '사인', '계약서 서명'],
   },
   {
     id: 'pdf-repair',
@@ -554,7 +554,7 @@ export const TOOLS: ToolMeta[] = [
     icon: FilePlus,
     status: 'ready',
     phase: 3,
-    keywords: ['repair', 'fix', '복구'],
+    keywords: ['repair', 'fix', '복구', 'pdf repair', 'pdf 복구', '손상 pdf', '파일 복원', 'recover'],
   },
 
   // ---- Phase 4: AI ----
@@ -578,7 +578,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Eraser,
     status: 'ready',
     phase: 4,
-    keywords: ['background', 'bg', '배경', '누끼'],
+    keywords: ['background', 'bg', '배경', '누끼', 'remove background', '배경 제거', '배경 투명', '투명 배경'],
   },
   {
     id: 'blur-face',
@@ -646,7 +646,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Archive,
     status: 'ready',
     phase: 5,
-    keywords: ['compress', 'shrink', '압축', '용량'],
+    keywords: ['compress', 'shrink', '압축', '용량', 'video compress', '비디오 압축', '동영상 용량 줄이기', '영상 압축'],
   },
   {
     id: 'video-extract-frames',
@@ -657,7 +657,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Film,
     status: 'ready',
     phase: 5,
-    keywords: ['frames', 'extract', '프레임', '스틸'],
+    keywords: ['frames', 'extract', '프레임', '스틸', 'extract frames', '프레임 추출', '동영상 캡처', 'video to image'],
   },
 
   {
@@ -669,7 +669,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Images,
     status: 'ready',
     phase: 5,
-    keywords: ['gif', 'animate', 'maker', '만들기'],
+    keywords: ['gif', 'animate', 'maker', '만들기', 'gif maker', 'gif 만들기', '이미지로 gif', '움짤 만들기'],
   },
   {
     id: 'gif-resize',
@@ -691,7 +691,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Archive,
     status: 'ready',
     phase: 5,
-    keywords: ['optimize', 'compress', '최적화', '용량'],
+    keywords: ['optimize', 'compress', '최적화', '용량', 'gif optimize', 'gif 압축', 'gif 용량 줄이기', '움짤 최적화'],
   },
   {
     id: 'gif-crop',
@@ -702,7 +702,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Crop,
     status: 'ready',
     phase: 5,
-    keywords: ['crop', '자르기'],
+    keywords: ['crop', '자르기', 'gif crop', 'gif 자르기', '영역 자르기', '움짤 자르기', 'trim', '잘라내기'],
   },
   {
     id: 'gif-trim',
@@ -735,7 +735,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Type,
     status: 'ready',
     phase: 5,
-    keywords: ['text', 'caption', '자막'],
+    keywords: ['text', 'caption', '자막', 'gif text', 'gif 자막', '움짤 텍스트', '텍스트 삽입', '캡션'],
   },
 
   // ---- Phase 6: 오디오 & 유틸리티 ----
@@ -781,7 +781,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Archive,
     status: 'ready',
     phase: 6,
-    keywords: ['compress', 'bitrate', '압축', '용량'],
+    keywords: ['compress', 'bitrate', '압축', '용량', 'audio compress', '오디오 압축', '음원 용량 줄이기', 'mp3 압축'],
   },
 
   {
@@ -793,7 +793,7 @@ export const TOOLS: ToolMeta[] = [
     icon: QrCode,
     status: 'ready',
     phase: 6,
-    keywords: ['qr', 'qrcode', '큐알'],
+    keywords: ['qr', 'qrcode', '큐알', 'qr code', 'qr 생성', 'qr 스캔', '큐알코드', 'qr reader'],
   },
   {
     id: 'barcode',
@@ -804,7 +804,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Barcode,
     status: 'ready',
     phase: 6,
-    keywords: ['barcode', '바코드'],
+    keywords: ['barcode', '바코드', 'barcode generator', '바코드 생성', 'code128', 'ean', 'upc', '바코드 만들기'],
   },
   {
     id: 'color-palette',
@@ -815,7 +815,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Palette,
     status: 'ready',
     phase: 6,
-    keywords: ['color', 'palette', '색상', '팔레트'],
+    keywords: ['color', 'palette', '색상', '팔레트', 'color palette', '색상 추출', '대표 색상', '이미지 색상'],
   },
   {
     id: 'file-hash',
@@ -837,7 +837,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Braces,
     status: 'ready',
     phase: 6,
-    keywords: ['json', 'format', 'validate', '포맷팅'],
+    keywords: ['json', 'format', 'validate', '포맷팅', 'json formatter', 'json 정렬', 'json 검증', 'beautify', 'json 트리'],
   },
   {
     id: 'base64',
@@ -861,7 +861,7 @@ export const TOOLS: ToolMeta[] = [
     icon: FileText,
     status: 'ready',
     phase: 7,
-    keywords: ['markdown', 'md', 'html', 'convert'],
+    keywords: ['markdown', 'md', 'html', 'convert', '마크다운', '변환', 'md to html', 'html to md'],
   },
   {
     id: 'csv-json',
@@ -872,7 +872,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Table,
     status: 'ready',
     phase: 7,
-    keywords: ['csv', 'json', 'tsv', '스프레드시트'],
+    keywords: ['csv', 'json', 'tsv', '스프레드시트', 'csv to json', 'json to csv', '변환', 'csv 변환'],
   },
   {
     id: 'yaml-json',
@@ -883,7 +883,7 @@ export const TOOLS: ToolMeta[] = [
     icon: FileCode,
     status: 'ready',
     phase: 7,
-    keywords: ['yaml', 'json', 'convert'],
+    keywords: ['yaml', 'json', 'convert', '변환', 'yaml to json', 'json to yaml', 'yml', 'yaml 변환'],
   },
   {
     id: 'epub-to-pdf',
@@ -1071,7 +1071,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Regex,
     status: 'ready',
     phase: 7,
-    keywords: ['regex', 'regexp', '정규식', 'pattern'],
+    keywords: ['regex', 'regexp', '정규식', 'pattern', 'regex tester', '정규표현식', '패턴 테스트', '매칭'],
   },
   {
     id: 'text-diff',
@@ -1082,7 +1082,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Diff,
     status: 'ready',
     phase: 7,
-    keywords: ['diff', 'compare', '비교'],
+    keywords: ['diff', 'compare', '비교', 'text diff', '텍스트 비교', '차이', '줄 비교', '대조'],
   },
   {
     id: 'text-count',
@@ -1105,7 +1105,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Key,
     status: 'ready',
     phase: 7,
-    keywords: ['jwt', 'token', '토큰'],
+    keywords: ['jwt', 'token', '토큰', 'jwt decoder', 'jwt 디코드', 'jwt 파싱', '페이로드', 'decode'],
   },
   {
     id: 'uuid-gen',
@@ -1116,7 +1116,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Hexagon,
     status: 'ready',
     phase: 7,
-    keywords: ['uuid', 'guid', '고유식별자'],
+    keywords: ['uuid', 'guid', '고유식별자', 'uuid generator', 'uuid 생성', 'v4', '랜덤 id', '식별자'],
   },
   {
     id: 'password-gen',
@@ -1127,7 +1127,7 @@ export const TOOLS: ToolMeta[] = [
     icon: KeyRound,
     status: 'ready',
     phase: 7,
-    keywords: ['password', 'random', '비밀번호'],
+    keywords: ['password', 'random', '비밀번호', 'password generator', '비밀번호 생성', '랜덤 암호', '강력한 비밀번호', 'passwd'],
   },
   {
     id: 'url-encoder',
@@ -1138,7 +1138,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Link2,
     status: 'ready',
     phase: 7,
-    keywords: ['url', 'encode', 'decode', 'query'],
+    keywords: ['url', 'encode', 'decode', 'query', 'url encode', 'url 인코딩', '퍼센트 인코딩', '쿼리 파라미터'],
   },
 
   // ---- 2026-05-22 추가 묶음 (이미지·문서·개발자·유틸) ----
@@ -1397,9 +1397,9 @@ export const TOOLS: ToolMeta[] = [
   { id: 'xlsx-convert', title: 'XLSX ↔ CSV ↔ JSON', description: 'Excel·CSV·JSON 사이 자유 변환. 시트 선택 가능.', href: '/tools/docs/xlsx-convert', category: 'docs', icon: Table, status: 'ready', phase: 7, keywords: ['xlsx', 'excel', 'csv', 'json', '엑셀', '시트'] },
   { id: 'sql-format', title: 'SQL 포맷터', description: 'SQL 쿼리 들여쓰기·키워드 케이스. 10종 방언 지원.', href: '/tools/dev/sql-format', category: 'dev', icon: Database, status: 'ready', phase: 7, keywords: ['sql', 'format', 'pretty', '쿼리', 'mysql', 'postgres'] },
   { id: 'jsonpath', title: 'JSONPath 테스터', description: 'JSONPath 표현식으로 JSON 값 추출. 실시간 평가.', href: '/tools/dev/jsonpath', category: 'dev', icon: Search, status: 'ready', phase: 7, keywords: ['jsonpath', 'json', '쿼리', '추출', 'path'] },
-  { id: 'json-xml', title: 'JSON ↔ XML', description: 'JSON 과 XML 간 상호 변환. 루트 태그 지정.', href: '/tools/dev/json-xml', category: 'dev', icon: ArrowRightLeft, status: 'ready', phase: 7, keywords: ['json', 'xml', 'convert', '변환'] },
+  { id: 'json-xml', title: 'JSON ↔ XML', description: 'JSON 과 XML 간 상호 변환. 루트 태그 지정.', href: '/tools/dev/json-xml', category: 'dev', icon: ArrowRightLeft, status: 'ready', phase: 7, keywords: ['json', 'xml', 'convert', '변환', 'json to xml', 'xml to json', 'json xml', '상호 변환'] },
   { id: 'chart', title: '차트 → PNG', description: '막대·꺾은선·원그래프 데이터를 입력해 즉시 PNG 이미지로 생성합니다. 보고서·발표 자료에 바로 붙여 쓸 수 있습니다.', href: '/tools/dev/chart', category: 'util', icon: BarChart3, status: 'ready', phase: 7, keywords: ['chart', '차트', '그래프', 'bar', 'line', 'pie', 'png', '시각화', 'graph'] },
-  { id: 'csv-diff', title: 'CSV 비교', description: '두 CSV 를 키 컬럼 기준 행 단위 비교. 추가·삭제·변경 표시.', href: '/tools/docs/csv-diff', category: 'docs', icon: Diff, status: 'ready', phase: 7, keywords: ['csv', 'diff', '비교', 'compare'] },
+  { id: 'csv-diff', title: 'CSV 비교', description: '두 CSV 를 키 컬럼 기준 행 단위 비교. 추가·삭제·변경 표시.', href: '/tools/docs/csv-diff', category: 'docs', icon: Diff, status: 'ready', phase: 7, keywords: ['csv', 'diff', '비교', 'compare', 'csv diff', 'csv 비교', '행 비교', '데이터 비교'] },
 
   // PDF 고급 5종
   { id: 'pdf-search', title: '다중 PDF 검색', description: '여러 PDF 안에서 키워드를 한꺼번에 찾고 문맥 표시.', href: '/tools/pdf/search', category: 'pdf', icon: Search, status: 'ready', phase: 1, keywords: ['pdf', 'search', '검색', '다중', '키워드'] },
@@ -1409,13 +1409,13 @@ export const TOOLS: ToolMeta[] = [
   { id: 'pdf-linearize', title: 'PDF 웹 최적화', description: '중복 객체 제거·압축 스트림 재구성으로 PDF 정리.', href: '/tools/pdf/linearize', category: 'pdf', icon: Zap, status: 'ready', phase: 1, keywords: ['pdf', 'linearize', 'optimize', '최적화', '웹'] },
 
   // 이미지 확장 8종
-  { id: 'image-collage', title: '이미지 콜라주', description: '여러 이미지를 격자로 합쳐 한 장의 JPG 생성.', href: '/tools/image/collage', category: 'image', icon: Images, status: 'ready', phase: 2, keywords: ['collage', '콜라주', '격자', '합치기'] },
-  { id: 'image-batch-watermark', title: '일괄 워터마크', description: '여러 이미지에 동일 워터마크 일괄 적용.', href: '/tools/image/batch-watermark', category: 'image', icon: Stamp, status: 'ready', phase: 2, keywords: ['watermark', '워터마크', '일괄', 'batch'] },
-  { id: 'image-slideshow', title: '이미지 → 슬라이드쇼', description: '이미지 여러 장을 MP4 슬라이드쇼 영상으로.', href: '/tools/image/slideshow', category: 'image', icon: Film, status: 'ready', phase: 2, keywords: ['slideshow', '슬라이드쇼', 'mp4', '영상'] },
-  { id: 'image-diff', title: '이미지 시각 비교', description: '두 이미지를 픽셀 비교해 차이를 빨강으로 표시.', href: '/tools/image/diff', category: 'image', icon: Diff, status: 'ready', phase: 2, keywords: ['diff', 'compare', '비교', '차이'] },
+  { id: 'image-collage', title: '이미지 콜라주', description: '여러 이미지를 격자로 합쳐 한 장의 JPG 생성.', href: '/tools/image/collage', category: 'image', icon: Images, status: 'ready', phase: 2, keywords: ['collage', '콜라주', '격자', '합치기', 'image collage', '이미지 콜라주', '사진 합치기', '그리드'] },
+  { id: 'image-batch-watermark', title: '일괄 워터마크', description: '여러 이미지에 동일 워터마크 일괄 적용.', href: '/tools/image/batch-watermark', category: 'image', icon: Stamp, status: 'ready', phase: 2, keywords: ['watermark', '워터마크', '일괄', 'batch', 'batch watermark', '일괄 워터마크', '여러 이미지 워터마크', '로고'] },
+  { id: 'image-slideshow', title: '이미지 → 슬라이드쇼', description: '이미지 여러 장을 MP4 슬라이드쇼 영상으로.', href: '/tools/image/slideshow', category: 'image', icon: Film, status: 'ready', phase: 2, keywords: ['slideshow', '슬라이드쇼', 'mp4', '영상', 'image slideshow', '사진 영상', '이미지 동영상', '사진 슬라이드'] },
+  { id: 'image-diff', title: '이미지 시각 비교', description: '두 이미지를 픽셀 비교해 차이를 빨강으로 표시.', href: '/tools/image/diff', category: 'image', icon: Diff, status: 'ready', phase: 2, keywords: ['diff', 'compare', '비교', '차이', 'image diff', '이미지 비교', '사진 비교', '픽셀 비교'] },
   { id: 'image-color-adjust', title: '이미지 색 보정', description: '밝기·대비·채도·색조·블러·세피아·반전 — 실시간.', href: '/tools/image/color-adjust', category: 'image', icon: Sliders, status: 'ready', phase: 2, keywords: ['color', 'adjust', '색', '보정', 'brightness', 'contrast'] },
-  { id: 'image-denoise', title: '이미지 노이즈 제거', description: '미디언 필터로 이미지 노이즈 감소.', href: '/tools/image/denoise', category: 'image', icon: Sparkles, status: 'ready', phase: 2, keywords: ['denoise', '노이즈', 'noise', 'median'] },
-  { id: 'image-pixelate', title: '이미지 모자이크/픽셀화', description: '전체 또는 영역만 모자이크 처리.', href: '/tools/image/pixelate', category: 'image', icon: Grid3X3, status: 'ready', phase: 2, keywords: ['pixelate', 'mosaic', '모자이크', '픽셀'] },
+  { id: 'image-denoise', title: '이미지 노이즈 제거', description: '미디언 필터로 이미지 노이즈 감소.', href: '/tools/image/denoise', category: 'image', icon: Sparkles, status: 'ready', phase: 2, keywords: ['denoise', '노이즈', 'noise', 'median', 'image denoise', '노이즈 제거', '잡음 제거', '사진 노이즈'] },
+  { id: 'image-pixelate', title: '이미지 모자이크/픽셀화', description: '전체 또는 영역만 모자이크 처리.', href: '/tools/image/pixelate', category: 'image', icon: Grid3X3, status: 'ready', phase: 2, keywords: ['pixelate', 'mosaic', '모자이크', '픽셀', '픽셀화', '이미지 모자이크', '영역 가리기', 'censor'] },
   { id: 'image-exif-batch', title: 'EXIF 일괄 제거', description: '여러 사진의 GPS·촬영 정보를 한꺼번에 제거.', href: '/tools/image/exif-batch', category: 'image', icon: ShieldOff, status: 'ready', phase: 2, keywords: ['exif', 'strip', '일괄', 'privacy', '제거'] },
 
   // 오디오/비디오 7종
@@ -1425,7 +1425,7 @@ export const TOOLS: ToolMeta[] = [
   { id: 'video-poster', title: '비디오 포스터 추출', description: '비디오의 특정 시각을 정지 이미지로 캡처.', href: '/tools/video/poster', category: 'video', icon: ImageIcon, status: 'ready', phase: 5, keywords: ['poster', 'thumbnail', '포스터', '썸네일', '캡처'] },
   { id: 'audio-silence-trim', title: '무음 자동 제거', description: '말 없는 구간을 자동으로 잘라내 깔끔하게.', href: '/tools/audio/silence-trim', category: 'audio', icon: VolumeX, status: 'ready', phase: 6, keywords: ['silence', '무음', 'remove', '제거', 'auto'] },
   { id: 'video-audio-replace', title: '비디오 오디오 교체', description: '영상의 오디오 트랙을 다른 음원으로 교체·믹스.', href: '/tools/video/audio-replace', category: 'video', icon: Music, status: 'ready', phase: 5, keywords: ['audio', 'replace', '교체', '믹스', 'mix', 'video'] },
-  { id: 'audio-fade', title: '오디오 페이드 인/아웃', description: '오디오 시작·끝에 부드러운 페이드 효과.', href: '/tools/audio/fade', category: 'audio', icon: AudioLines, status: 'ready', phase: 6, keywords: ['fade', '페이드', 'in', 'out'] },
+  { id: 'audio-fade', title: '오디오 페이드 인/아웃', description: '오디오 시작·끝에 부드러운 페이드 효과.', href: '/tools/audio/fade', category: 'audio', icon: AudioLines, status: 'ready', phase: 6, keywords: ['fade', '페이드', 'in', 'out', 'audio fade', '페이드 인', '페이드 아웃', '음량 서서히'] },
 
   {
     id: 'markdown-toc',

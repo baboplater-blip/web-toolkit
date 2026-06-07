@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/color-palette.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["color","palette","색상","팔레트","유틸","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["color","palette","색상","팔레트","color palette","색상 추출","대표 색상","이미지 색상","유틸","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

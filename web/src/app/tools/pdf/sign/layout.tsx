@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-sign.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["sign","signature","서명","보안","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["sign","signature","서명","pdf sign","pdf 서명","전자서명","사인","계약서 서명","보안","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

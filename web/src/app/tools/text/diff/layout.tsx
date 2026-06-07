@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/text-diff.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["diff","compare","비교","텍스트","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["diff","compare","비교","text diff","텍스트 비교","차이","줄 비교","대조","텍스트","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

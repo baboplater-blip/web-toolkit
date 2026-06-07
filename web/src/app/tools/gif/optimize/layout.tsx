@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/gif-optimize.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["optimize","compress","최적화","용량","GIF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["optimize","compress","최적화","용량","gif optimize","gif 압축","gif 용량 줄이기","움짤 최적화","GIF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

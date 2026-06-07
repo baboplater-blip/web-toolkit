@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-crop.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["crop","trim","여백","PDF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["crop","trim","여백","pdf crop","여백 자르기","여백 제거","margin","페이지 자르기","PDF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

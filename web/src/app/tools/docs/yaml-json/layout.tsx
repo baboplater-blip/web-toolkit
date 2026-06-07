@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/yaml-json.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["yaml","json","convert","문서 변환","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["yaml","json","convert","변환","yaml to json","json to yaml","yml","yaml 변환","문서 변환","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/uuid-gen.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["uuid","guid","고유식별자","개발자","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["uuid","guid","고유식별자","uuid generator","uuid 생성","v4","랜덤 id","식별자","개발자","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

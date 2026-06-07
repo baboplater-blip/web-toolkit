@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/gif-maker.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["gif","animate","maker","만들기","GIF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["gif","animate","maker","만들기","gif maker","gif 만들기","이미지로 gif","움짤 만들기","GIF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

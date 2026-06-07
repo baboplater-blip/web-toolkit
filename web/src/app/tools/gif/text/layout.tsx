@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/gif-text.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["text","caption","자막","GIF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["text","caption","자막","gif text","gif 자막","움짤 텍스트","텍스트 삽입","캡션","GIF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

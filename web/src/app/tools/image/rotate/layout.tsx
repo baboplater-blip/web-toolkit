@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/image-rotate.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["rotate","flip","회전","반전","이미지","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["rotate","flip","회전","반전","image rotate","이미지 회전","90도","mirror","이미지","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

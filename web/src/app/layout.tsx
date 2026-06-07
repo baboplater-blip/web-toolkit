@@ -9,6 +9,7 @@ import { KeyboardInsetTracker } from '@/components/KeyboardInsetTracker';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 import { WebVitalsTracker } from '@/components/WebVitalsTracker';
+import { ErrorTracker } from '@/components/ErrorTracker';
 import { RecentTracker } from '@/components/tools/RecentTracker';
 import { ThemeWatcher } from '@/components/ThemeWatcher';
 import { ToastHost } from '@/components/ui/toast';
@@ -307,6 +308,7 @@ export default function RootLayout({
         <ToastHost />
         <ServiceWorkerRegister />
         <WebVitalsTracker />
+        <ErrorTracker />
         <style>{`
           :root {
             --bottom-nav-h: 3.5rem;

@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/qr-code.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["qr","qrcode","큐알","유틸","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["qr","qrcode","큐알","qr code","qr 생성","qr 스캔","큐알코드","qr reader","유틸","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-repair.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["repair","fix","복구","보안","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["repair","fix","복구","pdf repair","pdf 복구","손상 pdf","파일 복원","recover","보안","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/regex-tester.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["regex","regexp","정규식","pattern","텍스트","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["regex","regexp","정규식","pattern","regex tester","정규표현식","패턴 테스트","매칭","텍스트","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

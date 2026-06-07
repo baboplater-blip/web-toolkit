@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-protect.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["protect","encrypt","password","암호설정","보안","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["protect","encrypt","password","암호설정","pdf 암호","pdf password","pdf 보호","권한 설정","보안","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

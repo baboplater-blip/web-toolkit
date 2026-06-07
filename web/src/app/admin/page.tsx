@@ -29,6 +29,7 @@ import {
 } from '@/lib/ads-config';
 import { AD_SLOT_SIZES, processAdImage } from '@/lib/ads-image';
 import { CwvStats } from '@/components/admin/CwvStats';
+import { ErrorStats } from '@/components/admin/ErrorStats';
 
 const ADMIN_KEY_ENV = process.env.NEXT_PUBLIC_ADMIN_KEY ?? '';
 const REPO_ENV = process.env.NEXT_PUBLIC_GITHUB_REPO ?? 'baboplater-blip/web-toolkit';
@@ -560,6 +561,10 @@ export default function AdminPage() {
         <Separator />
 
         <CwvStats />
+
+        <Separator />
+
+        <ErrorStats />
 
         <Separator />
 

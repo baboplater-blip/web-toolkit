@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-unlock.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["unlock","decrypt","잠금","암호해제","보안","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["unlock","decrypt","잠금","암호해제","pdf unlock","pdf 암호 제거","remove password","제한 해제","보안","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

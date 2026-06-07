@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/video-compress.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["compress","shrink","압축","용량","비디오","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["compress","shrink","압축","용량","video compress","비디오 압축","동영상 용량 줄이기","영상 압축","비디오","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

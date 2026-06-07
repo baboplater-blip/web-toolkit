@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/image-resize.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["resize","크기","조정","이미지","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["resize","크기","조정","image resize","이미지 크기 조정","사진 크기","scale","픽셀 크기","이미지","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

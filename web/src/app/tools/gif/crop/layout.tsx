@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/gif-crop.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["crop","자르기","GIF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["crop","자르기","gif crop","gif 자르기","영역 자르기","움짤 자르기","trim","잘라내기","GIF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

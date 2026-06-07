@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/jwt-decoder.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["jwt","token","토큰","개발자","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["jwt","token","토큰","jwt decoder","jwt 디코드","jwt 파싱","페이로드","decode","개발자","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

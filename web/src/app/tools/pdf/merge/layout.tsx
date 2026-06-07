@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-merge.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["merge","combine","병합","PDF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["merge","combine","병합","pdf 합치기","pdf merge","여러 pdf","join pdf","문서 병합","PDF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

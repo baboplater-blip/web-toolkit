@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/remove-background.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["background","bg","배경","누끼","AI","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["background","bg","배경","누끼","remove background","배경 제거","배경 투명","투명 배경","AI","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

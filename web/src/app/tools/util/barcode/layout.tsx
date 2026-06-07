@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/barcode.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["barcode","바코드","유틸","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["barcode","바코드","barcode generator","바코드 생성","code128","ean","upc","바코드 만들기","유틸","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

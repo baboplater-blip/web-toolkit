@@ -38,6 +38,23 @@ jobs:
           path: web/out
           retention-days: 7
 
+  budget:
+    name: Bundle budget gate
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download static build
+        uses: actions/download-artifact@v4
+        with:
+          name: out
+          path: web/out
+      - name: Check First-Load JS budget
+        # 라이트하우스 나이틀리는 배포 후(라이브) 회귀를 잡지만, 이 게이트는
+        # 머지 전에 정적 산출물(out)의 gzip First-Load JS 를 예산과 대조해
+        # 무거운 의존성이 공유 청크에 들어오는 회귀를 사전 차단한다 (서버 불필요).
+        run: node scripts/check-bundle-budget.mjs
+
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest

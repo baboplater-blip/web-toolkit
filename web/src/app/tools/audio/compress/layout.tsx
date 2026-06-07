@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/audio-compress.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["compress","bitrate","압축","용량","오디오","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["compress","bitrate","압축","용량","audio compress","오디오 압축","음원 용량 줄이기","mp3 압축","오디오","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

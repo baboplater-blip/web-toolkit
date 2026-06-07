@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-watermark.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["watermark","워터마크","PDF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["watermark","워터마크","pdf watermark","스탬프","stamp","도장","pdf 워터마크","로고","PDF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

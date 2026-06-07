@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-to-jpg.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["extract","image","이미지 추출","변환","PDF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["extract","image","이미지 추출","변환","pdf to jpg","pdf를 이미지로","pdf jpg","페이지 이미지","PDF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {

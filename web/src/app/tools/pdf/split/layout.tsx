@@ -9,7 +9,7 @@ const OG_IMAGE = '/og/tools/pdf-split.png';
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  keywords: ["split","divide","분할","나누기","PDF","브라우저 도구","무료","온라인","no upload"],
+  keywords: ["split","divide","분할","나누기","pdf split","pdf 분할","페이지 범위","extract pages","PDF","브라우저 도구","무료","온라인","no upload"],
   alternates: {
     canonical: URL_PATH,
     languages: {
