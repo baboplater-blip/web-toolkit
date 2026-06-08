@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Loader2, BookOpen, ChevronLeft, ChevronRight, Menu, X, Type as TypeIcon, Sun, Moon } from 'lucide-react';
+import { Loader2, BookOpen, ChevronLeft, ChevronRight, Menu, X, Type as TypeIcon, Sun, Moon, Maximize2, Minimize2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,8 +40,10 @@ export default function EpubReaderPage() {
   const [tocOpen, setTocOpen] = useState(false);
   const [fontSize, setFontSize] = useState(17);
   const [theme, setTheme] = useState<Theme>('light');
+  const [fullscreen, setFullscreen] = useState(false);
   const blobUrlsRef = useRef<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
+  const readerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return () => {
@@ -49,6 +51,35 @@ export default function EpubReaderPage() {
       blobUrlsRef.current.clear();
     };
   }, []);
+
+  // 브라우저 전체화면(Fullscreen API) 종료(Esc 등)와 상태 동기화
+  useEffect(() => {
+    const onFsChange = () => {
+      if (!document.fullscreenElement) setFullscreen(false);
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  // 전체화면(CSS 오버레이)에서 Esc 로 빠져나오기 (Fullscreen API 미지원 환경 대비)
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !document.fullscreenElement) setFullscreen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [fullscreen]);
+
+  function toggleFullscreen() {
+    const next = !fullscreen;
+    setFullscreen(next);
+    if (next) {
+      readerRef.current?.requestFullscreen?.().catch(() => {});
+    } else if (document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  }
 
   async function handleLoad(f: File) {
     setFile(f);
@@ -134,7 +165,14 @@ export default function EpubReaderPage() {
       )}
 
       {epub && (
-        <div className="space-y-3">
+        <div
+          ref={readerRef}
+          className={
+            fullscreen
+              ? 'fixed inset-0 z-50 flex flex-col gap-2 overflow-hidden bg-background p-3'
+              : 'space-y-3'
+          }
+        >
           {/* 메타 + 컨트롤 */}
           <div className="rounded-xl border bg-card p-3 flex flex-wrap items-center gap-2">
             <div className="flex-1 min-w-0">
@@ -173,12 +211,29 @@ export default function EpubReaderPage() {
             >
               {theme === 'dark' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
             </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleFullscreen}
+              aria-label={fullscreen ? '전체화면 종료' : '전체화면으로 보기'}
+              title={fullscreen ? '전체화면 종료 (Esc)' : '전체화면으로 보기'}
+            >
+              {fullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+            </Button>
           </div>
 
-          <div className={`grid gap-3 ${tocOpen ? 'md:grid-cols-[240px_1fr]' : 'grid-cols-1'}`}>
+          <div
+            className={`grid gap-3 ${tocOpen ? 'md:grid-cols-[240px_1fr]' : 'grid-cols-1'} ${
+              fullscreen ? 'min-h-0 flex-1' : ''
+            }`}
+          >
             {/* TOC */}
             {tocOpen && (
-              <aside className="rounded-xl border bg-card p-2 max-h-[70vh] overflow-y-auto">
+              <aside
+                className={`rounded-xl border bg-card p-2 overflow-y-auto ${
+                  fullscreen ? 'max-h-full' : 'max-h-[70vh]'
+                }`}
+              >
                 <ul className="space-y-0.5 text-xs">
                   {chapters.map((c, i) => (
                     <li key={i}>
@@ -200,7 +255,9 @@ export default function EpubReaderPage() {
             {/* 본문 */}
             <div
               ref={containerRef}
-              className="rounded-xl border h-[70vh] overflow-y-auto p-6 leading-relaxed"
+              className={`rounded-xl border overflow-y-auto p-6 leading-relaxed ${
+                fullscreen ? 'h-full min-h-0' : 'h-[70vh]'
+              }`}
               style={{
                 background: themeStyle.bg,
                 color: themeStyle.fg,
