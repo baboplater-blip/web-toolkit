@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, Split, Trash2 } from 'lucide-react';
+import { Check, Copy, Trash2 } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -321,17 +322,22 @@ export default function SecretSplitPage() {
     }
   }
 
+  function handleReset() {
+    setSecret('');
+    setSplitOutput('');
+    setCombineInput('');
+    setRestoredSecret('');
+    setError(null);
+    setCopied(false);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Split className="h-5 w-5 text-primary" aria-hidden />
-          비밀 분할(샤미르)
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="비밀 분할(샤미르)" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           비밀을 N개 조각으로 나누고, 임계값 K개 이상을 모아 복원합니다(Shamir, GF(256)).
         </p>
-      </header>
 
       <div className="flex gap-2">
         <Button
@@ -525,6 +531,7 @@ export default function SecretSplitPage() {
       <p className="text-xs text-muted-foreground">
         모든 연산은 브라우저 내부에서만 수행되며 비밀과 조각은 서버로 전송되지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

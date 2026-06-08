@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, Grid3X3, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'full' | 'region';
 
@@ -82,15 +83,24 @@ export default function PixelatePage() {
     }
   }
 
+  function handleReset() {
+    setFile(null);
+    setSize(20);
+    setMode('full');
+    setRegion({ x: 25, y: 25, w: 50, h: 50 });
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return '';
+    });
+    setError(null);
+    setLargeWarning(false);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Grid3X3 className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">이미지 모자이크/픽셀화</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 모자이크/픽셀화" widthClass="max-w-2xl" onReset={file ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">전체 또는 특정 영역만 모자이크 처리합니다.</p>
-      </header>
 
       <FileDropZone accept="image/*" onFiles={(f) => setFile(f[0] ?? null)} title="이미지 1장 드롭" />
 
@@ -136,7 +146,8 @@ export default function PixelatePage() {
           </a>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

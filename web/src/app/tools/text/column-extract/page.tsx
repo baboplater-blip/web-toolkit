@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Columns3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -98,13 +98,13 @@ export default function ColumnExtractPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="열 추출" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Columns3 className="h-5 w-5 text-primary" aria-hidden />
-          열 추출
-        </h1>
         <p className="text-sm text-muted-foreground">구분자로 나뉜 텍스트에서 특정 열만 골라 뽑아냅니다.</p>
+
       </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-3 text-sm">
@@ -211,5 +211,6 @@ export default function ColumnExtractPage() {
         <Button variant="outline" onClick={download} disabled={!output}>다운로드</Button>
       </div>
     </main>
+    </div>
   );
 }

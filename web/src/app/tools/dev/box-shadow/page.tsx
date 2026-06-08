@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Box, Check, Copy, Plus, Trash2 } from 'lucide-react';
+import { Check, Copy, Plus, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 interface Shadow {
   id: number;
@@ -101,15 +102,15 @@ export default function BoxShadowPage() {
     }
   };
 
+  const handleReset = () => {
+    setShadows([createShadow()]);
+  };
+
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Box className="h-5 w-5 text-primary" aria-hidden />
-          CSS 박스 그림자 생성기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="CSS 박스 그림자 생성기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">오프셋·블러·확산·색을 조절해 box-shadow CSS를 미리보고 복사합니다.</p>
-      </header>
 
       <div className="flex min-h-44 items-center justify-center rounded-xl border bg-[repeating-conic-gradient(theme(colors.muted.DEFAULT)_0%_25%,transparent_0%_50%)] bg-[length:24px_24px] p-8">
         <div
@@ -221,6 +222,7 @@ export default function BoxShadowPage() {
           {cssCode}
         </pre>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Copy, Languages } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -233,16 +234,12 @@ export default function LanguageDetectPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Languages className="h-5 w-5 text-primary" aria-hidden />
-          언어 감지
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="언어 감지" widthClass="max-w-3xl" onReset={() => setInput('')} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           입력한 텍스트의 언어를 추정합니다(스크립트 감지 + 라틴어 휴리스틱, 브라우저 내 판별).
         </p>
-      </header>
 
       <textarea
         className="min-h-40 w-full rounded-xl border bg-card p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -286,6 +283,7 @@ export default function LanguageDetectPage() {
         규칙 기반 추정이라 짧은 문장이나 혼합 언어에서는 정확도가 낮을 수 있습니다. 모든 처리는
         브라우저 내부에서 수행되며 입력 텍스트는 서버로 전송되지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Copy, Database, Download } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import {
   type FieldDef,
   type FieldType,
@@ -91,15 +92,18 @@ export default function MockDataPage() {
 
   const canGenerate = fields.length > 0 && rowCount > 0;
 
+  const handleReset = () => {
+    setSelected(['name', 'email', 'phone']);
+    setRowCount(10);
+    setFormat('json');
+    setOutput('');
+  };
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Database className="h-5 w-5 text-primary" aria-hidden />
-          더미 데이터 생성기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="더미 데이터 생성기" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이름·이메일·주소 등 가짜 데이터를 JSON·CSV로 대량 생성합니다.</p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <span className="text-sm font-medium">필드 선택</span>
@@ -186,6 +190,7 @@ export default function MockDataPage() {
           </Button>
         </div>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

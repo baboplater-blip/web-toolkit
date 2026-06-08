@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, AudioLines } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, probeAudio, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
 import { AUDIO_ACCEPT, explainFfmpegError, limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
@@ -71,17 +72,21 @@ export default function FadePage() {
     }
   }
 
+  function handleReset() {
+    setFile(null);
+    setDuration(0);
+    setResult(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <AudioLines className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">오디오 페이드 인/아웃</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="오디오 페이드 인/아웃" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           오디오의 시작과 끝에 부드러운 페이드 효과를 추가합니다.
         </p>
-      </header>
 
       <FileDropZone
         accept={AUDIO_ACCEPT}
@@ -115,6 +120,7 @@ export default function FadePage() {
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
       {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} />}
-    </main>
+      </main>
+    </div>
   );
 }

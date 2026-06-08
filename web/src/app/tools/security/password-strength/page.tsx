@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -103,16 +104,16 @@ export default function PasswordStrengthPage() {
   const barWidth = result ? Math.min(100, (result.entropyBits / 100) * 100) : 0;
 
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
-          비밀번호 강도 검사
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="비밀번호 강도 검사"
+        widthClass="max-w-xl"
+        onReset={password ? () => { setPassword(''); setVisible(false); } : undefined}
+      />
+      <main className="mx-auto max-w-xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           비밀번호의 엔트로피와 예상 크래킹 시간을 추정해 강도를 보여줍니다.
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <label className="block space-y-1">
@@ -193,6 +194,7 @@ export default function PasswordStrengthPage() {
         입력한 비밀번호는 브라우저 메모리에만 존재하며 서버로 전송되거나 저장되지 않습니다. 추정치는 참고용이며 사전·패턴
         기반 공격은 고려하지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

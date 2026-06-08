@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { RemoveFormatting } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WhitespaceOptions {
@@ -89,13 +89,13 @@ export default function WhitespaceCleanPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="공백 정리" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <RemoveFormatting className="h-5 w-5 text-primary" aria-hidden />
-          공백 정리
-        </h1>
         <p className="text-sm text-muted-foreground">줄 끝 공백·중복 빈 줄·탭을 정리하고 들여쓰기를 통일합니다.</p>
+
       </header>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card p-3 text-sm">
@@ -181,5 +181,6 @@ export default function WhitespaceCleanPage() {
         <Button variant="outline" onClick={download} disabled={!output}>다운로드</Button>
       </div>
     </main>
+    </div>
   );
 }

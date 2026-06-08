@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, BookPlus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -102,15 +103,15 @@ export default function MdToEpubPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="Markdown → EPUB" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BookPlus className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">Markdown → EPUB</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           Markdown 문서를 헤딩 단위로 챕터 분할해 EPUB 으로 만듭니다. 표지 이미지 첨부 가능.
         </p>
+
       </header>
 
       <FileDropZone
@@ -181,6 +182,7 @@ export default function MdToEpubPage() {
         />
       )}
     </main>
+    </div>
   );
 }
 

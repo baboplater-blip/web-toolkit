@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useEffect, useState } from 'react';
-import { Loader2, ImagePlus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -144,15 +145,15 @@ export default function EpubCoverReplacePage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 표지 교체" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <ImagePlus className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 표지 교체</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 의 표지 이미지를 새 그림으로 교체해 새 파일로 저장합니다.
         </p>
+
       </header>
 
       <section className="space-y-2">
@@ -217,6 +218,7 @@ export default function EpubCoverReplacePage() {
         />
       )}
     </main>
+    </div>
   );
 }
 

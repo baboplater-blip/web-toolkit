@@ -5,6 +5,7 @@ import { Smile, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
 /**
@@ -152,17 +153,24 @@ export default function MemeGenPage() {
     }, 'image/png');
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setTopText('');
+    setBottomText('');
+    setFileName('meme');
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Smile className="h-5 w-5 text-primary" aria-hidden />
-          밈 생성기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="밈 생성기" widthClass="max-w-2xl" onReset={bitmap ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           이미지에 상단·하단 텍스트를 Impact 스타일(흰색 글자 + 검은 테두리)로 얹어 클래식 밈을 만듭니다.
         </p>
-      </header>
 
       {!bitmap && (
         <FileDropZone
@@ -235,6 +243,7 @@ export default function MemeGenPage() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

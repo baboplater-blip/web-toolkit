@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { SpellCheck, Copy, Check, Wand2 } from 'lucide-react';
+import { Copy, Check, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { applyAllFixes, findSpellIssues } from '@/lib/tools/korean';
 
@@ -35,15 +36,15 @@ export default function KoSpellCheckPage() {
   }, [input, issues]);
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="한국어 맞춤법 검사" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <SpellCheck className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">한국어 맞춤법 검사</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           자주 틀리는 단어를 찾아 표시합니다. 일괄 자동 교정도 가능.
         </p>
+
       </header>
 
       <div className="space-y-2">
@@ -110,5 +111,6 @@ export default function KoSpellCheckPage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }

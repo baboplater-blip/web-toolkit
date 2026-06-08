@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { ListX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DedupeResult {
@@ -62,13 +62,13 @@ export default function DedupeLinesPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="중복 줄 제거" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <ListX className="h-5 w-5 text-primary" aria-hidden />
-          중복 줄 제거
-        </h1>
         <p className="text-sm text-muted-foreground">여러 줄 텍스트에서 중복된 줄을 제거하고 순서를 유지합니다.</p>
+
       </header>
 
       <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-xl border bg-card p-3 text-sm">
@@ -129,5 +129,6 @@ export default function DedupeLinesPage() {
         <Button variant="outline" onClick={download} disabled={!output}>다운로드</Button>
       </div>
     </main>
+    </div>
   );
 }

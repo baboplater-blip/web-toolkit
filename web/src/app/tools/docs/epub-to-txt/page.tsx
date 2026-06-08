@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, FileText, Copy, Check } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -58,15 +59,15 @@ export default function EpubToTxtPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB → TXT" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB → TXT</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 의 본문만 추출해 일반 텍스트 파일로 저장합니다. 단락·챕터 구분 유지.
         </p>
+
       </header>
 
       <FileDropZone
@@ -119,5 +120,6 @@ export default function EpubToTxtPage() {
         />
       )}
     </main>
+    </div>
   );
 }

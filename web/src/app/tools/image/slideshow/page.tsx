@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, Film, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { getFFmpeg } from '@/lib/tools/ffmpeg-common';
 import { explainFfmpegError, fmtMB, getMediaLimits } from '@/lib/tools/media-limits';
@@ -99,17 +100,23 @@ export default function SlideshowPage() {
     }
   }
 
+  function handleReset() {
+    setFiles([]);
+    setError(null);
+    setProgress(0);
+    setResult((prev) => {
+      if (prev) URL.revokeObjectURL(prev.blobUrl);
+      return null;
+    });
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Film className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">이미지 → 슬라이드쇼 MP4</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 → 슬라이드쇼 MP4" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           여러 이미지를 일정 시간씩 보여주는 슬라이드쇼 영상을 만듭니다.
         </p>
-      </header>
 
       <FileDropZone
         accept="image/*,.jpg,.jpeg,.png,.webp,.gif"
@@ -185,6 +192,7 @@ export default function SlideshowPage() {
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
       {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} extraInfo={`${files.length}장 × ${duration}초 슬라이드쇼`} />}
-    </main>
+      </main>
+    </div>
   );
 }

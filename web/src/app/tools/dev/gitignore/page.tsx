@@ -1,8 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Copy, Download, FileX } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import {
   buildGitignore,
   type GitignoreTemplate,
@@ -56,15 +57,19 @@ export default function GitignoreGenPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleReset = () => {
+    setSelected([]);
+  };
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <FileX className="h-5 w-5 text-primary" aria-hidden />
-          .gitignore 생성기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title=".gitignore 생성기"
+        widthClass="max-w-3xl"
+        onReset={selected.length > 0 ? handleReset : undefined}
+      />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">언어·프레임워크·OS를 골라 .gitignore 파일을 조합합니다.</p>
-      </header>
 
       <div className="space-y-4 rounded-xl border bg-card p-4">
         {grouped.map(({ group, templates }) => (
@@ -115,6 +120,7 @@ export default function GitignoreGenPage() {
           </p>
         )}
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

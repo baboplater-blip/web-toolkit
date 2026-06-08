@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Squircle, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
 /**
@@ -97,17 +98,23 @@ export default function ImageRoundCornersPage() {
     }, 'image/png');
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setFileName('image');
+    setRadius(15);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Squircle className="h-5 w-5 text-primary" aria-hidden />
-          모서리 둥글게
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="모서리 둥글게" widthClass="max-w-2xl" onReset={bitmap ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           이미지 네 모서리를 둥글게 깎아 배경이 투명한 PNG 로 저장합니다.
         </p>
-      </header>
 
       {!bitmap && (
         <FileDropZone
@@ -175,18 +182,13 @@ export default function ImageRoundCornersPage() {
               <Download className="mr-2 h-4 w-4" aria-hidden />
               투명 PNG 다운로드
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                bitmap.close();
-                setBitmap(null);
-              }}
-            >
+            <Button variant="outline" onClick={handleReset}>
               다른 이미지
             </Button>
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

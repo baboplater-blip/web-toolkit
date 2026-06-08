@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Contact, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -196,15 +197,15 @@ export default function VcardParsePage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="vCard 파서" widthClass="max-w-4xl" />
     <main className="mx-auto max-w-4xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Contact className="h-5 w-5 text-primary" aria-hidden />
-          vCard 파서
-        </h1>
         <p className="text-sm text-muted-foreground">
           .vcf 연락처 파일을 읽어 이름·전화·이메일을 표로 보여주고 CSV 로 내보냅니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -290,5 +291,6 @@ export default function VcardParsePage() {
         </div>
       )}
     </main>
+    </div>
   );
 }

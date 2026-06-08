@@ -5,6 +5,7 @@ import { Scaling, Loader2, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
 
 type OutputFormat = 'jpeg' | 'webp';
@@ -134,15 +135,25 @@ export default function ImageTargetSizePage() {
     triggerDownload(result.blob, `${stripExtension(file.name)}-${targetKb}kb.${ext}`);
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setFile(null);
+    setResult(null);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Scaling className="h-5 w-5 text-primary" aria-hidden />
-          목표 용량 리사이즈
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="목표 용량 리사이즈" widthClass="max-w-2xl" onReset={file ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">원하는 파일 크기(예: 200KB)에 맞춰 이미지 품질을 자동 조정합니다.</p>
-      </header>
 
       {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
 
@@ -211,6 +222,7 @@ export default function ImageTargetSizePage() {
       )}
 
       <canvas ref={canvasRef} className="hidden" />
-    </main>
+      </main>
+    </div>
   );
 }

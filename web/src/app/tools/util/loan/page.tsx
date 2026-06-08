@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Landmark } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type TermUnit = 'years' | 'months';
 
@@ -80,17 +80,24 @@ export default function LoanCalcPage() {
     if (result) navigator.clipboard?.writeText(formatCurrency(result.monthlyPayment));
   }
 
+  function handleReset() {
+    setPrincipal('');
+    setAnnualRate('');
+    setTerm('');
+    setTermUnit('years');
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Landmark className="h-5 w-5 text-primary" aria-hidden />
-          대출 이자 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="대출 이자 계산기"
+        widthClass="max-w-xl"
+        onReset={principal || annualRate || term ? handleReset : undefined}
+      />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           원리금 균등상환 기준 월 상환액과 총이자를 계산합니다.
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <label className="block space-y-1">
@@ -197,6 +204,7 @@ export default function LoanCalcPage() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

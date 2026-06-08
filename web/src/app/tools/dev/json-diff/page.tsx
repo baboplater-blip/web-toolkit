@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { GitCompare } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type DiffKind = 'added' | 'removed' | 'changed';
 
@@ -150,15 +150,20 @@ export default function JsonDiffPage() {
     return { diffs, error: null, ready: true };
   }, [leftText, rightText]);
 
+  const handleReset = () => {
+    setLeftText('');
+    setRightText('');
+  };
+
   return (
-    <main className="mx-auto max-w-4xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <GitCompare className="h-5 w-5 text-primary" aria-hidden />
-          JSON 비교(구조적 diff)
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="JSON 비교(구조적 diff)"
+        widthClass="max-w-4xl"
+        onReset={leftText || rightText ? handleReset : undefined}
+      />
+      <main className="mx-auto max-w-4xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">두 JSON을 구조적으로 비교해 추가·삭제·변경된 키를 표시합니다.</p>
-      </header>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block space-y-1">
@@ -231,6 +236,7 @@ export default function JsonDiffPage() {
           )}
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

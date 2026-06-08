@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Subtitles, X } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
 import { explainFfmpegError, limitsHint, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
@@ -94,17 +95,21 @@ export default function BurnSubtitlePage() {
     }
   }
 
+  function handleReset() {
+    setVideo(null);
+    setSubtitle(null);
+    setResult(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Subtitles className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">비디오에 자막 굽기</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="비디오에 자막 굽기" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           SRT/VTT/ASS 자막을 영상 화면에 영구 결합한 MP4 를 만듭니다.
         </p>
-      </header>
 
       <section className="space-y-2">
         <p className="text-xs font-semibold">1. 비디오</p>
@@ -157,6 +162,7 @@ export default function BurnSubtitlePage() {
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
       {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} extraInfo="자막이 영상에 영구 결합된 MP4 (재생할 때 자막 트랙 토글 불가)" />}
-    </main>
+      </main>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, Merge, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { Loader2, X, ArrowUp, ArrowDown } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -118,15 +119,15 @@ export default function EpubMergePage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 병합" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Merge className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 병합</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           여러 EPUB 을 순서대로 하나로 묶습니다. 각 책의 챕터를 모두 보존합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -219,5 +220,6 @@ export default function EpubMergePage() {
         />
       )}
     </main>
+    </div>
   );
 }

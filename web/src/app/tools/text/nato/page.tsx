@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // NATO 음성문자 (ICAO 표준) + 숫자 발음
@@ -62,15 +62,15 @@ export default function NatoPhoneticPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="NATO 음성문자 변환" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Megaphone className="h-5 w-5 text-primary" aria-hidden />
-          NATO 음성문자 변환
-        </h1>
         <p className="text-sm text-muted-foreground">
           텍스트를 Alfa·Bravo·Charlie 같은 NATO 음성문자(숫자 포함)로 변환합니다.
         </p>
+
       </header>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -99,5 +99,6 @@ export default function NatoPhoneticPage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }

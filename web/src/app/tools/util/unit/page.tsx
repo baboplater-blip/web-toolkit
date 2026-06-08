@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Ruler, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Category = 'length' | 'weight' | 'temperature' | 'area' | 'speed' | 'volume';
 
@@ -113,17 +114,18 @@ export default function UnitPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setCategory('length');
+    setValue('1');
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Ruler className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">단위 변환기</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="단위 변환기" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           길이·무게·온도·면적·속도·부피 단위를 상호 변환합니다.
         </p>
-      </header>
 
       <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
         {(Object.keys(CATEGORIES) as Category[]).map((c) => (
@@ -186,6 +188,7 @@ export default function UnitPage() {
             })}
         </div>
       </section>
-    </main>
+      </main>
+    </div>
   );
 }

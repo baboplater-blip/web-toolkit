@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Music } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { cleanupFiles, getFFmpeg, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
 import { AUDIO_ACCEPT, explainFfmpegError, limitsHint, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
@@ -88,17 +89,21 @@ export default function AudioReplacePage() {
     }
   }
 
+  function handleReset() {
+    setVideo(null);
+    setAudio(null);
+    setResult(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Music className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">비디오 오디오 교체</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="비디오 오디오 교체" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           영상의 오디오를 다른 음원으로 교체하거나 두 트랙을 믹스합니다.
         </p>
-      </header>
 
       <section className="space-y-2">
         <p className="text-xs font-semibold">1. 비디오</p>
@@ -157,7 +162,8 @@ export default function AudioReplacePage() {
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
       {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} />}
-    </main>
+      </main>
+    </div>
   );
 }
 

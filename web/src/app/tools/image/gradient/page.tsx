@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PaintBucket, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
 type GradientType = 'linear' | 'radial';
@@ -92,15 +93,26 @@ export default function GradientImagePage() {
     triggerDownload(resultBlob, `gradient-${type}.png`);
   }
 
+  function handleReset() {
+    setStartColor(DEFAULT_START);
+    setEndColor(DEFAULT_END);
+    setType('linear');
+    setAngle('90');
+    setWidthInput('1920');
+    setHeightInput('1080');
+    setResultBlob(null);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <PaintBucket className="h-5 w-5 text-primary" aria-hidden />
-          그라디언트 이미지 생성
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="그라디언트 이미지 생성" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">색·방향·크기를 골라 그라디언트 배경 PNG를 생성합니다.</p>
-      </header>
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -216,6 +228,7 @@ export default function GradientImagePage() {
           </Button>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

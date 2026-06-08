@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, BarChart3 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import {
   collectFonts,
@@ -93,17 +94,20 @@ export default function PdfStatsPage() {
     }
   }
 
+  function handleReset() {
+    setFile(null);
+    setStats(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 통계</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          페이지·단어·문자·폰트·목차·메타데이터를 분석합니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 통계" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        페이지·단어·문자·폰트·목차·메타데이터를 분석합니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -188,7 +192,8 @@ export default function PdfStatsPage() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

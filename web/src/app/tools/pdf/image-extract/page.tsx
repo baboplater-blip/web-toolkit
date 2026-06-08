@@ -1,10 +1,11 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, Images, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { extractImagesFromPdf, openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -73,17 +74,21 @@ export default function PdfImageExtractPage() {
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    setFile(null);
+    setResult(null);
+    setError(null);
+    setCount(0);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Images className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 이미지 추출</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          PDF 페이지에 삽입된 이미지를 PNG 로 추출해 ZIP 으로 저장합니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 이미지 추출" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        PDF 페이지에 삽입된 이미지를 PNG 로 추출해 ZIP 으로 저장합니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -132,6 +137,7 @@ export default function PdfImageExtractPage() {
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
         <p>벡터 그래픽이나 마스킹된 이미지는 추출되지 않거나 형태가 다를 수 있습니다. 페이지 전체를 이미지화하려면 "PDF → JPG" 도구를 사용하세요.</p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

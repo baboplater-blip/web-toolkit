@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Type, Copy, Check, RefreshCw } from 'lucide-react';
+import { Copy, Check, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'paragraphs' | 'sentences' | 'words';
 
@@ -80,17 +81,19 @@ export default function LoremPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setMode('paragraphs');
+    setCount(3);
+    setStartWithLorem(true);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Type className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">Lorem Ipsum 생성</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="Lorem Ipsum 생성" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           디자인·목업용 더미 텍스트를 즉시 생성합니다.
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <div className="flex items-center gap-2">
@@ -147,6 +150,7 @@ export default function LoremPage() {
         readOnly
         value={output}
         className="h-72 w-full rounded-md border bg-card p-3 text-sm leading-relaxed" aria-label="결과" />
-    </main>
+      </main>
+    </div>
   );
 }

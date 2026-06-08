@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment, useMemo, useState } from 'react';
-import { SmilePlus } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 /**
  * 사전 기반 감성 분석(브라우저 전용, 모델 불필요).
@@ -126,16 +126,12 @@ export default function SentimentPage() {
   const result = useMemo(() => (input.trim() ? analyze(input) : null), [input]);
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <SmilePlus className="h-5 w-5 text-primary" aria-hidden />
-          감성 분석
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="감성 분석" widthClass="max-w-3xl" onReset={() => setInput('')} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           텍스트의 긍·부정 감성을 사전 기반으로 점수화합니다(영·한, 모델 불필요).
         </p>
-      </header>
 
       <textarea
         className="min-h-40 w-full rounded-xl border bg-card p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -198,6 +194,7 @@ export default function SentimentPage() {
         사전 기반 규칙 분석이라 비꼼·이중부정·문맥은 반영하지 못합니다. 모든 처리는 브라우저
         내부에서 수행되며 입력 텍스트는 서버로 전송되지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Copy, Fingerprint } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -217,16 +218,16 @@ export default function TextHashPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Fingerprint className="h-5 w-5 text-primary" aria-hidden />
-          텍스트 해시
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="텍스트 해시"
+        widthClass="max-w-3xl"
+        onReset={input ? () => setInput('') : undefined}
+      />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           입력한 텍스트의 MD5·SHA-1·SHA-256·SHA-512 해시를 생성합니다.
         </p>
-      </header>
 
       <textarea
         className="min-h-40 w-full rounded-xl border bg-card p-3 font-mono text-sm"
@@ -275,6 +276,7 @@ export default function TextHashPage() {
       <p className="text-xs text-muted-foreground">
         모든 해시는 브라우저 내부에서만 계산되며 입력 내용은 서버로 전송되지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

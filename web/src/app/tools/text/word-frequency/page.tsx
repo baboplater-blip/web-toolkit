@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Check, Copy, ListOrdered } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -89,13 +90,13 @@ export default function WordFrequencyPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="단어 빈도 분석" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <ListOrdered className="h-5 w-5 text-primary" aria-hidden />
-          단어 빈도 분석
-        </h1>
         <p className="text-sm text-muted-foreground">텍스트에서 단어별 출현 횟수를 세어 빈도순으로 보여줍니다.</p>
+
       </header>
 
       <textarea
@@ -209,5 +210,6 @@ export default function WordFrequencyPage() {
         )}
       </div>
     </main>
+    </div>
   );
 }

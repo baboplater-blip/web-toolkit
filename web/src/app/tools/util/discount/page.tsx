@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Tag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'forward' | 'reverse';
 
@@ -83,17 +83,21 @@ export default function DiscountPage() {
     }
   }
 
+  function handleReset() {
+    setMode('forward');
+    setListPrice('');
+    setDiscountRate('');
+    setOrigPrice('');
+    setSalePrice('');
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Tag className="h-5 w-5 text-primary" aria-hidden />
-          할인가 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="할인가 계산기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           정가와 할인율로 할인가·할인액을, 또는 역으로 할인율을 계산합니다.
         </p>
-      </header>
 
       <div className="grid grid-cols-2 gap-1.5">
         {(
@@ -200,6 +204,7 @@ export default function DiscountPage() {
         천단위 콤마는 자동으로 인식·표시됩니다. 모든 계산은 브라우저에서 즉시
         처리됩니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

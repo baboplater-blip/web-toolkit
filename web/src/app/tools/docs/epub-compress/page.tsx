@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, Archive } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -132,15 +133,15 @@ export default function EpubCompressPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 압축 (내부 이미지 최적화)" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Archive className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 압축 (내부 이미지 최적화)</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 안의 이미지를 재인코딩·축소해 전체 용량을 줄입니다. 텍스트는 그대로 유지됩니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -222,6 +223,7 @@ export default function EpubCompressPage() {
         />
       )}
     </main>
+    </div>
   );
 }
 

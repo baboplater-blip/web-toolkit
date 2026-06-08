@@ -1,8 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, Search, X, FileText } from 'lucide-react';
+import { Loader2, X, FileText } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { extractPlainText, openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -82,17 +83,21 @@ export default function PdfSearchPage() {
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    setFiles([]);
+    setQuery('');
+    setMatches(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">다중 PDF 텍스트 검색</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          여러 PDF 에서 키워드를 한꺼번에 찾고 페이지·문맥을 표시합니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="다중 PDF 텍스트 검색" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        여러 PDF 에서 키워드를 한꺼번에 찾고 페이지·문맥을 표시합니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -187,7 +192,8 @@ export default function PdfSearchPage() {
       {matches && matches.length === 0 && !busy && (
         <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">검색 결과 없음</div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

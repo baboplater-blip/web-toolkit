@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Diff } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { extractPlainText, openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -65,17 +66,21 @@ export default function PdfComparePage() {
     }
   }
 
+  function handleReset() {
+    setA(null);
+    setB(null);
+    setDiff(null);
+    setStats(null);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Diff className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 텍스트 비교</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          두 PDF 의 텍스트를 추출해 줄 단위로 차이점을 보여줍니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 텍스트 비교" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        두 PDF 의 텍스트를 추출해 줄 단위로 차이점을 보여줍니다.
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
@@ -138,6 +143,7 @@ export default function PdfComparePage() {
           </pre>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

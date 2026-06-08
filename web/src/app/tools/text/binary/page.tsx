@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Binary } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 /** 입력이 2진수(0·1 과 공백/개행만)인지 감지한다. */
@@ -74,15 +74,15 @@ export default function BinaryTextPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="텍스트 ↔ 2진수" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Binary className="h-5 w-5 text-primary" aria-hidden />
-          텍스트 ↔ 2진수
-        </h1>
         <p className="text-sm text-muted-foreground">
           텍스트를 UTF-8 8비트 2진수로, 또는 그 반대로 자동 변환합니다.
         </p>
+
       </header>
 
       <p className="text-xs text-muted-foreground" aria-live="polite">
@@ -124,5 +124,6 @@ export default function BinaryTextPage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }

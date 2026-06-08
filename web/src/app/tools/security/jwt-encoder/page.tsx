@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, KeySquare, Trash2 } from 'lucide-react';
+import { Check, Copy, Trash2 } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -109,17 +110,21 @@ export default function JwtEncoderPage() {
     }
   }
 
+  function handleReset() {
+    setPayloadText(DEFAULT_PAYLOAD);
+    setSecret('');
+    setToken('');
+    setError(null);
+    setCopied(false);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <KeySquare className="h-5 w-5 text-primary" aria-hidden />
-          JWT 서명 생성
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="JWT 서명 생성" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           헤더·페이로드·시크릿으로 HS256 서명된 JWT 를 만듭니다.
         </p>
-      </header>
 
       <div className="space-y-4 rounded-xl border bg-card p-4">
         <div className="space-y-1.5">
@@ -202,6 +207,7 @@ export default function JwtEncoderPage() {
       <p className="text-xs text-muted-foreground">
         서명은 브라우저 내부 WebCrypto 로만 계산되며 시크릿과 페이로드는 서버로 전송되지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

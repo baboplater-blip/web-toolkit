@@ -1,23 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRightLeft, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Direction = 'json-to-xml' | 'xml-to-json';
 
-export default function JsonXmlPage() {
-  const [direction, setDirection] = useState<Direction>('json-to-xml');
-  const [input, setInput] = useState(
-    `{
+const SAMPLE_JSON = `{
   "book": {
     "title": "Moby Dick",
     "author": "Herman Melville",
     "year": 1851,
     "tags": ["classic", "novel"]
   }
-}`,
-  );
+}`;
+
+export default function JsonXmlPage() {
+  const [direction, setDirection] = useState<Direction>('json-to-xml');
+  const [input, setInput] = useState(SAMPLE_JSON);
   const [output, setOutput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pretty, setPretty] = useState(true);
@@ -46,17 +47,22 @@ export default function JsonXmlPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setDirection('json-to-xml');
+    setInput(SAMPLE_JSON);
+    setOutput('');
+    setError(null);
+    setPretty(true);
+    setRootName('root');
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <ArrowRightLeft className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">JSON ↔ XML</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="JSON ↔ XML" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           JSON 과 XML 을 상호 변환합니다.
         </p>
-      </header>
 
       <div className="rounded-xl border bg-card p-3 space-y-2">
         <div className="flex flex-wrap gap-2">
@@ -108,7 +114,8 @@ export default function JsonXmlPage() {
           <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-48 leading-relaxed" aria-label="결과" />
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

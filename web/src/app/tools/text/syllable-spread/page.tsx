@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { LetterText, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { decomposeSyllable } from '@/lib/tools/korean';
 
@@ -55,15 +56,15 @@ export default function SyllableSpreadPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="한글 음절·자모 풀어쓰기" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <LetterText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">한글 음절·자모 풀어쓰기</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           한글을 음절 단위 / 자모 단위로 풀어 다양한 구분자로 표시합니다.
         </p>
+
       </header>
 
       <div className="space-y-2">
@@ -100,5 +101,6 @@ export default function SyllableSpreadPage() {
         <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed font-mono" aria-label="결과" />
       </div>
     </main>
+    </div>
   );
 }

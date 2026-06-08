@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { FlipHorizontal2, FlipVertical2, Download, Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
 type FlipAxis = 'horizontal' | 'vertical';
@@ -89,15 +90,22 @@ export default function ImageFlipPage() {
     }
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setFileName('image');
+    setAxis('horizontal');
+    clearResult();
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <FlipHorizontal2 className="h-5 w-5 text-primary" aria-hidden />
-          이미지 반전
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 반전" widthClass="max-w-2xl" onReset={bitmap ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이미지를 좌우 또는 상하로 뒤집어 저장합니다.</p>
-      </header>
 
       {!bitmap && (
         <FileDropZone
@@ -185,6 +193,7 @@ export default function ImageFlipPage() {
           </Button>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

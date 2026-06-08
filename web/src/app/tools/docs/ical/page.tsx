@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { CalendarPlus, Check, Copy, Download } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -187,15 +188,15 @@ export default function IcalGenPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="iCal 일정 생성기" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <CalendarPlus className="h-5 w-5 text-primary" aria-hidden />
-          iCal 일정 생성기
-        </h1>
         <p className="text-sm text-muted-foreground">
           제목·시간·장소를 입력해 캘린더에 추가할 .ics 파일을 만듭니다.
         </p>
+
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -311,5 +312,6 @@ export default function IcalGenPage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }

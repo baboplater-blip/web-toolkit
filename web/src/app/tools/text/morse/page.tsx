@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useRef, useState } from 'react';
-import { RadioTower, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // 텍스트 → 모스부호 매핑 (문자, 숫자, 일부 기호)
@@ -163,15 +164,15 @@ export default function MorseCodePage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="모스부호 번역" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <RadioTower className="h-5 w-5 text-primary" aria-hidden />
-          모스부호 번역
-        </h1>
         <p className="text-sm text-muted-foreground">
           텍스트와 모스부호를 서로 변환하고 소리로 재생합니다. 입력 형태를 자동으로 감지합니다.
         </p>
+
       </header>
 
       <p className="text-xs text-muted-foreground" aria-live="polite">
@@ -217,6 +218,7 @@ export default function MorseCodePage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }
 

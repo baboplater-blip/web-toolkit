@@ -1,10 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Braces, Check, Copy, Download } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { jsonToTypeScript } from '@/lib/tools/json-to-ts-convert';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 const SAMPLE = `{
   "id": 42,
@@ -53,17 +54,18 @@ export default function JsonToTsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleReset = () => {
+    setInput(SAMPLE);
+    setRootName('Root');
+  };
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Braces className="h-5 w-5 text-primary" aria-hidden />
-          JSON → TypeScript
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="JSON → TypeScript" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           JSON 을 붙여넣으면 TypeScript 인터페이스를 자동 생성합니다.
         </p>
-      </header>
 
       <label className="block max-w-xs space-y-1">
         <span className="text-sm font-medium">루트 인터페이스 이름</span>
@@ -119,6 +121,7 @@ export default function JsonToTsPage() {
           안에서 이뤄지며 데이터는 외부로 전송되지 않습니다.
         </p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

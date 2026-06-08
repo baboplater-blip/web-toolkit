@@ -1,5 +1,6 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useEffect, useRef, useState } from 'react';
 import { Volume2, Play, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -89,13 +90,9 @@ export default function TtsPage() {
 
   if (!supported) {
     return (
+      <div className="min-h-dvh bg-background">
+        <ToolHeader title="텍스트 음성 변환(TTS)" widthClass="max-w-xl" />
       <main className="mx-auto max-w-xl space-y-4 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Volume2 className="h-5 w-5 text-primary" aria-hidden />
-            텍스트 음성 변환(TTS)
-          </h1>
-        </header>
         <div
           role="alert"
           className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
@@ -104,16 +101,15 @@ export default function TtsPage() {
           이용해 주세요.
         </div>
       </main>
+      </div>
     );
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="텍스트 음성 변환(TTS)" widthClass="max-w-xl" />
     <main className="mx-auto max-w-xl space-y-4 p-4">
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Volume2 className="h-5 w-5 text-primary" aria-hidden />
-          텍스트 음성 변환(TTS)
-        </h1>
         <p className="text-sm text-muted-foreground">
           브라우저 음성 합성으로 텍스트를 읽어줍니다. 음성·속도·피치를 조절하세요.
         </p>
@@ -194,5 +190,6 @@ export default function TtsPage() {
         오디오 파일 내보내기는 브라우저 환경에서 불안정하여 제공하지 않습니다. 재생만 지원합니다.
       </p>
     </main>
+      </div>
   );
 }

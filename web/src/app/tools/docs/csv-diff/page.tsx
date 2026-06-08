@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Loader2, Diff } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 
@@ -126,13 +127,24 @@ export default function CsvDiffPage() {
 
   const headers = headersA.length >= headersB.length ? headersA : headersB;
 
+  function handleReset() {
+    setA(null);
+    setB(null);
+    setKeyCol(0);
+    setError(null);
+    setDiff(null);
+    setHeadersA([]);
+    setHeadersB([]);
+    setShowEq(false);
+    setVisible(INITIAL_VISIBLE);
+    setDupWarning(null);
+  }
+
   return (
-    <main className="mx-auto max-w-4xl space-y-4 p-4">
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="CSV 비교" widthClass="max-w-4xl" onReset={handleReset} />
+      <main className="mx-auto max-w-4xl space-y-4 p-4">
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Diff className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">CSV 비교</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           두 CSV 를 키 컬럼 기준으로 행 단위 비교합니다. 추가·삭제·변경 셀을 색으로 표시.
         </p>
@@ -259,6 +271,7 @@ export default function CsvDiffPage() {
           )}
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

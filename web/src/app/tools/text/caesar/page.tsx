@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { LockKeyhole } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ALPHABET_SIZE = 26;
@@ -59,16 +59,16 @@ export default function CaesarCipherPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="시저·ROT13 암호" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <LockKeyhole className="h-5 w-5 text-primary" aria-hidden />
-          시저·ROT13 암호
-        </h1>
         <p className="text-sm text-muted-foreground">
           텍스트를 시저 암호(자리 이동)·ROT13으로 암·복호화합니다. 영문 대소문자만 이동하며 나머지는
           보존합니다.
         </p>
+
       </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
@@ -124,5 +124,6 @@ export default function CaesarCipherPage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }

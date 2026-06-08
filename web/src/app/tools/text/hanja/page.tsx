@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Languages, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { hanjaToHangul } from '@/lib/tools/korean';
 
@@ -20,15 +21,15 @@ export default function HanjaPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="한자 → 한글 변환" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Languages className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">한자 → 한글 변환</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           한자를 한국 한자음(한글) 로 변환합니다. 자주 쓰이는 한자 위주 사전.
         </p>
+
       </header>
 
       <div className="space-y-2">
@@ -54,5 +55,6 @@ export default function HanjaPage() {
         <p>일상에서 자주 쓰이는 한자(~500자) 위주 사전입니다. 일부 동음이의 한자는 일반적인 음을 적용합니다.</p>
       </div>
     </main>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Check, Copy, Link } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // 국어의 로마자 표기법(개정안) 기반 자모 매핑.
@@ -84,13 +85,13 @@ export default function SlugifyPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="슬러그 변환" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Link className="h-5 w-5 text-primary" aria-hidden />
-          슬러그 변환
-        </h1>
         <p className="text-sm text-muted-foreground">제목을 URL 슬러그로 변환합니다. 한글은 로마자로 음역합니다.</p>
+
       </header>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card p-3 text-sm">
@@ -146,5 +147,6 @@ export default function SlugifyPage() {
         </div>
       </div>
     </main>
+    </div>
   );
 }

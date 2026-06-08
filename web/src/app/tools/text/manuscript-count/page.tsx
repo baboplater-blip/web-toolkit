@@ -1,7 +1,7 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { FileText } from 'lucide-react';
 
 export default function ManuscriptCountPage() {
   const [input, setInput] = useState('');
@@ -44,15 +44,15 @@ export default function ManuscriptCountPage() {
   }, [input]);
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="원고지 글자 수 세기" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">원고지 글자 수 세기</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           200자/400자 원고지 매수, 출판 페이지 환산까지 실시간으로 표시합니다.
         </p>
+
       </header>
 
       <div className="space-y-2">
@@ -84,6 +84,7 @@ export default function ManuscriptCountPage() {
         </ul>
       </div>
     </main>
+    </div>
   );
 }
 

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Zap } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
@@ -50,17 +51,19 @@ export default function PdfLinearizePage() {
     }
   }
 
+  function handleReset() {
+    setFile(null);
+    setResult(null);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Zap className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 웹 최적화 (Linearize)</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          중복 객체 제거·압축 스트림 재구성으로 PDF 파일을 정리합니다. 빠른 다운로드·웹 로딩에 유리.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 웹 최적화 (Linearize)" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        중복 객체 제거·압축 스트림 재구성으로 PDF 파일을 정리합니다. 빠른 다운로드·웹 로딩에 유리.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -97,6 +100,7 @@ export default function PdfLinearizePage() {
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
         <p>주의: 브라우저 라이브러리(pdf-lib) 는 PDF 1.4+ 의 Object Streams 까지 지원합니다. 정식 Linearize (Fast Web View) 는 PDF 서버 라이브러리에서만 가능하며, 본 도구는 재구성 + 압축 효과를 제공합니다.</p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

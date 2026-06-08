@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Droplet, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 interface RGB { r: number; g: number; b: number; a: number }
 interface HSL { h: number; s: number; l: number; a: number }
@@ -140,17 +141,17 @@ export default function ColorConverterPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setInput('#3b82f6');
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Droplet className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">색상 변환기</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="색상 변환기" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           HEX · RGB · HSL · OKLCH 표기를 상호 변환합니다.
         </p>
-      </header>
 
       <div className="space-y-2">
         <label className="text-xs font-medium text-muted-foreground">색상 입력</label>
@@ -210,6 +211,7 @@ export default function ColorConverterPage() {
           색상을 인식하지 못했습니다. 예: <code>#3b82f6</code>, <code>rgb(59, 130, 246)</code>
         </p>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

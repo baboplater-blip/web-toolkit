@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, Code2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -148,15 +149,15 @@ ${inlinedChapters.join('\n')}
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB → HTML" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Code2 className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB → HTML</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 을 단일 HTML 또는 챕터별 HTML ZIP 으로 변환합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -197,6 +198,7 @@ ${inlinedChapters.join('\n')}
         />
       )}
     </main>
+    </div>
   );
 }
 

@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Search, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 /** jsonpath-plus 의 JSONPath 함수 시그니처(필요한 부분만). */
 type JsonPathFn = (opts: { path: string; json: unknown }) => unknown[];
@@ -77,17 +78,20 @@ export default function JsonPathPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setJson(DEFAULT_JSON);
+    setPath('$.store.book[*].title');
+    setResult('');
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">JSONPath 테스터</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="JSONPath 테스터" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           JSONPath 표현식으로 JSON 의 특정 값을 추출합니다 — 실시간 평가.
         </p>
-      </header>
 
       <div className="space-y-2">
         <label className="text-xs font-medium">JSON</label>
@@ -142,6 +146,7 @@ export default function JsonPathPage() {
           <li><code>[0,1,2]</code> 다중 인덱스, <code>[-1:]</code> 마지막</li>
         </ul>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

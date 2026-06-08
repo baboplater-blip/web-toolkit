@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useEffect, useState } from 'react';
-import { Loader2, Table } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -133,15 +134,15 @@ export default function XlsxConvertPage() {
         : '.xlsx,.xls,.ods,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="XLSX ↔ CSV ↔ JSON" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Table className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">XLSX ↔ CSV ↔ JSON</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           Excel · CSV · JSON 사이를 자유롭게 변환합니다.
         </p>
+
       </header>
 
       <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -197,5 +198,6 @@ export default function XlsxConvertPage() {
         />
       )}
     </main>
+    </div>
   );
 }

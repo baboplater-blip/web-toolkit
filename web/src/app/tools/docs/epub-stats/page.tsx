@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, BarChart3 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import {
@@ -112,15 +113,15 @@ export default function EpubStatsPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 통계" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 통계</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           단어·문자·챕터·이미지 수와 챕터별 분량을 분석합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -189,6 +190,7 @@ export default function EpubStatsPage() {
         </div>
       )}
     </main>
+    </div>
   );
 }
 

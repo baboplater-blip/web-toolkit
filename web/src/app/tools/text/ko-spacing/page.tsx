@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Type, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { autoSpacing } from '@/lib/tools/korean';
 
@@ -19,15 +20,15 @@ export default function KoSpacingPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="한글 띄어쓰기 교정" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Type className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">한글 띄어쓰기 교정</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           자주 빠지는 띄어쓰기를 규칙 기반으로 교정합니다. 의존명사·조사·숫자 단위 우선.
         </p>
+
       </header>
 
       <div className="space-y-2">
@@ -63,5 +64,6 @@ export default function KoSpacingPage() {
         </ul>
       </div>
     </main>
+    </div>
   );
 }

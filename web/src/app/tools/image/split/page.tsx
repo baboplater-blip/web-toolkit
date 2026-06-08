@@ -5,6 +5,7 @@ import { Grid2x2, Download, Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { buildZip } from '@/lib/tools/zip-builder';
 import type { BatchOutput } from '@/lib/tools/folder-batch';
@@ -118,17 +119,25 @@ export default function ImageSplitPage() {
 
   const tileCount = rows * cols;
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Grid2x2 className="h-5 w-5 text-primary" aria-hidden />
-          이미지 그리드 분할
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 그리드 분할" widthClass="max-w-2xl" onReset={bitmap ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           이미지를 행·열 격자로 잘라 SNS 업로드용 조각으로 만들고 ZIP 으로 내려받습니다.
         </p>
-      </header>
 
       {!bitmap && (
         <FileDropZone
@@ -220,20 +229,13 @@ export default function ImageSplitPage() {
               )}
               {tileCount}개 조각 ZIP 다운로드
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                bitmap.close();
-                setBitmap(null);
-                if (previewUrl) URL.revokeObjectURL(previewUrl);
-                setPreviewUrl(null);
-              }}
-            >
+            <Button variant="outline" onClick={handleReset}>
               다른 이미지
             </Button>
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

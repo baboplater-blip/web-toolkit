@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Blend, Check, Copy, Plus, Trash2 } from 'lucide-react';
+import { Check, Copy, Plus, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type GradientKind = 'linear' | 'radial';
 
@@ -84,17 +85,19 @@ export default function CssGradientPage() {
     }
   };
 
+  const handleReset = () => {
+    setKind('linear');
+    setAngle(90);
+    setStops([createStop('#6366f1', 0), createStop('#ec4899', 100)]);
+  };
+
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Blend className="h-5 w-5 text-primary" aria-hidden />
-          CSS 그라디언트 생성기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="CSS 그라디언트 생성기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           색·각도를 조절해 CSS linear/radial 그라디언트를 미리보고 코드를 복사합니다.
         </p>
-      </header>
 
       <div
         className="h-44 w-full rounded-xl border"
@@ -213,6 +216,7 @@ export default function CssGradientPage() {
           {cssCode}
         </pre>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

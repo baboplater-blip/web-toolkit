@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, BookMarked } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { getPdfOutline, openPdfDoc, type OutlineNode } from '@/lib/tools/pdf-text';
 
@@ -52,17 +53,19 @@ export default function PdfBookmarksPage() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  function handleReset() {
+    setFile(null);
+    setOutline(null);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BookMarked className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 책갈피 보기</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          PDF 의 목차/책갈피 트리를 표시하고 Markdown 으로 내보냅니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 책갈피 보기" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        PDF 의 목차/책갈피 트리를 표시하고 Markdown 으로 내보냅니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -97,7 +100,8 @@ export default function PdfBookmarksPage() {
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
         <p>책갈피 편집은 PDF 사양상 복잡하여 현재 읽기 전용 + Markdown 내보내기만 지원합니다. 새 책갈피 생성은 다음 라운드 예정.</p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }
 

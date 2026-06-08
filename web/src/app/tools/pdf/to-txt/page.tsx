@@ -1,9 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, FileText, Copy, Check, X } from 'lucide-react';
+import { Loader2, Copy, Check, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { extractPlainText, openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -75,17 +76,22 @@ export default function PdfToTxtPage() {
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    setFile(null);
+    setText('');
+    setResult(null);
+    setError(null);
+    setCopied(false);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF → TXT</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          PDF 의 텍스트를 그대로 추출해 일반 텍스트 파일로 저장합니다. 스캔 PDF 는 OCR 도구를 사용하세요.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF → TXT" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        PDF 의 텍스트를 그대로 추출해 일반 텍스트 파일로 저장합니다. 스캔 PDF 는 OCR 도구를 사용하세요.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -148,6 +154,7 @@ export default function PdfToTxtPage() {
           blobUrl={result.blobUrl}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SlidersHorizontal, Loader2, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
 
 type FilterId =
@@ -138,15 +139,26 @@ export default function ImageFiltersPage() {
     triggerDownload(resultBlob, `${base}-${filterId}.png`);
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setFile(null);
+    setFilterId('grayscale');
+    setResultBlob(null);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <SlidersHorizontal className="h-5 w-5 text-primary" aria-hidden />
-          이미지 필터
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 필터" widthClass="max-w-2xl" onReset={file ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">흑백·세피아·빈티지 등 인스타 풍 필터를 적용해 저장합니다.</p>
-      </header>
 
       {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
 
@@ -199,6 +211,7 @@ export default function ImageFiltersPage() {
       )}
 
       <canvas ref={canvasRef} className="hidden" />
-    </main>
+      </main>
+    </div>
   );
 }

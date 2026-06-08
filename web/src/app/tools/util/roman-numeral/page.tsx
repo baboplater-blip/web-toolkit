@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowRightLeft, Sigma } from 'lucide-react';
+import { ArrowRightLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Direction = 'toRoman' | 'toArabic';
 
@@ -120,16 +121,16 @@ export default function RomanNumeralPage() {
   }
 
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Sigma className="h-5 w-5 text-primary" aria-hidden />
-          로마숫자 변환
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="로마숫자 변환"
+        widthClass="max-w-xl"
+        onReset={input ? () => setInput('') : undefined}
+      />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           아라비아 숫자와 로마숫자(I·V·X·L·C·D·M)를 서로 변환합니다. (1~3999)
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <label className="block space-y-1">
@@ -171,6 +172,7 @@ export default function RomanNumeralPage() {
           </Button>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

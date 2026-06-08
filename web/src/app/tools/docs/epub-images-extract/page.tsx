@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, Images } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -72,15 +73,15 @@ export default function EpubImagesExtractPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 이미지 일괄 추출" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Images className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 이미지 일괄 추출</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 안의 모든 이미지(표지·삽화 포함) 를 ZIP 으로 추출합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -116,5 +117,6 @@ export default function EpubImagesExtractPage() {
         />
       )}
     </main>
+    </div>
   );
 }

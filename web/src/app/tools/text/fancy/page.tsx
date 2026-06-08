@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Sparkles, Copy } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -150,15 +151,15 @@ export default function FancyTextPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="유니코드 폰트 생성" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Sparkles className="h-5 w-5 text-primary" aria-hidden />
-          유니코드 폰트 생성
-        </h1>
         <p className="text-sm text-muted-foreground">
           텍스트를 𝕗𝕒𝕟𝕔𝕪·𝓼𝓬𝓻𝓲𝓹𝓽 등 여러 유니코드 글꼴로 변환합니다. 각 스타일을 복사하세요.
         </p>
+
       </header>
 
       <textarea
@@ -194,5 +195,6 @@ export default function FancyTextPage() {
         ))}
       </ul>
     </main>
+    </div>
   );
 }

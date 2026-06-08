@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Keyboard, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { en2ko, ko2en } from '@/lib/tools/korean';
 
@@ -36,15 +37,15 @@ export default function KeyboardFlipPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="한영 자판 변환" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Keyboard className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">한영 자판 변환</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           한영키를 잘못 누르고 입력한 글을 바로 잡습니다. dkssudgktpdy → 안녕하세요.
         </p>
+
       </header>
 
       <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -76,5 +77,6 @@ export default function KeyboardFlipPage() {
         <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" aria-label="변환 결과" />
       </div>
     </main>
+    </div>
   );
 }

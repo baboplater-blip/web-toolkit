@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, Diff, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 // 재처리 디바운스(ms): 연속 슬라이더 조작 시 마지막 값만 처리.
 const COMPUTE_DEBOUNCE_MS = 250;
@@ -90,15 +91,22 @@ export default function ImageDiffPage() {
     }
   }
 
+  function handleReset() {
+    setA(null);
+    setB(null);
+    setResult((prev) => {
+      if (prev?.url) URL.revokeObjectURL(prev.url);
+      return null;
+    });
+    setError(null);
+    setLargeWarning(false);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Diff className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">이미지 시각 비교</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 시각 비교" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">두 이미지를 픽셀 단위로 비교해 차이를 빨강으로 표시.</p>
-      </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
@@ -135,7 +143,8 @@ export default function ImageDiffPage() {
           </a>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

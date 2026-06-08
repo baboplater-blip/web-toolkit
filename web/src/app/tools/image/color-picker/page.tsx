@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pipette, Check, Copy } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 interface PickedColor {
   hex: string;
@@ -95,15 +96,22 @@ export default function ImageColorPickerPage() {
     }
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setCurrent(null);
+    setRecent([]);
+    setCopied(null);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Pipette className="h-5 w-5 text-primary" aria-hidden />
-          이미지 색 추출·픽
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 색 추출·픽" widthClass="max-w-2xl" onReset={bitmap ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이미지를 올려 클릭한 지점의 색상 HEX·RGB를 추출합니다.</p>
-      </header>
 
       {!bitmap && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
 
@@ -185,6 +193,7 @@ export default function ImageColorPickerPage() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

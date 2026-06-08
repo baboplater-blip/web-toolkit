@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { Check, Copy, Dices, RefreshCw, Trash2 } from 'lucide-react';
+import { Check, Copy, RefreshCw, Trash2 } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -125,16 +126,16 @@ export default function DicewarePage() {
   }
 
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Dices className="h-5 w-5 text-primary" aria-hidden />
-          Diceware 패스프레이즈
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="Diceware 패스프레이즈"
+        widthClass="max-w-xl"
+        onReset={passphrase ? () => { setPassphrase(''); setCopied(false); } : undefined}
+      />
+      <main className="mx-auto max-w-xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           외우기 쉬운 단어 조합 패스프레이즈를 안전한 난수로 생성합니다.
         </p>
-      </header>
 
       <div className="space-y-4 rounded-xl border bg-card p-4">
         <label className="block space-y-1.5">
@@ -236,6 +237,7 @@ export default function DicewarePage() {
         단어는 {WORDLIST.length}개 목록에서 crypto.getRandomValues 로 선택되며, 모든 생성은 브라우저 안에서만
         이루어집니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

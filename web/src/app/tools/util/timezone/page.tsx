@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 /** Intl.supportedValuesOf 미지원 브라우저용 폴백 — 주요 도시 시간대. */
 const FALLBACK_ZONES = [
@@ -175,17 +175,19 @@ export default function TimezonePage() {
     }
   }
 
+  function handleReset() {
+    setFromZone(getLocalZone());
+    setToZone('UTC');
+    setDateTime(nowLocalInputValue());
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Globe className="h-5 w-5 text-primary" aria-hidden />
-          시간대 변환기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="시간대 변환기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           도시·시간대 간 시각을 변환하고 시차를 보여줍니다.
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <label className="block space-y-1">
@@ -297,6 +299,7 @@ export default function TimezonePage() {
         DST(서머타임)는 선택한 날짜 기준으로 자동 반영됩니다. 모든 계산은
         브라우저에서 즉시 처리됩니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

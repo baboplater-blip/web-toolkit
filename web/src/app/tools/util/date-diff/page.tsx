@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CalendarRange } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'diff' | 'add';
 
@@ -126,17 +126,22 @@ export default function DateDiffPage() {
     }
   }
 
+  function handleReset() {
+    const today = todayInputValue();
+    setMode('diff');
+    setStartDate(today);
+    setEndDate(today);
+    setBaseDate(today);
+    setOffsetDays('100');
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <CalendarRange className="h-5 w-5 text-primary" aria-hidden />
-          날짜 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="날짜 계산기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           두 날짜 사이의 일수를 구하거나 특정 날짜에 일수를 더합니다.
         </p>
-      </header>
 
       <div className="grid grid-cols-2 gap-1.5">
         {(
@@ -287,6 +292,7 @@ export default function DateDiffPage() {
         날짜는 시간대 영향을 받지 않도록 UTC 자정 기준으로 계산됩니다. 모든
         계산은 브라우저에서 즉시 처리됩니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

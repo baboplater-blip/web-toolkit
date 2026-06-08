@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { FileDigit, Download, Copy, Check } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
 type Mode = 'encode' | 'decode';
@@ -159,17 +160,24 @@ export default function ImageBase64Page() {
     setError(null);
   }
 
+  function handleReset() {
+    setDataUri('');
+    setDecodeInput('');
+    setCopied(false);
+    setDecoded((prev) => {
+      if (prev) URL.revokeObjectURL(prev.url);
+      return null;
+    });
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <FileDigit className="h-5 w-5 text-primary" aria-hidden />
-          이미지 ↔ Base64
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 ↔ Base64" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           이미지를 Base64 Data URI 로 변환하거나, Data URI / Base64 문자열을 이미지로 복원합니다.
         </p>
-      </header>
 
       <div className="grid grid-cols-2 gap-2">
         {(
@@ -283,6 +291,7 @@ export default function ImageBase64Page() {
           )}
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

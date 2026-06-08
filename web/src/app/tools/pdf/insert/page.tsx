@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, FilePlus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
@@ -79,17 +80,22 @@ export default function PdfInsertPage() {
     }
   }
 
+  function handleReset() {
+    setBase(null);
+    setInsert(null);
+    setPosition('end');
+    setAfterPage(1);
+    setResult(null);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FilePlus className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 페이지 삽입</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          다른 PDF 의 페이지를 대상 PDF 의 원하는 위치에 끼워 넣습니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 페이지 삽입" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        다른 PDF 의 페이지를 대상 PDF 의 원하는 위치에 끼워 넣습니다.
+      </p>
 
       <section className="space-y-2">
         <p className="text-xs font-semibold">1. 대상 PDF (기준 문서)</p>
@@ -155,6 +161,7 @@ export default function PdfInsertPage() {
           blobUrl={result.blobUrl}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }

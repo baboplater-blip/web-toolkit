@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, Images, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Layout = '2x2' | '3x3' | '4x4' | '1x2' | '2x1' | '3x2';
 
@@ -103,17 +104,23 @@ export default function CollagePage() {
 
   const total = LAYOUTS[layout].cols * LAYOUTS[layout].rows;
 
+  function handleReset() {
+    setFiles([]);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return '';
+    });
+    setError(null);
+    setLargeWarning(false);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Images className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">이미지 콜라주</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 콜라주" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           여러 이미지를 격자로 합쳐 한 장의 JPG 로 만듭니다. {total} 장 필요.
         </p>
-      </header>
 
       <FileDropZone
         accept="image/*"
@@ -189,7 +196,8 @@ export default function CollagePage() {
           </a>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

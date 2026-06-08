@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Check, Copy, Spline } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import {
   BEZIER_PRESETS,
   type BezierControls,
@@ -144,15 +145,15 @@ export default function CubicBezierPage() {
   // 미리보기 막대 위치를 곡선 끝점(진행률 100%) 기준으로 둔다.
   const previewEnd = evaluateEasing(controls, 1);
 
+  const handleReset = () => {
+    setControls({ ...BEZIER_PRESETS[0].controls });
+  };
+
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Spline className="h-5 w-5 text-primary" aria-hidden />
-          cubic-bezier 이징 편집기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="cubic-bezier 이징 편집기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">베지어 곡선을 드래그해 CSS transition-timing-function 값을 만듭니다.</p>
-      </header>
 
       <div className="flex flex-wrap gap-1.5 rounded-xl border bg-card p-3">
         <span className="mr-1 self-center text-sm font-medium">프리셋</span>
@@ -263,6 +264,7 @@ export default function CubicBezierPage() {
       </div>
 
       <style>{`@keyframes cubic-bezier-demo { from { transform: translateX(0); } to { transform: translateX(calc(100% - 1.5rem)); } }`}</style>
-    </main>
+      </main>
+    </div>
   );
 }

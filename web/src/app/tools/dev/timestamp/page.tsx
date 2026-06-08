@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Clock, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Unit = 'ms' | 's';
 
@@ -41,17 +42,19 @@ export default function TimestampPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setTsInput(String(Math.floor(Date.now() / 1000)));
+    setUnit('s');
+    setIsoInput(new Date().toISOString().slice(0, 19));
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">타임스탬프 변환</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="타임스탬프 변환" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           Unix 타임스탬프와 ISO·로컬 시각을 상호 변환합니다.
         </p>
-      </header>
 
       <section className="rounded-xl border bg-card p-4 space-y-2">
         <div className="flex items-center justify-between">
@@ -146,6 +149,7 @@ export default function TimestampPage() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </div>
   );
 }

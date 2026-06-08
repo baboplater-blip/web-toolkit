@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useRef, useState } from 'react';
-import { Loader2, X, BookOpen } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -198,15 +199,15 @@ export default function EpubToPdfPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB → PDF" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB → PDF</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 전자책을 PDF 로 변환합니다. 50 MB · 200 페이지 이하 권장.
         </p>
+
       </header>
 
       <FileDropZone
@@ -283,6 +284,7 @@ export default function EpubToPdfPage() {
         </ul>
       </div>
     </main>
+    </div>
   );
 }
 

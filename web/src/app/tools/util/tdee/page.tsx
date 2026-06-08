@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Flame } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Sex = 'male' | 'female';
 type UnitSystem = 'metric' | 'imperial';
@@ -100,17 +100,26 @@ export default function TdeePage() {
   const heightLabel = unit === 'metric' ? '키 (cm)' : '키 (inch)';
   const weightLabel = unit === 'metric' ? '몸무게 (kg)' : '몸무게 (lb)';
 
+  function handleReset() {
+    setSex('male');
+    setUnit('metric');
+    setAge('');
+    setHeight('');
+    setWeight('');
+    setActivityId('moderate');
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Flame className="h-5 w-5 text-primary" aria-hidden />
-          칼로리·TDEE 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="칼로리·TDEE 계산기"
+        widthClass="max-w-xl"
+        onReset={age || height || weight ? handleReset : undefined}
+      />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           키·몸무게·활동량으로 기초대사량과 하루 권장 칼로리를 계산합니다.
         </p>
-      </header>
 
       <div className="space-y-4 rounded-xl border bg-card p-4">
         <div className="grid grid-cols-2 gap-3">
@@ -273,6 +282,7 @@ export default function TdeePage() {
         Mifflin-St Jeor 공식 기반 추정치입니다. 개인차가 있으니 참고용으로
         사용하세요. 모든 계산은 브라우저에서 즉시 처리됩니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

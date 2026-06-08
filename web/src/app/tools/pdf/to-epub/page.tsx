@@ -1,9 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, BookPlus, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { buildEpub } from '@/lib/tools/epub-common';
 import { extractMarkdown, getPdfMetadata, openPdfDoc } from '@/lib/tools/pdf-text';
@@ -95,17 +96,23 @@ export default function PdfToEpubPage() {
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    setFile(null);
+    setTitle('');
+    setAuthor('');
+    setLanguage('ko');
+    setResult(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BookPlus className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF → EPUB</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          PDF 의 텍스트를 추출해 헤딩 단위로 챕터를 만들고 EPUB 전자책으로 만듭니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF → EPUB" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        PDF 의 텍스트를 추출해 헤딩 단위로 챕터를 만들고 EPUB 전자책으로 만듭니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -152,7 +159,8 @@ export default function PdfToEpubPage() {
           blobUrl={result.blobUrl}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

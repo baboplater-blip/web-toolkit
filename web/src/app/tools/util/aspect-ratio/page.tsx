@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Ratio } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 /** 마지막으로 사용자가 입력한 변 — 반대편을 자동 계산할 기준 */
 type LastEdited = 'width' | 'height';
@@ -78,17 +78,21 @@ export default function AspectRatioPage() {
     }
   }
 
+  function handleReset() {
+    setRatioW('16');
+    setRatioH('9');
+    setWidth('1920');
+    setHeight('');
+    setLastEdited('width');
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Ratio className="h-5 w-5 text-primary" aria-hidden />
-          화면비 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="화면비 계산기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           가로·세로 중 하나를 바꾸면 지정한 화면비(16:9 등)로 나머지를 계산합니다.
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <div className="space-y-1">
@@ -182,6 +186,7 @@ export default function AspectRatioPage() {
           </Button>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

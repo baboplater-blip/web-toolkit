@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Subtitles, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -59,15 +60,15 @@ export default function SubtitleEditPage() {
   const filename = `subtitle.${outputFormat}`;
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="자막 편집·시간 보정·변환" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Subtitles className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">자막 편집·시간 보정·변환</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           SRT · VTT · ASS · LRC 자막을 편집하고 시간을 보정한 뒤 원하는 포맷으로 내보냅니다.
         </p>
+
       </header>
 
       <FileDropZone accept=".srt,.vtt,.ass,.lrc,.txt,text/plain" onFiles={(f) => f[0] && handleFile(f[0])} title="자막 파일 드롭" />
@@ -132,6 +133,7 @@ export default function SubtitleEditPage() {
         </>
       )}
     </main>
+    </div>
   );
 }
 

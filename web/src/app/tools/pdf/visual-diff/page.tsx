@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Diff } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -56,17 +57,21 @@ export default function PdfVisualDiffPage() {
     }
   }
 
+  function handleReset() {
+    setA(null);
+    setB(null);
+    setDiffs(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Diff className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 시각 비교</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          두 PDF 의 같은 페이지를 픽셀 단위로 비교해 차이를 빨강·초록으로 표시합니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 시각 비교" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        두 PDF 의 같은 페이지를 픽셀 단위로 비교해 차이를 빨강·초록으로 표시합니다.
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
@@ -124,7 +129,8 @@ export default function PdfVisualDiffPage() {
           ))}
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

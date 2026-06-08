@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Type, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { decomposeAll } from '@/lib/tools/korean';
 
@@ -35,15 +36,15 @@ export default function JamoPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="한글 자모 분해" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Type className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">한글 자모 분해</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           한글 음절을 초성·중성·종성으로 풀어 표시합니다.
         </p>
+
       </header>
 
       <div className="space-y-2">
@@ -76,5 +77,6 @@ export default function JamoPage() {
         <p>예: 안 → ㅇㅏㄴ, 녕 → ㄴㅕㅇ. NLP 학습용 입력 전처리·자판 분석 등에 활용.</p>
       </div>
     </main>
+    </div>
   );
 }

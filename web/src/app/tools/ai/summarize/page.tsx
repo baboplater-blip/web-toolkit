@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { AlignLeft, Check, Copy } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -160,16 +161,12 @@ export default function SummarizePage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <AlignLeft className="h-5 w-5 text-primary" aria-hidden />
-          텍스트 요약(추출)
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="텍스트 요약(추출)" widthClass="max-w-3xl" onReset={() => setInput('')} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           문장 중요도를 분석해 핵심 문장을 골라 요약합니다(모델 불필요, 영·한 지원).
         </p>
-      </header>
 
       <div className="space-y-2 rounded-xl border bg-card p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -221,6 +218,7 @@ export default function SummarizePage() {
         추출 요약은 원문에 있는 문장만 골라냅니다(새 문장을 생성하지 않음). 모든 처리는 브라우저
         내부에서 수행되며 입력 텍스트는 서버로 전송되지 않습니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

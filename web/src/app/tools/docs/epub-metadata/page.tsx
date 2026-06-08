@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, FileEdit, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -84,15 +85,15 @@ export default function EpubMetadataPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 메타데이터 편집" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileEdit className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 메타데이터 편집</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           제목·저자·언어·설명·발행자·태그 등을 수정해 새 EPUB 으로 저장합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -182,6 +183,7 @@ export default function EpubMetadataPage() {
         />
       )}
     </main>
+    </div>
   );
 }
 

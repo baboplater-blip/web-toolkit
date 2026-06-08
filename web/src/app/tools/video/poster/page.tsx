@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, Image as ImageIcon, Download } from 'lucide-react';
+import { Loader2, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { limitsHint, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 
@@ -63,17 +64,24 @@ export default function PosterPage() {
     }
   }
 
+  function handleReset() {
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    if (posterUrl) URL.revokeObjectURL(posterUrl);
+    setFile(null);
+    setVideoUrl('');
+    setPosterUrl('');
+    setTime(0);
+    setDuration(0);
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <ImageIcon className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">비디오 포스터 추출</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="비디오 포스터 추출" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           비디오에서 특정 시각의 정지 화면을 캡처해 이미지로 저장합니다.
         </p>
-      </header>
 
       <FileDropZone
         accept={VIDEO_ACCEPT}
@@ -130,6 +138,7 @@ export default function PosterPage() {
           </a>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

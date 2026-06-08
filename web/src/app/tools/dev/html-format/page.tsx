@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Code2, Copy, Download } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { beautifyHtml, minifyHtml } from '@/lib/tools/html-format-formatter';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'beautify' | 'minify';
 
@@ -41,17 +42,18 @@ export default function HtmlFormatPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleReset = () => {
+    setInput(SAMPLE);
+    setMode('beautify');
+  };
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Code2 className="h-5 w-5 text-primary" aria-hidden />
-          HTML 정리·미화
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="HTML 정리·미화" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           HTML 을 들여쓰기로 정리하거나 한 줄로 압축합니다.
         </p>
-      </header>
 
       <div className="flex flex-wrap items-center gap-1.5">
         <span className="mr-1 text-sm font-medium">모드</span>
@@ -111,6 +113,7 @@ export default function HtmlFormatPage() {
           원본 그대로 보존합니다. 모든 처리는 브라우저 안에서 이뤄집니다.
         </p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

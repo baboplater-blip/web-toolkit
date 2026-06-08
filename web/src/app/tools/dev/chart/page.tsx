@@ -1,18 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { BarChart3, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type ChartType = 'bar' | 'line' | 'pie';
 
-export default function ChartPage() {
-  const [type, setType] = useState<ChartType>('bar');
-  const [data, setData] = useState(`서울, 9700
+const SAMPLE_DATA = `서울, 9700
 부산, 3400
 인천, 2900
 대구, 2400
-대전, 1500`);
+대전, 1500`;
+
+export default function ChartPage() {
+  const [type, setType] = useState<ChartType>('bar');
+  const [data, setData] = useState(SAMPLE_DATA);
   const [title, setTitle] = useState('인구 (천 명)');
   const [color, setColor] = useState('#6366f1');
   const [width, setWidth] = useState(800);
@@ -132,17 +135,22 @@ export default function ChartPage() {
     setDownloadUrl(url);
   }
 
+  function handleReset() {
+    setType('bar');
+    setData(SAMPLE_DATA);
+    setTitle('인구 (천 명)');
+    setColor('#6366f1');
+    setWidth(800);
+    setHeight(500);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">차트 → PNG</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="차트 → PNG" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           간단한 데이터를 막대·꺾은선·원그래프 PNG 로 만듭니다.
         </p>
-      </header>
 
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
@@ -199,7 +207,8 @@ export default function ChartPage() {
           PNG 다운로드
         </a>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

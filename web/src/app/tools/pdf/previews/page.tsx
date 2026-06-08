@@ -1,10 +1,11 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, Images, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -93,17 +94,22 @@ export default function PdfPreviewsPage() {
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    thumbs.forEach((t) => URL.revokeObjectURL(t.url));
+    setFile(null);
+    setThumbs([]);
+    setResult(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Images className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF 페이지 미리보기 PNG</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          모든 페이지를 PNG/JPG 이미지로 렌더해 ZIP 으로 저장합니다. (블로그 썸네일·SNS 공유용)
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF 페이지 미리보기 PNG" widthClass="max-w-3xl" onReset={handleReset} />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        모든 페이지를 PNG/JPG 이미지로 렌더해 ZIP 으로 저장합니다. (블로그 썸네일·SNS 공유용)
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -180,6 +186,7 @@ export default function PdfPreviewsPage() {
           blobUrl={result.blobUrl}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }

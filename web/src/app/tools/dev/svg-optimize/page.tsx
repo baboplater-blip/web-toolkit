@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Copy, Download, Shrink } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import {
   byteLength,
   DEFAULT_OPTIONS,
@@ -80,15 +81,20 @@ export default function SvgOptimizePage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleReset = () => {
+    setInput('');
+    setOptions({ ...DEFAULT_OPTIONS });
+  };
+
   return (
-    <main className="mx-auto max-w-4xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Shrink className="h-5 w-5 text-primary" aria-hidden />
-          SVG 최적화
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="SVG 최적화"
+        widthClass="max-w-4xl"
+        onReset={input ? handleReset : undefined}
+      />
+      <main className="mx-auto max-w-4xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">SVG의 불필요한 메타데이터·공백·소수점을 정리해 용량을 줄입니다.</p>
-      </header>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-4">
         {TOGGLE_FIELDS.map((field) => (
@@ -178,6 +184,7 @@ export default function SvgOptimizePage() {
           다운로드
         </Button>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

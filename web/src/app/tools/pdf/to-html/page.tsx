@@ -1,9 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, Code2, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { extractMarkdown, openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -82,17 +83,20 @@ ${html}
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    setFile(null);
+    setResult(null);
+    setError(null);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Code2 className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF → HTML</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          PDF 텍스트를 헤딩·단락 구조의 HTML 페이지로 변환합니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF → HTML" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        PDF 텍스트를 헤딩·단락 구조의 HTML 페이지로 변환합니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -131,7 +135,8 @@ ${html}
           blobUrl={result.blobUrl}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

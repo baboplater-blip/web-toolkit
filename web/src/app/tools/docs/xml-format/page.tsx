@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Check, CodeXml, Copy, Download } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
@@ -230,15 +231,15 @@ export default function XmlFormatPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="XML 정리·미화" widthClass="max-w-3xl" />
     <main className="mx-auto max-w-3xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <CodeXml className="h-5 w-5 text-primary" aria-hidden />
-          XML 정리·미화
-        </h1>
         <p className="text-sm text-muted-foreground">
           XML 을 들여쓰기로 정리하거나 한 줄로 압축합니다.
         </p>
+
       </header>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -313,5 +314,6 @@ export default function XmlFormatPage() {
         </Button>
       </div>
     </main>
+    </div>
   );
 }

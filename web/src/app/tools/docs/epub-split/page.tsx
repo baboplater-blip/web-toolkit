@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useEffect, useState } from 'react';
-import { Loader2, SplitSquareHorizontal } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -125,15 +126,15 @@ export default function EpubSplitPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 챕터별 분할" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <SplitSquareHorizontal className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 챕터별 분할</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           선택한 챕터를 각각 독립된 EPUB 파일로 만들어 ZIP 으로 묶습니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -196,5 +197,6 @@ export default function EpubSplitPage() {
         />
       )}
     </main>
+    </div>
   );
 }

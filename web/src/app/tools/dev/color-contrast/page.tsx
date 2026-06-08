@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Contrast } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 interface Rgb {
   r: number;
@@ -82,17 +82,18 @@ export default function ColorContrastPage() {
   const fgHex = fg ? toHexString(fg) : '#000000';
   const bgHex = bg ? toHexString(bg) : '#ffffff';
 
+  const handleReset = () => {
+    setFgInput('#1a1a1a');
+    setBgInput('#ffffff');
+  };
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Contrast className="h-5 w-5 text-primary" aria-hidden />
-          색상 대비 검사기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="색상 대비 검사기" widthClass="max-w-xl" onReset={handleReset} />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           두 색의 WCAG 명도 대비비를 계산하고 AA·AAA 통과 여부를 보여줍니다.
         </p>
-      </header>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 rounded-xl border bg-card p-4">
@@ -181,6 +182,7 @@ export default function ColorContrastPage() {
           18.66px) 이상입니다.
         </p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

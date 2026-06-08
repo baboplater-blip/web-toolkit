@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, FileText, Copy, Check } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
@@ -72,15 +73,15 @@ export default function DocxToMdPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="DOCX → Markdown" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">DOCX → Markdown</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           Word 문서를 Markdown 으로 변환합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -140,5 +141,6 @@ export default function DocxToMdPage() {
         </div>
       )}
     </main>
+    </div>
   );
 }

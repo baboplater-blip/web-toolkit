@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { WholeWord } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 const EN_ONES = [
   'zero',
@@ -230,16 +230,16 @@ export default function NumberToWordsPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <WholeWord className="h-5 w-5 text-primary" aria-hidden />
-          숫자 → 한글·영문 표기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="숫자 → 한글·영문 표기"
+        widthClass="max-w-3xl"
+        onReset={input ? () => setInput('') : undefined}
+      />
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           숫자를 한글(일십백천만억)·영문 단어 표기로 변환합니다.
         </p>
-      </header>
 
       <div className="space-y-2 rounded-xl border bg-card p-4">
         <label className="block space-y-1">
@@ -304,6 +304,7 @@ export default function NumberToWordsPage() {
       <p className="text-xs text-muted-foreground">
         모든 변환은 브라우저에서 즉시 처리됩니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

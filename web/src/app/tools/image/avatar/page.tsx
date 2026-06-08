@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CircleUserRound, Loader2, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
 
 const SIZE_OPTIONS = [128, 256, 512, 1024] as const;
@@ -99,15 +100,25 @@ export default function AvatarCropPage() {
     triggerDownload(resultBlob, `${stripExtension(file.name)}-avatar-${size}.png`);
   }
 
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setFile(null);
+    setResultBlob(null);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <CircleUserRound className="h-5 w-5 text-primary" aria-hidden />
-          원형 아바타 크롭
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="원형 아바타 크롭" widthClass="max-w-2xl" onReset={file ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이미지를 원형으로 잘라 프로필 사진용 투명 PNG로 저장합니다.</p>
-      </header>
 
       {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
 
@@ -163,6 +174,7 @@ export default function AvatarCropPage() {
       )}
 
       <canvas ref={canvasRef} className="hidden" />
-    </main>
+      </main>
+    </div>
   );
 }

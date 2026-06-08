@@ -1,9 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, FileText, Copy, Check, X } from 'lucide-react';
+import { Loader2, Copy, Check, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { extractMarkdown, openPdfDoc } from '@/lib/tools/pdf-text';
 
@@ -70,17 +71,22 @@ export default function PdfToMdPage() {
     if (abortRef.current) abortRef.current.aborted = true;
   }
 
+  function handleReset() {
+    setFile(null);
+    setMd('');
+    setResult(null);
+    setError(null);
+    setCopied(false);
+    setProgress(0);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">PDF → Markdown</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          폰트 크기로 헤딩을 추정해 # / ## / ### 구조로 변환합니다.
-        </p>
-      </header>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="PDF → Markdown" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
+      <p className="text-sm text-muted-foreground">
+        폰트 크기로 헤딩을 추정해 # / ## / ### 구조로 변환합니다.
+      </p>
 
       <FileDropZone
         accept="application/pdf,.pdf"
@@ -136,6 +142,7 @@ export default function PdfToMdPage() {
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
         <p>휴리스틱 헤딩 검출입니다. 모든 PDF 에서 완벽하지 않을 수 있습니다.</p>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

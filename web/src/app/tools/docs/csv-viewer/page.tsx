@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ArrowUpDown, Table } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Input } from '@/components/ui/input';
 
@@ -200,15 +201,15 @@ export default function CsvViewerPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="CSV 뷰어" widthClass="max-w-5xl" />
     <main className="mx-auto max-w-5xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Table className="h-5 w-5 text-primary" aria-hidden />
-          CSV 뷰어
-        </h1>
         <p className="text-sm text-muted-foreground">
           CSV 파일을 표로 미리보고 열 정렬·검색·필터를 적용합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -329,5 +330,6 @@ export default function CsvViewerPage() {
         </div>
       )}
     </main>
+    </div>
   );
 }

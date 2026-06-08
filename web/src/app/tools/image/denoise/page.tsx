@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, Sparkles, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 // 미리보기 재처리 디바운스(ms): 연속 슬라이더 조작 시 마지막 값만 처리.
 const RENDER_DEBOUNCE_MS = 250;
@@ -90,15 +91,22 @@ export default function DenoisePage() {
     }
   }
 
+  function handleReset() {
+    setFile(null);
+    setStrength(2);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return '';
+    });
+    setError(null);
+    setLargeWarning(false);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">이미지 노이즈 제거</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="이미지 노이즈 제거" widthClass="max-w-2xl" onReset={file ? handleReset : undefined} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">미디언 필터로 노이즈를 줄입니다. 작은 사진 권장.</p>
-      </header>
 
       <FileDropZone accept="image/*" onFiles={(f) => setFile(f[0] ?? null)} title="이미지 1장 드롭" />
 
@@ -131,7 +139,8 @@ export default function DenoisePage() {
           </a>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
 

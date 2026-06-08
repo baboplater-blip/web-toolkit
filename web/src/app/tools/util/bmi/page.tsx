@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Scale } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type UnitSystem = 'metric' | 'imperial';
 
@@ -87,17 +87,23 @@ export default function BmiCalcPage() {
     if (result) navigator.clipboard?.writeText(result.bmi.toFixed(1));
   }
 
+  function handleReset() {
+    setUnit('metric');
+    setHeight('');
+    setWeight('');
+  }
+
   return (
-    <main className="mx-auto max-w-xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Scale className="h-5 w-5 text-primary" aria-hidden />
-          BMI 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader
+        title="BMI 계산기"
+        widthClass="max-w-xl"
+        onReset={height || weight ? handleReset : undefined}
+      />
+      <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           키와 몸무게로 체질량지수(BMI)를 계산하고 비만도 구간을 보여줍니다.
         </p>
-      </header>
 
       <div className="space-y-3 rounded-xl border bg-card p-4">
         <div className="flex gap-1.5" role="group" aria-label="단위계 선택">
@@ -196,6 +202,7 @@ export default function BmiCalcPage() {
           </p>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

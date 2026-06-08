@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useEffect, useState } from 'react';
-import { Loader2, ImageIcon, Download } from 'lucide-react';
+import { Loader2, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { fmtBytes, parseEpub, resolveHref } from '@/lib/tools/epub-common';
@@ -63,15 +64,15 @@ export default function EpubCoverExtractPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB 표지 추출" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <ImageIcon className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB 표지 추출</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 의 표지 이미지를 원본 그대로 추출합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -109,5 +110,6 @@ export default function EpubCoverExtractPage() {
         </div>
       )}
     </main>
+    </div>
   );
 }

@@ -1,8 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Database, Copy, Check, Loader2 } from 'lucide-react';
+import { Copy, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
+
+const SAMPLE_SQL =
+  'select u.id,u.name,count(o.id) as orders from users u left join orders o on u.id=o.user_id where u.active=1 group by u.id,u.name having count(o.id)>0 order by orders desc limit 10;';
 
 const DIALECTS = [
   { value: 'sql', label: '표준 SQL' },
@@ -19,9 +23,7 @@ const DIALECTS = [
 type Dialect = (typeof DIALECTS)[number]['value'];
 
 export default function SqlFormatPage() {
-  const [input, setInput] = useState(
-    'select u.id,u.name,count(o.id) as orders from users u left join orders o on u.id=o.user_id where u.active=1 group by u.id,u.name having count(o.id)>0 order by orders desc limit 10;',
-  );
+  const [input, setInput] = useState(SAMPLE_SQL);
   const [output, setOutput] = useState('');
   const [dialect, setDialect] = useState<Dialect>('sql');
   const [tabWidth, setTabWidth] = useState(2);
@@ -74,17 +76,19 @@ export default function SqlFormatPage() {
     } catch {}
   }
 
+  function handleReset() {
+    setInput(SAMPLE_SQL);
+    setOutput('');
+    setError(null);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-4 p-4">
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Database className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">SQL 포맷터</h1>
-        </div>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="SQL 포맷터" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           SQL 쿼리를 보기 좋게 정렬·들여쓰기합니다. 10종 SQL 방언 지원.
         </p>
-      </header>
 
       <div className="rounded-xl border bg-card p-3 space-y-2">
         <div className="grid grid-cols-3 gap-2">
@@ -149,6 +153,7 @@ export default function SqlFormatPage() {
           <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-72 leading-relaxed" aria-label="결과" />
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

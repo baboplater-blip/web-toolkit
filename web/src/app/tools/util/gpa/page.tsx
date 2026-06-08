@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { GraduationCap, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type ScaleId = '4.5' | '4.3' | '4.0';
 
@@ -135,17 +136,18 @@ export default function GpaPage() {
     }
   }
 
+  function handleReset() {
+    setScale('4.5');
+    setRows([makeRow(), makeRow(), makeRow()]);
+  }
+
   return (
-    <main className="mx-auto max-w-2xl space-y-5 p-4">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <GraduationCap className="h-5 w-5 text-primary" aria-hidden />
-          학점(GPA) 계산기
-        </h1>
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="학점(GPA) 계산기" widthClass="max-w-2xl" onReset={handleReset} />
+      <main className="mx-auto max-w-2xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           과목별 학점·등급으로 평점평균(GPA)을 계산합니다.
         </p>
-      </header>
 
       <div className="space-y-1">
         <span className="text-sm font-medium">평점 스케일</span>
@@ -259,6 +261,7 @@ export default function GpaPage() {
         학점수와 등급이 모두 입력된 과목만 평균에 반영됩니다. 모든 계산은
         브라우저에서 즉시 처리됩니다.
       </p>
-    </main>
+      </main>
+    </div>
   );
 }

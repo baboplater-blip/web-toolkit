@@ -1,7 +1,8 @@
 'use client';
 
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
-import { Loader2, FileText } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -88,15 +89,15 @@ export default function EpubToMdPage() {
   }
 
   return (
+    <div className="min-h-dvh bg-background">
+      <ToolHeader title="EPUB → Markdown" widthClass="max-w-2xl" />
     <main className="mx-auto max-w-2xl space-y-4 p-4">
+
       <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">EPUB → Markdown</h1>
-        </div>
         <p className="text-sm text-muted-foreground">
           EPUB 의 챕터별 본문을 Markdown 으로 변환합니다.
         </p>
+
       </header>
 
       <FileDropZone
@@ -145,5 +146,6 @@ export default function EpubToMdPage() {
         />
       )}
     </main>
+    </div>
   );
 }
