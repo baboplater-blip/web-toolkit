@@ -38,6 +38,7 @@ export default function BarcodePage() {
   useEffect(() => {
     if (!text.trim()) {
       setError(null);
+      svgRef.current?.replaceChildren();
       return;
     }
     import('jsbarcode').then((mod) => {

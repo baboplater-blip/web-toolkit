@@ -15,6 +15,7 @@ import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
 interface ResultData {
+  blob: Blob;
   url: string;
   size: number;
   name: string;
@@ -190,7 +191,7 @@ export default function ScreenRecordPage() {
         const url = URL.createObjectURL(blob);
         resultUrlRef.current = url;
         const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-        setResult({ url, size: blob.size, name: `screen-record-${stamp}.webm` });
+        setResult({ blob, url, size: blob.size, name: `screen-record-${stamp}.webm` });
       };
 
       recorder.start(1000); // 1초마다 청크 flush → 긴 녹화 메모리 안정
@@ -332,11 +333,7 @@ export default function ScreenRecordPage() {
               className="w-full rounded-lg max-h-[400px] bg-black"
             />
             <Button
-              onClick={() =>
-                fetch(result.url)
-                  .then((r) => r.blob())
-                  .then((b) => triggerDownload(b, result.name))
-              }
+              onClick={() => triggerDownload(result.blob, result.name)}
               className="w-full"
             >
               <Download className="h-4 w-4 mr-1.5" />

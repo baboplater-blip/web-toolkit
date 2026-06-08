@@ -1,8 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Search, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+/** jsonpath-plus 의 JSONPath 함수 시그니처(필요한 부분만). */
+type JsonPathFn = (opts: { path: string; json: unknown }) => unknown[];
 
 const DEFAULT_JSON = `{
   "store": {
@@ -27,21 +30,43 @@ export default function JsonPathPage() {
   const [json, setJson] = useState(DEFAULT_JSON);
   const [path, setPath] = useState('$.store.book[*].title');
   const [copied, setCopied] = useState(false);
+  const [result, setResult] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const { result, error } = useMemo(() => {
-    if (!json.trim() || !path.trim()) return { result: '', error: null };
-    try {
-      const obj = JSON.parse(json);
-      // jsonpath-plus 는 dynamic import 불가능 (top-level export 가 객체)
-      // 그러므로 동기 import 시 lazy 안 됨. 여기서는 require 비슷한 방식 X
-      // — 그냥 useEffect 로 비동기 처리하기보다 evaluator 함수로 호출.
-      // jsonpath-plus 는 require 없이 named export 됨
-      const mod = require('jsonpath-plus') as { JSONPath: (opts: { path: string; json: unknown }) => unknown[] };
-      const out = mod.JSONPath({ path, json: obj });
-      return { result: JSON.stringify(out, null, 2), error: null };
-    } catch (e) {
-      return { result: '', error: e instanceof Error ? e.message : '오류' };
-    }
+  // jsonpath-plus 는 정적 export 의 브라우저 ESM 번들에서 require 불가 →
+  // 동적 import 로 1회 로드해 ref 에 보관(다른 도구의 await import 패턴과 동일).
+  const jsonPathRef = useRef<JsonPathFn | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setError(null);
+
+      if (!json.trim() || !path.trim()) {
+        if (!cancelled) setResult('');
+        return;
+      }
+
+      try {
+        if (!jsonPathRef.current) {
+          const { JSONPath } = await import('jsonpath-plus');
+          jsonPathRef.current = JSONPath as JsonPathFn;
+        }
+        const obj: unknown = JSON.parse(json);
+        const out = jsonPathRef.current({ path, json: obj });
+        if (!cancelled) setResult(JSON.stringify(out, null, 2));
+      } catch (err) {
+        if (!cancelled) {
+          setResult('');
+          setError(err instanceof Error ? err.message : '오류');
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [json, path]);
 
   async function handleCopy() {

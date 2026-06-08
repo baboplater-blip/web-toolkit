@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import DOMPurify from 'dompurify';
 import { ArrowLeft, ArrowRightLeft, Copy, Check, Download, FileText } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -28,6 +29,17 @@ export default function MdHtmlPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+
+  // 미리보기 렌더에만 DOMPurify 로 정화한다. 복사/다운로드용 raw HTML(output)은
+  // 사용자가 의도한 변환 결과이므로 그대로 두고, dangerouslySetInnerHTML 주입에서만 XSS 차단.
+  // DOMPurify 는 window 가 필요하므로 정적 export prerender(Node)에선 건너뛰고 클라이언트에서만 정화.
+  const previewHtml = useMemo(
+    () =>
+      dir === 'md-to-html' && typeof window !== 'undefined'
+        ? DOMPurify.sanitize(output)
+        : '',
+    [output, dir],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -165,7 +177,7 @@ export default function MdHtmlPage() {
             {showPreview && dir === 'md-to-html' ? (
               <div
                 className="w-full h-[28rem] rounded-lg border bg-background px-3 py-2 text-sm overflow-auto prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: output }}
+                dangerouslySetInnerHTML={{ __html: previewHtml }}
               />
             ) : (
               <textarea

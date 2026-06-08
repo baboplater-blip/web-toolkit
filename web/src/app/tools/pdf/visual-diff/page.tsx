@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Loader2, Diff } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
@@ -22,12 +22,7 @@ export default function PdfVisualDiffPage() {
   const [diffs, setDiffs] = useState<PageDiff[] | null>(null);
   const [scale, setScale] = useState(1.0);
 
-  useEffect(() => {
-    return () => {
-      diffs?.forEach((d) => d.imageDataUrl.startsWith('blob:') && URL.revokeObjectURL(d.imageDataUrl));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // 결과 이미지는 canvas.toDataURL 로 만든 data: URL 이라 objectURL 해제가 필요 없다.
 
   async function handleProcess() {
     if (!a || !b) {

@@ -107,7 +107,7 @@ export default function PosterPage() {
               {format === 'jpeg' && (
                 <div className="space-y-1">
                   <label className="text-xs font-medium">품질 ({Math.round(quality * 100)}%)</label>
-                  <input type="range" min={50} max={100} value={Math.round(quality * 100)} onChange={(e) => setQuality(Number(e.target.value) / 100)} className="w-full" aria-label="품질 ( %)" />
+                  <input type="range" min={50} max={100} value={Math.round(quality * 100)} onChange={(e) => setQuality(Number(e.target.value) / 100)} className="w-full" aria-label="품질" />
                 </div>
               )}
             </div>

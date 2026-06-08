@@ -146,7 +146,7 @@ export default function BatchWatermarkPage() {
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">불투명도 ({Math.round(opacity * 100)}%)</label>
-          <input type="range" min={10} max={100} value={Math.round(opacity * 100)} onChange={(e) => setOpacity(Number(e.target.value) / 100)} className="w-full" aria-label="불투명도 ( %)" />
+          <input type="range" min={10} max={100} value={Math.round(opacity * 100)} onChange={(e) => setOpacity(Number(e.target.value) / 100)} className="w-full" aria-label="불투명도" />
         </div>
         <label className="flex items-center gap-2 text-xs">
           <input type="checkbox" className="h-4 w-4" checked={shadow} onChange={(e) => setShadow(e.target.checked)} />

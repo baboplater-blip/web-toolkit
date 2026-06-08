@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import {
   ArrowLeft,
@@ -45,11 +45,7 @@ export default function PdfSplitPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResultState | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (result) URL.revokeObjectURL(URL.createObjectURL(result.blob));
-    };
-  }, [result]);
+  // 결과 Blob 은 보관만 하고, 다운로드 시 triggerDownload 가 objectURL 수명을 직접 관리한다.
 
   const acceptFile = async (f: File) => {
     if (!isPdfFile(f)) {

@@ -31,7 +31,7 @@ const RULES: Rule[] = [
     key: 'rrn',
     label: '주민등록번호',
     re: /\b\d{6}[-\s]?\d{7}\b/g,
-    mask: (m) => m.replace(/(\d{6}[-\s]?\d)\d{6}/, '$1******'),
+    mask: (m) => m.replace(/\d/g, '*'),
   },
   {
     key: 'card',

@@ -85,7 +85,7 @@ export const metadata: Metadata = {
         url: '/og/default.png',
         width: 1200,
         height: 630,
-        alt: 'Web Toolkit — 브라우저에서 완결되는 무료 도구 109종',
+        alt: 'Web Toolkit — 브라우저에서 완결되는 무료 도구 모음',
       },
     ],
   },

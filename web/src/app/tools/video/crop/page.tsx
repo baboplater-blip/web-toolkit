@@ -30,6 +30,7 @@ import { formatBytes } from '@/lib/compress/format';
 
 interface ResultData {
   url: string;
+  blob: Blob;
   size: number;
   name: string;
 }
@@ -199,7 +200,7 @@ export default function VideoCropPage() {
       const url = URL.createObjectURL(blob);
 
       const base = file.name.replace(/\.[^.]+$/, '');
-      setResult({ url, size: blob.size, name: `${base}-cropped.mp4` });
+      setResult({ url, blob, size: blob.size, name: `${base}-cropped.mp4` });
       setProgress(100);
       setStage('완료');
 
@@ -362,11 +363,7 @@ export default function VideoCropPage() {
               className="w-full rounded-lg max-h-[400px] bg-black"
             />
             <Button
-              onClick={() =>
-                fetch(result.url)
-                  .then((r) => r.blob())
-                  .then((b) => triggerDownload(b, result.name))
-              }
+              onClick={() => triggerDownload(result.blob, result.name)}
               className="w-full"
             >
               <Download className="h-4 w-4 mr-1.5" />

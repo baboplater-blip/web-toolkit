@@ -33,14 +33,19 @@ export default function BurnSubtitlePage() {
     setBusy(true);
     setProgress(0);
     setResult(null);
+
+    // 입력 확장자를 보존해 webm/mov 등도 FFmpeg 가 컨테이너를 올바로 인식하게 한다.
+    const inExt = video.name.split('.').pop()?.toLowerCase() || 'mp4';
+    const inName = `in.${inExt}`;
+    const subExt = subtitle.name.split('.').pop()?.toLowerCase() ?? 'srt';
+    const subName = `sub.${subExt}`;
+    const outName = 'out.mp4';
+    let ffmpeg;
     try {
-      const ffmpeg = await getFFmpeg();
+      ffmpeg = await getFFmpeg();
       ffmpeg.on('progress', (p) => setProgress(Math.round((p.progress ?? 0) * 100)));
 
-      await writeFile(ffmpeg, 'in.mp4', video);
-
-      const subExt = subtitle.name.split('.').pop()?.toLowerCase() ?? 'srt';
-      const subName = `sub.${subExt}`;
+      await writeFile(ffmpeg, inName, video);
       await writeFile(ffmpeg, subName, subtitle);
 
       // 자막 스타일링 — force_style 파라미터 (libass)
@@ -62,16 +67,16 @@ export default function BurnSubtitlePage() {
 
       await ffmpeg.exec([
         '-y',
-        '-i', 'in.mp4',
+        '-i', inName,
         '-vf', filter,
         '-c:v', 'libx264',
         '-preset', 'fast',
         '-pix_fmt', 'yuv420p',
         '-c:a', 'copy',
-        'out.mp4',
+        outName,
       ]);
 
-      const blob = await readOutput(ffmpeg, 'out.mp4', 'video/mp4');
+      const blob = await readOutput(ffmpeg, outName, 'video/mp4');
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `${video.name.replace(/\.[^.]+$/, '')}-subtitled.mp4`,
@@ -79,11 +84,12 @@ export default function BurnSubtitlePage() {
         compressedSize: blob.size,
       });
       setProgress(100);
-      await cleanupFiles(ffmpeg, ['in.mp4', subName, 'out.mp4']);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(video ? explainFfmpegError(msg, video.size) : msg);
     } finally {
+      // 성공·실패 무관하게 가상 FS 잔류 파일 정리
+      if (ffmpeg) await cleanupFiles(ffmpeg, [inName, subName, outName]);
       setBusy(false);
     }
   }

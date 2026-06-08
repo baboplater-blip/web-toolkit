@@ -27,6 +27,7 @@ type FlipDir = 'hflip' | 'vflip';
 
 interface ResultData {
   url: string;
+  blob: Blob;
   size: number;
   name: string;
 }
@@ -118,7 +119,7 @@ export default function VideoFlipPage() {
 
       const base = file.name.replace(/\.[^.]+$/, '');
       const suffix = direction === 'hflip' ? 'hflip' : 'vflip';
-      setResult({ url, size: blob.size, name: `${base}-${suffix}.mp4` });
+      setResult({ url, blob, size: blob.size, name: `${base}-${suffix}.mp4` });
       setProgress(100);
       setStage('완료');
 
@@ -292,11 +293,7 @@ export default function VideoFlipPage() {
               className="w-full rounded-lg max-h-[400px] bg-black"
             />
             <Button
-              onClick={() =>
-                fetch(result.url)
-                  .then((r) => r.blob())
-                  .then((b) => triggerDownload(b, result.name))
-              }
+              onClick={() => triggerDownload(result.blob, result.name)}
               className="w-full"
             >
               <Download className="h-4 w-4 mr-1.5" />

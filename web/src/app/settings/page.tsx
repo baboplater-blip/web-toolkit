@@ -41,7 +41,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <main id="main-content" className="mx-auto max-w-3xl space-y-4 p-4">
+      <main className="mx-auto max-w-3xl space-y-4 p-4">
         <section className="space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             앱 설정

@@ -95,8 +95,9 @@ export default function QrCodePage() {
     setError(null);
     setDecodedText(null);
     if (imagePreview) URL.revokeObjectURL(imagePreview);
+    const previewUrl = URL.createObjectURL(f);
     setImageFile(f);
-    setImagePreview(URL.createObjectURL(f));
+    setImagePreview(previewUrl);
 
     setReading(true);
     try {
@@ -105,7 +106,7 @@ export default function QrCodePage() {
         const i = new Image();
         i.onload = () => resolve(i);
         i.onerror = () => reject(new Error('이미지 로드 실패'));
-        i.src = URL.createObjectURL(f);
+        i.src = previewUrl;
       });
 
       const canvas = canvasRef.current ?? document.createElement('canvas');

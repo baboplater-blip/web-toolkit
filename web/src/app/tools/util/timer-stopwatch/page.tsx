@@ -59,6 +59,11 @@ export default function TimerStopwatchPage() {
   const lastTickRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
 
+  // 타이머 종료 시각(epoch ms)과 백업 타이머. 백그라운드 탭에서 RAF 가 멈춰도
+  // 벽시계(Date.now) 와 setTimeout 으로 정확한 시점에 알람을 발화한다.
+  const timerEndAtRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // 스톱워치 랩
   const [laps, setLaps] = useState<number[]>([]);
 
@@ -69,7 +74,41 @@ export default function TimerStopwatchPage() {
   const totalTarget = (timerH * 3600 + timerM * 60 + timerS) * 1000;
   const [done, setDone] = useState(false);
 
+  const clearBackupTimeout = useCallback(() => {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
+
+  const fireDone = useCallback(() => {
+    clearBackupTimeout();
+    timerEndAtRef.current = null;
+    setRunning(false);
+    setElapsed(totalTarget);
+    setDone(true);
+    playBeep();
+    try {
+      if (typeof document !== 'undefined') document.title = '⏰ 타이머 — Web Toolkit';
+    } catch {
+      /* noop */
+    }
+  }, [clearBackupTimeout, totalTarget]);
+
   const tick = useCallback(() => {
+    // 타이머 모드: 벽시계 기준 남은 시간 계산(백그라운드 탭에서 RAF 가
+    // 느려져도 표시·종료 판정이 실제 경과 시간과 어긋나지 않는다).
+    if (timerEndAtRef.current !== null) {
+      const remainingMs = timerEndAtRef.current - Date.now();
+      if (remainingMs <= 0) {
+        fireDone();
+        return;
+      }
+      setElapsed(totalTarget - remainingMs);
+      lastTickRef.current = performance.now();
+      rafRef.current = requestAnimationFrame(tick);
+      return;
+    }
     const now = performance.now();
     if (lastTickRef.current !== null) {
       const delta = now - lastTickRef.current;
@@ -77,7 +116,7 @@ export default function TimerStopwatchPage() {
     }
     lastTickRef.current = now;
     rafRef.current = requestAnimationFrame(tick);
-  }, []);
+  }, [fireDone, totalTarget]);
 
   useEffect(() => {
     if (running) {
@@ -90,30 +129,29 @@ export default function TimerStopwatchPage() {
     };
   }, [running, tick]);
 
-  // 타이머 모드: target 도달 시 알람
-  useEffect(() => {
-    if (mode !== 'timer') return;
-    if (!running) return;
-    if (totalTarget === 0) return;
-    if (elapsed >= totalTarget) {
-      setRunning(false);
-      setDone(true);
-      playBeep();
-      try {
-        if (typeof document !== 'undefined') document.title = '⏰ 타이머 — Web Toolkit';
-      } catch {
-        /* noop */
-      }
-    }
-  }, [elapsed, totalTarget, mode, running]);
+  // 언마운트 시 백업 setTimeout 정리(언마운트 후 setState 방지).
+  useEffect(() => clearBackupTimeout, [clearBackupTimeout]);
 
   const start = () => {
     if (mode === 'timer' && totalTarget === 0) return;
+    if (mode === 'timer') {
+      // 현재 남은 시간 기준으로 절대 종료시각 고정 + 백그라운드 백업 타이머 설정.
+      const remainingMs = Math.max(0, totalTarget - elapsed);
+      timerEndAtRef.current = Date.now() + remainingMs;
+      clearBackupTimeout();
+      timeoutRef.current = setTimeout(fireDone, remainingMs);
+    }
     setRunning(true);
     setDone(false);
   };
-  const pause = () => setRunning(false);
+  const pause = () => {
+    clearBackupTimeout();
+    timerEndAtRef.current = null;
+    setRunning(false);
+  };
   const reset = () => {
+    clearBackupTimeout();
+    timerEndAtRef.current = null;
     setRunning(false);
     setElapsed(0);
     setLaps([]);
@@ -330,8 +368,9 @@ export default function TimerStopwatchPage() {
         <div className="rounded-xl border bg-card/50 p-4 text-xs text-muted-foreground">
           <p>
             <code className="font-mono">requestAnimationFrame</code> +{' '}
-            <code className="font-mono">performance.now</code> 기반 정밀 타이머. 백그라운드
-            탭에선 브라우저가 RAF 를 멈춰 정확도가 떨어질 수 있습니다 (시간 차이는 다음 활성 프레임에 보정).
+            <code className="font-mono">performance.now</code> 기반 정밀 표시. 타이머는 절대
+            종료시각(<code className="font-mono">Date.now</code>)과{' '}
+            <code className="font-mono">setTimeout</code> 백업으로 백그라운드 탭에서도 정확한 시점에 알람이 울립니다.
           </p>
         </div>
       </main>
