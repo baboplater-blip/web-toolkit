@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { Check, Copy, Dices, RefreshCw } from 'lucide-react';
+import { Check, Copy, Dices, RefreshCw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -207,11 +207,28 @@ export default function DicewarePage() {
               단어 엔트로피 약 {wordEntropy.toFixed(1)} bits
               {appendNumber ? ' (+ 숫자 약 13.3 bits)' : ''}
             </span>
-            <Button variant="outline" size="sm" onClick={copy}>
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              복사
-            </Button>
+            <div className="flex gap-1.5">
+              <Button variant="outline" size="sm" onClick={copy}>
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                복사
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPassphrase('');
+                  setCopied(false);
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                지우기
+              </Button>
+            </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            ⚠️ 민감정보입니다 — 클립보드·화면에 남을 수 있으니 비밀번호 관리자에 저장한 뒤
+            지우세요.
+          </p>
         </div>
       )}
 

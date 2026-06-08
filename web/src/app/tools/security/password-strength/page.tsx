@@ -180,6 +180,11 @@ export default function PasswordStrengthPage() {
                 <dd className="font-mono font-medium">{result.crackTimeLabel}</dd>
               </div>
             </dl>
+
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-muted-foreground leading-relaxed">
+              ⚠️ 이 추정은 길이·문자종류 기반이며 사전어·키보드 패턴·반복은 반영하지 않습니다. 실제
+              강도는 더 낮을 수 있습니다.
+            </div>
           </div>
         )}
       </div>

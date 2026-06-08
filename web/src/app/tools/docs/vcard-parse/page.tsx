@@ -252,15 +252,15 @@ export default function VcardParsePage() {
               <tbody>
                 {entries.map((entry, index) => (
                   <tr key={index} className="odd:bg-background even:bg-muted/20">
-                    <td className="border-b px-3 py-1.5 align-top">{entry.name}</td>
-                    <td className="border-b px-3 py-1.5 align-top">
+                    <td className="border-b px-3 py-1.5 align-top max-w-[12rem] break-words">{entry.name}</td>
+                    <td className="border-b px-3 py-1.5 align-top max-w-[14rem] break-words">
                       {entry.org || '—'}
                     </td>
-                    <td className="border-b px-3 py-1.5 align-top">
+                    <td className="border-b px-3 py-1.5 align-top max-w-[12rem]">
                       {entry.phones.length > 0 ? (
                         <ul className="space-y-0.5">
                           {entry.phones.map((phone, phoneIndex) => (
-                            <li key={phoneIndex} className="font-mono text-xs">
+                            <li key={phoneIndex} className="font-mono text-xs break-words">
                               {phone}
                             </li>
                           ))}
@@ -269,11 +269,11 @@ export default function VcardParsePage() {
                         '—'
                       )}
                     </td>
-                    <td className="border-b px-3 py-1.5 align-top">
+                    <td className="border-b px-3 py-1.5 align-top max-w-[16rem]">
                       {entry.emails.length > 0 ? (
                         <ul className="space-y-0.5">
                           {entry.emails.map((email, emailIndex) => (
-                            <li key={emailIndex} className="font-mono text-xs">
+                            <li key={emailIndex} className="font-mono text-xs break-all">
                               {email}
                             </li>
                           ))}

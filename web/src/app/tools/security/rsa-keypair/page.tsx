@@ -8,6 +8,7 @@ import {
   Download,
   KeyRound,
   Loader2,
+  Trash2,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -194,6 +195,24 @@ export default function RsaKeypairPage() {
 
         {result && (
           <>
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 flex items-start justify-between gap-3">
+              <p className="text-xs text-destructive leading-relaxed">
+                ⚠️ 민감정보입니다 — 클립보드·화면에 남을 수 있으니 사용 후 지우세요. 특히 개인 키는
+                안전한 곳에 보관한 뒤 이 화면에서 지우는 것을 권장합니다.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 shrink-0 text-xs"
+                onClick={() => {
+                  setResult(null);
+                  setCopied(null);
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-1" />
+                결과 지우기
+              </Button>
+            </div>
             <KeyPanel
               title="공개 키 (Public Key)"
               hint="다른 사람에게 공유해도 안전합니다. PEM/SPKI 형식."

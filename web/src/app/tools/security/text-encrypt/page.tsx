@@ -10,6 +10,7 @@ import {
   Loader2,
   Lock,
   Shield,
+  Trash2,
   Unlock,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -170,6 +171,12 @@ export default function TextEncryptPage() {
           )}
         </div>
 
+        {mode === 'encrypt' && (
+          <p className="text-[11px] text-destructive leading-relaxed px-1">
+            ⚠️ 비밀번호를 잃으면 복구할 수 없습니다. 안전한 곳에 따로 보관하세요.
+          </p>
+        )}
+
         {error && (
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
             {error}
@@ -201,16 +208,33 @@ export default function TextEncryptPage() {
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 결과
               </h2>
-              <Button variant="outline" size="sm" className="h-7 text-xs" onClick={copy}>
-                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                <span className="ml-1">복사</span>
-              </Button>
+              <div className="flex gap-1.5">
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={copy}>
+                  {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  <span className="ml-1">복사</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    setOutput('');
+                    setCopied(false);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                  <span className="ml-1">지우기</span>
+                </Button>
+              </div>
             </div>
             <textarea
               readOnly
               value={output}
               rows={6}
               className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono resize-y break-all" aria-label="결과" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              ⚠️ 민감정보입니다 — 클립보드·화면에 남을 수 있으니 사용 후 지우세요.
+            </p>
           </div>
         )}
 

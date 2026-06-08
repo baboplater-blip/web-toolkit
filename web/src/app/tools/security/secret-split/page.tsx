@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, Split } from 'lucide-react';
+import { Check, Copy, Split, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -451,10 +451,23 @@ export default function SecretSplitPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               생성된 조각
             </span>
-            <Button variant="outline" size="sm" onClick={() => copy(splitOutput)}>
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              복사
-            </Button>
+            <div className="flex gap-1.5">
+              <Button variant="outline" size="sm" onClick={() => copy(splitOutput)}>
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                복사
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSplitOutput('');
+                  setCopied(false);
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                지우기
+              </Button>
+            </div>
           </div>
           <textarea
             value={splitOutput}
@@ -464,6 +477,10 @@ export default function SecretSplitPage() {
             className="w-full resize-y break-all rounded-lg bg-muted p-3 font-mono text-xs outline-none"
             aria-label="생성된 조각"
           />
+          <p className="text-xs text-muted-foreground">
+            ⚠️ 민감정보입니다 — 클립보드·화면에 남을 수 있으니 조각을 안전하게 분산 보관한 뒤
+            지우세요.
+          </p>
         </div>
       )}
 
@@ -473,10 +490,23 @@ export default function SecretSplitPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               복원된 비밀
             </span>
-            <Button variant="outline" size="sm" onClick={() => copy(restoredSecret)}>
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              복사
-            </Button>
+            <div className="flex gap-1.5">
+              <Button variant="outline" size="sm" onClick={() => copy(restoredSecret)}>
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                복사
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setRestoredSecret('');
+                  setCopied(false);
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                지우기
+              </Button>
+            </div>
           </div>
           <textarea
             value={restoredSecret}
@@ -486,6 +516,9 @@ export default function SecretSplitPage() {
             className="w-full resize-y break-all rounded-lg bg-muted p-3 font-mono text-sm outline-none"
             aria-label="복원된 비밀"
           />
+          <p className="text-xs text-muted-foreground">
+            ⚠️ 민감정보입니다 — 클립보드·화면에 남을 수 있으니 사용 후 지우세요.
+          </p>
         </div>
       )}
 

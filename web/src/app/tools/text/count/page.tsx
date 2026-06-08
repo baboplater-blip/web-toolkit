@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { ArrowLeft, Hash } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -14,17 +14,21 @@ export default function TextCountPage() {
     '여기에 텍스트를 입력하세요. 단어·문자·줄 수가 실시간으로 집계됩니다.\n\n한글, English, 숫자 123 모두 지원합니다.',
   );
 
+  // 무거운 집계는 입력보다 한 박자 늦게 계산해 대용량 붙여넣기 시 입력 블로킹을 막는다.
+  // (입력값 text 는 즉시 반영, deferredText 는 React 가 여유 있을 때 따라옴)
+  const deferredText = useDeferredValue(text);
+
   const stats = useMemo(() => {
-    const chars = text.length;
-    const charsNoSpace = text.replace(/\s/g, '').length;
-    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-    const lines = text.split('\n').length;
-    const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim()).length;
-    const bytes = new Blob([text]).size;
-    const sentences = text.split(/[.!?。!?]+\s*/).filter((s) => s.trim()).length;
-    const korean = (text.match(/[\uac00-\ud7af]/g) ?? []).length;
-    const english = (text.match(/[a-zA-Z]/g) ?? []).length;
-    const digits = (text.match(/[0-9]/g) ?? []).length;
+    const chars = deferredText.length;
+    const charsNoSpace = deferredText.replace(/\s/g, '').length;
+    const words = deferredText.trim() ? deferredText.trim().split(/\s+/).length : 0;
+    const lines = deferredText.split('\n').length;
+    const paragraphs = deferredText.split(/\n\s*\n/).filter((p) => p.trim()).length;
+    const bytes = new Blob([deferredText]).size;
+    const sentences = deferredText.split(/[.!?。!?]+\s*/).filter((s) => s.trim()).length;
+    const korean = (deferredText.match(/[\uac00-\ud7af]/g) ?? []).length;
+    const english = (deferredText.match(/[a-zA-Z]/g) ?? []).length;
+    const digits = (deferredText.match(/[0-9]/g) ?? []).length;
     const avgWordLen = words > 0 ? charsNoSpace / words : 0;
     const readMin = countReadMinutes(words);
     return {
@@ -41,19 +45,19 @@ export default function TextCountPage() {
       avgWordLen,
       readMin,
     };
-  }, [text]);
+  }, [deferredText]);
 
   // 상위 단어 빈도 (5개)
   const topWords = useMemo(() => {
     const map = new Map<string, number>();
-    for (const w of text.toLowerCase().match(/[\w가-힣]+/g) ?? []) {
+    for (const w of deferredText.toLowerCase().match(/[\w가-힣]+/g) ?? []) {
       if (w.length <= 1) continue;
       map.set(w, (map.get(w) ?? 0) + 1);
     }
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
-  }, [text]);
+  }, [deferredText]);
 
   return (
     <div className="min-h-dvh bg-background">

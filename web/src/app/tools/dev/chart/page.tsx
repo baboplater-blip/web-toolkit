@@ -21,9 +21,15 @@ export default function ChartPage() {
   const [downloadUrl, setDownloadUrl] = useState('');
 
   const parsed = parseData(data);
+  const hasData = parsed.length > 0;
 
+  // 매 입력마다 동기 렌더 + toDataURL 이 무거우므로 ~200ms 디바운스.
+  // 입력값(상태)은 즉시 반영되고, 실제 캔버스 그리기만 지연된다.
   useEffect(() => {
-    drawChart();
+    const timer = window.setTimeout(() => {
+      drawChart();
+    }, 200);
+    return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, data, title, color, width, height]);
 
@@ -45,7 +51,11 @@ export default function ChartPage() {
     ctx.textAlign = 'center';
     ctx.fillText(title, width / 2, 32);
 
-    if (parsed.length === 0) return;
+    if (parsed.length === 0) {
+      // 표시할 데이터가 없으면 PNG 다운로드 링크를 감춘다 (안내 문구는 캔버스 위에 오버레이).
+      setDownloadUrl('');
+      return;
+    }
 
     if (type === 'pie') {
       drawPie(ctx, parsed, width, height, color);
@@ -166,12 +176,17 @@ export default function ChartPage() {
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-medium">데이터 (한 줄에 "레이블, 값")</label>
+        <label className="text-xs font-medium">데이터 (한 줄에 &quot;레이블, 값&quot;)</label>
         <textarea value={data} onChange={(e) => setData(e.target.value)} className="w-full rounded-md border bg-background p-3 text-xs font-mono h-32 leading-relaxed" aria-label="데이터" />
       </div>
 
-      <div className="rounded-xl border bg-card p-2 overflow-x-auto">
+      <div className="relative rounded-xl border bg-card p-2 overflow-x-auto">
         <canvas ref={canvasRef} className="mx-auto max-w-full block" />
+        {!hasData && (
+          <div className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-muted-foreground">
+            표시할 데이터가 없습니다. &quot;레이블, 값&quot; 형식으로 한 줄에 하나씩 입력하세요.
+          </div>
+        )}
       </div>
 
       {downloadUrl && (

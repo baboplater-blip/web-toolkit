@@ -3,34 +3,53 @@
 import { useEffect, useState } from 'react';
 import { Loader2, Sparkles, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+
+// 미리보기 재처리 디바운스(ms): 연속 슬라이더 조작 시 마지막 값만 처리.
+const RENDER_DEBOUNCE_MS = 250;
+// 이 픽셀 수를 넘으면 메인스레드 프리징 경고(폭×높이).
+const LARGE_IMAGE_PIXELS = 2400 * 2400;
 
 export default function DenoisePage() {
   const [file, setFile] = useState<File | null>(null);
   const [strength, setStrength] = useState(2);
   const [previewUrl, setPreviewUrl] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [largeWarning, setLargeWarning] = useState(false);
 
   useEffect(() => {
     return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
   }, [previewUrl]);
 
   useEffect(() => {
-    if (file) render();
+    if (!file) return;
+    const timer = setTimeout(() => { render(); }, RENDER_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file, strength]);
 
   async function render() {
     if (!file) return;
     setBusy(true);
-    const img = await load(file);
+    setError(null);
+    let img: HTMLImageElement;
+    try {
+      img = await load(file);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '이미지 로드 실패');
+      setBusy(false);
+      return;
+    }
     try {
       const w = img.naturalWidth;
       const h = img.naturalHeight;
+      setLargeWarning(w * h > LARGE_IMAGE_PIXELS);
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('캔버스 컨텍스트를 가져올 수 없습니다.');
       ctx.drawImage(img, 0, 0);
       const src = ctx.getImageData(0, 0, w, h);
       const dst = ctx.createImageData(w, h);
@@ -59,9 +78,12 @@ export default function DenoisePage() {
         }
       }
       ctx.putImageData(dst, 0, 0);
-      const blob = await new Promise<Blob>((res) => canvas.toBlob((b) => res(b!), 'image/jpeg', 0.95));
+      const blob = await new Promise<Blob>((res, rej) =>
+        canvas.toBlob((b) => (b ? res(b) : rej(new Error('이미지 인코딩 실패'))), 'image/jpeg', 0.95));
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(blob));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '노이즈 제거 처리 실패');
     } finally {
       URL.revokeObjectURL(img.src);
       setBusy(false);
@@ -85,6 +107,16 @@ export default function DenoisePage() {
           <label className="text-xs font-medium">강도 ({strength}/5)</label>
           <input type="range" min={1} max={5} value={strength} onChange={(e) => setStrength(Number(e.target.value))} className="w-full" aria-label="강도 ( /5)" />
           <p className="text-[10px] text-muted-foreground">강도가 높을수록 디테일이 흐려집니다.</p>
+        </div>
+      )}
+
+      {largeWarning && !busy && (
+        <p className="text-[11px] text-amber-600 dark:text-amber-500">큰 이미지입니다. 처리 중 잠시 화면이 멈출 수 있습니다.</p>
+      )}
+
+      {error && (
+        <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
         </div>
       )}
 

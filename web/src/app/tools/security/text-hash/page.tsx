@@ -242,6 +242,11 @@ export default function TextHashPage() {
         </p>
       )}
 
+      <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-muted-foreground leading-relaxed">
+        ⚠️ MD5·SHA-1 은 무결성 체크섬용입니다. 비밀번호 저장·서명엔 충돌에 안전한 SHA-256 이상을
+        쓰세요.
+      </div>
+
       <div className="space-y-3">
         {ROW_ORDER.map((algo) => (
           <div key={algo} className="rounded-xl border bg-card p-3">

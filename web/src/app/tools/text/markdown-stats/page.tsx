@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 
@@ -99,7 +99,10 @@ function analyze(md: string): Stats {
 
 export default function MarkdownStatsPage() {
   const [md, setMd] = useState('');
-  const stats = useMemo(() => analyze(md), [md]);
+  // 무거운 정규식 집계는 입력보다 한 박자 늦게 실행해 대용량 붙여넣기 시
+  // 입력(textarea) 블로킹을 막는다. 입력값 md 는 즉시 반영된다.
+  const deferredMd = useDeferredValue(md);
+  const stats = useMemo(() => analyze(deferredMd), [deferredMd]);
 
   return (
     <div className="min-h-dvh bg-background">

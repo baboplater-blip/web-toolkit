@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, KeyRound } from 'lucide-react';
+import { Check, Copy, KeyRound, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -377,10 +377,23 @@ export default function HtpasswdPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               .htpasswd 항목
             </span>
-            <Button variant="outline" size="sm" onClick={copy}>
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              복사
-            </Button>
+            <div className="flex gap-1.5">
+              <Button variant="outline" size="sm" onClick={copy}>
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                복사
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setResult('');
+                  setCopied(false);
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                지우기
+              </Button>
+            </div>
           </div>
           <textarea
             value={result}
@@ -390,6 +403,10 @@ export default function HtpasswdPage() {
             className="w-full resize-y break-all rounded-lg bg-muted p-3 font-mono text-xs outline-none"
             aria-label="생성된 .htpasswd 항목"
           />
+          <p className="text-xs text-muted-foreground">
+            ⚠️ 민감정보입니다 — 클립보드·화면에 남을 수 있으니 .htpasswd 파일에 붙여넣은 뒤
+            지우세요.
+          </p>
         </div>
       )}
 

@@ -7,12 +7,19 @@ import { Button, buttonVariants } from '@/components/ui/button';
 
 type Mode = 'full' | 'region';
 
+// 재처리 디바운스(ms): 연속 슬라이더/입력 조작 시 마지막 값만 처리.
+const RENDER_DEBOUNCE_MS = 250;
+// 이 픽셀 수를 넘으면 메인스레드 프리징 경고(폭×높이).
+const LARGE_IMAGE_PIXELS = 2400 * 2400;
+
 export default function PixelatePage() {
   const [file, setFile] = useState<File | null>(null);
   const [size, setSize] = useState(20);
   const [mode, setMode] = useState<Mode>('full');
   const [previewUrl, setPreviewUrl] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [largeWarning, setLargeWarning] = useState(false);
   // 영역 선택 (퍼센트 좌표)
   const [region, setRegion] = useState({ x: 25, y: 25, w: 50, h: 50 });
 
@@ -21,36 +28,54 @@ export default function PixelatePage() {
   }, [previewUrl]);
 
   useEffect(() => {
-    if (file) render();
+    if (!file) return;
+    const timer = setTimeout(() => { render(); }, RENDER_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file, size, mode, region]);
 
   async function render() {
     if (!file) return;
     setBusy(true);
-    const img = await load(file);
+    setError(null);
+    let img: HTMLImageElement;
+    try {
+      img = await load(file);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '이미지 로드 실패');
+      setBusy(false);
+      return;
+    }
     try {
       const w = img.naturalWidth;
       const h = img.naturalHeight;
+      setLargeWarning(w * h > LARGE_IMAGE_PIXELS);
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('캔버스 컨텍스트를 가져올 수 없습니다.');
       ctx.drawImage(img, 0, 0);
 
       if (mode === 'full') {
         applyPixelate(canvas, 0, 0, w, h, size);
       } else {
-        const rx = Math.round((region.x / 100) * w);
-        const ry = Math.round((region.y / 100) * h);
-        const rw = Math.round((region.w / 100) * w);
-        const rh = Math.round((region.h / 100) * h);
-        applyPixelate(canvas, rx, ry, rw, rh, size);
+        // 퍼센트 좌표를 픽셀로 변환한 뒤 캔버스 범위 안으로 클램프(getImageData 범위 초과 방지).
+        const rx = clamp(Math.round((region.x / 100) * w), 0, w);
+        const ry = clamp(Math.round((region.y / 100) * h), 0, h);
+        const rw = clamp(Math.round((region.w / 100) * w), 0, w - rx);
+        const rh = clamp(Math.round((region.h / 100) * h), 0, h - ry);
+        if (rw > 0 && rh > 0) {
+          applyPixelate(canvas, rx, ry, rw, rh, size);
+        }
       }
 
-      const blob = await new Promise<Blob>((res) => canvas.toBlob((b) => res(b!), 'image/png'));
+      const blob = await new Promise<Blob>((res, rej) =>
+        canvas.toBlob((b) => (b ? res(b) : rej(new Error('이미지 인코딩 실패'))), 'image/png'));
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(blob));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '모자이크 처리 실패');
     } finally {
       URL.revokeObjectURL(img.src);
       setBusy(false);
@@ -90,6 +115,16 @@ export default function PixelatePage() {
         </div>
       )}
 
+      {largeWarning && !busy && (
+        <p className="text-[11px] text-amber-600 dark:text-amber-500">큰 이미지입니다. 처리 중 잠시 화면이 멈출 수 있습니다.</p>
+      )}
+
+      {error && (
+        <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
       {busy && <p className="text-xs text-muted-foreground flex items-center gap-2"><Loader2 className="h-3 w-3 animate-spin" /> 처리 중…</p>}
 
       {previewUrl && (
@@ -105,17 +140,27 @@ export default function PixelatePage() {
   );
 }
 
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
 function RangeBox({ label, v, onChange }: { label: string; v: number; onChange: (v: number) => void }) {
+  // 빈칸/NaN 은 0 으로, 범위는 0~100% 로 클램프(영역 좌표 안정화).
+  const handleChange = (raw: string) => {
+    const parsed = Number(raw);
+    onChange(Number.isFinite(parsed) ? clamp(Math.round(parsed), 0, 100) : 0);
+  };
   return (
     <div className="space-y-0.5">
       <label className="text-[10px] text-muted-foreground">{label}</label>
-      <input type="number" min={0} max={100} value={v} onChange={(e) => onChange(Number(e.target.value))} aria-label={label} className="w-full rounded-md border bg-background px-2 py-1 text-xs" />
+      <input type="number" min={0} max={100} value={v} onChange={(e) => handleChange(e.target.value)} aria-label={label} className="w-full rounded-md border bg-background px-2 py-1 text-xs" />
     </div>
   );
 }
 
 function applyPixelate(canvas: HTMLCanvasElement, x: number, y: number, w: number, h: number, blockSize: number) {
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('캔버스 컨텍스트를 가져올 수 없습니다.');
   const region = ctx.getImageData(x, y, w, h);
   for (let by = 0; by < h; by += blockSize) {
     for (let bx = 0; bx < w; bx += blockSize) {

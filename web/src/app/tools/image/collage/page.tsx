@@ -16,6 +16,25 @@ const LAYOUTS: Record<Layout, { cols: number; rows: number }> = {
   '4x4': { cols: 4, rows: 4 },
 };
 
+// 셀·여백·간격 입력 허용 범위(UI min/max 와 일치).
+const CELL_MIN = 100;
+const CELL_MAX = 2000;
+const PADDING_MIN = 0;
+const PADDING_MAX = 200;
+const GAP_MIN = 0;
+const GAP_MAX = 100;
+// 재처리 디바운스(ms): 연속 입력 시 마지막 값만 처리.
+const RENDER_DEBOUNCE_MS = 250;
+// 이 픽셀 수를 넘으면 메인스레드 프리징 경고(폭×높이).
+const LARGE_IMAGE_PIXELS = 2400 * 2400;
+
+/** 숫자 입력값을 [min,max] 로 클램프. 빈칸/NaN 은 fallback 으로 대체해 캔버스 크기 오류를 막는다. */
+function clampNumber(raw: string, min: number, max: number, fallback: number): number {
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(max, Math.max(min, Math.round(parsed)));
+}
+
 export default function CollagePage() {
   const [files, setFiles] = useState<File[]>([]);
   const [layout, setLayout] = useState<Layout>('2x2');
@@ -27,13 +46,15 @@ export default function CollagePage() {
   const [previewUrl, setPreviewUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [largeWarning, setLargeWarning] = useState(false);
 
   useEffect(() => {
     return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
   }, [previewUrl]);
 
   useEffect(() => {
-    render();
+    const timer = setTimeout(() => { render(); }, RENDER_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files, layout, bgColor, gap, padding, cellW, cellH]);
 
@@ -49,6 +70,7 @@ export default function CollagePage() {
     try {
       const totalW = padding * 2 + cellW * cols + gap * (cols - 1);
       const totalH = padding * 2 + cellH * rows + gap * (rows - 1);
+      setLargeWarning(totalW * totalH > LARGE_IMAGE_PIXELS);
       const canvas = document.createElement('canvas');
       canvas.width = totalW;
       canvas.height = totalH;
@@ -116,19 +138,19 @@ export default function CollagePage() {
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <label className="text-xs font-medium">셀 너비</label>
-            <input type="number" min={100} max={2000} value={cellW} onChange={(e) => setCellW(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 너비" />
+            <input type="number" min={100} max={2000} value={cellW} onChange={(e) => setCellW(clampNumber(e.target.value, CELL_MIN, CELL_MAX, cellW))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 너비" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">셀 높이</label>
-            <input type="number" min={100} max={2000} value={cellH} onChange={(e) => setCellH(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 높이" />
+            <input type="number" min={100} max={2000} value={cellH} onChange={(e) => setCellH(clampNumber(e.target.value, CELL_MIN, CELL_MAX, cellH))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="셀 높이" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">여백 (외곽)</label>
-            <input type="number" min={0} max={200} value={padding} onChange={(e) => setPadding(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="여백 (외곽)" />
+            <input type="number" min={0} max={200} value={padding} onChange={(e) => setPadding(clampNumber(e.target.value, PADDING_MIN, PADDING_MAX, padding))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="여백 (외곽)" />
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium">간격 (셀 사이)</label>
-            <input type="number" min={0} max={100} value={gap} onChange={(e) => setGap(Number(e.target.value))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="간격 (셀 사이)" />
+            <input type="number" min={0} max={100} value={gap} onChange={(e) => setGap(clampNumber(e.target.value, GAP_MIN, GAP_MAX, gap))} className="w-full rounded-md border bg-background px-2 py-1 text-sm" aria-label="간격 (셀 사이)" />
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -141,6 +163,10 @@ export default function CollagePage() {
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
+      )}
+
+      {largeWarning && !busy && (
+        <p className="text-[11px] text-amber-600 dark:text-amber-500">결과 이미지가 매우 큽니다. 합성 중 잠시 화면이 멈출 수 있습니다.</p>
       )}
 
       {busy && (

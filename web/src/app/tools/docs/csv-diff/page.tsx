@@ -12,6 +12,9 @@ interface DiffRow {
   changedCols?: Set<number>;
 }
 
+const INITIAL_VISIBLE = 100;
+const LOAD_MORE_STEP = 200;
+
 export default function CsvDiffPage() {
   const [a, setA] = useState<File | null>(null);
   const [b, setB] = useState<File | null>(null);
@@ -22,6 +25,8 @@ export default function CsvDiffPage() {
   const [headersA, setHeadersA] = useState<string[]>([]);
   const [headersB, setHeadersB] = useState<string[]>([]);
   const [showEq, setShowEq] = useState(false);
+  const [visible, setVisible] = useState(INITIAL_VISIBLE);
+  const [dupWarning, setDupWarning] = useState<string | null>(null);
 
   async function handleProcess() {
     if (!a || !b) {
@@ -31,11 +36,18 @@ export default function CsvDiffPage() {
     setError(null);
     setBusy(true);
     setDiff(null);
+    setDupWarning(null);
+    setVisible(INITIAL_VISIBLE);
     try {
       const Papa = (await import('papaparse')).default;
+      // worker: true 로 큰 파일 파싱을 별도 스레드에서 처리해 UI 블로킹을 막는다.
       const [resA, resB] = await Promise.all([
-        new Promise<string[][]>((res, rej) => Papa.parse<string[]>(a, { complete: (r) => res(r.data), error: rej })),
-        new Promise<string[][]>((res, rej) => Papa.parse<string[]>(b, { complete: (r) => res(r.data), error: rej })),
+        new Promise<string[][]>((res, rej) =>
+          Papa.parse<string[]>(a, { worker: true, complete: (r) => res(r.data), error: rej }),
+        ),
+        new Promise<string[][]>((res, rej) =>
+          Papa.parse<string[]>(b, { worker: true, complete: (r) => res(r.data), error: rej }),
+        ),
       ]);
       const hA = resA[0] ?? [];
       const hB = resB[0] ?? [];
@@ -46,8 +58,27 @@ export default function CsvDiffPage() {
       const dataB = resB.slice(1).filter((r) => r.length > 0 && r.some((c) => c !== ''));
       const mapA = new Map<string, string[]>();
       const mapB = new Map<string, string[]>();
-      for (const row of dataA) mapA.set(row[keyCol] ?? '', row);
-      for (const row of dataB) mapB.set(row[keyCol] ?? '', row);
+      // 중복 키는 마지막 행만 남으므로(조용한 손실) 발견 시 경고를 표시한다.
+      let dupA = 0;
+      let dupB = 0;
+      for (const row of dataA) {
+        const key = row[keyCol] ?? '';
+        if (mapA.has(key)) dupA += 1;
+        mapA.set(key, row);
+      }
+      for (const row of dataB) {
+        const key = row[keyCol] ?? '';
+        if (mapB.has(key)) dupB += 1;
+        mapB.set(key, row);
+      }
+      if (dupA > 0 || dupB > 0) {
+        const parts: string[] = [];
+        if (dupA > 0) parts.push(`A에 ${dupA}개`);
+        if (dupB > 0) parts.push(`B에 ${dupB}개`);
+        setDupWarning(
+          `중복된 키가 발견되었습니다 (${parts.join(', ')}). 같은 키는 마지막 행만 비교에 사용됩니다.`,
+        );
+      }
 
       const out: DiffRow[] = [];
       const allKeys = new Set([...mapA.keys(), ...mapB.keys()]);
@@ -89,6 +120,9 @@ export default function CsvDiffPage() {
     if (!diff) return null;
     return showEq ? diff : diff.filter((d) => d.type !== 'eq');
   }, [diff, showEq]);
+
+  // 전수 렌더 시 대용량에서 멈추므로 보이는 행만 잘라서 렌더(csv-viewer 패턴).
+  const visibleDiff = displayDiff ? displayDiff.slice(0, visible) : null;
 
   const headers = headersA.length >= headersB.length ? headersA : headersB;
 
@@ -138,6 +172,12 @@ export default function CsvDiffPage() {
         </div>
       )}
 
+      {dupWarning && (
+        <div role="status" className="rounded-md border border-amber-500/50 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+          {dupWarning}
+        </div>
+      )}
+
       {stats && (
         <div className="flex flex-wrap gap-2 text-xs items-center">
           <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1">+{stats.add}</span>
@@ -145,56 +185,78 @@ export default function CsvDiffPage() {
           <span className="rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-1">변경 {stats.change}</span>
           <span className="rounded-full bg-muted text-muted-foreground px-2 py-1">동일 {stats.eq}</span>
           <label className="ml-2 flex items-center gap-1.5 text-xs">
-            <input type="checkbox" className="h-3.5 w-3.5" checked={showEq} onChange={(e) => setShowEq(e.target.checked)} />
+            <input
+              type="checkbox"
+              className="h-3.5 w-3.5"
+              checked={showEq}
+              onChange={(e) => {
+                setShowEq(e.target.checked);
+                setVisible(INITIAL_VISIBLE);
+              }}
+            />
             동일 행도 보기
           </label>
         </div>
       )}
 
-      {displayDiff && (
-        <div className="rounded-xl border bg-card overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b bg-muted/30">
-                <th className="px-2 py-1 text-left w-16">상태</th>
-                {headers.map((h, i) => (
-                  <th key={i} className="px-2 py-1 text-left">{h || `col${i}`}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {displayDiff.map((row, i) => (
-                <tr
-                  key={i}
-                  className={
-                    row.type === 'add' ? 'bg-emerald-500/5' : row.type === 'remove' ? 'bg-destructive/5' : row.type === 'change' ? 'bg-amber-500/5' : ''
-                  }
-                >
-                  <td className="px-2 py-1">
-                    {row.type === 'add' ? <span className="text-emerald-600">+</span> : row.type === 'remove' ? <span className="text-destructive">−</span> : row.type === 'change' ? <span className="text-amber-600">~</span> : '='}
-                  </td>
-                  {headers.map((_, ci) => {
-                    const aCell = row.a?.[ci] ?? '';
-                    const bCell = row.b?.[ci] ?? '';
-                    if (row.type === 'change') {
-                      const changed = row.changedCols?.has(ci);
-                      if (changed) {
-                        return (
-                          <td key={ci} className="px-2 py-1">
-                            <span className="text-destructive line-through">{aCell}</span>
-                            {' → '}
-                            <span className="text-emerald-600">{bCell}</span>
-                          </td>
-                        );
-                      }
-                      return <td key={ci} className="px-2 py-1 text-muted-foreground">{aCell || bCell}</td>;
-                    }
-                    return <td key={ci} className="px-2 py-1">{aCell || bCell}</td>;
-                  })}
+      {displayDiff && visibleDiff && (
+        <div className="space-y-3">
+          <div className="rounded-xl border bg-card overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b bg-muted/30">
+                  <th className="px-2 py-1 text-left w-16">상태</th>
+                  {headers.map((h, i) => (
+                    <th key={i} className="px-2 py-1 text-left">{h || `col${i}`}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {visibleDiff.map((row, i) => (
+                  <tr
+                    key={i}
+                    className={
+                      row.type === 'add' ? 'bg-emerald-500/5' : row.type === 'remove' ? 'bg-destructive/5' : row.type === 'change' ? 'bg-amber-500/5' : ''
+                    }
+                  >
+                    <td className="px-2 py-1 align-top">
+                      {row.type === 'add' ? <span className="text-emerald-600">+</span> : row.type === 'remove' ? <span className="text-destructive">−</span> : row.type === 'change' ? <span className="text-amber-600">~</span> : '='}
+                    </td>
+                    {headers.map((_, ci) => {
+                      const aCell = row.a?.[ci] ?? '';
+                      const bCell = row.b?.[ci] ?? '';
+                      if (row.type === 'change') {
+                        const changed = row.changedCols?.has(ci);
+                        if (changed) {
+                          return (
+                            <td key={ci} className="px-2 py-1 align-top max-w-[18rem] break-words">
+                              <span className="text-destructive line-through">{aCell}</span>
+                              {' → '}
+                              <span className="text-emerald-600">{bCell}</span>
+                            </td>
+                          );
+                        }
+                        return <td key={ci} className="px-2 py-1 align-top max-w-[18rem] truncate text-muted-foreground">{aCell || bCell}</td>;
+                      }
+                      return <td key={ci} className="px-2 py-1 align-top max-w-[18rem] truncate">{aCell || bCell}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {visible < displayDiff.length && (
+            <div className="flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => setVisible((v) => v + LOAD_MORE_STEP)}
+                className="h-9 rounded-md border bg-background px-4 text-xs hover:bg-muted"
+              >
+                더보기 ({displayDiff.length - visible}행 남음)
+              </button>
+            </div>
+          )}
         </div>
       )}
     </main>

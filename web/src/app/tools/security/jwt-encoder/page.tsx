@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, KeySquare } from 'lucide-react';
+import { Check, Copy, KeySquare, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -173,12 +173,29 @@ export default function JwtEncoderPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               생성된 토큰
             </span>
-            <Button variant="outline" size="sm" onClick={copy}>
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              복사
-            </Button>
+            <div className="flex gap-1.5">
+              <Button variant="outline" size="sm" onClick={copy}>
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                복사
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setToken('');
+                  setCopied(false);
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                지우기
+              </Button>
+            </div>
           </div>
           <p className="break-all rounded-lg bg-muted p-3 font-mono text-xs">{token}</p>
+          <p className="text-xs text-muted-foreground">
+            ⚠️ 민감정보입니다 — 토큰은 인증에 사용되므로 클립보드·화면에 남지 않도록 사용 후
+            지우세요.
+          </p>
         </div>
       )}
 
