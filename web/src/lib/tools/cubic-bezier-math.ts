@@ -36,10 +36,11 @@ function solveTForX(x: number, x1: number, x2: number): number {
   }
 
   // 뉴턴법 실패 시 이분법 보강.
+  // 부동소수 특성상 low < high 가 영원히 참일 수 있어(수렴 정체) 반복 횟수를 60회로 제한한다.
   let low = 0;
   let high = 1;
   t = x;
-  while (low < high) {
+  for (let i = 0; i < 60 && low < high; i += 1) {
     const xAtT = sampleAxis(t, x1, x2);
     if (Math.abs(xAtT - x) < 1e-6) return t;
     if (xAtT < x) low = t;

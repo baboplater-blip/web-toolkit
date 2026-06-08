@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -30,8 +30,11 @@ export default function SvgOptimizePage() {
   const [options, setOptions] = useState<OptimizeOptions>({ ...DEFAULT_OPTIONS });
   const [copied, setCopied] = useState(false);
 
+  // 큰 SVG·ReDoS 취약 정규식이 타이핑을 막지 않도록 최적화는 지연된 값 기준으로 수행한다.
+  const deferredInput = useDeferredValue(input);
+
   const { output, error, beforeBytes, afterBytes } = useMemo(() => {
-    const trimmed = input.trim();
+    const trimmed = deferredInput.trim();
     if (!trimmed) {
       return { output: '', error: null as string | null, beforeBytes: 0, afterBytes: 0 };
     }
@@ -39,18 +42,18 @@ export default function SvgOptimizePage() {
       return {
         output: '',
         error: 'SVG 콘텐츠가 아닙니다. <svg> 로 시작하는 SVG 코드를 붙여넣으세요.',
-        beforeBytes: byteLength(input),
+        beforeBytes: byteLength(deferredInput),
         afterBytes: 0,
       };
     }
-    const optimized = optimizeSvg(input, options);
+    const optimized = optimizeSvg(deferredInput, options);
     return {
       output: optimized,
       error: null,
-      beforeBytes: byteLength(input),
+      beforeBytes: byteLength(deferredInput),
       afterBytes: byteLength(optimized),
     };
-  }, [input, options]);
+  }, [deferredInput, options]);
 
   const savedBytes = beforeBytes - afterBytes;
   const savedPercent = beforeBytes > 0 ? (savedBytes / beforeBytes) * 100 : 0;

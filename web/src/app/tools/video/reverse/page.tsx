@@ -19,7 +19,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 
 interface ResultData {
@@ -128,7 +128,8 @@ export default function VideoReversePage() {
 
       await cleanupFiles(ffmpeg, [inputName, outputName]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '역방향 처리에 실패했습니다.');
+      const msg = err instanceof Error ? err.message : '역방향 처리에 실패했습니다.';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setBusy(false);
     }
@@ -178,6 +179,8 @@ export default function VideoReversePage() {
             accept={VIDEO_ACCEPT}
             description="거꾸로 재생할 비디오를 업로드하세요"
             hint="MP4·WEBM·MOV·AVI 등. 영상과 오디오를 모두 시간 역순으로 뒤집습니다."
+            validate={(picked) => validateMediaSize(picked[0])}
+            onError={(m) => setError(m)}
             onFiles={(picked) => accept(picked[0])}
           />
         )}

@@ -1,7 +1,7 @@
 'use client';
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Copy, Check, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { applyAllFixes, findSpellIssues } from '@/lib/tools/korean';
@@ -10,8 +10,12 @@ export default function KoSpellCheckPage() {
   const [input, setInput] = useState('이게 되요? 안되! 몇일동안 깨끗히 청소했어요. 확율이 낮습니다.');
   const [copied, setCopied] = useState(false);
 
-  const issues = useMemo(() => findSpellIssues(input), [input]);
-  const fixed = useMemo(() => applyAllFixes(input).result, [input]);
+  // 맞춤법 검사는 입력보다 한 박자 늦게 실행해 대용량 붙여넣기 시 입력 블로킹을 막는다.
+  // 하이라이트 인덱스가 일치하도록 issues·fixed·segments 모두 같은 deferred 값을 기준으로 한다.
+  const deferredInput = useDeferredValue(input);
+
+  const issues = useMemo(() => findSpellIssues(deferredInput), [deferredInput]);
+  const fixed = useMemo(() => applyAllFixes(deferredInput).result, [deferredInput]);
 
   async function handleCopy() {
     try {
@@ -23,17 +27,17 @@ export default function KoSpellCheckPage() {
 
   // 매치를 하이라이트
   const segments = useMemo(() => {
-    if (issues.length === 0) return [{ text: input, match: null }];
+    if (issues.length === 0) return [{ text: deferredInput, match: null }];
     const out: Array<{ text: string; match: typeof issues[number] | null }> = [];
     let cursor = 0;
     for (const m of issues) {
-      if (m.index > cursor) out.push({ text: input.slice(cursor, m.index), match: null });
+      if (m.index > cursor) out.push({ text: deferredInput.slice(cursor, m.index), match: null });
       out.push({ text: m.original, match: m });
       cursor = m.index + m.length;
     }
-    if (cursor < input.length) out.push({ text: input.slice(cursor), match: null });
+    if (cursor < deferredInput.length) out.push({ text: deferredInput.slice(cursor), match: null });
     return out;
-  }, [input, issues]);
+  }, [deferredInput, issues]);
 
   return (
     <div className="min-h-dvh bg-background">

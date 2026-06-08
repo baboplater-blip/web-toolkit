@@ -146,7 +146,17 @@ export default function JsonDiffPage() {
     if (right.error) return { diffs: [], error: right.error, ready: false };
 
     const diffs: DiffEntry[] = [];
-    collectDiff(left.value as Json, right.value as Json, '', diffs);
+    try {
+      // 매우 깊게 중첩된 JSON 은 재귀 깊이 초과(RangeError)로 도구가 멈출 수 있다.
+      collectDiff(left.value as Json, right.value as Json, '', diffs);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '알 수 없는 오류';
+      return {
+        diffs: [],
+        error: `비교 처리 중 오류가 발생했습니다(중첩이 너무 깊을 수 있습니다): ${message}`,
+        ready: false,
+      };
+    }
     return { diffs, error: null, ready: true };
   }, [leftText, rightText]);
 

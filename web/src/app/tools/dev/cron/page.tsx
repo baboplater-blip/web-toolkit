@@ -1,10 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, CalendarClock, Check, ChevronRight } from 'lucide-react';
-import { buttonVariants } from '@/components/ui/button';
+import { Check, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { ToolHeader } from '@/components/tools/ToolHeader';
+
+const DEFAULT_EXPRESSION = '0 9 * * 1-5';
 
 interface ParsedField {
   raw: string;
@@ -49,12 +51,17 @@ function parseField(
   max: number,
   fieldName: string,
   alias?: Record<string, number>,
+  /** Unix cron 의 요일 7(일요일)=0 처럼 max+1 값을 min 으로 접어주는 별칭 값. */
+  wrapValue?: number,
 ): ParsedField {
   const raw = spec.trim();
   const resolveName = (s: string): number | null => {
     const lower = s.toLowerCase();
     return alias?.[lower] ?? null;
   };
+  // 숫자 해석 시 wrapValue(예: 요일 7)를 min(예: 0)으로 정규화한다.
+  const normalize = (value: number): number =>
+    wrapValue !== undefined && value === wrapValue ? min : value;
 
   if (raw === '*' || raw === '?') {
     return {
@@ -74,6 +81,10 @@ function parseField(
       base = stepMatch[1];
       step = Number(stepMatch[2]);
     }
+    // 스텝 0(또는 음수)은 `for (i+=step)` 를 무한 루프에 빠뜨리므로 거부한다.
+    if (step <= 0) {
+      throw new Error(`${fieldName}: 스텝 값은 1 이상이어야 합니다 ('${part}')`);
+    }
 
     let lo: number;
     let hi: number;
@@ -85,13 +96,13 @@ function parseField(
       const av = /^\d+$/.test(a) ? Number(a) : resolveName(a);
       const bv = /^\d+$/.test(b) ? Number(b) : resolveName(b);
       if (av === null || bv === null) throw new Error(`${fieldName}: '${base}' 해석 불가`);
-      lo = av;
-      hi = bv;
+      lo = normalize(av);
+      hi = normalize(bv);
     } else {
       const v = /^\d+$/.test(base) ? Number(base) : resolveName(base);
       if (v === null) throw new Error(`${fieldName}: '${base}' 해석 불가`);
-      lo = v;
-      hi = v;
+      lo = normalize(v);
+      hi = normalize(v);
     }
     if (lo < min || hi > max || lo > hi) {
       throw new Error(`${fieldName}: 범위 [${min}-${max}] 벗어남 (${lo}-${hi})`);
@@ -128,9 +139,10 @@ function parseCron(expression: string): ParseResult {
     max: number,
     name: string,
     alias?: Record<string, number>,
+    wrapValue?: number,
   ): ParsedField => {
     try {
-      return parseField(spec, min, max, name, alias);
+      return parseField(spec, min, max, name, alias, wrapValue);
     } catch (e) {
       errors.push(e instanceof Error ? e.message : String(e));
       return { raw: spec, values: [], description: '' };
@@ -142,7 +154,8 @@ function parseCron(expression: string): ParseResult {
     hour: parseOrError(tokens[1], 0, 23, '시'),
     dayOfMonth: parseOrError(tokens[2], 1, 31, '일'),
     month: parseOrError(tokens[3], 1, 12, '월', MONTH_ALIAS),
-    dayOfWeek: parseOrError(tokens[4], 0, 6, '요일', DOW_ALIAS),
+    // Unix cron 은 요일 7 을 일요일(0)로 허용하므로 7→0 으로 접는다.
+    dayOfWeek: parseOrError(tokens[4], 0, 6, '요일', DOW_ALIAS, 7),
   };
 
   return {
@@ -200,6 +213,12 @@ function nextRuns(parsed: ParseResult, count: number, from: Date = new Date()): 
     return [];
   }
 
+  // 표준 cron: 일(dayOfMonth)과 요일(dayOfWeek) 이 둘 다 제한적(`*` 아님)이면
+  // 두 조건을 OR 로 결합한다(둘 중 하나라도 맞으면 실행). 한쪽이라도 `*` 면 AND.
+  const domRestricted = fields.dayOfMonth.raw !== '*';
+  const dowRestricted = fields.dayOfWeek.raw !== '*';
+  const bothDayFieldsRestricted = domRestricted && dowRestricted;
+
   const results: Date[] = [];
   const cursor = new Date(from);
   cursor.setSeconds(0, 0);
@@ -215,13 +234,11 @@ function nextRuns(parsed: ParseResult, count: number, from: Date = new Date()): 
     const h = cursor.getHours();
     const min = cursor.getMinutes();
 
-    if (
-      months.includes(m) &&
-      days.includes(d) &&
-      dows.includes(dow) &&
-      hours.includes(h) &&
-      minutes.includes(min)
-    ) {
+    const dayMatch = bothDayFieldsRestricted
+      ? days.includes(d) || dows.includes(dow)
+      : days.includes(d) && dows.includes(dow);
+
+    if (months.includes(m) && dayMatch && hours.includes(h) && minutes.includes(min)) {
       results.push(new Date(cursor));
     }
 
@@ -242,28 +259,20 @@ const PRESETS = [
 ];
 
 export default function CronExplainerPage() {
-  const [expression, setExpression] = useState('0 9 * * 1-5');
+  const [expression, setExpression] = useState(DEFAULT_EXPRESSION);
 
   const parsed = useMemo(() => parseCron(expression), [expression]);
   const upcoming = useMemo(() => nextRuns(parsed, 7), [parsed]);
 
+  const handleReset = () => setExpression(DEFAULT_EXPRESSION);
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <CalendarClock className="h-5 w-5" />
-            <h1 className="font-semibold text-base">cron 표현식 해석기</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader
+        title="cron 표현식 해석기"
+        widthClass="max-w-4xl"
+        onReset={expression !== DEFAULT_EXPRESSION ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-4xl mx-auto space-y-3">
         <div className="rounded-xl border bg-card p-3 space-y-2">

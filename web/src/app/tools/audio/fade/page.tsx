@@ -38,32 +38,38 @@ export default function FadePage() {
     setBusy(true);
     setProgress(0);
     setResult(null);
+    const ext = (file.name.split('.').pop() ?? 'mp3').toLowerCase();
+    const inName = `in.${ext}`;
+    const outName = `out.${ext}`;
     try {
       const ffmpeg = await getFFmpeg();
-      ffmpeg.on('progress', (p) => setProgress(Math.round((p.progress ?? 0) * 100)));
+      // 진행률 리스너는 싱글턴에 누적되므로 이름 붙여 finally 에서 해제.
+      const onProgress = (p: { progress: number }) =>
+        setProgress(Math.round((p.progress ?? 0) * 100));
+      ffmpeg.on('progress', onProgress);
+      try {
+        await writeFile(ffmpeg, inName, file);
 
-      const ext = (file.name.split('.').pop() ?? 'mp3').toLowerCase();
-      const inName = `in.${ext}`;
-      const outName = `out.${ext}`;
-      await writeFile(ffmpeg, inName, file);
+        const filters: string[] = [];
+        if (fadeIn > 0) filters.push(`afade=t=in:st=0:d=${fadeIn}`);
+        if (fadeOut > 0 && duration > 0) filters.push(`afade=t=out:st=${Math.max(0, duration - fadeOut)}:d=${fadeOut}`);
+        const filterChain = filters.join(',') || 'anull';
 
-      const filters: string[] = [];
-      if (fadeIn > 0) filters.push(`afade=t=in:st=0:d=${fadeIn}`);
-      if (fadeOut > 0 && duration > 0) filters.push(`afade=t=out:st=${Math.max(0, duration - fadeOut)}:d=${fadeOut}`);
-      const filterChain = filters.join(',') || 'anull';
+        await ffmpeg.exec(['-y', '-i', inName, '-af', filterChain, outName]);
 
-      await ffmpeg.exec(['-y', '-i', inName, '-af', filterChain, outName]);
-
-      const mime = ext === 'mp3' ? 'audio/mpeg' : ext === 'wav' ? 'audio/wav' : ext === 'ogg' ? 'audio/ogg' : `audio/${ext}`;
-      const blob = await readOutput(ffmpeg, outName, mime);
-      setResult({
-        blobUrl: URL.createObjectURL(blob),
-        filename: `${file.name.replace(/\.[^.]+$/, '')}-fade.${ext}`,
-        originalSize: file.size,
-        compressedSize: blob.size,
-      });
-      setProgress(100);
-      await cleanupFiles(ffmpeg, [inName, outName]);
+        const mime = ext === 'mp3' ? 'audio/mpeg' : ext === 'wav' ? 'audio/wav' : ext === 'ogg' ? 'audio/ogg' : `audio/${ext}`;
+        const blob = await readOutput(ffmpeg, outName, mime);
+        setResult({
+          blobUrl: URL.createObjectURL(blob),
+          filename: `${file.name.replace(/\.[^.]+$/, '')}-fade.${ext}`,
+          originalSize: file.size,
+          compressedSize: blob.size,
+        });
+        setProgress(100);
+      } finally {
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, [inName, outName]);
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(file ? explainFfmpegError(msg, file.size) : msg);

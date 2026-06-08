@@ -38,49 +38,55 @@ export default function AudioReplacePage() {
     setResult(null);
     try {
       const ffmpeg = await getFFmpeg();
-      ffmpeg.on('progress', (p) => setProgress(Math.round((p.progress ?? 0) * 100)));
+      // 진행률 리스너는 싱글턴에 누적되므로 이름 붙여 finally 에서 해제.
+      const onProgress = (p: { progress: number }) =>
+        setProgress(Math.round((p.progress ?? 0) * 100));
+      ffmpeg.on('progress', onProgress);
+      try {
+        await writeFile(ffmpeg, 'video.bin', video);
+        await writeFile(ffmpeg, 'audio.bin', audio);
 
-      await writeFile(ffmpeg, 'video.bin', video);
-      await writeFile(ffmpeg, 'audio.bin', audio);
+        let args: string[];
+        if (mode === 'replace') {
+          args = [
+            '-y',
+            '-i', 'video.bin',
+            '-i', 'audio.bin',
+            '-map', '0:v',
+            '-map', '1:a',
+            '-c:v', 'copy',
+            '-c:a', 'aac',
+            '-shortest',
+            'out.mp4',
+          ];
+        } else {
+          // 믹스 — amix 필터
+          const filter = `[0:a]volume=${dbToLinear(origGain)}[a0];[1:a]volume=${dbToLinear(audioGain)}[a1];[a0][a1]amix=inputs=2:duration=longest`;
+          args = [
+            '-y',
+            '-i', 'video.bin',
+            '-i', 'audio.bin',
+            '-filter_complex', filter,
+            '-map', '0:v',
+            '-c:v', 'copy',
+            '-c:a', 'aac',
+            'out.mp4',
+          ];
+        }
 
-      let args: string[];
-      if (mode === 'replace') {
-        args = [
-          '-y',
-          '-i', 'video.bin',
-          '-i', 'audio.bin',
-          '-map', '0:v',
-          '-map', '1:a',
-          '-c:v', 'copy',
-          '-c:a', 'aac',
-          '-shortest',
-          'out.mp4',
-        ];
-      } else {
-        // 믹스 — amix 필터
-        const filter = `[0:a]volume=${dbToLinear(origGain)}[a0];[1:a]volume=${dbToLinear(audioGain)}[a1];[a0][a1]amix=inputs=2:duration=longest`;
-        args = [
-          '-y',
-          '-i', 'video.bin',
-          '-i', 'audio.bin',
-          '-filter_complex', filter,
-          '-map', '0:v',
-          '-c:v', 'copy',
-          '-c:a', 'aac',
-          'out.mp4',
-        ];
+        await ffmpeg.exec(args);
+        const blob = await readOutput(ffmpeg, 'out.mp4', 'video/mp4');
+        setResult({
+          blobUrl: URL.createObjectURL(blob),
+          filename: `${video.name.replace(/\.[^.]+$/, '')}-audio.mp4`,
+          originalSize: video.size + audio.size,
+          compressedSize: blob.size,
+        });
+        setProgress(100);
+      } finally {
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, ['video.bin', 'audio.bin', 'out.mp4']);
       }
-
-      await ffmpeg.exec(args);
-      const blob = await readOutput(ffmpeg, 'out.mp4', 'video/mp4');
-      setResult({
-        blobUrl: URL.createObjectURL(blob),
-        filename: `${video.name.replace(/\.[^.]+$/, '')}-audio.mp4`,
-        originalSize: video.size + audio.size,
-        compressedSize: blob.size,
-      });
-      setProgress(100);
-      await cleanupFiles(ffmpeg, ['video.bin', 'audio.bin', 'out.mp4']);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(video ? explainFfmpegError(msg, video.size) : msg);

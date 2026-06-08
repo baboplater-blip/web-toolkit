@@ -24,7 +24,8 @@ export default function TextCountPage() {
     const words = deferredText.trim() ? deferredText.trim().split(/\s+/).length : 0;
     const lines = deferredText.split('\n').length;
     const paragraphs = deferredText.split(/\n\s*\n/).filter((p) => p.trim()).length;
-    const bytes = new Blob([deferredText]).size;
+    // Blob 은 전체 문자열을 복사하므로 대용량에서 비싸다. TextEncoder 로 바이트 길이만 구한다.
+    const bytes = new TextEncoder().encode(deferredText).length;
     const sentences = deferredText.split(/[.!?。!?]+\s*/).filter((s) => s.trim()).length;
     const korean = (deferredText.match(/[\uac00-\ud7af]/g) ?? []).length;
     const english = (deferredText.match(/[a-zA-Z]/g) ?? []).length;

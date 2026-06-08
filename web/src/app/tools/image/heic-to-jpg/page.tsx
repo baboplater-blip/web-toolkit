@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, FileImage } from 'lucide-react';
 import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
 import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
@@ -54,6 +54,13 @@ export default function HeicToJpgPage() {
   const [cancelling, setCancelling] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // 언마운트/교체 시 단일 결과 blob URL 해제(누수 방지).
+  useEffect(() => {
+    return () => {
+      if (result) URL.revokeObjectURL(result.blobUrl);
+    };
+  }, [result]);
 
   const onFolderPicked = (files: RelativeFile[]) => {
     setError(null);

@@ -24,7 +24,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -75,6 +75,16 @@ async function extractFramesToZip(
 
   try {
     await writeFile(ffmpeg, inputName, srcFile);
+
+    // 공유 FS 라서 이전 실행이 중단/실패하면 frame_*.* 가 남아 다음 추출의
+    // listDir 결과에 섞여 들어온다. exec 전에 선행 프레임을 모두 제거해
+    // 이번 실행이 만든 프레임만 집계되도록 한다.
+    const stale = (await ffmpeg.listDir('/'))
+      .map((e) => e.name)
+      .filter((n) => n.startsWith('frame_') && n.endsWith(`.${ext}`));
+    if (stale.length > 0) {
+      await cleanupFiles(ffmpeg, stale);
+    }
 
     const args: string[] = ['-i', inputName];
     if (opts.mode === 'fps') {
@@ -134,7 +144,8 @@ export default function ExtractFramesPage() {
   );
   const [extractMode, setExtractMode] = useState<Mode>('fps');
   const [fps, setFps] = useState(1);
-  const [interval, setInterval] = useState(1);
+  // setInterval(전역) 섀도잉 방지를 위해 intervalSec/setIntervalSec 로 명명.
+  const [intervalSec, setIntervalSec] = useState(1);
   const [total, setTotal] = useState(10);
   const [format, setFormat] = useState<Format>('jpeg');
   const [quality, setQuality] = useState(90);
@@ -163,6 +174,11 @@ export default function ExtractFramesPage() {
   const acceptFile = async (f: File) => {
     if (!f.type.startsWith('video/')) {
       setError('비디오 파일만 업로드 가능합니다.');
+      return;
+    }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setError(null);
@@ -215,7 +231,7 @@ export default function ExtractFramesPage() {
     return estimateCount(meta.duration, {
       mode: extractMode,
       fps,
-      interval,
+      interval: intervalSec,
       total,
       format,
       quality,
@@ -227,7 +243,7 @@ export default function ExtractFramesPage() {
     const opts: ExtractOptions = {
       mode: extractMode,
       fps,
-      interval,
+      interval: intervalSec,
       total,
       format,
       quality,
@@ -323,7 +339,8 @@ export default function ExtractFramesPage() {
         ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '프레임 추출 실패');
+      const msg = err instanceof Error ? err.message : '프레임 추출 실패';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setProcessing(false);
       setProgressText('');
@@ -392,8 +409,8 @@ export default function ExtractFramesPage() {
               type="number"
               min={0.1}
               step={0.1}
-              value={interval}
-              onChange={(e) => setInterval(Math.max(0.1, Number(e.target.value) || 0.1))}
+              value={intervalSec}
+              onChange={(e) => setIntervalSec(Math.max(0.1, Number(e.target.value) || 0.1))}
               disabled={processing}
               className="h-9" aria-label="간격 (초)" />
           </>

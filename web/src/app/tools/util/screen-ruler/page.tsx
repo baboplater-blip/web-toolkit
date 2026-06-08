@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Ruler } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 interface ScreenInfo {
   /** 인치당 픽셀. */
@@ -57,24 +56,22 @@ export default function ScreenRulerPage() {
     'repeating-linear-gradient(to right, var(--border) 0, var(--border) 1px, transparent 1px, transparent calc(1cm / 10)),' +
     'repeating-linear-gradient(to right, var(--foreground) 0, var(--foreground) 1px, transparent 1px, transparent 1cm)';
 
+  // 기본 해상도·크기로 되돌린다.
+  const handleReset = () => {
+    setWidthPx('1920');
+    setHeightPx('1080');
+    setDiagonalInch('24');
+  };
+
+  const canReset =
+    widthPx !== '1920' || heightPx !== '1080' || diagonalInch !== '24';
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              title="도구로"
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Ruler className="h-5 w-5" />
-            <h1 className="font-semibold text-base">화면 자·PPI 계산기</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader
+        title="화면 자·PPI 계산기"
+        onReset={canReset ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <p className="text-sm text-muted-foreground">

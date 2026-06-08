@@ -19,26 +19,35 @@ interface Adjust {
 
 const DEFAULT: Adjust = { brightness: 100, contrast: 100, saturation: 100, hue: 0, blur: 0, grayscale: 0, sepia: 0, invert: 0 };
 
+// 재처리 디바운스(ms): 연속 슬라이더 조작 시 마지막 값만 처리(대용량 이미지 프리징 방지).
+const RENDER_DEBOUNCE_MS = 250;
+
 export default function ColorAdjustPage() {
   const [file, setFile] = useState<File | null>(null);
   const [adj, setAdj] = useState<Adjust>(DEFAULT);
   const [previewUrl, setPreviewUrl] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
   }, [previewUrl]);
 
   useEffect(() => {
-    if (file) render();
+    if (!file) return;
+    const timer = setTimeout(() => { render(); }, RENDER_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file, adj]);
 
   async function render() {
     if (!file) return;
     setBusy(true);
-    const img = await load(file);
+    setError(null);
+    // load 를 try 안으로 옮겨 손상된 이미지의 디코드 실패 시에도 busy 가 풀리도록 한다.
+    let img: HTMLImageElement | null = null;
     try {
+      img = await load(file);
       const canvas = document.createElement('canvas');
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
@@ -48,8 +57,10 @@ export default function ColorAdjustPage() {
       const blob = await new Promise<Blob>((res) => canvas.toBlob((b) => res(b!), 'image/jpeg', 0.92));
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(blob));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '이미지를 처리할 수 없습니다.');
     } finally {
-      URL.revokeObjectURL(img.src);
+      if (img) URL.revokeObjectURL(img.src);
       setBusy(false);
     }
   }
@@ -57,6 +68,7 @@ export default function ColorAdjustPage() {
   function handleReset() {
     setFile(null);
     setAdj(DEFAULT);
+    setError(null);
     setPreviewUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return '';
@@ -89,6 +101,8 @@ export default function ColorAdjustPage() {
 
       {busy && <p className="text-xs text-muted-foreground flex items-center gap-2"><Loader2 className="h-3 w-3 animate-spin" /> 처리 중…</p>}
 
+      {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+
       {previewUrl && (
         <div className="space-y-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -115,8 +129,13 @@ function SliderRow({ label, value, min, max, onChange }: { label: string; value:
 function load(file: File): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
     const img = new Image();
+    const url = URL.createObjectURL(file);
     img.onload = () => res(img);
-    img.onerror = () => rej(new Error('로드 실패'));
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => {
+      // 디코드 실패 시 ObjectURL 이 새지 않도록 해제(성공 시엔 호출부 finally 가 해제).
+      URL.revokeObjectURL(url);
+      rej(new Error('로드 실패'));
+    };
+    img.src = url;
   });
 }

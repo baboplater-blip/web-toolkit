@@ -32,6 +32,9 @@ export default function PdfBackgroundPage() {
     };
   }, [bgPreview]);
 
+  // 언마운트 시 마지막 결과 ObjectURL 회수 (merge 의 생명주기와 동일)
+  useEffect(() => () => { if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl); }, [result?.blobUrl]);
+
   function pickImage(f: File) {
     if (bgPreview) URL.revokeObjectURL(bgPreview);
     setBgImage(f);
@@ -111,6 +114,8 @@ export default function PdfBackgroundPage() {
       const bytes = await doc.save({ useObjectStreams: true });
       const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
       const baseName = file.name.replace(/\.pdf$/i, '');
+      // 새 URL 생성 전 직전 결과 URL 회수 (재실행 시 누수 방지)
+      if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `${baseName}-bg.pdf`,

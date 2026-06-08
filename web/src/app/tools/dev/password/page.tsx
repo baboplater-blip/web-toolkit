@@ -1,9 +1,20 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Check, Copy, KeyRound, RefreshCw } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Check, Copy, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { ToolHeader } from '@/components/tools/ToolHeader';
+
+const DEFAULT_OPTS: Options = {
+  length: 20,
+  lower: true,
+  upper: true,
+  digits: true,
+  symbols: true,
+  excludeAmbiguous: false,
+};
+const DEFAULT_COUNT = 5;
 
 const LOWER = 'abcdefghijklmnopqrstuvwxyz';
 const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -72,15 +83,8 @@ function strength(pw: string): { score: number; label: string; entropy: number }
 }
 
 export default function PasswordPage() {
-  const [opts, setOpts] = useState<Options>({
-    length: 20,
-    lower: true,
-    upper: true,
-    digits: true,
-    symbols: true,
-    excludeAmbiguous: false,
-  });
-  const [count, setCount] = useState(5);
+  const [opts, setOpts] = useState<Options>({ ...DEFAULT_OPTS });
+  const [count, setCount] = useState(DEFAULT_COUNT);
   const [list, setList] = useState<string[]>([]);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
@@ -94,9 +98,21 @@ export default function PasswordPage() {
   };
 
   const copyOne = async (i: number) => {
-    await navigator.clipboard.writeText(list[i]);
-    setCopiedIdx(i);
-    setTimeout(() => setCopiedIdx(null), 1500);
+    try {
+      await navigator.clipboard.writeText(list[i]);
+      setCopiedIdx(i);
+      setTimeout(() => setCopiedIdx(null), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+    }
+  };
+
+  const handleReset = () => {
+    setOpts({ ...DEFAULT_OPTS });
+    setCount(DEFAULT_COUNT);
+    setList(Array.from({ length: DEFAULT_COUNT }, () => generate(DEFAULT_OPTS)));
+    setCopiedIdx(null);
   };
 
   const analyses = useMemo(() => list.map((p) => strength(p)), [list]);
@@ -106,21 +122,7 @@ export default function PasswordPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <KeyRound className="h-5 w-5" />
-            <h1 className="font-semibold text-base">비밀번호 생성</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader title="비밀번호 생성" onReset={handleReset} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-3">
         <div className="rounded-xl border bg-card p-3 space-y-3">

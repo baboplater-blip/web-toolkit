@@ -50,18 +50,22 @@ export function subscribeTheme(fn: Listener): () => void {
 /**
  * 시스템 설정 변경 감지 — 모드가 'system' 일 때만 실제 클래스를 갱신한다.
  * 앱 시작 시 한 번 부르면 된다 (중복 바인딩 방지는 caller 책임).
+ *
+ * 반환값은 disposer — caller(effect 등)가 정리 시 호출해 리스너 누수를 막는다.
+ * SSR 등으로 바인딩하지 않은 경우엔 no-op disposer 를 돌려준다.
  */
-export function watchSystemTheme() {
-  if (typeof window === 'undefined') return;
+export function watchSystemTheme(): () => void {
+  if (typeof window === 'undefined') return () => {};
   const mq = window.matchMedia('(prefers-color-scheme: dark)');
   const handler = () => {
     if (getStoredTheme() === 'system') applyTheme('system');
   };
   mq.addEventListener('change', handler);
+  return () => mq.removeEventListener('change', handler);
 }
 
 /**
  * `<head>` 에 inline 으로 주입할 스크립트 본문.
  * 외부 코드를 의존하지 않도록 모든 심볼을 로컬에 재선언한다.
  */
-export const THEME_BOOT_SCRIPT = `(function(){try{var k='${THEME_STORAGE_KEY}';var s=localStorage.getItem(k);var m=(s==='light'||s==='dark'||s==='system')?s:'dark';var dark=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(dark)document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');}catch(e){document.documentElement.classList.add('dark');}})();`;
+export const THEME_BOOT_SCRIPT = `(function(){try{var k='${THEME_STORAGE_KEY}';var s=localStorage.getItem(k);var m=(s==='light'||s==='dark'||s==='system')?s:'system';var dark=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(dark)document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');}catch(e){document.documentElement.classList.add('dark');}})();`;

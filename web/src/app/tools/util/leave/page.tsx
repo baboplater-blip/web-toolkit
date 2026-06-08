@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, CalendarCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 function parseNum(s: string): number {
   const n = Number(s.replace(/[, ]/g, ''));
@@ -11,23 +10,36 @@ function parseNum(s: string): number {
 }
 const won = (n: number) => `${Math.round(n).toLocaleString('ko-KR')}원`;
 
+/**
+ * `YYYY-MM-DD` 문자열을 UTC 자정 Date 로 파싱한다.
+ * `new Date('YYYY-MM-DD')` 는 UTC 자정으로 파싱하면서 로컬 getter 로 읽으면
+ * 음수 UTC 타임존에서 전날로 밀려 근속 계산이 어긋나므로, 직접 분해해 Date.UTC 로 만든다.
+ */
+function parseUtcDate(iso: string): Date | null {
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 /** 입사일~기준일 근속으로 연차 일수 산정. */
 function annualLeave(joinISO: string, refISO: string) {
-  const join = new Date(joinISO);
-  const ref = new Date(refISO);
-  if (Number.isNaN(join.getTime()) || Number.isNaN(ref.getTime()) || ref < join)
-    return null;
+  const join = parseUtcDate(joinISO);
+  const ref = parseUtcDate(refISO);
+  if (!join || !ref || ref < join) return null;
 
-  // 만 근속 연수
-  let years = ref.getFullYear() - join.getFullYear();
+  // 만 근속 연수 (전부 UTC getter 로 일관 비교)
+  let years = ref.getUTCFullYear() - join.getUTCFullYear();
   const anniv = new Date(join);
-  anniv.setFullYear(join.getFullYear() + years);
+  anniv.setUTCFullYear(join.getUTCFullYear() + years);
   if (ref < anniv) years -= 1;
 
   if (years < 1) {
     // 1년 미만: 개근 1개월당 1일, 최대 11일
-    let months = (ref.getFullYear() - join.getFullYear()) * 12 + (ref.getMonth() - join.getMonth());
-    if (ref.getDate() < join.getDate()) months -= 1;
+    let months =
+      (ref.getUTCFullYear() - join.getUTCFullYear()) * 12 +
+      (ref.getUTCMonth() - join.getUTCMonth());
+    if (ref.getUTCDate() < join.getUTCDate()) months -= 1;
     months = Math.max(0, months);
     return { days: Math.min(11, months), basis: '1년 미만 — 개근 1개월당 1일 (최대 11일)', years };
   }
@@ -62,22 +74,28 @@ export default function LeaveCalcPage() {
     return { eligible, paidHours, pay, monthly: pay * 4.345 };
   }, [weeklyHours, hourlyWage]);
 
+  // 현재 탭의 입력값만 초기화한다.
+  const handleReset = () => {
+    if (tab === 'annual') {
+      setJoinDate('');
+      setRefDate('');
+    } else {
+      setWeeklyHours('40');
+      setHourlyWage('10030');
+    }
+  };
+
+  const canReset =
+    tab === 'annual'
+      ? !!(joinDate || refDate)
+      : weeklyHours !== '40' || hourlyWage !== '10030';
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <CalendarCheck className="h-5 w-5" />
-          <h1 className="font-semibold text-base">연차·주휴수당 계산기</h1>
-        </div>
-      </header>
+      <ToolHeader
+        title="연차·주휴수당 계산기"
+        onReset={canReset ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="grid grid-cols-2 gap-1.5">

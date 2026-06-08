@@ -20,7 +20,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 
 interface ResultData {
@@ -130,7 +130,8 @@ export default function VideoLoopPage() {
 
       await cleanupFiles(ffmpeg, [inputName, outputName]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '반복 처리에 실패했습니다.');
+      const msg = err instanceof Error ? err.message : '반복 처리에 실패했습니다.';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setBusy(false);
     }
@@ -180,6 +181,8 @@ export default function VideoLoopPage() {
             accept={VIDEO_ACCEPT}
             description="반복할 비디오를 업로드하세요"
             hint="코덱을 그대로 복사해 재인코딩 없이 빠르게 이어붙입니다. 원본 컨테이너가 유지됩니다."
+            validate={(picked) => validateMediaSize(picked[0])}
+            onError={(m) => setError(m)}
             onFiles={(picked) => accept(picked[0])}
           />
         )}

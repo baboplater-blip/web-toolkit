@@ -33,6 +33,18 @@ function readArr<T>(key: string): T[] {
   }
 }
 
+/**
+ * localStorage 쓰기 — 프라이빗 모드·용량초과(QuotaExceededError) 등에서 throw 되어
+ * 클릭 핸들러가 깨지지 않도록 조용히 무시한다(읽기 가드와 동일한 스타일).
+ */
+function writeJson(key: string, value: unknown): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // 저장 실패는 무시 — 인메모리 결과만 반환하고 이벤트는 정상 발행한다.
+  }
+}
+
 function emit(event: string, detail: unknown) {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(event, { detail }));
@@ -54,7 +66,7 @@ export function toggleFavorite(id: string): string[] {
   if (cur.has(id)) cur.delete(id);
   else cur.add(id);
   const next = [...cur];
-  localStorage.setItem(FAVS_KEY, JSON.stringify(next));
+  writeJson(FAVS_KEY, next);
   emit(FAVS_EVENT, next);
   return next;
 }
@@ -72,7 +84,7 @@ export function setFavorites(ids: string[]): string[] {
     seen.add(id);
     next.push(id);
   }
-  localStorage.setItem(FAVS_KEY, JSON.stringify(next));
+  writeJson(FAVS_KEY, next);
   emit(FAVS_EVENT, next);
   return next;
 }
@@ -88,7 +100,7 @@ export function recordRecent(id: string): RecentEntry[] {
   const now = Date.now();
   const existing = getRecent().filter((e) => e.id !== id);
   const next = [{ id, ts: now }, ...existing].slice(0, RECENT_LIMIT);
-  localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  writeJson(RECENT_KEY, next);
   emit(RECENT_EVENT, next);
   incrementUsage(id);
   return next;
@@ -120,7 +132,7 @@ export function incrementUsage(id: string): UsageStats {
   if (typeof window === 'undefined') return {};
   const stats = getUsageStats();
   stats[id] = (stats[id] ?? 0) + 1;
-  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  writeJson(STATS_KEY, stats);
   emit(STATS_EVENT, stats);
   return stats;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useDeferredValue, useEffect, useState } from 'react';
 import { ArrowLeft, Diff } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 
@@ -19,21 +19,28 @@ export default function DiffPage() {
   const [parts, setParts] = useState<Part[]>([]);
   const [stats, setStats] = useState({ added: 0, removed: 0, unchanged: 0 });
 
+  // diffChars 는 O(n·m) 라 대용량 입력에서 비싸다. 입력보다 한 박자 늦게 계산해
+  // 키 입력이 막히는 것을 줄인다. (textarea 는 즉시 반영, 비교는 여유 있을 때 따라옴)
+  const deferredA = useDeferredValue(a);
+  const deferredB = useDeferredValue(b);
+  const deferredMode = useDeferredValue(mode);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const diff = await import('diff');
       let result: Part[];
-      if (mode === 'line') result = diff.diffLines(a, b);
-      else if (mode === 'word') result = diff.diffWords(a, b);
-      else result = diff.diffChars(a, b);
+      if (deferredMode === 'line') result = diff.diffLines(deferredA, deferredB);
+      else if (deferredMode === 'word') result = diff.diffWords(deferredA, deferredB);
+      else result = diff.diffChars(deferredA, deferredB);
       if (cancelled) return;
       setParts(result);
       let added = 0;
       let removed = 0;
       let unchanged = 0;
       for (const p of result) {
-        const len = mode === 'line' ? p.value.split('\n').filter(Boolean).length : p.value.length;
+        const len =
+          deferredMode === 'line' ? p.value.split('\n').filter(Boolean).length : p.value.length;
         if (p.added) added += len;
         else if (p.removed) removed += len;
         else unchanged += len;
@@ -43,7 +50,7 @@ export default function DiffPage() {
     return () => {
       cancelled = true;
     };
-  }, [a, b, mode]);
+  }, [deferredA, deferredB, deferredMode]);
 
   return (
     <div className="min-h-dvh bg-background">

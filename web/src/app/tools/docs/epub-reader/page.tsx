@@ -23,6 +23,7 @@ import {
   Search as SearchIcon,
   Settings2,
 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import {
@@ -140,6 +141,23 @@ function writePos(bookKey: string, pos: BookPos) {
   }
 }
 
+/**
+ * 챕터 HTML 을 dangerouslySetInnerHTML 에 넣기 전에 정화한다.
+ * extractBody 는 <script>/스타일시트 링크만 제거하므로 onerror/<iframe>/javascript:
+ * 등이 그대로 남는다 → DOMPurify 로 차단. 단, 이미지 src 는 이미 blob: URL 로
+ * 재작성된 상태이므로 blob: URI 는 허용해야 그림이 깨지지 않는다.
+ * DOMPurify 는 window 가 필요하므로 서버(prerender)에선 건너뛴다(클라이언트에서만 호출됨).
+ */
+function sanitizeChapterHtml(html: string): string {
+  if (typeof window === 'undefined') return html;
+  return DOMPurify.sanitize(html, {
+    // data: 는 일부 EPUB 의 인라인 이미지, blob: 는 위에서 재작성한 이미지 URL
+    ADD_URI_SAFE_ATTR: ['xlink:href'],
+    ALLOW_UNKNOWN_PROTOCOLS: false,
+    ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel|blob|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.:-]|$))/i,
+  });
+}
+
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -166,6 +184,7 @@ interface SearchHit {
   title: string;
   snippet: string;
   count: number;
+  capped: boolean;
 }
 
 export default function EpubReaderPage() {
@@ -191,6 +210,10 @@ export default function EpubReaderPage() {
   const [resumed, setResumed] = useState(false);
 
   const blobUrlsRef = useRef<Set<string>>(new Set());
+  // 현재 화면에 표시 중인 챕터의 이미지 blob URL 집합. 새 챕터로 이동하면
+  // 이전 챕터의 URL 을 즉시 revoke 해 세션 내내 누적되는 것을 막는다.
+  const chapterUrlsRef = useRef<Set<string>>(new Set());
+  const searchTokenRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const readerRef = useRef<HTMLDivElement>(null);
   const bookKeyRef = useRef('');
@@ -285,8 +308,10 @@ export default function EpubReaderPage() {
     setHighlightTerm('');
     highlightRef.current = '';
     fillTokenRef.current++;
+    searchTokenRef.current++;
     for (const url of blobUrlsRef.current) URL.revokeObjectURL(url);
     blobUrlsRef.current.clear();
+    chapterUrlsRef.current.clear();
     try {
       const parsed = await parseEpub(f);
       const tocEntries = await parseToc(parsed);
@@ -351,7 +376,19 @@ export default function EpubReaderPage() {
         const ch = await readChapter(parsed, parsed.spine[idx]);
         if (!ch) return;
         const body = extractBody(ch.xhtml);
-        let rewritten = await rewriteImages(parsed, ch.path, body, blobUrlsRef.current);
+        // 이 챕터에서 새로 만든 이미지 URL 만 따로 모은다(이전 챕터 URL 정리에 사용).
+        const nextUrls = new Set<string>();
+        let rewritten = await rewriteImages(parsed, ch.path, body, blobUrlsRef.current, nextUrls);
+        // 이전 챕터의 이미지 blob URL 중 이번 챕터가 다시 쓰지 않는 것은 즉시 해제.
+        for (const url of chapterUrlsRef.current) {
+          if (!nextUrls.has(url)) {
+            URL.revokeObjectURL(url);
+            blobUrlsRef.current.delete(url);
+          }
+        }
+        chapterUrlsRef.current = nextUrls;
+        // 신뢰할 수 없는 챕터 HTML 정화(이미지 blob src 는 보존).
+        rewritten = sanitizeChapterHtml(rewritten);
         if (highlightRef.current) rewritten = highlightHtml(rewritten, highlightRef.current);
         idxRef.current = idx;
         setChapterHtml(rewritten);
@@ -423,6 +460,8 @@ export default function EpubReaderPage() {
   async function runSearch() {
     const q = searchQuery.trim();
     if (!q || !epub) return;
+    // 검색어를 바꿔 재검색하면 이전 스캔은 무효화한다(둘 다 setSearchResults 하는 경쟁 방지).
+    const token = ++searchTokenRef.current;
     setSearching(true);
     setSearched(true);
     setSearchResults([]);
@@ -430,23 +469,37 @@ export default function EpubReaderPage() {
       const ql = q.toLowerCase();
       const hits: SearchHit[] = [];
       for (let i = 0; i < epub.spine.length; i++) {
+        if (searchTokenRef.current !== token) return; // 새 검색이 시작됨 → 폐기
         const ch = await readChapter(epub, epub.spine[i]);
         if (!ch) continue;
         const text = htmlToPlainText(extractBody(ch.xhtml));
         const tl = text.toLowerCase();
         const at = tl.indexOf(ql);
         if (at < 0) continue;
+        // 챕터당 매치 수는 999 에서 멈춰 거대 챕터에서의 과도한 루프를 막는다.
         let count = 0;
+        let capped = false;
         let p = at;
         while (p >= 0) {
           count++;
+          if (count >= 999) {
+            capped = true;
+            break;
+          }
           p = tl.indexOf(ql, p + ql.length);
         }
-        hits.push({ idx: i, title: chapterTitleAt(i), snippet: makeSnippet(text, at, q.length), count });
+        hits.push({
+          idx: i,
+          title: chapterTitleAt(i),
+          snippet: makeSnippet(text, at, q.length),
+          count,
+          capped,
+        });
       }
+      if (searchTokenRef.current !== token) return;
       setSearchResults(hits);
     } finally {
-      setSearching(false);
+      if (searchTokenRef.current === token) setSearching(false);
     }
   }
 
@@ -627,7 +680,7 @@ export default function EpubReaderPage() {
               {searched && !searching && (
                 <p className="text-[11px] text-muted-foreground">
                   {searchResults.length > 0
-                    ? `${searchResults.reduce((s, h) => s + h.count, 0)}건 · ${searchResults.length}개 챕터`
+                    ? `${searchResults.reduce((s, h) => s + h.count, 0)}${searchResults.some((h) => h.capped) ? '+' : ''}건 · ${searchResults.length}개 챕터`
                     : '검색 결과가 없습니다.'}
                 </p>
               )}
@@ -640,7 +693,7 @@ export default function EpubReaderPage() {
                         className="block w-full text-left rounded-md px-2 py-1.5 hover:bg-muted"
                       >
                         <span className="text-xs font-medium">
-                          {h.title} <span className="text-muted-foreground">({h.count})</span>
+                          {h.title} <span className="text-muted-foreground">({h.count}{h.capped ? '+' : ''})</span>
                         </span>
                         <span className="block text-[11px] text-muted-foreground line-clamp-2">{h.snippet}</span>
                       </button>
@@ -798,6 +851,7 @@ async function rewriteImages(
   chapterPath: string,
   html: string,
   cache: Set<string>,
+  used?: Set<string>,
 ): Promise<string> {
   const chapterDir = chapterPath.includes('/')
     ? chapterPath.substring(0, chapterPath.lastIndexOf('/') + 1)
@@ -821,6 +875,7 @@ async function rewriteImages(
       urlMap.set(resolved, url);
       cache.add(url);
     }
+    used?.add(url);
     replacements.push([raw, `${attrName}="${url}"`]);
   }
   let out = html;

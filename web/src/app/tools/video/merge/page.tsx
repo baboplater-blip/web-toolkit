@@ -22,7 +22,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 
 type Mode = 'copy' | 'reencode';
@@ -85,10 +85,15 @@ export default function VideoMergePage() {
     let inputNames: string[] = [];
     const outputName = 'merged.mp4';
     const listName = 'concat-list.txt';
+    // 진행률 리스너는 싱글턴에 누적되므로 이름 붙여 finally 에서 해제.
+    const onProgress = ({ progress: p }: { progress: number }) => {
+      setProgress(Math.min(99, Math.round(p * 100)));
+    };
+    let ffmpeg: Awaited<ReturnType<typeof getFFmpeg>> | null = null;
 
     try {
       setStage('FFmpeg 로딩');
-      const ffmpeg = await getFFmpeg();
+      ffmpeg = await getFFmpeg();
 
       setStage('파일 준비');
       inputNames = files.map((_, i) => `in${i}.${files[i].name.split('.').pop() || 'mp4'}`);
@@ -96,9 +101,6 @@ export default function VideoMergePage() {
         await writeFile(ffmpeg, inputNames[i], files[i]);
       }
 
-      const onProgress = ({ progress: p }: { progress: number }) => {
-        setProgress(Math.min(99, Math.round(p * 100)));
-      };
       ffmpeg.on('progress', onProgress);
 
       setStage('합치는 중');
@@ -149,24 +151,28 @@ export default function VideoMergePage() {
       }
 
       await ffmpeg.exec(args);
-      ffmpeg.off('progress', onProgress);
 
       const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
       const url = URL.createObjectURL(blob);
       setResult({ blob, url, size: blob.size, name: outputName });
       setProgress(100);
       setStage('완료');
-
-      const cleanupTargets = [...inputNames, outputName];
-      if (mode === 'copy') cleanupTargets.push(listName);
-      await cleanupFiles(ffmpeg, cleanupTargets);
     } catch (err) {
-      setError(
+      const msg =
         err instanceof Error
           ? err.message
-          : '병합 실패. 코덱이 다른 파일은 "재인코딩" 모드를 사용해 보세요.',
-      );
+          : '병합 실패. 코덱이 다른 파일은 "재인코딩" 모드를 사용해 보세요.';
+      // 합산 용량 기준으로 메모리 부족 안내로 치환 (해당 패턴일 때만)
+      const totalSize = files.reduce((s, f) => s + f.size, 0);
+      setError(explainFfmpegError(msg, totalSize));
     } finally {
+      // exec 실패 시에도 진행률 리스너·MEMFS 잔류 파일이 새지 않게 finally 에서 정리.
+      if (ffmpeg) {
+        ffmpeg.off('progress', onProgress);
+        const cleanupTargets = [...inputNames, outputName];
+        if (mode === 'copy') cleanupTargets.push(listName);
+        await cleanupFiles(ffmpeg, cleanupTargets);
+      }
       setBusy(false);
     }
   };
@@ -213,6 +219,15 @@ export default function VideoMergePage() {
             multiple
             description="합칠 비디오를 순서대로 추가하세요"
             hint="MP4·WEBM·MOV·AVI 등. 위 → 아래 순서로 이어붙입니다."
+            validate={(picked) => {
+              // 추가된 파일 중 한도 초과 첫 파일을 막아 메모리 폭주 예방
+              for (const f of picked) {
+                const msg = validateMediaSize(f);
+                if (msg) return msg;
+              }
+              return null;
+            }}
+            onError={(m) => setError(m)}
             onFiles={(picked) => acceptFiles(picked)}
           />
         )}

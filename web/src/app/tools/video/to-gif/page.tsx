@@ -27,7 +27,7 @@ import {
   type LoadProgress,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -176,6 +176,11 @@ export default function VideoToGifPage() {
   const acceptFile = async (f: File) => {
     if (!f.type.startsWith('video/')) {
       setError('비디오 파일만 업로드 가능합니다 (mp4, webm, mov, avi 등).');
+      return;
+    }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setError(null);
@@ -353,7 +358,8 @@ export default function VideoToGifPage() {
         ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GIF 변환 실패');
+      const msg = err instanceof Error ? err.message : 'GIF 변환 실패';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setProcessing(false);
       setProgressPct(0);

@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, RotateCcw, Zap } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 /** 빨강 → 초록 전환까지의 무작위 대기 시간 범위(ms). */
 const MIN_DELAY_MS = 1200;
@@ -114,22 +115,10 @@ export default function ReactionTimePage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              title="도구로"
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Zap className="h-5 w-5" />
-            <h1 className="font-semibold text-base">반응속도 테스트</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader
+        title="반응속도 테스트"
+        onReset={history.length > 0 ? resetHistory : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <p className="text-sm text-muted-foreground">

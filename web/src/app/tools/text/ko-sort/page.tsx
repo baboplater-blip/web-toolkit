@@ -1,11 +1,21 @@
 'use client';
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
-import { useMemo, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Copy, Check, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type Mode = 'asc' | 'desc' | 'reverse' | 'random' | 'length-asc' | 'length-desc';
+
+/** Fisher–Yates 셔플(원본 불변, 새 배열 반환). */
+function shuffleLines(lines: string[]): string[] {
+  const arr = [...lines];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export default function KoSortPage() {
   const [input, setInput] = useState('가나다\n123\n나라\n람보\nABC\n사과\n100\n2.5');
@@ -14,35 +24,43 @@ export default function KoSortPage() {
   const [trim, setTrim] = useState(true);
   const [numeric, setNumeric] = useState(true);
   const [copied, setCopied] = useState(false);
+  // 셔플 결과는 명시적 액션으로만 갱신되는 상태로 보관한다(파생 상태 아님).
+  const [shuffled, setShuffled] = useState<string[]>([]);
 
-  const result = useMemo(() => {
+  // 전처리(공백 제거·중복 제거)까지는 결정적이므로 파생 상태로 둔다.
+  const preparedLines = useMemo(() => {
     let lines = input.split('\n');
     if (trim) lines = lines.map((l) => l.trim());
     if (dedupe) lines = Array.from(new Set(lines));
+    return lines;
+  }, [input, dedupe, trim]);
 
-    if (mode === 'reverse') {
-      return [...lines].reverse().join('\n');
-    }
+  // 무작위 모드로 들어가거나 전처리 결과가 바뀌면 한 번 섞는다(이후 무관한 변경엔 섞지 않음).
+  useEffect(() => {
     if (mode === 'random') {
-      const arr = [...lines];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr.join('\n');
+      setShuffled(shuffleLines(preparedLines));
+    }
+  }, [mode, preparedLines]);
+
+  const result = useMemo(() => {
+    if (mode === 'random') {
+      return shuffled.join('\n');
+    }
+    if (mode === 'reverse') {
+      return [...preparedLines].reverse().join('\n');
     }
     if (mode === 'length-asc' || mode === 'length-desc') {
-      const arr = [...lines].sort((a, b) => {
+      const arr = [...preparedLines].sort((a, b) => {
         const diff = a.length - b.length;
         return mode === 'length-asc' ? diff : -diff;
       });
       return arr.join('\n');
     }
     const collator = new Intl.Collator('ko-KR', { numeric, sensitivity: 'base' });
-    const arr = [...lines].sort(collator.compare);
+    const arr = [...preparedLines].sort(collator.compare);
     if (mode === 'desc') arr.reverse();
     return arr.join('\n');
-  }, [input, mode, dedupe, trim, numeric]);
+  }, [preparedLines, mode, numeric, shuffled]);
 
   const stats = useMemo(() => {
     const lines = input.split('\n');
@@ -108,10 +126,22 @@ export default function KoSortPage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-medium">결과</label>
-          <Button variant="outline" size="sm" onClick={handleCopy}>
-            {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-            {copied ? '복사됨' : '복사'}
-          </Button>
+          <div className="flex gap-1.5">
+            {mode === 'random' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShuffled(shuffleLines(preparedLines))}
+              >
+                <Shuffle className="mr-1.5 h-3.5 w-3.5" />
+                다시 섞기
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+              {copied ? '복사됨' : '복사'}
+            </Button>
+          </div>
         </div>
         <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm min-h-48 resize-y leading-relaxed font-mono" aria-label="결과" />
       </div>

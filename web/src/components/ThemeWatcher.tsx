@@ -9,7 +9,9 @@ import { watchSystemTheme } from '@/lib/theme';
  */
 export function ThemeWatcher() {
   useEffect(() => {
-    watchSystemTheme();
+    // watchSystemTheme 가 반환하는 해제 함수를 effect cleanup 으로 연결해
+    // matchMedia change 리스너 누수를 방지한다.
+    return watchSystemTheme();
   }, []);
   return null;
 }

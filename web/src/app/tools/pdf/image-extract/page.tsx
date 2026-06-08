@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
@@ -22,6 +22,9 @@ export default function PdfImageExtractPage() {
     compressedSize: number;
   } | null>(null);
   const abortRef = useRef<{ aborted: boolean } | null>(null);
+
+  // 언마운트 시 마지막 결과 ObjectURL 회수 (merge 의 생명주기와 동일)
+  useEffect(() => () => { if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl); }, [result?.blobUrl]);
 
   async function handleProcess() {
     if (!file) {
@@ -56,6 +59,8 @@ export default function PdfImageExtractPage() {
       }
       const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
       const baseName = file.name.replace(/\.pdf$/i, '');
+      // 새 URL 생성 전 직전 결과 URL 회수 (재실행 시 누수 방지)
+      if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `${baseName}-images.zip`,
@@ -135,7 +140,7 @@ export default function PdfImageExtractPage() {
       )}
 
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
-        <p>벡터 그래픽이나 마스킹된 이미지는 추출되지 않거나 형태가 다를 수 있습니다. 페이지 전체를 이미지화하려면 "PDF → JPG" 도구를 사용하세요.</p>
+        <p>벡터 그래픽이나 마스킹된 이미지는 추출되지 않거나 형태가 다를 수 있습니다. 페이지 전체를 이미지화하려면 &quot;PDF → JPG&quot; 도구를 사용하세요.</p>
       </div>
       </main>
     </div>

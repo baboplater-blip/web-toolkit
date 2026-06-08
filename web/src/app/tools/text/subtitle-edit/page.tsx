@@ -4,7 +4,8 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
 import { Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { triggerDownload } from '@/lib/tools/file-utils';
 import {
   formatTimecode,
   parseSubtitle,
@@ -14,8 +15,18 @@ import {
   type SubtitleFormat,
 } from '@/lib/tools/subtitles';
 
+// 편집용 cue 에는 React key 용 안정적 id 를 붙인다(배열 인덱스 key 는 삭제 시 포커스 점프 유발).
+interface EditableCue extends SubtitleCue {
+  uid: number;
+}
+
+let cueUidCounter = 0;
+function nextCueUid(): number {
+  return ++cueUidCounter;
+}
+
 export default function SubtitleEditPage() {
-  const [cues, setCues] = useState<SubtitleCue[]>([]);
+  const [cues, setCues] = useState<EditableCue[]>([]);
   const [origFormat, setOrigFormat] = useState<SubtitleFormat>('srt');
   const [outputFormat, setOutputFormat] = useState<SubtitleFormat>('srt');
   const [offset, setOffset] = useState(0);
@@ -27,7 +38,7 @@ export default function SubtitleEditPage() {
     try {
       const text = await f.text();
       const parsed = parseSubtitle(text);
-      setCues(parsed.cues);
+      setCues(parsed.cues.map((c) => ({ ...c, uid: nextCueUid() })));
       setOrigFormat(parsed.format);
       setOutputFormat(parsed.format === 'txt' ? 'srt' : parsed.format);
     } catch (e) {
@@ -35,29 +46,31 @@ export default function SubtitleEditPage() {
     }
   }
 
-  function updateCue(idx: number, patch: Partial<SubtitleCue>) {
-    setCues((prev) => prev.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
+  function updateCue(uid: number, patch: Partial<SubtitleCue>) {
+    setCues((prev) => prev.map((c) => (c.uid === uid ? { ...c, ...patch } : c)));
   }
 
-  function removeCue(idx: number) {
-    setCues((prev) => prev.filter((_, i) => i !== idx));
+  function removeCue(uid: number) {
+    setCues((prev) => prev.filter((c) => c.uid !== uid));
   }
 
   function addCue() {
     const last = cues[cues.length - 1];
     const start = last ? last.end : 0;
-    setCues((prev) => [...prev, { index: prev.length + 1, start, end: start + 3, text: '' }]);
+    setCues((prev) => [
+      ...prev,
+      { index: prev.length + 1, start, end: start + 3, text: '', uid: nextCueUid() },
+    ]);
   }
 
   const shifted = useMemo(() => shiftSubtitles(cues, offset, rate), [cues, offset, rate]);
   const serialized = useMemo(() => serializeSubtitle(shifted, outputFormat), [shifted, outputFormat]);
 
-  const downloadUrl = useMemo(() => {
-    const blob = new Blob([serialized], { type: 'text/plain;charset=utf-8' });
-    return URL.createObjectURL(blob);
-  }, [serialized]);
-
   const filename = `subtitle.${outputFormat}`;
+
+  function download() {
+    triggerDownload(new Blob([serialized], { type: 'text/plain;charset=utf-8' }), filename);
+  }
 
   return (
     <div className="min-h-dvh bg-background">
@@ -101,35 +114,35 @@ export default function SubtitleEditPage() {
 
           <div className="rounded-xl border bg-card divide-y max-h-[60vh] overflow-y-auto">
             {cues.map((c, i) => (
-              <div key={i} className="p-2 grid grid-cols-[80px_80px_1fr_24px] gap-2 items-start text-xs">
+              <div key={c.uid} className="p-2 grid grid-cols-[80px_80px_1fr_24px] gap-2 items-start text-xs">
                 <input
                   value={formatTimecode(c.start, ',')}
-                  onChange={(e) => updateCue(i, { start: parseTimeInput(e.target.value) })}
+                  onChange={(e) => updateCue(c.uid, { start: parseTimeInput(e.target.value) })}
                   aria-label={`자막 ${i + 1} 시작 시간`}
                   className="rounded-md border bg-background px-1 py-0.5 font-mono"
                 />
                 <input
                   value={formatTimecode(c.end, ',')}
-                  onChange={(e) => updateCue(i, { end: parseTimeInput(e.target.value) })}
+                  onChange={(e) => updateCue(c.uid, { end: parseTimeInput(e.target.value) })}
                   aria-label={`자막 ${i + 1} 끝 시간`}
                   className="rounded-md border bg-background px-1 py-0.5 font-mono"
                 />
                 <textarea
                   value={c.text}
-                  onChange={(e) => updateCue(i, { text: e.target.value })}
+                  onChange={(e) => updateCue(c.uid, { text: e.target.value })}
                   aria-label={`자막 ${i + 1} 텍스트`}
                   className="rounded-md border bg-background px-1.5 py-1 min-h-[2em] leading-snug"
                   rows={2}
                 />
-                <button onClick={() => removeCue(i)} className="text-destructive hover:text-destructive/70" title="삭제">×</button>
+                <button onClick={() => removeCue(c.uid)} className="text-destructive hover:text-destructive/70" title="삭제">×</button>
               </div>
             ))}
           </div>
           <Button variant="outline" size="sm" onClick={addCue}>+ cue 추가</Button>
 
-          <a href={downloadUrl} download={filename} className={buttonVariants({ variant: 'default', className: 'w-full' })}>
+          <Button variant="default" className="w-full" onClick={download}>
             <Download className="h-4 w-4" /> {filename} 다운로드
-          </a>
+          </Button>
         </>
       )}
     </main>

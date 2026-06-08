@@ -21,7 +21,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 
 interface ResultData {
@@ -158,7 +158,8 @@ export default function VideoResizePage() {
 
       await cleanupFiles(ffmpeg, [inputName, outputName]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '해상도 변경에 실패했습니다.');
+      const msg = err instanceof Error ? err.message : '해상도 변경에 실패했습니다.';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setBusy(false);
     }
@@ -208,6 +209,8 @@ export default function VideoResizePage() {
             accept={VIDEO_ACCEPT}
             description="해상도를 바꿀 비디오를 업로드하세요"
             hint="가로세로 비율은 유지됩니다. 업로드 용량을 줄이거나 화질을 낮출 때 유용합니다."
+            validate={(picked) => validateMediaSize(picked[0])}
+            onError={(m) => setError(m)}
             onFiles={(picked) => accept(picked[0])}
           />
         )}

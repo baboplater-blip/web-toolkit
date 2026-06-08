@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDownAZ,
   ArrowLeft,
@@ -8,6 +8,7 @@ import {
   Check,
   Copy,
   Download,
+  Shuffle,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -21,7 +22,9 @@ const KO_COLLATOR = new Intl.Collator('ko', {
   numeric: true,
 });
 
-function applySort(lines: string[], mode: SortMode): string[] {
+// 'random' 은 비결정적이라 파생 상태(useMemo)로 두면 무관한 입력 변경에도 다시 섞인다.
+// 따라서 정렬 함수에서는 제외하고, 셔플은 명시적 액션으로만 수행한다.
+function applySort(lines: string[], mode: Exclude<SortMode, 'random'>): string[] {
   switch (mode) {
     case 'asc':
       return [...lines].sort((a, b) => KO_COLLATOR.compare(a, b));
@@ -33,15 +36,17 @@ function applySort(lines: string[], mode: SortMode): string[] {
       return [...lines].sort((a, b) => b.length - a.length || KO_COLLATOR.compare(a, b));
     case 'reverse':
       return [...lines].reverse();
-    case 'random': {
-      const arr = [...lines];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
   }
+}
+
+/** Fisher–Yates 셔플(원본 불변, 새 배열 반환). */
+function shuffleLines(lines: string[]): string[] {
+  const arr = [...lines];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function applyDup(lines: string[], mode: DupMode, ignoreCase: boolean): string[] {
@@ -88,15 +93,29 @@ export default function TextSortPage() {
   const [removeBlank, setRemoveBlank] = useState(true);
   const [ignoreCase, setIgnoreCase] = useState(false);
   const [copied, setCopied] = useState(false);
+  // 셔플 결과는 명시적 액션으로만 갱신되는 상태로 보관한다(파생 상태 아님).
+  const [shuffled, setShuffled] = useState<string[]>([]);
 
-  const result = useMemo(() => {
+  // 전처리·중복 처리까지는 결정적이므로 파생 상태로 둔다.
+  const preparedLines = useMemo(() => {
     let lines = text.split(/\r?\n/);
     if (trim) lines = lines.map((l) => l.trim());
     if (removeBlank) lines = lines.filter((l) => l.length > 0);
     lines = applyDup(lines, dupMode, ignoreCase);
-    lines = applySort(lines, sortMode);
     return lines;
-  }, [text, sortMode, dupMode, trim, removeBlank, ignoreCase]);
+  }, [text, dupMode, trim, removeBlank, ignoreCase]);
+
+  // 랜덤 모드로 들어가거나 전처리 결과가 바뀌면 한 번 섞는다(이후 무관한 변경엔 섞지 않음).
+  useEffect(() => {
+    if (sortMode === 'random') {
+      setShuffled(shuffleLines(preparedLines));
+    }
+  }, [sortMode, preparedLines]);
+
+  const result = useMemo(() => {
+    if (sortMode === 'random') return shuffled;
+    return applySort(preparedLines, sortMode);
+  }, [preparedLines, sortMode, shuffled]);
 
   const resultText = result.join('\n');
   const originalCount = text.split(/\r?\n/).length;
@@ -256,6 +275,17 @@ export default function TextSortPage() {
                 결과 ({result.length}줄)
               </h2>
               <div className="flex gap-1.5">
+                {sortMode === 'random' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setShuffled(shuffleLines(preparedLines))}
+                  >
+                    <Shuffle className="h-3 w-3" />
+                    <span className="ml-1">다시 섞기</span>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"

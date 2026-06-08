@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
@@ -138,16 +138,19 @@ export default function SummarizePage() {
   const [ratioPercent, setRatioPercent] = useState(30);
   const [copied, setCopied] = useState(false);
 
+  // 요약은 문장 분리·단어 가중치 계산으로 비싸다. 입력보다 한 박자 늦게 계산해 입력 블로킹을 막는다.
+  const deferredInput = useDeferredValue(input);
+
   const output = useMemo(() => {
-    if (!input.trim()) return '';
-    return summarize(input, ratioPercent / 100);
-  }, [input, ratioPercent]);
+    if (!deferredInput.trim()) return '';
+    return summarize(deferredInput, ratioPercent / 100);
+  }, [deferredInput, ratioPercent]);
 
   const stats = useMemo(() => {
-    const sourceSentences = splitSentences(input).length;
+    const sourceSentences = splitSentences(deferredInput).length;
     const summarySentences = output ? splitSentences(output).length : 0;
     return { sourceSentences, summarySentences };
-  }, [input, output]);
+  }, [deferredInput, output]);
 
   async function copy(): Promise<void> {
     if (!output) return;

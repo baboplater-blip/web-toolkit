@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Contact, Copy, Download } from 'lucide-react';
+import { Copy, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 interface Card {
   name: string;
@@ -87,12 +89,16 @@ export default function VCardQrPage() {
     setCard((c) => ({ ...c, [key]: value }));
   }
 
-  function download() {
+  // QR 은 data URL 이므로 Blob 으로 변환 후 공용 다운로드 헬퍼로 저장한다.
+  // (비부착 anchor.click() 은 일부 브라우저에서 동작하지 않아 triggerDownload 로 통일.)
+  async function download() {
     if (!qr) return;
-    const a = document.createElement('a');
-    a.href = qr;
-    a.download = `${card.name || 'contact'}-vcard-qr.png`;
-    a.click();
+    try {
+      const blob = await (await fetch(qr)).blob();
+      triggerDownload(blob, `${card.name || 'contact'}-vcard-qr.png`);
+    } catch {
+      /* noop */
+    }
   }
 
   async function copyVcard() {
@@ -105,22 +111,25 @@ export default function VCardQrPage() {
     }
   }
 
+  function handleReset() {
+    setCard({
+      name: '',
+      org: '',
+      title: '',
+      phone: '',
+      mobile: '',
+      email: '',
+      url: '',
+      address: '',
+    });
+  }
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <Contact className="h-5 w-5" />
-          <h1 className="font-semibold text-base">vCard 명함 QR 생성기</h1>
-        </div>
-      </header>
+      <ToolHeader
+        title="vCard 명함 QR 생성기"
+        onReset={hasData ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto grid md:grid-cols-2 gap-4">
         <div className="rounded-xl border bg-card p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">

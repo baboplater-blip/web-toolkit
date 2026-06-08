@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Wallet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { calcSalary, RATES } from '@/lib/office/payroll';
 
 function parseNum(s: string): number {
@@ -41,22 +40,17 @@ export default function SalaryCalcPage() {
       ]
     : [];
 
+  // 급여 금액만 초기화한다. (비과세·부양가족은 일반적 기본값 유지)
+  const handleReset = () => {
+    setAmount('');
+  };
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <Wallet className="h-5 w-5" />
-          <h1 className="font-semibold text-base">연봉 실수령액 계산기</h1>
-        </div>
-      </header>
+      <ToolHeader
+        title="연봉 실수령액 계산기"
+        onReset={amount ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">

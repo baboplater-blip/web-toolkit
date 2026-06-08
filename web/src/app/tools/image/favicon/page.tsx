@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppWindow, Download, Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,14 @@ export default function FaviconGenPage() {
   const [zipBlob, setZipBlob] = useState<Blob | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 언마운트 시 미리보기 PNG blob URL 들을 해제(누수 방지).
+  // 교체는 clearResult 가 담당하므로, 여기서는 마지막 배열만 정리하면 된다.
+  useEffect(() => {
+    return () => {
+      rendered?.forEach((r) => URL.revokeObjectURL(r.url));
+    };
+  }, [rendered]);
 
   function clearResult() {
     setRendered((prev) => {

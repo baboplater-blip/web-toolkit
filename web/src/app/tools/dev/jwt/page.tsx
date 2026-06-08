@@ -1,9 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Check, Copy, Key } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Check, Copy } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { ToolHeader } from '@/components/tools/ToolHeader';
+
+const SAMPLE_JWT =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFpZGVuIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.dQw4w9WgXcQ';
 
 function base64UrlDecode(s: string): string {
   let b64 = s.replace(/-/g, '+').replace(/_/g, '/');
@@ -13,9 +17,6 @@ function base64UrlDecode(s: string): string {
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return new TextDecoder('utf-8').decode(bytes);
 }
-
-const SAMPLE_JWT =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFpZGVuIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.dQw4w9WgXcQ';
 
 export default function JwtPage() {
   const [token, setToken] = useState(SAMPLE_JWT);
@@ -52,10 +53,17 @@ export default function JwtPage() {
   }, [token]);
 
   const copy = async (key: string, value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 1500);
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+    }
   };
+
+  const handleReset = () => setToken(SAMPLE_JWT);
 
   const formatTs = (ts: number) => {
     if (!Number.isFinite(ts)) return String(ts);
@@ -66,21 +74,11 @@ export default function JwtPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Key className="h-5 w-5" />
-            <h1 className="font-semibold text-base">JWT 디코더</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader
+        title="JWT 디코더"
+        widthClass="max-w-4xl"
+        onReset={token !== SAMPLE_JWT ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-4xl mx-auto space-y-3">
         <div className="rounded-xl border bg-card p-3 space-y-2">

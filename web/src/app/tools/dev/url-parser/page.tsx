@@ -1,15 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  ArrowLeft,
-  Check,
-  Copy,
-  Link2,
-} from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { ToolHeader } from '@/components/tools/ToolHeader';
+
+const DEFAULT_INPUT = 'https://example.com/search?q=hello+world&page=2#results';
 
 interface Parsed {
   protocol: string;
@@ -69,11 +67,17 @@ function rebuild(parts: Parsed): string {
 }
 
 export default function UrlParserPage() {
-  const [input, setInput] = useState('https://example.com/search?q=hello+world&page=2#results');
+  const [input, setInput] = useState(DEFAULT_INPUT);
   const [overrideParams, setOverrideParams] = useState<
     Array<[string, string]> | null
   >(null);
   const [copied, setCopied] = useState<string | null>(null);
+
+  const handleReset = () => {
+    setInput(DEFAULT_INPUT);
+    setOverrideParams(null);
+    setCopied(null);
+  };
 
   const parsedRaw = useMemo(() => tryParse(input), [input]);
   const parsed = 'error' in parsedRaw ? null : parsedRaw;
@@ -112,24 +116,7 @@ export default function UrlParserPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({
-              variant: 'ghost',
-              size: 'icon',
-              className: 'h-8 w-8',
-            })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <Link2 className="h-5 w-5" />
-          <h1 className="font-semibold text-base">URL 파서</h1>
-        </div>
-      </header>
+      <ToolHeader title="URL 파서" onReset={handleReset} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-2">

@@ -1,7 +1,7 @@
 'use client';
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Copy, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { autoSpacing } from '@/lib/tools/korean';
@@ -10,7 +10,9 @@ import { triggerDownload } from '@/lib/tools/file-utils';
 export default function KoSpacingPage() {
   const [input, setInput] = useState('한국어띄어쓰기가어렵습니다.제가할것은무엇일까요? 100 만원이있습니다.');
   const [copied, setCopied] = useState(false);
-  const output = useMemo(() => autoSpacing(input), [input]);
+  // 규칙 기반 교정은 입력보다 한 박자 늦게 실행해 대용량 붙여넣기 시 입력 블로킹을 막는다.
+  const deferredInput = useDeferredValue(input);
+  const output = useMemo(() => autoSpacing(deferredInput), [deferredInput]);
 
   async function handleCopy() {
     try {

@@ -52,6 +52,26 @@ export async function getFFmpeg(
   }
 }
 
+/**
+ * 캐시된 FFmpeg 인스턴스를 종료하고 캐시를 비운다.
+ * WASM 메모리는 한 번 늘면 줄지 않고, 중단된 실행은 인스턴스를 망가진 상태로
+ * 남길 수 있다 — 이때 호출하면 다음 getFFmpeg() 가 깨끗하게 재로드한다.
+ */
+export function resetFFmpeg(): void {
+  const current = instance;
+  instance = null;
+  loadingPromise = null;
+  if (current) {
+    try {
+      // terminate 는 버전에 따라 없을 수 있어 존재 확인 후 호출.
+      const terminate = (current as Partial<Pick<FFmpeg, 'terminate'>>).terminate;
+      if (typeof terminate === 'function') terminate.call(current);
+    } catch {
+      /* 종료 실패는 무시 — 어차피 캐시는 비웠다 */
+    }
+  }
+}
+
 export async function writeFile(
   ffmpeg: FFmpeg,
   name: string,

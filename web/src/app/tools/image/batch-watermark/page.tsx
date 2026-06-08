@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2, Stamp } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
@@ -27,6 +27,13 @@ export default function BatchWatermarkPage() {
     originalSize: number;
     compressedSize: number;
   } | null>(null);
+
+  // 언마운트 시 마지막 결과 blob URL 해제(누수 방지).
+  useEffect(() => {
+    return () => {
+      if (result) URL.revokeObjectURL(result.blobUrl);
+    };
+  }, [result]);
 
   async function handleProcess() {
     if (files.length === 0) {
@@ -172,8 +179,13 @@ export default function BatchWatermarkPage() {
 function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
     const img = new Image();
+    const url = URL.createObjectURL(file);
     img.onload = () => res(img);
-    img.onerror = () => rej(new Error('이미지 로드 실패'));
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => {
+      // 디코드 실패 시 ObjectURL 이 새지 않도록 해제(성공 시엔 호출부 finally 가 해제).
+      URL.revokeObjectURL(url);
+      rej(new Error('이미지 로드 실패'));
+    };
+    img.src = url;
   });
 }

@@ -23,6 +23,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
@@ -88,6 +89,11 @@ export default function AudioConvertPage() {
   const acceptFile = async (f: File) => {
     if (!f.type.startsWith('audio/') && !/\.(mp3|wav|ogg|aac|m4a|flac|opus|wma)$/i.test(f.name)) {
       setError('오디오 파일만 업로드 가능합니다.');
+      return;
+    }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setError(null);
@@ -216,7 +222,8 @@ export default function AudioConvertPage() {
         ffmpeg.off('progress', onFfProgress);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '변환 실패');
+      const msg = err instanceof Error ? err.message : '변환 실패';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setProcessing(false);
       setProgressText('');

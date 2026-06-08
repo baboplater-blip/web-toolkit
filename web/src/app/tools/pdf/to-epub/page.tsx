@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -24,6 +24,9 @@ export default function PdfToEpubPage() {
     compressedSize: number;
   } | null>(null);
   const abortRef = useRef<{ aborted: boolean } | null>(null);
+
+  // 언마운트 시 마지막 결과 ObjectURL 회수 (merge 의 생명주기와 동일)
+  useEffect(() => () => { if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl); }, [result?.blobUrl]);
 
   async function handleFile(f: File) {
     setFile(f);
@@ -79,6 +82,8 @@ export default function PdfToEpubPage() {
       setProgress(100);
 
       const baseName = (title || file.name.replace(/\.pdf$/i, '')).replace(/[\\/:*?"<>|]/g, '_').slice(0, 60);
+      // 새 URL 생성 전 직전 결과 URL 회수 (재실행 시 누수 방지)
+      if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `${baseName}.epub`,
@@ -203,7 +208,7 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border bg-background px-2 py-1.5 text-sm" aria-label="$" />
+        className="w-full rounded-md border bg-background px-2 py-1.5 text-sm" aria-label={label} />
     </div>
   );
 }

@@ -1,22 +1,27 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  ArrowLeft,
-  Check,
-  Copy,
-  Dices,
-  RotateCcw,
-  Shuffle,
-} from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Check, Copy, Shuffle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
+/**
+ * [0, maxExclusive) 범위의 균등한 정수를 반환한다.
+ * 단순 `% maxExclusive` 는 2^32 가 maxExclusive 의 배수가 아닐 때 모듈로 편향이 생기므로,
+ * 균등 분포가 보장되는 상한(limit) 이상 값은 버리고 다시 뽑는 거부 표집(rejection sampling)을 쓴다.
+ */
 function secureRandomInt(maxExclusive: number): number {
+  // maxExclusive 의 배수가 되는 가장 큰 2^32 이하 경계. 이 값 이상은 편향 구간이라 폐기.
+  const limit = Math.floor(0x1_0000_0000 / maxExclusive) * maxExclusive;
   const buf = new Uint32Array(1);
-  crypto.getRandomValues(buf);
-  return buf[0] % maxExclusive;
+  let value: number;
+  do {
+    crypto.getRandomValues(buf);
+    value = buf[0];
+  } while (value >= limit);
+  return value % maxExclusive;
 }
 
 function shuffleSecure<T>(arr: T[]): T[] {
@@ -78,32 +83,7 @@ export default function RandomPickPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({
-                variant: 'ghost',
-                size: 'icon',
-                className: 'h-8 w-8',
-              })}
-              title="도구로"
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Dices className="h-5 w-5" />
-            <h1 className="font-semibold text-base">추첨기</h1>
-          </div>
-          {picked.length > 0 && (
-            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
-              <RotateCcw className="h-3.5 w-3.5 mr-1" />
-              초기화
-            </Button>
-          )}
-        </div>
-      </header>
+      <ToolHeader title="추첨기" onReset={picked.length > 0 ? reset : undefined} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">

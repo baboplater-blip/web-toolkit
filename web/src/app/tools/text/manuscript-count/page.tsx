@@ -1,18 +1,22 @@
 'use client';
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 
 export default function ManuscriptCountPage() {
   const [input, setInput] = useState('');
 
+  // 집계는 입력보다 한 박자 늦게 계산해 대용량 붙여넣기 시 입력 블로킹을 막는다.
+  const deferredInput = useDeferredValue(input);
+
   const stats = useMemo(() => {
-    const text = input;
+    const text = deferredInput;
     const chars = text.length;
     const charsNoSpace = text.replace(/\s/g, '').length;
     const words = text.split(/\s+/).filter(Boolean).length;
     const lines = text.split(/\n/).length;
-    const bytes = new Blob([text]).size;
+    // Blob 은 전체 문자열을 복사하므로 대용량에서 비싸다. TextEncoder 로 바이트 길이만 구한다.
+    const bytes = new TextEncoder().encode(text).length;
 
     // 원고지 단위 (200자 / 400자)
     const sheet200 = Math.ceil(chars / 200);
@@ -41,7 +45,7 @@ export default function ManuscriptCountPage() {
       rows200: ROWS_200,
       rows400: ROWS_400,
     };
-  }, [input]);
+  }, [deferredInput]);
 
   return (
     <div className="min-h-dvh bg-background">

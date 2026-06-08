@@ -1,18 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  ArrowLeft,
-  Check,
-  Copy,
-  FileImage,
-  Loader2,
-  Palette,
-  RotateCcw,
-} from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Check, Copy, FileImage, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { loadImageFile, type LoadedImage } from '@/lib/tools/image-common';
 import { formatBytes } from '@/lib/compress/format';
 
@@ -164,15 +157,18 @@ export default function PalettePage() {
     }
   };
 
-  // k 변경 시 재추출
+  // k 변경 시 재추출 — 슬라이더를 드래그하면 매 틱마다 동기 재추출되어 끊기므로 200ms 디바운스.
   useEffect(() => {
     if (!loaded) return;
-    setProcessing(true);
-    try {
-      setSwatches(extractPalette(loaded.element, k));
-    } finally {
-      setProcessing(false);
-    }
+    const timer = setTimeout(() => {
+      setProcessing(true);
+      try {
+        setSwatches(extractPalette(loaded.element, k));
+      } finally {
+        setProcessing(false);
+      }
+    }, 200);
+    return () => clearTimeout(timer);
   }, [k, loaded]);
 
   const reset = () => {
@@ -207,28 +203,7 @@ export default function PalettePage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              title="도구로"
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Palette className="h-5 w-5" />
-            <h1 className="font-semibold text-base">이미지 색상 팔레트</h1>
-          </div>
-          {file && (
-            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={reset}>
-              <RotateCcw className="h-3.5 w-3.5 mr-1" />
-              초기화
-            </Button>
-          )}
-        </div>
-      </header>
+      <ToolHeader title="이미지 색상 팔레트" onReset={file ? reset : undefined} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         {!file && (

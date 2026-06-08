@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Download, IdCard } from 'lucide-react';
+import { ArrowLeft, Download, IdCard, RotateCcw } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { buttonVariants } from '@/components/ui/button';
 
@@ -34,10 +34,31 @@ export default function IdPhotoPage() {
     if (!file) return;
     try {
       const bmp = await createImageBitmap(file);
-      setBitmap(bmp);
+      // 이전 비트맵의 디코드 메모리를 먼저 해제한 뒤 교체(누수 방지).
+      setBitmap((prev) => {
+        prev?.close();
+        return bmp;
+      });
     } catch {
       setError('이미지를 불러올 수 없습니다. 다른 파일을 시도해 주세요.');
     }
+  }
+
+  // 언마운트 시 비트맵 디코드 메모리 해제.
+  useEffect(() => {
+    return () => {
+      bitmap?.close();
+    };
+  }, [bitmap]);
+
+  function handleReset() {
+    setBitmap((prev) => {
+      prev?.close();
+      return null;
+    });
+    setSpec(SPECS[0]);
+    setBg('#ffffff');
+    setError(null);
   }
 
   useEffect(() => {
@@ -91,6 +112,17 @@ export default function IdPhotoPage() {
           </a>
           <IdCard className="h-5 w-5" />
           <h1 className="font-semibold text-base">증명사진 규격 변환</h1>
+          {bitmap && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'ml-auto h-8 text-xs gap-1' })}
+              aria-label="초기화"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              초기화
+            </button>
+          )}
         </div>
       </header>
 

@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Coins } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { buttonVariants } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { calcSeverance } from '@/lib/office/payroll';
 
 function parseNum(s: string): number {
@@ -31,22 +30,23 @@ export default function SeveranceCalcPage() {
     });
   }, [joinDate, leaveDate, pay3m, bonus, leaveAllowance]);
 
+  // 모든 입력값을 초기화한다.
+  const handleReset = () => {
+    setJoinDate('');
+    setLeaveDate('');
+    setPay3m('');
+    setBonus('');
+    setLeaveAllowance('');
+  };
+
+  const canReset = !!(joinDate || leaveDate || pay3m || bonus || leaveAllowance);
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <Coins className="h-5 w-5" />
-          <h1 className="font-semibold text-base">퇴직금 계산기</h1>
-        </div>
-      </header>
+      <ToolHeader
+        title="퇴직금 계산기"
+        onReset={canReset ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">

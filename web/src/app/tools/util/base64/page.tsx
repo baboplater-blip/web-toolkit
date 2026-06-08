@@ -44,29 +44,36 @@ export default function Base64Page() {
     type: string;
     base64: string;
   } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // 파일 읽기 등 이벤트 핸들러에서 발생하는 에러만 별도 상태로 관리.
+  const [fileError, setFileError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const output = useMemo(() => {
-    setError(null);
+  // 변환 결과와 에러를 함께 계산해 반환한다.
+  // (렌더 중 setState 호출 = 불순한 useMemo → 에러 플래시·추가 렌더 유발하므로 금지.)
+  const { value: output, error: outputError } = useMemo<{
+    value: string;
+    error: string | null;
+  }>(() => {
     if (mode === 'encode-text') {
-      if (!inputText) return '';
-      return bytesToBase64(new TextEncoder().encode(inputText));
+      if (!inputText) return { value: '', error: null };
+      return { value: bytesToBase64(new TextEncoder().encode(inputText)), error: null };
     }
     if (mode === 'decode-text') {
-      if (!inputText) return '';
+      if (!inputText) return { value: '', error: null };
       try {
-        return new TextDecoder('utf-8').decode(base64ToBytes(inputText));
+        return { value: new TextDecoder('utf-8').decode(base64ToBytes(inputText)), error: null };
       } catch (err) {
-        setError(err instanceof Error ? err.message : '디코딩 실패');
-        return '';
+        return { value: '', error: err instanceof Error ? err.message : '디코딩 실패' };
       }
     }
-    return fileData?.base64 ?? '';
+    return { value: fileData?.base64 ?? '', error: null };
   }, [mode, inputText, fileData]);
 
+  // 입력 변환 에러(outputError)와 파일 읽기 에러(fileError)를 합쳐 표시.
+  const error = outputError ?? fileError;
+
   const acceptFile = async (f: File) => {
-    setError(null);
+    setFileError(null);
     try {
       const buf = await f.arrayBuffer();
       const b64 = bytesToBase64(new Uint8Array(buf));
@@ -77,14 +84,14 @@ export default function Base64Page() {
         base64: b64,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : '파일 읽기 실패');
+      setFileError(err instanceof Error ? err.message : '파일 읽기 실패');
     }
   };
 
   const reset = () => {
     setInputText('');
     setFileData(null);
-    setError(null);
+    setFileError(null);
   };
 
   const copyOutput = async () => {
@@ -105,7 +112,7 @@ export default function Base64Page() {
       const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/octet-stream' });
       triggerDownload(blob, 'decoded.bin');
     } catch {
-      setError('디코딩 실패');
+      setFileError('디코딩 실패');
     }
   };
 

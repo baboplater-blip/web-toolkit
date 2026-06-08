@@ -33,7 +33,9 @@ function stripMetadata(svg: string): string {
   result = result.replace(/<metadata[\s\S]*?<\/metadata>/gi, '');
   result = result.replace(/<metadata[^>]*\/>/gi, '');
   // 편집기 전용 요소(접두사 네임스페이스).
-  result = result.replace(/<(sodipodi|inkscape):[a-zA-Z-]+[\s\S]*?<\/\1:[a-zA-Z-]+>/gi, '');
+  // 여는 태그의 속성부는 `[^>]*>` 로 `>` 까지 한 번에 소비해 백트래킹 표면을 줄인다
+  // (기존 `[\s\S]*?` 는 백레퍼런스와 결합 시 ReDoS 위험). 내부 콘텐츠만 게으른 매칭.
+  result = result.replace(/<(sodipodi|inkscape):[a-zA-Z-]+[^>]*>[\s\S]*?<\/\1:[a-zA-Z-]+>/gi, '');
   result = result.replace(/<(sodipodi|inkscape):[a-zA-Z-]+[^>]*\/>/gi, '');
   // 편집기 전용 속성 및 그 네임스페이스 선언.
   result = result.replace(/\s(?:sodipodi|inkscape):[a-zA-Z-]+="[^"]*"/gi, '');

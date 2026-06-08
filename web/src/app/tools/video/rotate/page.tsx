@@ -21,7 +21,7 @@ import {
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 
 type Transform = 'cw' | 'ccw' | '180' | 'hflip' | 'vflip';
@@ -141,7 +141,8 @@ export default function VideoRotatePage() {
 
       await cleanupFiles(ffmpeg, [inputName, outputName]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '회전 처리 실패');
+      const msg = err instanceof Error ? err.message : '회전 처리 실패';
+      setError(file ? explainFfmpegError(msg, file.size) : msg);
     } finally {
       setBusy(false);
     }
@@ -188,6 +189,8 @@ export default function VideoRotatePage() {
             accept={VIDEO_ACCEPT}
             description="회전할 비디오를 업로드하세요"
             hint="MP4·WEBM·MOV·AVI 등. 세로로 찍힌 영상의 기울기를 바로잡을 때 유용합니다."
+            validate={(picked) => validateMediaSize(picked[0])}
+            onError={(m) => setError(m)}
             onFiles={(picked) => accept(picked[0])}
           />
         )}

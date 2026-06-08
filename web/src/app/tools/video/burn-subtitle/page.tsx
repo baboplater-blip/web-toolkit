@@ -42,9 +42,12 @@ export default function BurnSubtitlePage() {
     const subName = `sub.${subExt}`;
     const outName = 'out.mp4';
     let ffmpeg;
+    // 진행률 리스너는 싱글턴에 누적되므로 이름 붙여 finally 에서 해제.
+    const onProgress = (p: { progress: number }) =>
+      setProgress(Math.round((p.progress ?? 0) * 100));
     try {
       ffmpeg = await getFFmpeg();
-      ffmpeg.on('progress', (p) => setProgress(Math.round((p.progress ?? 0) * 100)));
+      ffmpeg.on('progress', onProgress);
 
       await writeFile(ffmpeg, inName, video);
       await writeFile(ffmpeg, subName, subtitle);
@@ -89,8 +92,11 @@ export default function BurnSubtitlePage() {
       const msg = e instanceof Error ? e.message : String(e);
       setError(video ? explainFfmpegError(msg, video.size) : msg);
     } finally {
-      // 성공·실패 무관하게 가상 FS 잔류 파일 정리
-      if (ffmpeg) await cleanupFiles(ffmpeg, [inName, subName, outName]);
+      // 성공·실패 무관하게 진행률 리스너 해제 + 가상 FS 잔류 파일 정리
+      if (ffmpeg) {
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, [inName, subName, outName]);
+      }
       setBusy(false);
     }
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { ArrowLeft, Regex } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,10 @@ interface MatchInfo {
   groups: string[];
 }
 
+// 사용자 정규식은 ReDoS(파국적 백트래킹) 위험이 있어 동기 평가 시 탭이 멈출 수 있다.
+// 일정 길이를 넘으면 실시간 평가를 건너뛰고 안내만 표시한다.
+const MAX_LIVE_EVAL_CHARS = 100_000;
+
 export default function RegexPage() {
   const [pattern, setPattern] = useState('\\b\\w+@\\w+\\.\\w+\\b');
   const [flags, setFlags] = useState('gi');
@@ -19,18 +23,33 @@ export default function RegexPage() {
     '연락: alice@example.com, bob@test.org\n참고: notanemail, hello@world.io 로 문의하세요.',
   );
   const [replaceWith, setReplaceWith] = useState('');
+  // 대용량 입력에서 ReDoS 위험을 감수하고 강제로 평가할지 여부.
+  const [forceEval, setForceEval] = useState(false);
+
+  // 평가는 입력보다 한 박자 늦게 수행해 키 입력이 막히는 것을 줄인다.
+  // (입력값은 즉시 반영되고, deferred 값은 React 가 여유 있을 때 따라온다.)
+  const deferredPattern = useDeferredValue(pattern);
+  const deferredFlags = useDeferredValue(flags);
+  const deferredText = useDeferredValue(text);
+  const deferredReplaceWith = useDeferredValue(replaceWith);
+
+  // 길이가 임계값을 넘고 강제 실행이 아니면 동기 평가를 건너뛴다.
+  const tooLarge = deferredText.length > MAX_LIVE_EVAL_CHARS && !forceEval;
 
   const { matches, error, compiled } = useMemo(() => {
+    if (tooLarge) {
+      return { matches: [] as MatchInfo[], error: null as string | null, compiled: null as RegExp | null };
+    }
     try {
-      const re = new RegExp(pattern, flags);
+      const re = new RegExp(deferredPattern, deferredFlags);
       const found: MatchInfo[] = [];
-      if (flags.includes('g')) {
-        for (const m of text.matchAll(re)) {
+      if (deferredFlags.includes('g')) {
+        for (const m of deferredText.matchAll(re)) {
           if (m.index === undefined) continue;
           found.push({ text: m[0], index: m.index, groups: m.slice(1) });
         }
       } else {
-        const m = text.match(re);
+        const m = deferredText.match(re);
         if (m && m.index !== undefined) {
           found.push({ text: m[0], index: m.index, groups: m.slice(1) });
         }
@@ -43,30 +62,30 @@ export default function RegexPage() {
         compiled: null,
       };
     }
-  }, [pattern, flags, text]);
+  }, [deferredPattern, deferredFlags, deferredText, tooLarge]);
 
   const replaced = useMemo(() => {
     if (!compiled) return '';
     try {
-      return text.replace(compiled, replaceWith);
+      return deferredText.replace(compiled, deferredReplaceWith);
     } catch {
       return '';
     }
-  }, [text, compiled, replaceWith]);
+  }, [deferredText, compiled, deferredReplaceWith]);
 
   // 하이라이트 렌더링
   const highlighted = useMemo(() => {
-    if (!compiled || matches.length === 0) return [{ text, highlight: false }];
+    if (!compiled || matches.length === 0) return [{ text: deferredText, highlight: false }];
     const out: { text: string; highlight: boolean }[] = [];
     let last = 0;
     for (const m of matches) {
-      if (m.index > last) out.push({ text: text.slice(last, m.index), highlight: false });
+      if (m.index > last) out.push({ text: deferredText.slice(last, m.index), highlight: false });
       out.push({ text: m.text, highlight: true });
       last = m.index + m.text.length;
     }
-    if (last < text.length) out.push({ text: text.slice(last), highlight: false });
+    if (last < deferredText.length) out.push({ text: deferredText.slice(last), highlight: false });
     return out;
-  }, [matches, text, compiled]);
+  }, [matches, deferredText, compiled]);
 
   const toggleFlag = (f: string) => {
     setFlags((cur) => (cur.includes(f) ? cur.replace(f, '') : cur + f));
@@ -139,6 +158,19 @@ export default function RegexPage() {
               </div>
             </div>
             {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+            {tooLarge && (
+              <div className="mt-1 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-400">
+                입력이 {MAX_LIVE_EVAL_CHARS.toLocaleString()}자를 넘어 실시간 평가를 멈췄습니다. 복잡한
+                정규식은 큰 입력에서 탭을 멈추게 할 수 있습니다.{' '}
+                <button
+                  type="button"
+                  onClick={() => setForceEval(true)}
+                  className="font-medium underline underline-offset-2"
+                >
+                  그래도 실행
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-1.5 flex-wrap">

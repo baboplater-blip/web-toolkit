@@ -35,8 +35,11 @@ export default function ImageDiffPage() {
     if (!a || !b) return;
     setBusy(true);
     setError(null);
+    // 성공·실패와 무관하게 finally 에서 입력 이미지 ObjectURL 을 해제한다.
+    let imgA: HTMLImageElement | null = null;
+    let imgB: HTMLImageElement | null = null;
     try {
-      const [imgA, imgB] = await Promise.all([load(a), load(b)]);
+      [imgA, imgB] = await Promise.all([load(a), load(b)]);
       const w = Math.max(imgA.naturalWidth, imgB.naturalWidth);
       const h = Math.max(imgA.naturalHeight, imgB.naturalHeight);
       setLargeWarning(w * h > LARGE_IMAGE_PIXELS);
@@ -82,11 +85,11 @@ export default function ImageDiffPage() {
         out.toBlob((b) => (b ? res(b) : rej(new Error('이미지 인코딩 실패'))), 'image/png'));
       if (result?.url) URL.revokeObjectURL(result.url);
       setResult({ url: URL.createObjectURL(blob), diffPercent: (diff / total) * 100, w, h });
-      URL.revokeObjectURL(imgA.src);
-      URL.revokeObjectURL(imgB.src);
     } catch (e) {
       setError(e instanceof Error ? e.message : '비교 실패');
     } finally {
+      if (imgA) URL.revokeObjectURL(imgA.src);
+      if (imgB) URL.revokeObjectURL(imgB.src);
       setBusy(false);
     }
   }
@@ -151,9 +154,14 @@ export default function ImageDiffPage() {
 function load(file: File): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
     const img = new Image();
+    const url = URL.createObjectURL(file);
     img.onload = () => res(img);
-    img.onerror = () => rej(new Error('로드 실패'));
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => {
+      // 디코드 실패 시 ObjectURL 이 새지 않도록 해제(성공 시엔 호출부가 해제).
+      URL.revokeObjectURL(url);
+      rej(new Error('로드 실패'));
+    };
+    img.src = url;
   });
 }
 

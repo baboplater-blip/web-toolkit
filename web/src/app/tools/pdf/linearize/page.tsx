@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -20,6 +20,9 @@ export default function PdfLinearizePage() {
     compressedSize: number;
   } | null>(null);
 
+  // 언마운트 시 마지막 결과 ObjectURL 회수 (merge 의 생명주기와 동일)
+  useEffect(() => () => { if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl); }, [result?.blobUrl]);
+
   async function handleProcess() {
     if (!file) {
       setError('PDF 파일을 먼저 선택해주세요.');
@@ -38,6 +41,8 @@ export default function PdfLinearizePage() {
       const bytes = await doc.save({ useObjectStreams, objectsPerTick: 50 });
       const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
       const baseName = file.name.replace(/\.pdf$/i, '');
+      // 새 URL 생성 전 직전 결과 URL 회수 (재실행 시 누수 방지)
+      if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `${baseName}-optimized.pdf`,

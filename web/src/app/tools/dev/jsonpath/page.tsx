@@ -50,11 +50,23 @@ export default function JsonPathPage() {
         return;
       }
 
-      try {
-        if (!jsonPathRef.current) {
+      // 라이브러리 로드 실패와 질의·파싱 오류를 구분한다.
+      // 동적 import 실패는 네트워크/번들 문제이므로 새로고침 안내로 분기한다.
+      if (!jsonPathRef.current) {
+        try {
           const { JSONPath } = await import('jsonpath-plus');
           jsonPathRef.current = JSONPath as JsonPathFn;
+        } catch (err) {
+          console.error('jsonpath-plus 동적 로드 실패', err);
+          if (!cancelled) {
+            setResult('');
+            setError('라이브러리 로드 실패 — 새로고침하세요');
+          }
+          return;
         }
+      }
+
+      try {
         const obj: unknown = JSON.parse(json);
         const out = jsonPathRef.current({ path, json: obj });
         if (!cancelled) setResult(JSON.stringify(out, null, 2));

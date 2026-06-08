@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useDeferredValue, useMemo, useState } from 'react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 
 /**
@@ -123,7 +123,12 @@ const LABEL_STYLES: Record<SentimentResult['label'], string> = {
 export default function SentimentPage() {
   const [input, setInput] = useState('');
 
-  const result = useMemo(() => (input.trim() ? analyze(input) : null), [input]);
+  // 분석은 O(토큰×사전)이라 비싸다. 입력보다 한 박자 늦게 계산해 입력 블로킹을 막는다.
+  const deferredInput = useDeferredValue(input);
+  const result = useMemo(
+    () => (deferredInput.trim() ? analyze(deferredInput) : null),
+    [deferredInput],
+  );
 
   return (
     <div className="min-h-dvh bg-background">

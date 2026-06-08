@@ -1,11 +1,15 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { ArrowLeft, Check, Copy, Download, Replace } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { triggerDownload } from '@/lib/tools/file-utils';
+
+// 사용자 정규식은 ReDoS(파국적 백트래킹) 위험이 있어 동기 평가 시 탭이 멈출 수 있다.
+// 일정 길이를 넘으면 실시간 평가를 건너뛰고 안내만 표시한다.
+const MAX_LIVE_EVAL_CHARS = 100_000;
 
 export default function TextReplacePage() {
   const [text, setText] = useState(
@@ -18,11 +22,25 @@ export default function TextReplacePage() {
   const [multiline, setMultiline] = useState(false);
   const [wholeWord, setWholeWord] = useState(false);
   const [copied, setCopied] = useState(false);
+  // 대용량 입력에서 ReDoS 위험을 감수하고 강제로 평가할지 여부.
+  const [forceEval, setForceEval] = useState(false);
+
+  // 치환 평가는 입력보다 한 박자 늦게 수행해 키 입력이 막히는 것을 줄인다.
+  const deferredText = useDeferredValue(text);
+  const deferredFind = useDeferredValue(find);
+  const deferredReplace = useDeferredValue(replace);
+
+  // 길이가 임계값을 넘고 강제 실행이 아니면 동기 평가를 건너뛴다.
+  const tooLarge = deferredText.length > MAX_LIVE_EVAL_CHARS && !forceEval;
 
   const { output, matchCount, regexError } = useMemo(() => {
-    if (!find) return { output: text, matchCount: 0, regexError: null as string | null };
+    if (!deferredFind) return { output: deferredText, matchCount: 0, regexError: null as string | null };
+    if (tooLarge) {
+      // 안내만 하고 원본을 그대로 보여준다(평가 생략).
+      return { output: deferredText, matchCount: 0, regexError: null as string | null };
+    }
 
-    let pattern = find;
+    let pattern = deferredFind;
     if (!useRegex) {
       pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
@@ -36,22 +54,27 @@ export default function TextReplacePage() {
 
     try {
       const re = new RegExp(pattern, flags);
-      const matches = text.match(re);
-      const out = text.replace(re, replace);
+      const matches = deferredText.match(re);
+      const out = deferredText.replace(re, deferredReplace);
       return { output: out, matchCount: matches?.length ?? 0, regexError: null };
     } catch (e) {
       return {
-        output: text,
+        output: deferredText,
         matchCount: 0,
         regexError: e instanceof Error ? e.message : '정규식 오류',
       };
     }
-  }, [text, find, replace, useRegex, ignoreCase, multiline, wholeWord]);
+  }, [deferredText, deferredFind, deferredReplace, useRegex, ignoreCase, multiline, wholeWord, tooLarge]);
 
   const copy = async () => {
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1200);
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch (err) {
+      // 클립보드 권한 거부·비보안 컨텍스트 등에서 reject 될 수 있어 무시하고 로깅만.
+      console.error('[replace] 클립보드 복사 실패', err);
+    }
   };
 
   return (
@@ -130,6 +153,20 @@ export default function TextReplacePage() {
           {regexError && (
             <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-2 text-[11px] text-destructive font-mono">
               정규식 오류: {regexError}
+            </div>
+          )}
+
+          {tooLarge && (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-400">
+              입력이 {MAX_LIVE_EVAL_CHARS.toLocaleString()}자를 넘어 실시간 치환을 멈췄습니다. 복잡한
+              정규식은 큰 입력에서 탭을 멈추게 할 수 있습니다.{' '}
+              <button
+                type="button"
+                onClick={() => setForceEval(true)}
+                className="font-medium underline underline-offset-2"
+              >
+                그래도 실행
+              </button>
             </div>
           )}
 

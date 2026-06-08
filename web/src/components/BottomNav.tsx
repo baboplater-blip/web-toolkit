@@ -34,6 +34,9 @@ function openCategoryDrawer() {
  */
 function RailThemeToggle() {
   const [mode, setMode] = useState<ThemeMode>('system');
+  // 'system' 모드일 때 OS 다크 여부를 반응형으로 추적한다. render 중 document 를
+  // 읽으면 비반응적·SSR 취약이라 matchMedia change 리스너로 상태를 갱신한다.
+  const [systemDark, setSystemDark] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -42,11 +45,16 @@ function RailThemeToggle() {
     return unsubscribe;
   }, []);
 
-  const isDark =
-    mode === 'dark' ||
-    (mode === 'system' &&
-      typeof window !== 'undefined' &&
-      document.documentElement.classList.contains('dark'));
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const sync = () => setSystemDark(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  const isDark = mode === 'dark' || (mode === 'system' && systemDark);
 
   const toggle = () => {
     setTheme(isDark ? 'light' : 'dark');

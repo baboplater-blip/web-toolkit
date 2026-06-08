@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -27,6 +27,9 @@ export default function PdfToWordPage() {
     compressedSize: number;
   } | null>(null);
   const abortRef = useRef<{ aborted: boolean } | null>(null);
+
+  // 언마운트 시 마지막 결과 ObjectURL 회수 (merge 의 생명주기와 동일)
+  useEffect(() => () => { if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl); }, [result?.blobUrl]);
 
   async function handleProcess() {
     if (!file) {
@@ -78,6 +81,8 @@ ${body}
 </body>
 </html>`;
       const blob = new Blob([docHtml], { type: 'application/msword' });
+      // 새 URL 생성 전 직전 결과 URL 회수 (재실행 시 누수 방지)
+      if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `${title}.doc`,

@@ -50,12 +50,19 @@ export default function RemoveBackgroundPage() {
   );
   const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
+  // previewUrl 과 result 는 서로 독립적인 생명주기를 가지므로 정리 이펙트를 분리한다.
+  // (합쳐 두면 setResult 가 여전히 표시 중인 previewUrl 까지 revoke 해 원본 미리보기가 깨진다)
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  useEffect(() => {
+    return () => {
       if (result) URL.revokeObjectURL(result.url);
     };
-  }, [previewUrl, result]);
+  }, [result]);
 
   const accept = (f: File) => {
     if (!f.type.startsWith('image/')) {

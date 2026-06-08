@@ -68,6 +68,8 @@ export default function CollagePage() {
     }
     setBusy(true);
     setError(null);
+    // 성공·실패와 무관하게 finally 에서 로드된 입력 이미지 ObjectURL 을 해제한다.
+    let imgs: HTMLImageElement[] = [];
     try {
       const totalW = padding * 2 + cellW * cols + gap * (cols - 1);
       const totalH = padding * 2 + cellH * rows + gap * (rows - 1);
@@ -82,7 +84,7 @@ export default function CollagePage() {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
 
-      const imgs = await Promise.all(files.slice(0, total).map(loadImage));
+      imgs = await Promise.all(files.slice(0, total).map(loadImage));
       for (let i = 0; i < imgs.length; i++) {
         const col = i % cols;
         const row = Math.floor(i / cols);
@@ -94,10 +96,10 @@ export default function CollagePage() {
       const blob = await new Promise<Blob>((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('인코딩 실패'))), 'image/jpeg', 0.92));
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(blob));
-      imgs.forEach((img) => img.src.startsWith('blob:') && URL.revokeObjectURL(img.src));
     } catch (e) {
       setError(e instanceof Error ? e.message : '렌더링 실패');
     } finally {
+      imgs.forEach((img) => img.src.startsWith('blob:') && URL.revokeObjectURL(img.src));
       setBusy(false);
     }
   }
@@ -204,9 +206,14 @@ export default function CollagePage() {
 function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
     const img = new Image();
+    const url = URL.createObjectURL(file);
     img.onload = () => res(img);
-    img.onerror = () => rej(new Error('이미지 로드 실패'));
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => {
+      // 디코드 실패 시 ObjectURL 이 새지 않도록 해제(성공 시엔 호출부가 해제).
+      URL.revokeObjectURL(url);
+      rej(new Error('이미지 로드 실패'));
+    };
+    img.src = url;
   });
 }
 

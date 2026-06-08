@@ -2,6 +2,7 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WhitespaceOptions {
@@ -52,6 +53,7 @@ export default function WhitespaceCleanPage() {
   const [tabWidth, setTabWidth] = useState<2 | 4>(2);
   const [trimEdgeBlankLines, setTrimEdgeBlankLines] = useState(false);
   const [collapseSpaces, setCollapseSpaces] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const output = useMemo(
     () =>
@@ -74,8 +76,16 @@ export default function WhitespaceCleanPage() {
     ],
   );
 
-  function copy() {
-    if (output) navigator.clipboard?.writeText(output);
+  async function copy() {
+    if (!output) return;
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      // 권한 거부·비보안 컨텍스트 등에서 reject 될 수 있어 무시하고 로깅만.
+      console.error('[whitespace] 클립보드 복사 실패', err);
+    }
   }
 
   function download() {
@@ -177,7 +187,10 @@ export default function WhitespaceCleanPage() {
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={copy} disabled={!output}>복사</Button>
+        <Button onClick={copy} disabled={!output}>
+          {copied ? <Check className="mr-1.5 h-4 w-4" /> : <Copy className="mr-1.5 h-4 w-4" />}
+          {copied ? '복사됨' : '복사'}
+        </Button>
         <Button variant="outline" onClick={download} disabled={!output}>다운로드</Button>
       </div>
     </main>

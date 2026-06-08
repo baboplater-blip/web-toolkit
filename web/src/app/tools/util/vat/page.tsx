@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, ReceiptText } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'supply' | 'total' | 'vat';
 
@@ -23,6 +24,7 @@ export default function VatCalcPage() {
   const [mode, setMode] = useState<Mode>('total');
   const [value, setValue] = useState('');
   const [rate, setRate] = useState('10');
+  const [copied, setCopied] = useState<string | null>(null);
 
   const result = useMemo(() => {
     const v = parseNum(value);
@@ -47,22 +49,28 @@ export default function VatCalcPage() {
     return { supply, vat, total };
   }, [mode, value, rate]);
 
+  // 결과 숫자를 클립보드에 복사한다. (key 로 어떤 항목이 복사됐는지 구분)
+  const copyValue = async (key: string, amount: number) => {
+    try {
+      await navigator.clipboard.writeText(String(Math.round(amount)));
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      /* noop */
+    }
+  };
+
+  const handleReset = () => {
+    setValue('');
+    setRate('10');
+  };
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <ReceiptText className="h-5 w-5" />
-          <h1 className="font-semibold text-base">부가세 계산기</h1>
-        </div>
-      </header>
+      <ToolHeader
+        title="부가세 계산기"
+        onReset={value || rate !== '10' ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">
@@ -104,18 +112,44 @@ export default function VatCalcPage() {
         {result && (
           <div className="rounded-xl border bg-card p-4 space-y-2">
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-lg border bg-background p-3">
-                <p className="text-[11px] text-muted-foreground">공급가액</p>
-                <p className="text-base sm:text-xl font-bold tabular-nums mt-1">{won(result.supply)}</p>
-              </div>
-              <div className="rounded-lg border bg-background p-3">
-                <p className="text-[11px] text-muted-foreground">부가세 ({rate}%)</p>
-                <p className="text-base sm:text-xl font-bold tabular-nums mt-1">{won(result.vat)}</p>
-              </div>
-              <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-3">
-                <p className="text-[11px] text-muted-foreground">합계</p>
-                <p className="text-base sm:text-xl font-bold tabular-nums mt-1">{won(result.total)}</p>
-              </div>
+              {(
+                [
+                  { key: 'supply', label: '공급가액', amount: result.supply, accent: false },
+                  { key: 'vat', label: `부가세 (${rate}%)`, amount: result.vat, accent: false },
+                  { key: 'total', label: '합계', amount: result.total, accent: true },
+                ] as const
+              ).map((cell) => (
+                <div
+                  key={cell.key}
+                  className={`rounded-lg border p-3 ${
+                    cell.accent ? 'border-2 border-primary/30 bg-primary/5' : 'bg-background'
+                  }`}
+                >
+                  <p className="text-[11px] text-muted-foreground">{cell.label}</p>
+                  <p className="text-base sm:text-xl font-bold tabular-nums mt-1">
+                    {won(cell.amount)}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-1 h-6 px-2 text-[11px]"
+                    onClick={() => copyValue(cell.key, cell.amount)}
+                    aria-label={`${cell.label} 복사`}
+                  >
+                    {copied === cell.key ? (
+                      <>
+                        <Check className="h-3 w-3 mr-1" />
+                        복사됨
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3 mr-1" />
+                        복사
+                      </>
+                    )}
+                  </Button>
+                </div>
+              ))}
             </div>
           </div>
         )}

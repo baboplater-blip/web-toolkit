@@ -33,8 +33,14 @@ export default function SlideshowPage() {
     setBusy(true);
     setProgress(0);
     setResult(null);
+    // getFFmpeg() 는 싱글턴이므로 progress 리스너를 매번 등록하면 누적된다.
+    // 명명 핸들러로 등록하고 finally 에서 off 로 반드시 제거한다.
+    let ffmpeg: Awaited<ReturnType<typeof getFFmpeg>> | null = null;
+    const onProgress = (p: { progress?: number }) => {
+      setProgress(30 + Math.round((p.progress ?? 0) * 60));
+    };
     try {
-      const ffmpeg = await getFFmpeg();
+      ffmpeg = await getFFmpeg();
       const [w, h] = resolution.split('x').map(Number);
 
       // 각 이미지를 input 파일로 저장
@@ -57,9 +63,7 @@ export default function SlideshowPage() {
       const listTxt = listLines.join('\n');
       await ffmpeg.writeFile('list.txt', new TextEncoder().encode(listTxt));
 
-      ffmpeg.on('progress', (p) => {
-        setProgress(30 + Math.round(((p.progress ?? 0) * 60)));
-      });
+      ffmpeg.on('progress', onProgress);
 
       const filter = `scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2:white,setsar=1`;
       await ffmpeg.exec([
@@ -96,6 +100,8 @@ export default function SlideshowPage() {
       const totalSize = files.reduce((s, f) => s + f.size, 0);
       setError(explainFfmpegError(msg, totalSize));
     } finally {
+      // 싱글턴에 남은 stale 리스너 제거(이전 setProgress 클로저가 다시 호출되는 것 방지)
+      ffmpeg?.off('progress', onProgress);
       setBusy(false);
     }
   }

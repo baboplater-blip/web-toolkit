@@ -306,6 +306,22 @@ const DEPENDENT_NOUNS = [
   '편', '쪽', '겸', '및',
 ];
 
+// 키 입력마다 RegExp 를 새로 만들지 않도록 모듈 로드 시 한 번만 컴파일한다.
+// (autoSpacing 은 매 호출마다 의존명사·조사 수십 개의 정규식을 만들던 핫패스였다.)
+const DEPENDENT_NOUN_RULES: { dep: string; re: RegExp }[] = DEPENDENT_NOUNS.map((dep) => ({
+  dep,
+  re: new RegExp(`([가-힣])${dep}(?=[가-힣은는이가을를도])`, 'g'),
+}));
+
+const PARTICLE_RULES: { p: string; re: RegExp }[] = PARTICLES.map((p) => ({
+  p,
+  re: new RegExp(`([가-힣])\\s+${p}(?=[\\s.,!?]|$)`, 'g'),
+}));
+
+const NUMBER_UNIT_RE =
+  /(\d+)\s+(개|명|살|마리|번|장|권|건|회|병|개월|년|월|일|시간|분|초|만원|원|kg|km|cm|mm|m|g)/g;
+const MULTI_SPACE_RE = /[ \t]+/g;
+
 /**
  * 자주 빠지는 띄어쓰기 규칙으로 교정.
  * 매우 보수적 — 잘못된 교정을 줄이는 데 우선.
@@ -315,23 +331,25 @@ export function autoSpacing(input: string): string {
 
   // 1) 의존명사 앞에 공백 추가 — "할것이다" → "할 것이다"
   //    조건: 앞이 한글 종결어미 (아/어/은/는/할/일 등) + 의존명사
-  for (const dep of DEPENDENT_NOUNS) {
-    const re = new RegExp(`([가-힣])${dep}(?=[가-힣은는이가을를도])`, 'g');
+  for (const { dep, re } of DEPENDENT_NOUN_RULES) {
+    re.lastIndex = 0; // 전역 RegExp 재사용 시 lastIndex 초기화 필수
     s = s.replace(re, `$1 ${dep}`);
   }
 
   // 2) 숫자+한글 단위는 붙임 (오히려 분리되어 있으면 합침)
   //    "3 개" → "3개", "100 만원" → "100만원"
-  s = s.replace(/(\d+)\s+(개|명|살|마리|번|장|권|건|회|병|개월|년|월|일|시간|분|초|만원|원|kg|km|cm|mm|m|g)/g, '$1$2');
+  NUMBER_UNIT_RE.lastIndex = 0;
+  s = s.replace(NUMBER_UNIT_RE, '$1$2');
 
   // 3) 조사 앞 공백 제거 — "사과 를" → "사과를"
-  for (const p of PARTICLES) {
-    const re = new RegExp(`([가-힣])\\s+${p}(?=[\\s.,!?]|$)`, 'g');
+  for (const { p, re } of PARTICLE_RULES) {
+    re.lastIndex = 0;
     s = s.replace(re, `$1${p}`);
   }
 
   // 4) 다중 공백 정리
-  s = s.replace(/[ \t]+/g, ' ');
+  MULTI_SPACE_RE.lastIndex = 0;
+  s = s.replace(MULTI_SPACE_RE, ' ');
   return s.trim();
 }
 
@@ -403,12 +421,23 @@ export interface SpellMatch {
   desc: string;
 }
 
+// 키 입력마다 규칙별 RegExp 를 새로 만들지 않도록 모듈 로드 시 전역 플래그 버전을 한 번만 컴파일한다.
+// exec 루프에서 재사용하므로 호출 시작 전 lastIndex 를 반드시 0으로 초기화한다.
+const SPELL_EXEC_RES: WeakMap<SpellRule, RegExp> = new WeakMap();
+for (const rule of SPELL_RULES) {
+  if (typeof rule.fix !== 'string') continue;
+  const flags = rule.pattern.flags.includes('g') ? rule.pattern.flags : rule.pattern.flags + 'g';
+  SPELL_EXEC_RES.set(rule, new RegExp(rule.pattern.source, flags));
+}
+
 export function findSpellIssues(text: string): SpellMatch[] {
   const out: SpellMatch[] = [];
   for (const rule of SPELL_RULES) {
     if (typeof rule.fix !== 'string') continue;
+    const re = SPELL_EXEC_RES.get(rule);
+    if (!re) continue;
+    re.lastIndex = 0; // 전역 RegExp 재사용 — 이전 호출의 lastIndex 잔존 방지
     let m: RegExpExecArray | null;
-    const re = new RegExp(rule.pattern.source, rule.pattern.flags.includes('g') ? rule.pattern.flags : rule.pattern.flags + 'g');
     while ((m = re.exec(text))) {
       out.push({
         index: m.index,

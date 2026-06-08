@@ -2,6 +2,7 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -48,7 +49,11 @@ export default function DocxToPdfPage() {
         '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif';
       container.style.fontSize = '11pt';
       container.style.lineHeight = '1.6';
-      container.innerHTML = r.value;
+      // mammoth 가 만든 HTML 을 라이브 DOM 에 그대로 주입하면 악성 .docx 의
+      // <img onerror> 등이 실행될 수 있으므로 DOMPurify 로 정화한다.
+      // DOMPurify 는 window 가 필요하므로 클라이언트에서만 동작(이 핸들러는 항상 클라이언트).
+      container.innerHTML =
+        typeof window !== 'undefined' ? DOMPurify.sanitize(r.value) : r.value;
       document.body.appendChild(container);
 
       try {

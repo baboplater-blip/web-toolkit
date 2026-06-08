@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Download, Loader2, ScanLine, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Download, Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { buttonVariants } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 
@@ -39,6 +40,22 @@ export default function ScanToPdfPage() {
   const [mode, setMode] = useState<Enhance>('gray');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 언마운트 시 남아있는 미리보기 ObjectURL 을 모두 회수하기 위한 최신값 보관 ref
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+  useEffect(
+    () => () => {
+      itemsRef.current.forEach((it) => URL.revokeObjectURL(it.url));
+    },
+    [],
+  );
+
+  function handleReset() {
+    items.forEach((it) => URL.revokeObjectURL(it.url));
+    setItems([]);
+    setError(null);
+  }
 
   function onFiles(files: File[]) {
     setError(null);
@@ -94,20 +111,11 @@ export default function ScanToPdfPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <ScanLine className="h-5 w-5" />
-          <h1 className="font-semibold text-base">스캔 → PDF</h1>
-        </div>
-      </header>
+      <ToolHeader
+        title="스캔 → PDF"
+        widthClass="max-w-3xl"
+        onReset={items.length > 0 ? handleReset : undefined}
+      />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <FileDropZone accept="image/*" multiple onFiles={onFiles} onError={(m) => setError(m)} />
@@ -182,7 +190,7 @@ export default function ScanToPdfPage() {
         <div className="rounded-xl border bg-card/50 p-4 text-xs text-muted-foreground">
           <p>
             휴대폰으로 찍은 서류 사진 여러 장을 명암 보정 후 한 개의 PDF로 묶습니다.
-            "고대비(문서)" 모드는 흰 종이의 글자를 또렷하게 만듭니다. 페이지 순서는 ←→로
+            &quot;고대비(문서)&quot; 모드는 흰 종이의 글자를 또렷하게 만듭니다. 페이지 순서는 ←→로
             바꿀 수 있습니다. 모든 처리는 브라우저 안에서 이뤄지며 이미지는 어디로도
             전송되지 않습니다.
           </p>

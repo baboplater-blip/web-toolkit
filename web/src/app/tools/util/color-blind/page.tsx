@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Download, EyeOff, Loader2, RotateCcw } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Download, Loader2, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
 
 type CvdType = 'protanopia' | 'deuteranopia' | 'tritanopia';
@@ -210,22 +211,7 @@ export default function ColorBlindPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              title="도구로"
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <EyeOff className="h-5 w-5" />
-            <h1 className="font-semibold text-base">색맹 시뮬레이션</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader title="색맹 시뮬레이션" onReset={file ? reset : undefined} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <p className="text-sm text-muted-foreground">

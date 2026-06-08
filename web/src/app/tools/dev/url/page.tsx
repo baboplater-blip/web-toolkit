@@ -1,15 +1,18 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Check, Copy, Link2 } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Check, Copy } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode = 'encode' | 'decode' | 'parse';
 
+const DEFAULT_INPUT = 'https://example.com/검색?q=안녕 세상&page=2#섹션';
+
 export default function UrlPage() {
   const [mode, setMode] = useState<Mode>('encode');
-  const [input, setInput] = useState('https://example.com/검색?q=안녕 세상&page=2#섹션');
+  const [input, setInput] = useState(DEFAULT_INPUT);
   const [useComponent, setUseComponent] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -60,28 +63,29 @@ export default function UrlPage() {
   }, [input, mode, useComponent]);
 
   const copy = async (key: string, value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 1500);
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+    }
+  };
+
+  const handleReset = () => {
+    setMode('encode');
+    setInput(DEFAULT_INPUT);
+    setUseComponent(true);
   };
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Link2 className="h-5 w-5" />
-            <h1 className="font-semibold text-base">URL 인코더/디코더</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader
+        title="URL 인코더/디코더"
+        widthClass="max-w-4xl"
+        onReset={handleReset}
+      />
 
       <main className="p-4 max-w-4xl mx-auto space-y-3">
         <div className="grid grid-cols-3 gap-1.5">

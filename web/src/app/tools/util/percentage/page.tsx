@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Percent } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Mode =
   | 'of' // X% of N = ?
@@ -40,6 +41,7 @@ export default function PercentagePage() {
   const [mode, setMode] = useState<Mode>('of');
   const [a, setA] = useState('');
   const [b, setB] = useState('');
+  const [copied, setCopied] = useState<string | null>(null);
 
   const result = useMemo(() => {
     const na = parseNum(a);
@@ -97,26 +99,26 @@ export default function PercentagePage() {
   const labelA = mode === 'of' ? '백분율 (%)' : mode === 'pct' ? '값' : mode === 'change' ? '시작값' : mode === 'addsub' ? '원래 값' : mode === 'tip' ? '금액' : 'A';
   const labelB = mode === 'of' ? '전체 값' : mode === 'pct' ? '전체 값' : mode === 'change' ? '끝값' : mode === 'addsub' ? '백분율 (%)' : mode === 'tip' ? '백분율 (%)' : 'B';
 
+  // 결과 숫자를 클립보드에 복사한다. (NaN 등 비유효 값은 무시)
+  const copyValue = async (key: string, value: number) => {
+    if (!Number.isFinite(value)) return;
+    try {
+      await navigator.clipboard.writeText(fmt(value));
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      /* noop */
+    }
+  };
+
+  const handleReset = () => {
+    setA('');
+    setB('');
+  };
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2 px-4 py-3 max-w-3xl mx-auto">
-          <a
-            href="/tools"
-            className={buttonVariants({
-              variant: 'ghost',
-              size: 'icon',
-              className: 'h-8 w-8',
-            })}
-            title="도구로"
-            aria-label="도구 목록으로"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </a>
-          <Percent className="h-5 w-5" />
-          <h1 className="font-semibold text-base">퍼센트 계산기</h1>
-        </div>
-      </header>
+      <ToolHeader title="퍼센트 계산기" onReset={a || b ? handleReset : undefined} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">
@@ -184,7 +186,30 @@ export default function PercentagePage() {
         {result && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="rounded-lg border bg-background p-4">
-              <p className="text-[11px] text-muted-foreground">{result.label}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-[11px] text-muted-foreground">{result.label}</p>
+                {Number.isFinite(result.value) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="-mt-1 h-6 px-2 text-[11px]"
+                    onClick={() => copyValue('main', result.value)}
+                    aria-label="결과 복사"
+                  >
+                    {copied === 'main' ? (
+                      <>
+                        <Check className="h-3 w-3 mr-1" />
+                        복사됨
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3 mr-1" />
+                        복사
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
               <p className="text-3xl sm:text-4xl font-bold tabular-nums mt-1">
                 {fmt(result.value)}
                 {result.unit && (
@@ -196,9 +221,32 @@ export default function PercentagePage() {
             </div>
             {result.extra !== undefined && (
               <div className="rounded-lg border bg-background p-4">
-                <p className="text-[11px] text-muted-foreground">
-                  {result.extraLabel}
-                </p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-[11px] text-muted-foreground">
+                    {result.extraLabel}
+                  </p>
+                  {Number.isFinite(result.extra) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="-mt-1 h-6 px-2 text-[11px]"
+                      onClick={() => copyValue('extra', result.extra as number)}
+                      aria-label={`${result.extraLabel} 복사`}
+                    >
+                      {copied === 'extra' ? (
+                        <>
+                          <Check className="h-3 w-3 mr-1" />
+                          복사됨
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3 mr-1" />
+                          복사
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
                 <p className="text-2xl font-bold tabular-nums mt-1 text-muted-foreground">
                   {fmt(result.extra)}
                   {result.unit && (

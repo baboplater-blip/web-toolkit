@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { beautifyHtml, minifyHtml } from '@/lib/tools/html-format-formatter';
@@ -15,10 +15,13 @@ export default function HtmlFormatPage() {
   const [mode, setMode] = useState<Mode>('beautify');
   const [copied, setCopied] = useState(false);
 
+  // 큰 입력에서도 타이핑이 끊기지 않도록 변환은 지연된 값 기준으로 수행한다.
+  const deferredInput = useDeferredValue(input);
+
   const output = useMemo(() => {
-    if (!input.trim()) return '';
-    return mode === 'beautify' ? beautifyHtml(input) : minifyHtml(input);
-  }, [input, mode]);
+    if (!deferredInput.trim()) return '';
+    return mode === 'beautify' ? beautifyHtml(deferredInput) : minifyHtml(deferredInput);
+  }, [deferredInput, mode]);
 
   const copy = async () => {
     if (!output) return;

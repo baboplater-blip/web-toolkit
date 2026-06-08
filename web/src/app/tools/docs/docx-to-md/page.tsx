@@ -1,7 +1,7 @@
 'use client';
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2, Copy, Check } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -21,6 +21,13 @@ export default function DocxToMdPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // 언마운트·결과 교체 시 이전 ObjectURL 해제(메모리 누수 방지)
+  useEffect(() => {
+    return () => {
+      if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
+    };
+  }, [result?.blobUrl]);
+
   async function handleProcess() {
     if (!file) {
       setError('DOCX 파일을 선택해주세요.');
@@ -28,6 +35,8 @@ export default function DocxToMdPage() {
     }
     setError(null);
     setMarkdown('');
+    // 이전 결과 URL 을 먼저 해제한 뒤 새로 만든다(재실행 누수 방지)
+    if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
     setResult(null);
     setBusy(true);
     try {

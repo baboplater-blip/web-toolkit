@@ -12,7 +12,7 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
-import { VIDEO_ACCEPT } from '@/lib/tools/media-limits';
+import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 import {
   cleanupFiles,
   getFFmpeg,
@@ -62,6 +62,11 @@ export default function VideoToAudioPage() {
   const acceptFile = async (f: File) => {
     if (!f.type.startsWith('video/')) {
       setError('비디오 파일만 업로드 가능합니다.');
+      return;
+    }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setError(null);
@@ -130,7 +135,20 @@ export default function VideoToAudioPage() {
         await cleanupFiles(ffmpeg, [inputName, outputName]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '오디오 추출 실패');
+      const msg = err instanceof Error ? err.message : '오디오 추출 실패';
+      // 입력에 오디오 트랙이 없으면 FFmpeg 가 "does not contain any stream" 류로
+      // 실패한다 — 일반 실패 대신 원인을 짚어 안내.
+      const noAudioTrack =
+        /does not contain any stream|output file is empty|Output file #0 does not contain any stream/i.test(
+          msg,
+        );
+      setError(
+        noAudioTrack
+          ? '이 영상에는 오디오 트랙이 없습니다. 소리가 들어 있는 영상으로 다시 시도해주세요.'
+          : file
+            ? explainFfmpegError(msg, file.size)
+            : msg,
+      );
     } finally {
       setProcessing(false);
       setProgressText('');

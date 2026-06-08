@@ -46,41 +46,46 @@ export default function SilenceTrimPage() {
     setProgress(0);
     setResult(null);
     setProgressText('FFmpeg 로드 중 (최초만 ~30MB)');
+    const isVideo =
+      (file.type || '').startsWith('video/') ||
+      /\.(mp4|mov|webm|mkv|avi)$/i.test(file.name);
+    const ext = isVideo ? 'mp4' : (file.name.split('.').pop() ?? 'mp3').toLowerCase();
+    const outName = `out.${ext === 'mp4' ? 'mp4' : ext}`;
     try {
       const ffmpeg = await getFFmpeg();
       setProgressText('파일 메모리 적재 중');
-      ffmpeg.on('progress', (p) => {
+      // 진행률 리스너는 싱글턴에 누적되므로 이름 붙여 finally 에서 해제.
+      const onProgress = (p: { progress: number }) => {
         setProgress(Math.round((p.progress ?? 0) * 100));
         setProgressText('무음 구간 분석·제거 중');
-      });
-      await writeFile(ffmpeg, 'in.bin', file);
+      };
+      ffmpeg.on('progress', onProgress);
+      try {
+        await writeFile(ffmpeg, 'in.bin', file);
 
-      const isVideo =
-        (file.type || '').startsWith('video/') ||
-        /\.(mp4|mov|webm|mkv|avi)$/i.test(file.name);
-      const ext = isVideo ? 'mp4' : (file.name.split('.').pop() ?? 'mp3').toLowerCase();
-      const outName = `out.${ext === 'mp4' ? 'mp4' : ext}`;
+        // silenceremove: 첫 무음 + 중간 무음 모두 제거
+        const filter = `silenceremove=stop_periods=-1:stop_duration=${minSilenceSec}:stop_threshold=${threshold}dB:start_periods=1:start_duration=0:start_threshold=${threshold}dB:start_silence=${keepTail}`;
 
-      // silenceremove: 첫 무음 + 중간 무음 모두 제거
-      const filter = `silenceremove=stop_periods=-1:stop_duration=${minSilenceSec}:stop_threshold=${threshold}dB:start_periods=1:start_duration=0:start_threshold=${threshold}dB:start_silence=${keepTail}`;
+        const args = isVideo
+          ? ['-y', '-i', 'in.bin', '-af', filter, '-c:v', 'copy', outName]
+          : ['-y', '-i', 'in.bin', '-af', filter, outName];
 
-      const args = isVideo
-        ? ['-y', '-i', 'in.bin', '-af', filter, '-c:v', 'copy', outName]
-        : ['-y', '-i', 'in.bin', '-af', filter, outName];
+        await ffmpeg.exec(args);
 
-      await ffmpeg.exec(args);
-
-      const mime = isVideo ? 'video/mp4' : `audio/${ext === 'm4a' ? 'mp4' : ext}`;
-      const blob = await readOutput(ffmpeg, outName, mime);
-      setResult({
-        blobUrl: URL.createObjectURL(blob),
-        filename: `${file.name.replace(/\.[^.]+$/, '')}-trimmed.${ext}`,
-        originalSize: file.size,
-        compressedSize: blob.size,
-      });
-      setProgress(100);
-      setProgressText('완료');
-      await cleanupFiles(ffmpeg, ['in.bin', outName]);
+        const mime = isVideo ? 'video/mp4' : `audio/${ext === 'm4a' ? 'mp4' : ext}`;
+        const blob = await readOutput(ffmpeg, outName, mime);
+        setResult({
+          blobUrl: URL.createObjectURL(blob),
+          filename: `${file.name.replace(/\.[^.]+$/, '')}-trimmed.${ext}`,
+          originalSize: file.size,
+          compressedSize: blob.size,
+        });
+        setProgress(100);
+        setProgressText('완료');
+      } finally {
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, ['in.bin', outName]);
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(explainFfmpegError(msg, file.size));

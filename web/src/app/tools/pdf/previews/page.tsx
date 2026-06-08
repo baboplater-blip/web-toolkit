@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
@@ -28,6 +28,19 @@ export default function PdfPreviewsPage() {
   } | null>(null);
   const abortRef = useRef<{ aborted: boolean } | null>(null);
 
+  // 언마운트 시 살아있는 썸네일·결과 ObjectURL 을 모두 회수하기 위한 최신값 보관 ref
+  const thumbsRef = useRef(thumbs);
+  thumbsRef.current = thumbs;
+  const resultRef = useRef(result);
+  resultRef.current = result;
+  useEffect(
+    () => () => {
+      thumbsRef.current.forEach((t) => URL.revokeObjectURL(t.url));
+      if (resultRef.current?.blobUrl) URL.revokeObjectURL(resultRef.current.blobUrl);
+    },
+    [],
+  );
+
   async function handleProcess() {
     if (!file) {
       setError('PDF 파일을 먼저 선택해주세요.');
@@ -35,6 +48,9 @@ export default function PdfPreviewsPage() {
     }
     setError(null);
     setBusy(true);
+    // 직전 실행의 썸네일·결과 ObjectURL 회수 후 새로 시작 (재실행 시 누수 방지)
+    thumbs.forEach((t) => URL.revokeObjectURL(t.url));
+    if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
     setResult(null);
     setThumbs([]);
     setProgress(0);
@@ -96,6 +112,7 @@ export default function PdfPreviewsPage() {
 
   function handleReset() {
     thumbs.forEach((t) => URL.revokeObjectURL(t.url));
+    if (result?.blobUrl) URL.revokeObjectURL(result.blobUrl);
     setFile(null);
     setThumbs([]);
     setResult(null);

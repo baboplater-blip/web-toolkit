@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, Check, Copy, Download, Hexagon, RefreshCw } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Check, Copy, Download, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { ToolHeader } from '@/components/tools/ToolHeader';
 
 type Format = 'default' | 'upper' | 'nohyphen' | 'braces';
+
+const DEFAULT_COUNT = 10;
 
 function generateUuidV4(): string {
   const c = globalThis.crypto;
@@ -38,10 +41,10 @@ function formatUuid(u: string, format: Format): string {
 }
 
 export default function UuidPage() {
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(DEFAULT_COUNT);
   const [format, setFormat] = useState<Format>('default');
   const [list, setList] = useState<string[]>(() =>
-    Array.from({ length: 10 }, () => generateUuidV4()),
+    Array.from({ length: DEFAULT_COUNT }, () => generateUuidV4()),
   );
   const [copiedIdx, setCopiedIdx] = useState<number | 'all' | null>(null);
 
@@ -53,15 +56,31 @@ export default function UuidPage() {
   const formatted = list.map((u) => formatUuid(u, format));
 
   const copyOne = async (i: number) => {
-    await navigator.clipboard.writeText(formatted[i]);
-    setCopiedIdx(i);
-    setTimeout(() => setCopiedIdx(null), 1500);
+    try {
+      await navigator.clipboard.writeText(formatted[i]);
+      setCopiedIdx(i);
+      setTimeout(() => setCopiedIdx(null), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+    }
   };
 
   const copyAll = async () => {
-    await navigator.clipboard.writeText(formatted.join('\n'));
-    setCopiedIdx('all');
-    setTimeout(() => setCopiedIdx(null), 1500);
+    try {
+      await navigator.clipboard.writeText(formatted.join('\n'));
+      setCopiedIdx('all');
+      setTimeout(() => setCopiedIdx(null), 1500);
+    } catch (err) {
+      console.error('클립보드 복사 실패', err);
+    }
+  };
+
+  const handleReset = () => {
+    setCount(DEFAULT_COUNT);
+    setFormat('default');
+    setList(Array.from({ length: DEFAULT_COUNT }, () => generateUuidV4()));
+    setCopiedIdx(null);
   };
 
   const downloadTxt = () => {
@@ -70,21 +89,7 @@ export default function UuidPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-3xl mx-auto">
-          <div className="flex items-center gap-2">
-            <a
-              href="/tools"
-              className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
-              aria-label="도구 목록으로"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </a>
-            <Hexagon className="h-5 w-5" />
-            <h1 className="font-semibold text-base">UUID 생성</h1>
-          </div>
-        </div>
-      </header>
+      <ToolHeader title="UUID 생성" onReset={handleReset} />
 
       <main className="p-4 max-w-3xl mx-auto space-y-3">
         <div className="rounded-xl border bg-card p-3 space-y-3">

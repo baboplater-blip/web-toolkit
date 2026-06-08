@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,16 +20,20 @@ export default function JsonToTsPage() {
   const [rootName, setRootName] = useState('Root');
   const [copied, setCopied] = useState(false);
 
+  // 큰 입력에서도 타이핑이 끊기지 않도록 변환은 지연된 값 기준으로 수행한다.
+  const deferredInput = useDeferredValue(input);
+  const deferredRootName = useDeferredValue(rootName);
+
   const { output, error } = useMemo(() => {
-    if (!input.trim()) return { output: '', error: null };
+    if (!deferredInput.trim()) return { output: '', error: null };
     try {
-      const { code } = jsonToTypeScript(input, rootName.trim() || 'Root');
+      const { code } = jsonToTypeScript(deferredInput, deferredRootName.trim() || 'Root');
       return { output: code, error: null };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return { output: '', error: `JSON 파싱 오류: ${message}` };
     }
-  }, [input, rootName]);
+  }, [deferredInput, deferredRootName]);
 
   const copy = async () => {
     if (!output) return;
