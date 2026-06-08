@@ -6,12 +6,16 @@
  * 옛 SW 가 그대로 유지되어 옛 응답을 캐시한다. 새 버전을 받으려면 매번 수동 bump
  * 필요 — 비효율적.
  *
- * 빌드 시 git short SHA + 빌드 timestamp 로 자동 갱신해 매 배포마다
- * 새 SW 로 인식 → activate 단계에서 옛 캐시 자동 청소 + 즉시 교체.
+ * 빌드 시 git short SHA 로 자동 갱신해 커밋이 바뀔 때마다 새 SW 로 인식
+ * → activate 단계에서 옛 캐시 자동 청소 + 즉시 교체.
+ *
+ * 결정성: 버전은 SHA 만 사용한다. 과거엔 timestamp 를 덧붙였으나, 같은 커밋을
+ * 재빌드할 때마다 sw.js 가 달라져(비결정적) 불필요한 SW 교체·캐시 무효화가
+ * 발생했다. SHA 만 쓰면 같은 커밋은 같은 sw.js → 재현 가능한 빌드.
  *
  * 환경:
  *   - prebuild 단계에서 실행
- *   - git 정보 없으면 timestamp 만 사용 (fallback)
+ *   - git 정보 없으면 timestamp 로 폴백 (CI 외 환경·shallow 체크아웃 대비)
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -32,8 +36,11 @@ function getGitSha() {
 
 function buildVersion() {
   const sha = getGitSha();
+  // SHA 가 있으면 SHA 만 사용 → 같은 커밋은 항상 같은 버전(결정적).
+  // SHA 가 없을 때만 timestamp 로 폴백.
+  if (sha) return `webtoolkit-sw-${sha}`;
   const ts = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12); // YYYYMMDDHHMM
-  return sha ? `webtoolkit-sw-${sha}-${ts}` : `webtoolkit-sw-${ts}`;
+  return `webtoolkit-sw-${ts}`;
 }
 
 const sw = readFileSync(SW_PATH, 'utf8');

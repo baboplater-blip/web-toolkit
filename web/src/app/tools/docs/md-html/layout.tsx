@@ -1,5 +1,6 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 const TITLE = `Markdown ↔ HTML — Web Toolkit`;
 const DESCRIPTION = `Markdown 과 HTML 상호 변환, 미리보기 포함.`;
@@ -44,8 +45,12 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"Markdown ↔ HTML","description":"Markdown 과 HTML 상호 변환, 미리보기 포함.","url":"https://agent-control-panel-phi.vercel.app/tools/docs/md-html","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"Markdown ↔ HTML 사용 방법","description":"Markdown 과 HTML 상호 변환, 미리보기 포함.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"Markdown ↔ HTML","url":"https://agent-control-panel-phi.vercel.app/tools/docs/md-html"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/docs/md-html#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"Markdown ↔ HTML에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/docs/md-html#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/docs/md-html#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"Markdown ↔ HTML","description":"Markdown 과 HTML 상호 변환, 미리보기 포함.","url":"https://__SITE_URL__/tools/docs/md-html","applicationCategory":"BusinessApplication","applicationSubCategory":"문서 변환","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://__SITE_URL__"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"Markdown ↔ HTML 사용 방법","description":"Markdown 과 HTML 상호 변환, 미리보기 포함.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"Markdown ↔ HTML","url":"https://__SITE_URL__/tools/docs/md-html"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://__SITE_URL__/tools/docs/md-html#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"Markdown ↔ HTML에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://__SITE_URL__/tools/docs/md-html#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://__SITE_URL__/tools/docs/md-html#step3"}]} as const;
+
+// JSON-LD 의 sentinel(https://__SITE_URL__) 을 런타임 운영 도메인으로 치환.
+const withSite = (obj: unknown) =>
+  JSON.stringify(obj).replaceAll('https://__SITE_URL__', SITE_URL);
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -53,12 +58,12 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(JSON_LD) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOWTO_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(HOWTO_JSON_LD) }}
       />
       {children}
     </>

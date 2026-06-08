@@ -20,8 +20,10 @@ import {
   parseTimeToSeconds,
   probeAudio,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
@@ -58,6 +60,11 @@ export default function AudioTrimPage() {
       setError('오디오 파일만 업로드 가능합니다.');
       return;
     }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     setError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
@@ -91,15 +98,25 @@ export default function AudioTrimPage() {
   const runTrim = async () => {
     if (!file) return;
     const start = parseTimeToSeconds(startTime);
-    const end = parseTimeToSeconds(endTime);
+    const typedEnd = parseTimeToSeconds(endTime);
+    // 종료가 길이를 넘으면 길이로 클램프하고 안내 (FFmpeg 은 넘는 -t 를 그대로
+    // 받아 빈 꼬리를 만들거나 길이 표기를 어긋나게 한다).
+    const clampDuration =
+      duration !== null && Number.isFinite(duration) && duration > 0 ? duration : null;
+    const end = clampDuration !== null ? Math.min(typedEnd, clampDuration) : typedEnd;
     if (end <= start) {
       setError('종료가 시작보다 커야 합니다.');
       return;
     }
+    const clampWarning =
+      clampDuration !== null && typedEnd > clampDuration
+        ? `종료 시간이 오디오 길이(${formatTime(clampDuration)})를 초과해 끝으로 맞췄습니다.`
+        : null;
     const dur = end - start;
 
     setProcessing(true);
-    setError(null);
+    // 클램프 경고가 있으면 유지, 없으면 기존 에러 초기화.
+    setError(clampWarning);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
@@ -147,7 +164,12 @@ export default function AudioTrimPage() {
         await cleanupFiles(ffmpeg, [inputName, outputName]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '자르기 실패');
+      const msg = err instanceof Error ? err.message : '자르기 실패';
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setProcessing(false);
       setProgressText('');

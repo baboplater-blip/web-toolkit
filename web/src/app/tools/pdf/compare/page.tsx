@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,8 @@ export default function PdfComparePage() {
   const [error, setError] = useState<string | null>(null);
   const [diff, setDiff] = useState<DiffLine[] | null>(null);
   const [stats, setStats] = useState<{ add: number; remove: number; eq: number } | null>(null);
+  const [progress, setProgress] = useState(0);
+  const abortRef = useRef<{ aborted: boolean } | null>(null);
 
   async function handleProcess() {
     if (!a || !b) {
@@ -29,11 +31,24 @@ export default function PdfComparePage() {
     setBusy(true);
     setDiff(null);
     setStats(null);
+    setProgress(0);
+    const token = { aborted: false };
+    abortRef.current = token;
+
+    let pdfA: Awaited<ReturnType<typeof openPdfDoc>> | null = null;
+    let pdfB: Awaited<ReturnType<typeof openPdfDoc>> | null = null;
     try {
-      const [pdfA, pdfB] = await Promise.all([openPdfDoc(a), openPdfDoc(b)]);
-      const [textA, textB] = await Promise.all([extractPlainText(pdfA), extractPlainText(pdfB)]);
-      pdfA.destroy();
-      pdfB.destroy();
+      [pdfA, pdfB] = await Promise.all([openPdfDoc(a), openPdfDoc(b)]);
+      // A·B 를 순차 추출하며 진행률 합산 (각 50%). 취소 토큰을 추출기에 전달.
+      const textA = await extractPlainText(pdfA, {
+        signal: token,
+        onProgress: (p) => setProgress(Math.round(p * 50)),
+      });
+      const textB = await extractPlainText(pdfB, {
+        signal: token,
+        onProgress: (p) => setProgress(50 + Math.round(p * 50)),
+      });
+      if (token.aborted) throw new Error('취소되었습니다.');
       const linesA = textA.join('\n\n').split('\n').map((s) => s.trim());
       const linesB = textB.join('\n\n').split('\n').map((s) => s.trim());
 
@@ -62,16 +77,24 @@ export default function PdfComparePage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : '비교에 실패했습니다.');
     } finally {
+      pdfA?.destroy();
+      pdfB?.destroy();
       setBusy(false);
     }
   }
 
+  function handleCancel() {
+    if (abortRef.current) abortRef.current.aborted = true;
+  }
+
   function handleReset() {
+    if (abortRef.current) abortRef.current.aborted = true;
     setA(null);
     setB(null);
     setDiff(null);
     setStats(null);
     setError(null);
+    setProgress(0);
   }
 
   return (
@@ -87,6 +110,7 @@ export default function PdfComparePage() {
           <p className="text-xs font-semibold">기준 PDF (A)</p>
           <FileDropZone
             accept="application/pdf,.pdf"
+            maxBytes={100 * 1024 * 1024}
             onFiles={(files) => setA(files[0] ?? null)}
             title="A 파일"
           />
@@ -96,6 +120,7 @@ export default function PdfComparePage() {
           <p className="text-xs font-semibold">비교 PDF (B)</p>
           <FileDropZone
             accept="application/pdf,.pdf"
+            maxBytes={100 * 1024 * 1024}
             onFiles={(files) => setB(files[0] ?? null)}
             title="B 파일"
           />
@@ -103,10 +128,22 @@ export default function PdfComparePage() {
         </div>
       </div>
 
-      <Button onClick={handleProcess} disabled={busy || !a || !b}>
-        {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        비교
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button onClick={handleProcess} disabled={busy || !a || !b}>
+          {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          비교
+        </Button>
+        {busy && (
+          <>
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+            </div>
+            <Button variant="ghost" size="icon" onClick={handleCancel} aria-label="취소">
+              <X className="h-4 w-4" />
+            </Button>
+          </>
+        )}
+      </div>
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

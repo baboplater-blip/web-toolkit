@@ -17,10 +17,61 @@ async function loadPdfJs() {
   return pdfjs;
 }
 
-export async function openPdfDoc(file: File | Blob | ArrayBuffer): Promise<PDFDocumentProxy> {
+export async function openPdfDoc(
+  file: File | Blob | ArrayBuffer,
+  password?: string,
+): Promise<PDFDocumentProxy> {
   const pdfjs = await loadPdfJs();
   const buf = file instanceof ArrayBuffer ? file : await (file as File | Blob).arrayBuffer();
-  return pdfjs.getDocument({ data: new Uint8Array(buf) }).promise;
+  try {
+    // password 가 주어지면 암호화 PDF 의 열람 암호로 전달 (PasswordException 재시도용)
+    return await pdfjs.getDocument({ data: new Uint8Array(buf), password }).promise;
+  } catch (err) {
+    throw normalizePdfjsError(err);
+  }
+}
+
+/**
+ * pdf.js 로더 에러 정규화 — PasswordException 은 message 를 한국어로 바꾸되
+ * name/code 는 보존해 비밀번호 입력 UI 가 그대로 감지할 수 있게 한다.
+ * 그 외 에러는 원본을 그대로 돌려준다.
+ */
+export function normalizePdfjsError(err: unknown): unknown {
+  if (!isPasswordException(err)) return err;
+  const code = (err as { code?: number }).code;
+  const friendly = new Error(describePdfError(err)) as Error & { name: string; code?: number };
+  friendly.name = 'PasswordException';
+  if (typeof code === 'number') friendly.code = code;
+  return friendly;
+}
+
+/**
+ * pdf.js PasswordException 여부 — code 1 = 암호 필요, 2 = 암호 틀림.
+ * 호출부에서 비밀번호 입력 UI 분기에 사용.
+ */
+export function isPasswordException(err: unknown): boolean {
+  return !!err && typeof err === 'object' && (err as { name?: string }).name === 'PasswordException';
+}
+
+/** PasswordException 의 code — 1 = 암호 필요, 2 = 암호 틀림, 그 외 undefined. */
+export function passwordExceptionCode(err: unknown): number | undefined {
+  if (!isPasswordException(err)) return undefined;
+  const code = (err as { code?: number }).code;
+  return typeof code === 'number' ? code : undefined;
+}
+
+/**
+ * pdf.js 로더 에러를 한국어 사용자 메시지로 정규화.
+ * 암호화/비밀번호 PDF 는 raw 영문 에러 대신 명확한 안내를 돌려준다.
+ * 암호가 아닌 에러는 fallback 메시지를 사용.
+ */
+export function describePdfError(err: unknown, fallback = 'PDF 처리에 실패했습니다.'): string {
+  const code = passwordExceptionCode(err);
+  if (code === 2) return '비밀번호가 올바르지 않습니다. 다시 입력해주세요.';
+  if (code === 1 || isPasswordException(err)) {
+    return '암호화된(또는 비밀번호가 걸린) PDF입니다. 비밀번호를 입력해주세요.';
+  }
+  return err instanceof Error && err.message ? err.message : fallback;
 }
 
 export interface PageTextLine {

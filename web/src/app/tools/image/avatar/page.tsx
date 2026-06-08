@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 const SIZE_OPTIONS = [128, 256, 512, 1024] as const;
 type AvatarSize = (typeof SIZE_OPTIONS)[number];
@@ -37,7 +38,7 @@ export default function AvatarCropPage() {
     setError(null);
     setResultBlob(null);
     try {
-      const bmp = await createImageBitmap(picked);
+      const bmp = await loadBitmap(picked);
       bitmap?.close();
       setBitmap(bmp);
       setFile(picked);
@@ -120,7 +121,7 @@ export default function AvatarCropPage() {
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이미지를 원형으로 잘라 프로필 사진용 투명 PNG로 저장합니다.</p>
 
-      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
+      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} maxBytes={50 * 1024 * 1024} />}
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

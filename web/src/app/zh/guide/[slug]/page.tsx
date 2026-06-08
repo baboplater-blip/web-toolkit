@@ -8,7 +8,7 @@ import { hasJaCopy } from '@/lib/ja-tools';
 import { buildGuideZh } from '@/lib/guide-content-zh';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

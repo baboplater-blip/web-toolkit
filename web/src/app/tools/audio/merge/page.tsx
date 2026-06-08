@@ -19,8 +19,10 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
@@ -54,6 +56,12 @@ export default function AudioMergePage() {
     );
     if (valid.length === 0) {
       setError('오디오 파일만 추가 가능합니다.');
+      return;
+    }
+    // 개별 파일이 한도를 넘으면 거부 (합산은 처리 시 explainFfmpegError 로 안내)
+    const oversized = valid.map(validateMediaSize).find((m) => m !== null);
+    if (oversized) {
+      setError(oversized);
       return;
     }
     setError(null);
@@ -155,7 +163,14 @@ export default function AudioMergePage() {
         await cleanupFiles(ffmpeg, [...inputs.map((i) => i.name), outputName]);
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : '합치기 실패');
+      const msg = e instanceof Error ? e.message : '합치기 실패';
+      // 합산 입력 크기로 OOM 판정 — 여러 파일이 동시에 MEMFS 에 올라간다.
+      const totalSize = items.reduce((sum, it) => sum + it.file.size, 0);
+      const friendly = explainFfmpegError(msg, totalSize);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setProcessing(false);
       setProgressText('');

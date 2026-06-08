@@ -12,7 +12,7 @@ import { JaToolsCatalog } from '@/components/ja/JaToolsCatalog';
  */
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

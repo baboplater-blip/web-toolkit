@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
+import { loadBitmap, assertCanvasSize } from '@/lib/tools/image-common';
 
 type OutputFormat = 'jpeg' | 'webp';
 
@@ -84,7 +85,7 @@ export default function ImageTargetSizePage() {
     setError(null);
     setResult(null);
     try {
-      const bmp = await createImageBitmap(picked);
+      const bmp = await loadBitmap(picked);
       bitmap?.close();
       setBitmap(bmp);
       setFile(picked);
@@ -103,6 +104,8 @@ export default function ImageTargetSizePage() {
     setProcessing(true);
     setError(null);
     try {
+      // 빈(투명) 결과물 방지: 브라우저 캔버스 한계 초과 시 명확히 실패시킨다.
+      assertCanvasSize(bitmap.width, bitmap.height);
       const canvas = canvasRef.current ?? document.createElement('canvas');
       canvasRef.current = canvas;
       canvas.width = bitmap.width;
@@ -155,7 +158,7 @@ export default function ImageTargetSizePage() {
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">원하는 파일 크기(예: 200KB)에 맞춰 이미지 품질을 자동 조정합니다.</p>
 
-      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
+      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} maxBytes={50 * 1024 * 1024} />}
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

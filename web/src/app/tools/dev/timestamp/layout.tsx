@@ -1,5 +1,6 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 const TITLE = `타임스탬프 변환 — Web Toolkit`;
 const DESCRIPTION = `Unix 타임스탬프와 ISO/로컬 시각을 상호 변환합니다.`;
@@ -44,8 +45,12 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"타임스탬프 변환","description":"Unix 타임스탬프와 ISO/로컬 시각을 상호 변환합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/timestamp","applicationCategory":"DeveloperApplication","applicationSubCategory":"개발자","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"타임스탬프 변환 사용 방법","description":"Unix 타임스탬프와 ISO/로컬 시각을 상호 변환합니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"타임스탬프 변환","url":"https://agent-control-panel-phi.vercel.app/tools/dev/timestamp"},"step":[{"@type":"HowToStep","position":1,"name":"값 입력","text":"날짜·금액·수치·단위 등 필요한 값을 입력칸에 넣습니다. 텍스트를 붙여넣는 것이 아니라 항목별로 값을 채웁니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/timestamp#step1"},{"@type":"HowToStep","position":2,"name":"실시간 계산","text":"입력을 바꾸는 즉시 결과가 다시 계산되어 화면에 표시됩니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/timestamp#step2"},{"@type":"HowToStep","position":3,"name":"결과 복사","text":"계산된 결과값을 클립보드에 복사해 바로 활용합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/timestamp#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"타임스탬프 변환","description":"Unix 타임스탬프와 ISO/로컬 시각을 상호 변환합니다.","url":"https://__SITE_URL__/tools/dev/timestamp","applicationCategory":"DeveloperApplication","applicationSubCategory":"개발자","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://__SITE_URL__"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"타임스탬프 변환 사용 방법","description":"Unix 타임스탬프와 ISO/로컬 시각을 상호 변환합니다.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"타임스탬프 변환","url":"https://__SITE_URL__/tools/dev/timestamp"},"step":[{"@type":"HowToStep","position":1,"name":"값 입력","text":"날짜·금액·수치·단위 등 필요한 값을 입력칸에 넣습니다. 텍스트를 붙여넣는 것이 아니라 항목별로 값을 채웁니다.","url":"https://__SITE_URL__/tools/dev/timestamp#step1"},{"@type":"HowToStep","position":2,"name":"실시간 계산","text":"입력을 바꾸는 즉시 결과가 다시 계산되어 화면에 표시됩니다.","url":"https://__SITE_URL__/tools/dev/timestamp#step2"},{"@type":"HowToStep","position":3,"name":"결과 복사","text":"계산된 결과값을 클립보드에 복사해 바로 활용합니다.","url":"https://__SITE_URL__/tools/dev/timestamp#step3"}]} as const;
+
+// JSON-LD 의 sentinel(https://__SITE_URL__) 을 런타임 운영 도메인으로 치환.
+const withSite = (obj: unknown) =>
+  JSON.stringify(obj).replaceAll('https://__SITE_URL__', SITE_URL);
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -53,12 +58,12 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(JSON_LD) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOWTO_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(HOWTO_JSON_LD) }}
       />
       {children}
     </>

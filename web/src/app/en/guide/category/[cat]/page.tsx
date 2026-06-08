@@ -5,7 +5,7 @@ import { TOOLS, type ToolCategory } from '@/lib/tools/registry';
 import { CATEGORY_GUIDES_EN } from '@/lib/category-guide-content-en';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

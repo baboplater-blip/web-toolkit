@@ -6,7 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-import { cleanupFiles, getFFmpeg, probeAudio, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
+import { cleanupFiles, getFFmpeg, probeAudio, readOutput, resetFFmpeg, writeFile } from '@/lib/tools/ffmpeg-common';
 import { AUDIO_ACCEPT, explainFfmpegError, limitsHint, validateMediaSize } from '@/lib/tools/media-limits';
 
 export default function FadePage() {
@@ -72,7 +72,11 @@ export default function FadePage() {
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      setError(file ? explainFfmpegError(msg, file.size) : msg);
+      const friendly = file ? explainFfmpegError(msg, file.size) : msg;
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setBusy(false);
     }
@@ -107,11 +111,11 @@ export default function FadePage() {
       <div className="rounded-xl border bg-card p-3 space-y-3">
         <div className="space-y-1">
           <label className="text-xs font-medium">페이드 인 ({fadeIn.toFixed(1)}초)</label>
-          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeIn} onChange={(e) => setFadeIn(Number(e.target.value))} className="w-full" aria-label="페이드 인 ( 초)" />
+          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeIn} onChange={(e) => setFadeIn(Number(e.target.value))} className="w-full accent-primary" aria-label="페이드 인 ( 초)" />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium">페이드 아웃 ({fadeOut.toFixed(1)}초)</label>
-          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeOut} onChange={(e) => setFadeOut(Number(e.target.value))} className="w-full" aria-label="페이드 아웃 ( 초)" />
+          <input type="range" min={0} max={Math.min(20, duration / 2 || 20)} step={0.1} value={fadeOut} onChange={(e) => setFadeOut(Number(e.target.value))} className="w-full accent-primary" aria-label="페이드 아웃 ( 초)" />
         </div>
       </div>
 

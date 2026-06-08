@@ -7,6 +7,13 @@ import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { loadPdfFromFile } from '@/lib/tools/pdf-common';
+
+/** 360 으로 정규화한 페이지 회전각 (0/90/180/270). */
+function normalizeAngle(deg: number): 0 | 90 | 180 | 270 {
+  const a = ((Math.round(deg / 90) * 90) % 360 + 360) % 360;
+  return a as 0 | 90 | 180 | 270;
+}
 
 type NupMode = 2 | 4 | 6 | 9;
 type Orientation = 'auto' | 'portrait' | 'landscape';
@@ -45,8 +52,9 @@ export default function PdfNupPage() {
     setBusy(true);
     setResult(null);
     try {
-      const { PDFDocument, PageSizes } = await loadPdfLib();
-      const src = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
+      const { PDFDocument, PageSizes, degrees } = await loadPdfLib();
+      // 공용 로더 사용 — 암호화 PDF 는 한국어 메시지로 정규화된 에러를 던진다.
+      const src = await loadPdfFromFile(file);
       const out = await PDFDocument.create();
       const { cols, rows, preferredLandscape } = NUP_LAYOUTS[mode];
 
@@ -56,6 +64,8 @@ export default function PdfNupPage() {
       const pageH = useLandscape ? a4[0] : a4[1];
 
       const embedded = await out.embedPdf(src);
+      // 원본 페이지의 /Rotate 메타데이터 — embedPdf 는 회전을 굽지 않으므로 직접 보정.
+      const srcRotations = src.getPages().map((pg) => normalizeAngle(pg.getRotation().angle));
 
       const totalCells = cols * rows;
       const totalIn = src.getPageCount();
@@ -70,13 +80,21 @@ export default function PdfNupPage() {
           const srcIdx = p * totalCells + c;
           if (srcIdx >= totalIn) break;
           const emb = embedded[srcIdx];
+          // 폼 자체 크기(회전 미반영)
           const ew = emb.width;
           const eh = emb.height;
-          const sx = cellW / ew;
-          const sy = cellH / eh;
-          const scale = Math.min(sx, sy);
-          const drawW = ew * scale;
-          const drawH = eh * scale;
+          const angle = srcRotations[srcIdx] ?? 0;
+          const rotated = angle === 90 || angle === 270;
+          // 화면에 보이는(회전 반영) 크기로 셀 맞춤 비율 계산
+          const visW = rotated ? eh : ew;
+          const visH = rotated ? ew : eh;
+          const scale = Math.min(cellW / visW, cellH / visH);
+          // 회전 반영 후 셀 안에서 차지하는 박스 크기
+          const drawW = visW * scale;
+          const drawH = visH * scale;
+          // 폼 자체에 적용할 스케일 크기 (회전 전 기준)
+          const sW = ew * scale;
+          const sH = eh * scale;
 
           const col = c % cols;
           const row = Math.floor(c / cols);
@@ -84,10 +102,29 @@ export default function PdfNupPage() {
           // y 좌표는 PDF 좌표계 (아래에서 위), 위에서부터 행을 채우려면 위→아래로 계산
           const cellY = pageH - margin - (row + 1) * cellH - row * gap;
 
-          const drawX = cellX + (cellW - drawW) / 2;
-          const drawY = cellY + (cellH - drawH) / 2;
+          // 회전 박스의 좌하단 위치 (셀 중앙 정렬)
+          const boxX = cellX + (cellW - drawW) / 2;
+          const boxY = cellY + (cellH - drawH) / 2;
 
-          page.drawPage(emb, { x: drawX, y: drawY, width: drawW, height: drawH });
+          // drawPage 의 rotate 는 (x,y) 앵커 기준 반시계 회전. 각도별 앵커 보정.
+          let drawX = boxX;
+          let drawY = boxY;
+          if (angle === 90) {
+            drawX = boxX + sH;
+          } else if (angle === 180) {
+            drawX = boxX + sW;
+            drawY = boxY + sH;
+          } else if (angle === 270) {
+            drawY = boxY + sW;
+          }
+
+          page.drawPage(emb, {
+            x: drawX,
+            y: drawY,
+            width: sW,
+            height: sH,
+            rotate: degrees(angle),
+          });
         }
       }
 
@@ -125,6 +162,7 @@ export default function PdfNupPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />

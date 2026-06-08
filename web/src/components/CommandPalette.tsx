@@ -125,6 +125,22 @@ const EXTRA_USECASES: ExtraEntry[] = USECASE_INDEX.map((e) => {
   };
 });
 
+/** 입력 컨텍스트(텍스트 입력·편집기)인지 판정 — 단축키 가로채기 방지. */
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  return target.isContentEditable;
+}
+
+/** 이미 다른 모달(다이얼로그)이 열려 있는지 — 모달 스태킹 방지. */
+function isAnotherDialogOpen(): boolean {
+  return (
+    document.querySelector('[data-slot="dialog-content"], [role="dialog"]') !==
+    null
+  );
+}
+
 /** 토큰 AND 매칭 — 부분일치 + 한글 초성. */
 function matchEntry(e: ExtraEntry, tokens: string[]): boolean {
   return tokens.every(
@@ -155,19 +171,28 @@ export function CommandPalette() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey;
-      if (isMod && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setOpen((v) => !v);
-      }
+      if (!isMod || e.key.toLowerCase() !== 'k') return;
+      // 도구 입력 필드·편집기에서 타이핑 중이면 가로채지 않는다.
+      if (isEditableTarget(e.target)) return;
+      // 팔레트가 이미 열려 있으면 무시(토글-닫기 금지 — ESC 로만 닫음).
+      if (open) return;
+      // 다른 모달이 떠 있으면 스태킹하지 않는다.
+      if (isAnotherDialogOpen()) return;
+      e.preventDefault();
+      setOpen(true);
     };
-    const openHandler = () => setOpen(true);
+    const openHandler = () => {
+      // 커스텀 이벤트로 열 때도 다른 모달 위에 겹치지 않는다.
+      if (isAnotherDialogOpen()) return;
+      setOpen(true);
+    };
     window.addEventListener('keydown', handler);
     window.addEventListener('webtoolkit:open-palette', openHandler);
     return () => {
       window.removeEventListener('keydown', handler);
       window.removeEventListener('webtoolkit:open-palette', openHandler);
     };
-  }, []);
+  }, [open]);
 
   /* 열릴 때 검색어/포커스 초기화 */
   useEffect(() => {

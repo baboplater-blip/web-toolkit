@@ -87,7 +87,7 @@ export function InstallPrompt() {
         'rounded-xl border bg-popover shadow-lg',
         'md:bottom-6 md:left-6 md:translate-x-0',
       )}
-      role="dialog"
+      role="region"
       aria-label="앱 설치 안내"
     >
       <div className="flex items-start gap-3 p-3">

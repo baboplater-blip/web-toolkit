@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { buildZip } from '@/lib/tools/zip-builder';
 import { packIco } from '@/lib/tools/favicon-ico';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 /** PNG 으로 출력할 파비콘 변. ICO 에는 16·32·48 만 패킹한다. */
 const PNG_SIZES = [16, 32, 48, 64, 180, 192, 512] as const;
@@ -76,7 +77,7 @@ export default function FaviconGenPage() {
     clearResult();
     setProcessing(true);
     try {
-      const bitmap = await createImageBitmap(file);
+      const bitmap = await loadBitmap(file);
       try {
         const pngByteCache = new Map<number, Uint8Array>();
         const results: RenderedSize[] = [];
@@ -137,6 +138,7 @@ export default function FaviconGenPage() {
         onFiles={handleFiles}
         onError={setError}
         description="정사각형에 가까운 이미지일수록 결과가 깔끔합니다."
+        maxBytes={50 * 1024 * 1024}
       />
 
       {processing && (

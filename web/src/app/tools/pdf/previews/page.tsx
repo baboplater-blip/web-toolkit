@@ -7,7 +7,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-import { openPdfDoc } from '@/lib/tools/pdf-text';
+import { openPdfDoc, isPasswordException } from '@/lib/tools/pdf-text';
 
 type Format = 'png' | 'jpeg';
 
@@ -19,6 +19,9 @@ export default function PdfPreviewsPage() {
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  // 암호화 PDF 비밀번호 입력 — PasswordException 발생 시 노출
+  const [password, setPassword] = useState('');
+  const [needsPassword, setNeedsPassword] = useState(false);
   const [thumbs, setThumbs] = useState<Array<{ url: string; page: number }>>([]);
   const [result, setResult] = useState<{
     blobUrl: string;
@@ -58,7 +61,9 @@ export default function PdfPreviewsPage() {
     abortRef.current = token;
 
     try {
-      const pdf = await openPdfDoc(file);
+      const pdf = await openPdfDoc(file, password || undefined);
+      // 비밀번호로 정상 열림 → 입력란 숨김
+      setNeedsPassword(false);
       const zip = new JSZip();
       const local: Array<{ url: string; page: number }> = [];
 
@@ -100,6 +105,10 @@ export default function PdfPreviewsPage() {
       });
       setProgress(100);
     } catch (e) {
+      // 암호화 PDF → 비밀번호 입력란 노출 후 재시도 유도
+      if (isPasswordException(e)) {
+        setNeedsPassword(true);
+      }
       setError(e instanceof Error ? e.message : '처리에 실패했습니다.');
     } finally {
       setBusy(false);
@@ -117,6 +126,8 @@ export default function PdfPreviewsPage() {
     setThumbs([]);
     setResult(null);
     setError(null);
+    setPassword('');
+    setNeedsPassword(false);
     setProgress(0);
   }
 
@@ -130,9 +141,27 @@ export default function PdfPreviewsPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />
+
+      {needsPassword && (
+        <div className="rounded-xl border border-amber-500/50 bg-amber-500/10 p-3 space-y-2">
+          <label className="text-xs font-medium" htmlFor="pdf-password">
+            암호화된 PDF입니다. 비밀번호를 입력하고 다시 시도하세요.
+          </label>
+          <input
+            id="pdf-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+            placeholder="PDF 비밀번호"
+            autoComplete="off"
+          />
+        </div>
+      )}
 
       <div className="rounded-xl border bg-card p-3 grid grid-cols-3 gap-2">
         <div className="space-y-1">

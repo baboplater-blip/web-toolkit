@@ -6,7 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { loadPdfFromFile } from '@/lib/tools/pdf-common';
 
 type Position = 'start' | 'end' | 'after';
 
@@ -30,12 +30,7 @@ export default function PdfInsertPage() {
       setBasePages(0);
       return;
     }
-    base
-      .arrayBuffer()
-      .then(async (buf) => {
-        const { PDFDocument } = await loadPdfLib();
-        return PDFDocument.load(buf, { updateMetadata: false });
-      })
+    loadPdfFromFile(base)
       .then((doc) => setBasePages(doc.getPageCount()))
       .catch(() => setBasePages(0));
   }, [base]);
@@ -52,9 +47,8 @@ export default function PdfInsertPage() {
     setBusy(true);
     setResult(null);
     try {
-      const { PDFDocument } = await loadPdfLib();
-      const baseDoc = await PDFDocument.load(await base.arrayBuffer(), { updateMetadata: false });
-      const insertDoc = await PDFDocument.load(await insert.arrayBuffer(), { updateMetadata: false });
+      const baseDoc = await loadPdfFromFile(base);
+      const insertDoc = await loadPdfFromFile(insert);
       const insertIndices = Array.from({ length: insertDoc.getPageCount() }, (_, i) => i);
       const insertPages = await baseDoc.copyPages(insertDoc, insertIndices);
 
@@ -106,6 +100,7 @@ export default function PdfInsertPage() {
         <p className="text-xs font-semibold">1. 대상 PDF (기준 문서)</p>
         <FileDropZone
           accept="application/pdf,.pdf"
+          maxBytes={100 * 1024 * 1024}
           onFiles={(files) => setBase(files[0] ?? null)}
           title="기준이 될 PDF"
         />
@@ -117,6 +112,7 @@ export default function PdfInsertPage() {
           <p className="text-xs font-semibold">2. 삽입할 PDF</p>
           <FileDropZone
             accept="application/pdf,.pdf"
+            maxBytes={100 * 1024 * 1024}
             onFiles={(files) => setInsert(files[0] ?? null)}
             title="끼워 넣을 PDF"
           />

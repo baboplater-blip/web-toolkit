@@ -40,7 +40,15 @@ export function CategoryDrawer() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const openHandler = () => setOpen(true);
+    const openHandler = () => {
+      // 다른 모달(팔레트·단축키 등)이 이미 열려 있으면 겹쳐 열지 않는다.
+      const otherDialogOpen =
+        document.querySelector(
+          '[data-slot="dialog-content"], [role="dialog"]',
+        ) !== null;
+      if (otherDialogOpen) return;
+      setOpen(true);
+    };
     window.addEventListener('webtoolkit:open-category-drawer', openHandler);
     return () => {
       window.removeEventListener(

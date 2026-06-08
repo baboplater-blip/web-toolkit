@@ -10,6 +10,12 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 const RENDER_DEBOUNCE_MS = 250;
 // 이 픽셀 수를 넘으면 메인스레드 프리징 경고(폭×높이).
 const LARGE_IMAGE_PIXELS = 2400 * 2400;
+// 이 행 수마다 이벤트 루프에 양보해 스피너가 그려지고 탭이 멎지 않게 한다.
+const YIELD_EVERY_ROWS = 32;
+
+function yieldToEventLoop(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
 
 export default function DenoisePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -77,6 +83,10 @@ export default function DenoisePage() {
           }
           dst.data[(y * w + x) * 4 + 3] = 255;
         }
+        // 주기적으로 양보: 큰 이미지에서도 스피너가 보이고 탭이 응답한다.
+        if (y % YIELD_EVERY_ROWS === YIELD_EVERY_ROWS - 1) {
+          await yieldToEventLoop();
+        }
       }
       ctx.putImageData(dst, 0, 0);
       const blob = await new Promise<Blob>((res, rej) =>
@@ -108,7 +118,7 @@ export default function DenoisePage() {
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">미디언 필터로 노이즈를 줄입니다. 작은 사진 권장.</p>
 
-      <FileDropZone accept="image/*" onFiles={(f) => setFile(f[0] ?? null)} title="이미지 1장 드롭" />
+      <FileDropZone accept="image/*" onFiles={(f) => setFile(f[0] ?? null)} title="이미지 1장 드롭" onError={setError} maxBytes={50 * 1024 * 1024} />
 
       {file && (
         <div className="rounded-xl border bg-card p-3 space-y-1">

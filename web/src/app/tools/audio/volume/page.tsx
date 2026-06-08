@@ -270,7 +270,7 @@ export default function AudioVolumePage() {
             value={gainDb}
             onChange={(e) => setGainDb(Number(e.target.value))}
             disabled={processing}
-            className="w-full" aria-label="dB" />
+            className="w-full accent-primary" aria-label="dB" />
           <div className="flex justify-between text-[9px] text-muted-foreground mt-0.5">
             <span>-30dB (감소)</span>
             <span>0dB</span>

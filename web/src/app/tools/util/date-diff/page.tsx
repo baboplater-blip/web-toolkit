@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -78,6 +79,9 @@ export default function DateDiffPage() {
   // add 모드
   const [baseDate, setBaseDate] = useState<string>(todayInputValue);
   const [offsetDays, setOffsetDays] = useState<string>('100');
+  // 복사 피드백: 어느 버튼이 방금 복사됐는지(또는 실패했는지) 추적.
+  const [copied, setCopied] = useState<'diff' | 'add' | null>(null);
+  const [copyError, setCopyError] = useState<'diff' | 'add' | null>(null);
 
   const dateInputClass =
     'h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm';
@@ -114,16 +118,25 @@ export default function DateDiffPage() {
     };
   }, [mode, baseDate, offsetDays]);
 
-  function copyDiff() {
-    if (diffResult) {
-      navigator.clipboard?.writeText(`${diffResult.totalDays}일`);
+  async function copyValue(key: 'diff' | 'add', value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(key);
+      setTimeout(() => setCopyError(null), 1500);
     }
   }
 
+  function copyDiff() {
+    if (diffResult) void copyValue('diff', `${diffResult.totalDays}일`);
+  }
+
   function copyAdd() {
-    if (addResult) {
-      navigator.clipboard?.writeText(addResult.target);
-    }
+    if (addResult) void copyValue('add', addResult.target);
   }
 
   function handleReset() {
@@ -206,7 +219,18 @@ export default function DateDiffPage() {
                   </p>
                 </div>
                 <Button variant="outline" size="sm" onClick={copyDiff}>
-                  복사
+                  {copied === 'diff' ? (
+                    <Check className="h-3.5 w-3.5" aria-hidden />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" aria-hidden />
+                  )}
+                  <span className="ml-1">
+                    {copied === 'diff'
+                      ? '복사됨'
+                      : copyError === 'diff'
+                        ? '복사 실패'
+                        : '복사'}
+                  </span>
                 </Button>
               </div>
               <dl className="grid grid-cols-2 gap-3 border-t pt-3 text-sm">
@@ -281,7 +305,18 @@ export default function DateDiffPage() {
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={copyAdd}>
-                복사
+                {copied === 'add' ? (
+                  <Check className="h-3.5 w-3.5" aria-hidden />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                )}
+                <span className="ml-1">
+                  {copied === 'add'
+                    ? '복사됨'
+                    : copyError === 'add'
+                      ? '복사 실패'
+                      : '복사'}
+                </span>
               </Button>
             </div>
           )}

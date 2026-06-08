@@ -198,6 +198,7 @@ export default function PdfSplitPage() {
         {!file && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="단일 PDF 파일을 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

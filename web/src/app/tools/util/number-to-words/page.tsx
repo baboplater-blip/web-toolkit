@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 
@@ -177,6 +178,9 @@ const EN_DECIMAL_DIGITS = [
 
 export default function NumberToWordsPage() {
   const [input, setInput] = useState('');
+  // 복사 피드백: 어느 표기(한글/영문)가 방금 복사됐는지(또는 실패했는지) 추적.
+  const [copied, setCopied] = useState<'korean' | 'english' | null>(null);
+  const [copyError, setCopyError] = useState<'korean' | 'english' | null>(null);
 
   const output = useMemo(() => {
     if (!input.trim()) return { english: '', korean: '', error: '' };
@@ -225,8 +229,18 @@ export default function NumberToWordsPage() {
     return { english: enText, korean: koText, error: '' };
   }, [input]);
 
-  function copy(text: string) {
-    if (text) navigator.clipboard?.writeText(text);
+  async function copy(key: 'korean' | 'english', text: string) {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(key);
+      setTimeout(() => setCopyError(null), 1500);
+    }
   }
 
   return (
@@ -273,9 +287,20 @@ export default function NumberToWordsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => copy(output.korean)}
+                onClick={() => copy('korean', output.korean)}
               >
-                복사
+                {copied === 'korean' ? (
+                  <Check className="h-3.5 w-3.5" aria-hidden />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                )}
+                <span className="ml-1">
+                  {copied === 'korean'
+                    ? '복사됨'
+                    : copyError === 'korean'
+                      ? '복사 실패'
+                      : '복사'}
+                </span>
               </Button>
             </div>
             <p className="break-keep text-lg font-semibold leading-relaxed">
@@ -289,9 +314,20 @@ export default function NumberToWordsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => copy(output.english)}
+                onClick={() => copy('english', output.english)}
               >
-                복사
+                {copied === 'english' ? (
+                  <Check className="h-3.5 w-3.5" aria-hidden />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                )}
+                <span className="ml-1">
+                  {copied === 'english'
+                    ? '복사됨'
+                    : copyError === 'english'
+                      ? '복사 실패'
+                      : '복사'}
+                </span>
               </Button>
             </div>
             <p className="text-lg font-semibold capitalize leading-relaxed">

@@ -8,10 +8,12 @@ import {
 } from '@/lib/tools/registry';
 import { buildGuide } from '@/lib/guide-content';
 import { hasEnCopy } from '@/lib/en-tools';
+import { hasJaCopy } from '@/lib/ja-tools';
+import { hasZhCopy } from '@/lib/zh-tools';
 import { SponsoredTip } from '@/components/SponsoredTip';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');
@@ -57,6 +59,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       languages: {
         'ko-KR': canonical,
         ...(enGuide ? { en: enGuide } : {}),
+        ...(hasJaCopy(tool.id) ? { ja: `/ja/guide/${tool.id}` } : {}),
+        ...(hasZhCopy(tool.id) ? { zh: `/zh/guide/${tool.id}` } : {}),
         'x-default': canonical,
       },
     },

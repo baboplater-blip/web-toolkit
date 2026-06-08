@@ -97,6 +97,7 @@ export default function PdfImageExtractPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />

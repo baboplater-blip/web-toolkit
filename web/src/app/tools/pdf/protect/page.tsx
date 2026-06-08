@@ -17,6 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { isPdfFile, stripExtension, triggerDownload } from '@/lib/tools/file-utils';
+import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { ENCRYPTED_PDF_MESSAGE, isEncryptedPdfError } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
 
 interface Permissions {
@@ -95,7 +97,7 @@ export default function PdfProtectPage() {
     setResult(null);
 
     try {
-      const { PDFDocument } = await import('@cantoo/pdf-lib');
+      const { PDFDocument } = await loadPdfLib();
       const bytes = await file.arrayBuffer();
       const doc = await PDFDocument.load(bytes, { updateMetadata: false });
 
@@ -114,7 +116,12 @@ export default function PdfProtectPage() {
         size: blob.size,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : '암호 설정 중 오류가 발생했습니다');
+      // 이미 암호화된 PDF 는 한국어 안내로 정규화
+      if (isEncryptedPdfError(err)) {
+        setError(ENCRYPTED_PDF_MESSAGE);
+      } else {
+        setError(err instanceof Error ? err.message : '암호 설정 중 오류가 발생했습니다');
+      }
     } finally {
       setProcessing(false);
     }
@@ -149,6 +156,7 @@ export default function PdfProtectPage() {
         {!file && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="암호를 걸 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

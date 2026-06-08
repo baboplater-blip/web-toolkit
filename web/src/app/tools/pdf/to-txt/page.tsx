@@ -51,6 +51,11 @@ export default function PdfToTxtPage() {
       pdf.destroy();
       const separator = pageBreaks ? '\n\n--- 페이지 구분 ---\n\n' : '\n\n';
       const joined = pages.join(separator).trim();
+      // 스캔본 등 텍스트가 전혀 없는 PDF 는 빈 결과 대신 안내한다.
+      if (joined.length === 0) {
+        setError('추출할 텍스트가 없습니다(스캔본일 수 있음). OCR 도구를 먼저 사용하세요.');
+        return;
+      }
       setText(joined);
       const blob = new Blob([joined], { type: 'text/plain;charset=utf-8' });
       const baseName = file.name.replace(/\.pdf$/i, '');
@@ -100,6 +105,7 @@ export default function PdfToTxtPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="PDF 파일을 끌어다 놓거나 클릭하여 선택"
       />

@@ -16,8 +16,10 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
 
@@ -75,6 +77,11 @@ export default function GifOptimizePage() {
       setError('GIF 파일만 업로드 가능합니다.');
       return;
     }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     setError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
@@ -124,7 +131,7 @@ export default function GifOptimizePage() {
           '-i',
           'input.gif',
           '-vf',
-          `${vfPre},palettegen=max_colors=${maxColors}:stats_mode=diff`,
+          `${vfPre},palettegen=max_colors=${maxColors}:stats_mode=diff:reserve_transparent=1`,
           '-y',
           'palette.png',
         ]);
@@ -136,7 +143,7 @@ export default function GifOptimizePage() {
           '-i',
           'palette.png',
           '-lavfi',
-          `${vfPre}[x];[x][1:v]paletteuse=dither=${cfg.dither}`,
+          `${vfPre}[x];[x][1:v]paletteuse=dither=${cfg.dither}:alpha_threshold=128`,
           '-loop',
           '0',
           '-y',
@@ -154,7 +161,12 @@ export default function GifOptimizePage() {
         await cleanupFiles(ffmpeg, created);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '최적화 실패');
+      const msg = err instanceof Error ? err.message : '최적화 실패';
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setProcessing(false);
       setProgressText('');

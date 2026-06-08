@@ -185,6 +185,7 @@ export default function PdfOrganizePage() {
         {!file && !loading && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="페이지 순서를 바꾸거나 삭제할 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

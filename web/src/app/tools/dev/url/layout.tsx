@@ -1,5 +1,6 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 const TITLE = `URL 인코더/디코더 — Web Toolkit`;
 const DESCRIPTION = `URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.`;
@@ -44,8 +45,12 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"URL 인코더/디코더","description":"URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/url","applicationCategory":"DeveloperApplication","applicationSubCategory":"개발자","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"URL 인코더/디코더 사용 방법","description":"URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"URL 인코더/디코더","url":"https://agent-control-panel-phi.vercel.app/tools/dev/url"},"step":[{"@type":"HowToStep","position":1,"name":"입력","text":"변환·분석할 텍스트나 데이터를 입력 영역에 붙여넣습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/url#step1"},{"@type":"HowToStep","position":2,"name":"결과 확인","text":"결과가 실시간으로 표시됩니다. 옵션을 조절해 결과를 다듬을 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/url#step2"},{"@type":"HowToStep","position":3,"name":"복사·저장","text":"결과를 클립보드에 복사하거나 파일로 내려받습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/dev/url#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"URL 인코더/디코더","description":"URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.","url":"https://__SITE_URL__/tools/dev/url","applicationCategory":"DeveloperApplication","applicationSubCategory":"개발자","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://__SITE_URL__"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"URL 인코더/디코더 사용 방법","description":"URL 구성요소를 인코딩/디코딩하고 쿼리 파라미터를 분석.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"URL 인코더/디코더","url":"https://__SITE_URL__/tools/dev/url"},"step":[{"@type":"HowToStep","position":1,"name":"입력","text":"변환·분석할 텍스트나 데이터를 입력 영역에 붙여넣습니다.","url":"https://__SITE_URL__/tools/dev/url#step1"},{"@type":"HowToStep","position":2,"name":"결과 확인","text":"결과가 실시간으로 표시됩니다. 옵션을 조절해 결과를 다듬을 수 있습니다.","url":"https://__SITE_URL__/tools/dev/url#step2"},{"@type":"HowToStep","position":3,"name":"복사·저장","text":"결과를 클립보드에 복사하거나 파일로 내려받습니다.","url":"https://__SITE_URL__/tools/dev/url#step3"}]} as const;
+
+// JSON-LD 의 sentinel(https://__SITE_URL__) 을 런타임 운영 도메인으로 치환.
+const withSite = (obj: unknown) =>
+  JSON.stringify(obj).replaceAll('https://__SITE_URL__', SITE_URL);
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -53,12 +58,12 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(JSON_LD) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOWTO_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(HOWTO_JSON_LD) }}
       />
       {children}
     </>

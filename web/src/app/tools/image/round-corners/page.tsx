@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 /**
  * roundRect 로 클립한 둥근 모서리 이미지를 캔버스에 그린다.
@@ -74,7 +75,7 @@ export default function ImageRoundCornersPage() {
     }
     setError(null);
     try {
-      const next = await createImageBitmap(file);
+      const next = await loadBitmap(file);
       setBitmap((prev) => {
         prev?.close();
         return next;
@@ -122,6 +123,7 @@ export default function ImageRoundCornersPage() {
           onFiles={handleFiles}
           onError={setError}
           description="모서리를 둥글게 만들 이미지를 올려주세요."
+          maxBytes={50 * 1024 * 1024}
         />
       )}
 

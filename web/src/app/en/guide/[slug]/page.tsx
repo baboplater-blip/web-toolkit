@@ -8,7 +8,7 @@ import { hasZhCopy } from '@/lib/zh-tools';
 import { buildGuideEn } from '@/lib/guide-content-en';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

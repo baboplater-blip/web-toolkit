@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Check, Copy, Plus, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -83,6 +83,8 @@ function parseCredits(value: string): number | null {
 export default function GpaPage() {
   const [scale, setScale] = useState<ScaleId>('4.5');
   const [rows, setRows] = useState<CourseRow[]>(INITIAL_ROWS);
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   const gradeOptions = useMemo(
     () => Object.keys(GRADE_POINTS[scale]),
@@ -128,11 +130,19 @@ export default function GpaPage() {
     );
   }
 
-  function copyResult() {
-    if (result) {
-      navigator.clipboard?.writeText(
+  async function copyResult() {
+    if (!result) return;
+    try {
+      await navigator.clipboard.writeText(
         `GPA ${result.gpa.toFixed(2)} / ${scale} (${result.totalCredits}학점)`,
       );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 1500);
     }
   }
 
@@ -252,7 +262,14 @@ export default function GpaPage() {
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={copyResult}>
-            복사
+            {copied ? (
+              <Check className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <Copy className="h-3.5 w-3.5" aria-hidden />
+            )}
+            <span className="ml-1">
+              {copied ? '복사됨' : copyError ? '복사 실패' : '복사'}
+            </span>
           </Button>
         </div>
       )}

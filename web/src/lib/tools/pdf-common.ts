@@ -11,10 +11,34 @@
 import type { PDFDocument } from './pdf-lazy';
 import { loadPdfLib } from './pdf-lazy';
 
+/** 암호화된(비밀번호가 걸린) PDF 일 때 던지는 공통 에러. 호출부에서 한국어 안내로 분기. */
+export const ENCRYPTED_PDF_MESSAGE =
+  '암호화된(또는 비밀번호가 걸린) PDF입니다. 이 도구는 암호화된 PDF를 처리할 수 없습니다.';
+
+/**
+ * pdf-lib 의 EncryptedPDFError 여부.
+ * 번들링으로 클래스 참조가 깨질 수 있어 name 기준으로 판별한다.
+ */
+export function isEncryptedPdfError(err: unknown): boolean {
+  return (
+    !!err &&
+    typeof err === 'object' &&
+    (err as { name?: string }).name === 'EncryptedPDFError'
+  );
+}
+
 export async function loadPdfFromFile(file: File): Promise<PDFDocument> {
   const { PDFDocument } = await loadPdfLib();
   const bytes = await file.arrayBuffer();
-  return PDFDocument.load(bytes, { updateMetadata: false });
+  try {
+    return await PDFDocument.load(bytes, { updateMetadata: false });
+  } catch (err) {
+    // 암호화 PDF 는 명확한 한국어 메시지로 정규화해 호출부가 raw 영문 에러 대신 안내하도록.
+    if (isEncryptedPdfError(err)) {
+      throw new Error(ENCRYPTED_PDF_MESSAGE);
+    }
+    throw err;
+  }
 }
 
 export async function saveAsBlob(doc: PDFDocument): Promise<Blob> {

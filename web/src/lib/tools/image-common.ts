@@ -12,6 +12,49 @@ export interface LoadedImage {
   cleanup: () => void;
 }
 
+/**
+ * 사용자 파일을 EXIF Orientation 을 반영해 디코딩한다.
+ * createImageBitmap 의 기본값은 imageOrientation:'none' 이라, 세로로 찍은
+ * 휴대폰 사진(EXIF Orientation=6 등)이 90° 회전된 채로 그려진다.
+ * 'from-image' 옵션으로 <img> 기반 loadImageFile 과 동일하게 방향을 보정한다.
+ *
+ * 일부 구형 브라우저는 옵션 인자를 무시하거나 던질 수 있으므로, 실패 시
+ * 옵션 없는 호출로 폴백한다(방향 보정만 포기, 디코딩 자체는 성공).
+ */
+export async function loadBitmap(file: File): Promise<ImageBitmap> {
+  try {
+    return await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch {
+    return createImageBitmap(file);
+  }
+}
+
+/**
+ * 캔버스 한 변의 최대 픽셀(브라우저 공통 안전선). 이를 넘으면 일부 브라우저가
+ * 빈(투명) 이미지를 조용히 반환한다.
+ */
+export const MAX_CANVAS_DIMENSION = 16384;
+/** 캔버스 총 면적 상한(약 268MP). Safari 등에서 이보다 크면 렌더가 실패한다. */
+export const MAX_CANVAS_AREA = 16384 * 16384;
+
+/**
+ * 목표 캔버스 크기가 브라우저 안전선 안에 있는지 검사한다.
+ * 초과 시 명확한 한국어 메시지를 던져 빈 파일 생성을 막는다.
+ */
+export function assertCanvasSize(width: number, height: number): void {
+  if (width > MAX_CANVAS_DIMENSION || height > MAX_CANVAS_DIMENSION) {
+    throw new Error(
+      `이미지 한 변이 너무 큽니다(${width}×${height}px). 한 변 최대 ${MAX_CANVAS_DIMENSION}px까지 처리할 수 있습니다.`,
+    );
+  }
+  if (width * height > MAX_CANVAS_AREA) {
+    const mp = Math.round((width * height) / 1_000_000);
+    throw new Error(
+      `이미지가 너무 큽니다(약 ${mp}MP). 브라우저 한계로 처리할 수 없습니다. 먼저 크기를 줄여주세요.`,
+    );
+  }
+}
+
 export async function loadImageFile(file: File): Promise<LoadedImage> {
   const url = URL.createObjectURL(file);
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -88,6 +131,8 @@ export function drawToCanvas(
   targetH: number,
   format: ImageFormat,
 ): HTMLCanvasElement {
+  // 빈(투명) 결과물 방지: 브라우저 캔버스 한계 초과 시 명확히 실패시킨다.
+  assertCanvasSize(targetW, targetH);
   const canvas = document.createElement('canvas');
   canvas.width = targetW;
   canvas.height = targetH;

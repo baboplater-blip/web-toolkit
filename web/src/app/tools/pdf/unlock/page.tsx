@@ -197,6 +197,7 @@ export default function PdfUnlockPage() {
         {!file && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="잠금을 해제할 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

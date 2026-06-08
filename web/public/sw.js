@@ -11,17 +11,25 @@
  *   - 정적 자산(_next/static): cache-first + 백그라운드 갱신 (SWR)
  *   - 아이콘·매니페스트: cache-first
  *   - RUNTIME 캐시는 최대 80개 항목 (LRU)
+ *   - ASSET 캐시는 최대 250개 항목 (LRU) — hash 자산 누적 폭주 방지
+ *
+ * 캐시 버전 정책:
+ *   - STATIC/ASSET 는 SW_VERSION 으로 버저닝 → 배포 시 옛 셸·옛 hash 자산 청소
+ *   - RUNTIME 은 버전 비의존(webtoolkit-runtime) → 배포해도 사용자가 받아둔 오프라인
+ *     페이지가 유지됨. activate 청소가 webtoolkit-sw- prefix 만 지우므로 살아남는다.
  *
  * 미션 변경(2026-05-22): agent-control-panel → web-toolkit.
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-2cbda06-202606081356';
+const SW_VERSION = 'webtoolkit-sw-f723ef4';
 const STATIC_CACHE = `${SW_VERSION}-static`;
-const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
+// RUNTIME 은 의도적으로 버전 비의존 — 배포 간 오프라인 페이지 보존.
+const RUNTIME_CACHE = 'webtoolkit-runtime';
 const ASSET_CACHE = `${SW_VERSION}-asset`;
 
 const RUNTIME_MAX_ENTRIES = 80;
+const ASSET_MAX_ENTRIES = 250;
 
 /**
  * 사전 캐시 대상.
@@ -89,6 +97,16 @@ const PRECACHE_URLS = [
   '/tools/security/rsa-keypair',
   '/tools/security/text-encrypt',
   '/tools/security/file-encrypt',
+  '/tools/security/redact',
+  // 오피스 계산기·생성기 (순수 JS/Canvas, 외부 다운로드 없음)
+  '/tools/util/salary',
+  '/tools/util/severance',
+  '/tools/util/leave',
+  '/tools/util/vat',
+  '/tools/util/vcard-qr',
+  '/tools/image/seal',
+  '/tools/image/id-photo',
+  '/tools/docs/excel-formula',
 ];
 
 self.addEventListener('install', (event) => {
@@ -161,7 +179,7 @@ function isLegacyRoute(pathname) {
   );
 }
 
-/** RUNTIME 캐시 크기 제한 — 오래된 항목 제거 (단순 FIFO) */
+/** 캐시 크기 제한 — 오래된 항목부터 제거 (단순 FIFO, RUNTIME·ASSET 공용) */
 async function trimCache(cacheName, maxEntries) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
@@ -202,7 +220,11 @@ async function staticAssetCacheFirst(request, cacheName) {
   if (cached) return cached;
   try {
     const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone()).catch(() => {});
+    if (response.ok) {
+      cache.put(request, response.clone()).catch(() => {});
+      // hash 자산은 무한 누적될 수 있으므로 LRU 상한 적용.
+      trimCache(cacheName, ASSET_MAX_ENTRIES).catch(() => {});
+    }
     return response;
   } catch {
     return new Response('', { status: 504 });
@@ -232,9 +254,14 @@ self.addEventListener('fetch', (event) => {
   // RSC payload 는 SW 가 건드리지 않음
   if (url.searchParams.has('_rsc')) return;
 
-  // 옛 라우트 → /tools 리다이렉트 (옛 홈화면 PWA 사용자 보호)
+  // 옛 라우트(채팅·대시보드·API 등) → 캐시된 /tools 셸로 응답.
+  // 주의: navigate 요청에 redirect 타입 Response 로 응답하면 브라우저가 거부해
+  // 네트워크 오류가 난다(respondWith 규약). 그래서 Response.redirect 대신
+  // /tools 셸을 직접 서빙해 옛 홈화면 PWA 사용자를 안전하게 보호한다.
   if (isLegacyRoute(url.pathname)) {
-    event.respondWith(Response.redirect('/tools', 302));
+    event.respondWith(
+      caches.match('/tools').then((cached) => cached || fetch('/tools')),
+    );
     return;
   }
 

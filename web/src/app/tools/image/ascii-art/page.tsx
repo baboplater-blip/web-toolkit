@@ -237,6 +237,8 @@ export default function AsciiArtPage() {
             description="이미지를 업로드하세요 (PNG·JPG·WEBP·GIF)"
             hint="작은 이미지일수록 빠르게 변환됩니다. 사람·얼굴 사진은 대비 강한 것이 잘 나옵니다."
             onFiles={(files) => accept(files[0])}
+            onError={setError}
+            maxBytes={50 * 1024 * 1024}
           />
         )}
 

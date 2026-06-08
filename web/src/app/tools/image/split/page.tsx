@@ -9,6 +9,7 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { buildZip } from '@/lib/tools/zip-builder';
 import type { BatchOutput } from '@/lib/tools/folder-batch';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 const MAX_DIVISIONS = 20;
 
@@ -61,7 +62,7 @@ export default function ImageSplitPage() {
     }
     setError(null);
     try {
-      const next = await createImageBitmap(file);
+      const next = await loadBitmap(file);
       setBitmap((prev) => {
         prev?.close();
         return next;
@@ -145,6 +146,7 @@ export default function ImageSplitPage() {
           onFiles={handleFiles}
           onError={setError}
           description="분할할 이미지를 올려주세요."
+          maxBytes={50 * 1024 * 1024}
         />
       )}
 

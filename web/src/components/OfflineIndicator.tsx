@@ -20,6 +20,9 @@ function getServerSnapshot() {
   return true;
 }
 
+/** 고정 배너 높이만큼 본문을 아래로 밀어, 상단 콘텐츠(공지 배너·헤더)를 가리지 않게 한다. */
+const BAR_OFFSET = '1.75rem';
+
 export function OfflineIndicator() {
   const online = useSyncExternalStore(
     subscribeNetwork,
@@ -41,6 +44,18 @@ export function OfflineIndicator() {
       Promise.resolve().then(() => setShowReconnected(false));
     }
   }, [online, showReconnected]);
+
+  // 배너가 떠 있는 동안 문서 상단에 같은 높이의 패딩을 줘 콘텐츠 겹침을 막는다.
+  const barVisible = !online || showReconnected;
+  useEffect(() => {
+    if (!barVisible) return;
+    const root = document.documentElement;
+    const prevPadding = root.style.paddingTop;
+    root.style.paddingTop = `calc(${BAR_OFFSET} + env(safe-area-inset-top))`;
+    return () => {
+      root.style.paddingTop = prevPadding;
+    };
+  }, [barVisible]);
 
   if (!online) {
     return (

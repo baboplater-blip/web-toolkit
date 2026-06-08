@@ -6,7 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { loadPdfFromFile } from '@/lib/tools/pdf-common';
 
 interface MetaForm {
   title: string;
@@ -39,8 +39,7 @@ export default function PdfMetadataPage() {
     setMeta(null);
     setResult(null);
     try {
-      const { PDFDocument } = await loadPdfLib();
-      const doc = await PDFDocument.load(await f.arrayBuffer(), { updateMetadata: false });
+      const doc = await loadPdfFromFile(f);
       setMeta({
         title: doc.getTitle() ?? '',
         author: doc.getAuthor() ?? '',
@@ -62,8 +61,7 @@ export default function PdfMetadataPage() {
     setBusy(true);
     setResult(null);
     try {
-      const { PDFDocument } = await loadPdfLib();
-      const doc = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
+      const doc = await loadPdfFromFile(file);
       doc.setTitle(meta.title);
       doc.setAuthor(meta.author);
       doc.setSubject(meta.subject);
@@ -106,6 +104,7 @@ export default function PdfMetadataPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => files[0] && handleLoad(files[0])}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />

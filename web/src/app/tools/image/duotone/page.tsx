@@ -6,6 +6,14 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
+import { loadBitmap, assertCanvasSize } from '@/lib/tools/image-common';
+
+// 이 행 수마다 이벤트 루프에 양보해 스피너가 그려지고 탭이 멎지 않게 한다.
+const YIELD_EVERY_ROWS = 64;
+
+function yieldToEventLoop(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
 
 interface Rgb {
   r: number;
@@ -33,13 +41,29 @@ function luminance(r: number, g: number, b: number): number {
 /**
  * 각 픽셀 휘도를 shadow~highlight 두 색 사이로 선형 매핑한다.
  * 알파는 원본 유지.
+ *
+ * 큰 이미지에서 메인스레드가 멎지 않도록 행 단위로 처리하고 주기적으로
+ * 이벤트 루프에 양보한다(스피너가 실제로 그려지도록). 출력은 동기 버전과 동일.
  */
-function applyDuotone(data: Uint8ClampedArray, shadow: Rgb, highlight: Rgb): void {
-  for (let i = 0; i < data.length; i += 4) {
-    const t = luminance(data[i], data[i + 1], data[i + 2]);
-    data[i] = Math.round(shadow.r + (highlight.r - shadow.r) * t);
-    data[i + 1] = Math.round(shadow.g + (highlight.g - shadow.g) * t);
-    data[i + 2] = Math.round(shadow.b + (highlight.b - shadow.b) * t);
+async function applyDuotone(
+  data: Uint8ClampedArray,
+  width: number,
+  height: number,
+  shadow: Rgb,
+  highlight: Rgb,
+): Promise<void> {
+  for (let y = 0; y < height; y++) {
+    const rowStart = y * width * 4;
+    for (let x = 0; x < width; x++) {
+      const i = rowStart + x * 4;
+      const t = luminance(data[i], data[i + 1], data[i + 2]);
+      data[i] = Math.round(shadow.r + (highlight.r - shadow.r) * t);
+      data[i + 1] = Math.round(shadow.g + (highlight.g - shadow.g) * t);
+      data[i + 2] = Math.round(shadow.b + (highlight.b - shadow.b) * t);
+    }
+    if (y % YIELD_EVERY_ROWS === YIELD_EVERY_ROWS - 1) {
+      await yieldToEventLoop();
+    }
   }
 }
 
@@ -71,7 +95,7 @@ export default function ImageDuotonePage() {
     setError(null);
     setResultBlob(null);
     try {
-      const bmp = await createImageBitmap(picked);
+      const bmp = await loadBitmap(picked);
       bitmap?.close();
       setBitmap(bmp);
       setFile(picked);
@@ -85,17 +109,25 @@ export default function ImageDuotonePage() {
     setProcessing(true);
     setError(null);
     try {
+      // 빈(투명) 결과물 방지: 브라우저 캔버스 한계 초과 시 명확히 실패시킨다.
+      assertCanvasSize(bitmap.width, bitmap.height);
       const canvas = canvasRef.current ?? document.createElement('canvas');
       canvasRef.current = canvas;
       canvas.width = bitmap.width;
       canvas.height = bitmap.height;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       if (!ctx) throw new Error('Canvas 컨텍스트를 생성할 수 없습니다.');
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(bitmap, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      applyDuotone(imageData.data, hexToRgb(shadowColor), hexToRgb(highlightColor));
+      await applyDuotone(
+        imageData.data,
+        canvas.width,
+        canvas.height,
+        hexToRgb(shadowColor),
+        hexToRgb(highlightColor),
+      );
       ctx.putImageData(imageData, 0, 0);
 
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -139,7 +171,7 @@ export default function ImageDuotonePage() {
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이미지를 두 가지 색조의 듀오톤으로 변환합니다.</p>
 
-      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
+      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} maxBytes={50 * 1024 * 1024} />}
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

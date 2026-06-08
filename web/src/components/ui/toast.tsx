@@ -60,11 +60,16 @@ const variantClasses: Record<Variant, string> = {
 };
 
 export function ToastHost() {
-  const [items, setItems] = useState<ToastItem[]>(queue);
+  // SSR/CSR 일치를 위해 항상 빈 배열로 시작한다. 모듈 싱글톤 queue 를 초기값으로
+  // 쓰면 mount 전에 toast() 가 호출됐을 때 서버(빈)와 클라이언트(채워짐) 마크업이
+  // 어긋나 hydration mismatch 가 난다. 실제 큐는 mount 이펙트에서 seed.
+  const [items, setItems] = useState<ToastItem[]>([]);
 
   useEffect(() => {
     const l: Listener = (next) => setItems(next);
     listeners.add(l);
+    // 마운트 시점에 이미 쌓여 있던 토스트를 즉시 반영.
+    setItems(queue);
     return () => {
       listeners.delete(l);
     };

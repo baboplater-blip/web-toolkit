@@ -210,6 +210,7 @@ export default function PdfRepairPage() {
         {!file && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="열리지 않거나 손상된 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

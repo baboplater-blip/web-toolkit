@@ -202,6 +202,7 @@ export default function PdfToJpgPage() {
         {!file && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="이미지로 변환할 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

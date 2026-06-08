@@ -2,6 +2,7 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 /** 입력이 2진수(0·1 과 공백/개행만)인지 감지한다. */
@@ -45,6 +46,8 @@ function binaryToText(binary: string): string {
 
 export default function BinaryTextPage() {
   const [input, setInput] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   const isBinary = useMemo(() => isBinaryInput(input), [input]);
 
@@ -59,8 +62,18 @@ export default function BinaryTextPage() {
     }
   }, [input, isBinary]);
 
-  function copy() {
-    if (output) navigator.clipboard?.writeText(output);
+  async function copy() {
+    if (!output) return;
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 1500);
+    }
   }
 
   function download() {
@@ -117,7 +130,12 @@ export default function BinaryTextPage() {
 
       <div className="flex gap-2">
         <Button onClick={copy} disabled={!output}>
-          복사
+          {copied ? (
+            <Check className="mr-1 h-4 w-4" aria-hidden />
+          ) : (
+            <Copy className="mr-1 h-4 w-4" aria-hidden />
+          )}
+          {copied ? '복사됨' : copyError ? '복사 실패' : '복사'}
         </Button>
         <Button variant="outline" onClick={download} disabled={!output}>
           다운로드

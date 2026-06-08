@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   Download,
@@ -10,6 +10,7 @@ import {
   Repeat,
   RotateCcw,
   Shuffle,
+  X,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -18,8 +19,10 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 
@@ -37,6 +40,8 @@ export default function GifEffectsPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  // 취소 여부 — 취소 시 in-flight exec 의 reject 를 에러로 표시하지 않기 위해 사용.
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -54,12 +59,41 @@ export default function GifEffectsPage() {
       setError('GIF 파일만 업로드 가능합니다.');
       return;
     }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     setError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setFile(f);
     setPreviewUrl(URL.createObjectURL(f));
+  };
+
+  /**
+   * GIF 의 평균 프레임레이트를 FFmpeg 로그에서 읽는다.
+   * 속도 효과 시 명시적 출력 fps 를 지정해 GIF delay 양자화로 인한 속도 어긋남을 막는다.
+   */
+  const probeGifFps = async (
+    ffmpeg: Awaited<ReturnType<typeof getFFmpeg>>,
+    name: string,
+  ): Promise<number> => {
+    let fps = 0;
+    const logHandler = (e: { message: string }) => {
+      const m = e.message.match(/(\d+(?:\.\d+)?)\s*fps/);
+      if (m) fps = Number(m[1]);
+    };
+    ffmpeg.on('log', logHandler);
+    try {
+      await ffmpeg.exec(['-i', name, '-f', 'null', '-']).catch(() => {
+        /* null muxer 는 에러 코드 반환하지만 로그는 파싱됨 */
+      });
+    } finally {
+      ffmpeg.off('log', logHandler);
+    }
+    return Number.isFinite(fps) && fps > 0 ? fps : 0;
   };
 
   const reset = () => {
@@ -75,18 +109,13 @@ export default function GifEffectsPage() {
     if (!file) return;
     setProcessing(true);
     setError(null);
+    cancelledRef.current = false;
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
     setProgressText('FFmpeg 로드 중');
 
-    const created = [
-      'input.gif',
-      'palette.png',
-      'output.gif',
-      'reversed.gif',
-      'combined.gif',
-    ];
+    const created = ['input.gif', 'palette.png', 'output.gif'];
     try {
       const ffmpeg = await getFFmpeg();
       const onProgress = ({ progress }: { progress: number }) => {
@@ -98,72 +127,62 @@ export default function GifEffectsPage() {
       try {
         await writeFile(ffmpeg, 'input.gif', file);
 
-        // 각 효과에 맞는 filter chain 구성
-        let vf = '';
-        if (effect === 'reverse') {
-          vf = 'reverse';
-        } else if (effect === 'speed') {
-          // GIF는 보통 비디오로 취급; setpts=PTS/N 가 N배 재생
-          const n = speedPct / 100;
-          vf = `setpts=PTS/${n}`;
-        } else {
-          vf = 'null';
-        }
-
-        setProgressText('팔레트 생성 중');
-        await ffmpeg.exec([
-          '-i',
-          'input.gif',
-          '-vf',
-          `${vf},palettegen=stats_mode=diff`,
-          '-y',
-          'palette.png',
-        ]);
-
-        setProgressText('GIF 인코딩 중');
-        await ffmpeg.exec([
-          '-i',
-          'input.gif',
-          '-i',
-          'palette.png',
-          '-lavfi',
-          `${vf}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3`,
-          '-loop',
-          '0',
-          '-y',
-          'output.gif',
-        ]);
-
-        let finalName = 'output.gif';
-
         if (effect === 'pingpong') {
-          setProgressText('역재생 생성 중');
+          // 핑퐁은 이미 팔레트화된 결과를 다시 concat 하면 이중 양자화로 밴딩이
+          // 생긴다. 원본에서 reverse+concat 후 단일 팔레트로 한 번에 인코딩한다.
+          setProgressText('앞뒤 결합 중');
+          await ffmpeg.exec([
+            '-i',
+            'input.gif',
+            '-filter_complex',
+            '[0:v]reverse[r];[0:v][r]concat=n=2[v];[v]split[a][b];' +
+              '[a]palettegen=stats_mode=diff:reserve_transparent=1[p];' +
+              '[b][p]paletteuse=dither=bayer:bayer_scale=3:alpha_threshold=128',
+            '-loop',
+            '0',
+            '-y',
+            'output.gif',
+          ]);
+        } else {
+          // 각 효과에 맞는 filter chain 구성
+          let vf = '';
+          if (effect === 'reverse') {
+            vf = 'reverse';
+          } else {
+            // 속도 조절: setpts=PTS/N 만으로는 GIF delay 양자화로 실제 속도가
+            // 슬라이더와 어긋난다 — 원본 fps 를 읽어 명시적 출력 fps 를 짝지운다.
+            const n = speedPct / 100;
+            const srcFps = await probeGifFps(ffmpeg, 'input.gif');
+            const fpsPart = srcFps > 0 ? `,fps=${srcFps}` : '';
+            vf = `setpts=PTS/${n}${fpsPart}`;
+          }
+
+          setProgressText('팔레트 생성 중');
           await ffmpeg.exec([
             '-i',
             'input.gif',
             '-vf',
-            'reverse',
+            `${vf},palettegen=stats_mode=diff:reserve_transparent=1`,
             '-y',
-            'reversed.gif',
+            'palette.png',
           ]);
 
-          setProgressText('앞뒤 결합 중');
+          setProgressText('GIF 인코딩 중');
           await ffmpeg.exec([
             '-i',
-            'output.gif',
+            'input.gif',
             '-i',
-            'reversed.gif',
-            '-filter_complex',
-            '[0:v][1:v]concat=n=2:v=1:a=0,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3',
+            'palette.png',
+            '-lavfi',
+            `${vf}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3:alpha_threshold=128`,
             '-loop',
             '0',
             '-y',
-            'combined.gif',
+            'output.gif',
           ]);
-          finalName = 'combined.gif';
         }
 
-        const blob = await readOutput(ffmpeg, finalName, 'image/gif');
+        const blob = await readOutput(ffmpeg, 'output.gif', 'image/gif');
         const suffix =
           effect === 'reverse'
             ? '-reversed'
@@ -180,12 +199,33 @@ export default function GifEffectsPage() {
         await cleanupFiles(ffmpeg, created);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '효과 적용 실패');
+      // 취소로 인한 reject 는 에러로 표시하지 않는다 (cancelRun 이 상태를 이미 정리).
+      if (cancelledRef.current) return;
+      const msg = err instanceof Error ? err.message : '효과 적용 실패';
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
-      setProcessing(false);
-      setProgressText('');
-      setProgress(0);
+      // 취소 시엔 cancelRun 이 상태를 정리하므로 건너뛴다.
+      if (!cancelledRef.current) {
+        setProcessing(false);
+        setProgressText('');
+        setProgress(0);
+      }
     }
+  };
+
+  // 처리 중 취소: FFmpeg 워커를 종료(resetFFmpeg)해 즉시 멈춘다.
+  // 워커 종료로 in-flight exec 는 reject 되지만 cancelledRef 로 무시한다.
+  const cancelRun = () => {
+    if (!processing) return;
+    cancelledRef.current = true;
+    resetFFmpeg();
+    setProcessing(false);
+    setProgressText('');
+    setProgress(0);
   };
 
   return (
@@ -331,7 +371,7 @@ export default function GifEffectsPage() {
             )}
 
             {processing && (
-              <div>
+              <div className="space-y-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
                   <span className="text-xs text-muted-foreground">{progress}%</span>
@@ -342,6 +382,10 @@ export default function GifEffectsPage() {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
+                <Button variant="outline" size="sm" className="w-full" onClick={cancelRun}>
+                  <X className="h-3.5 w-3.5" />
+                  취소
+                </Button>
               </div>
             )}
 

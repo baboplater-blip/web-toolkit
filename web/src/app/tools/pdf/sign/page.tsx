@@ -55,20 +55,50 @@ export default function PdfSignPage() {
     null,
   );
 
+  // 캔버스 백킹 스토어를 현재 CSS 크기에 맞춰 (재)초기화.
+  // 회전·리사이즈로 요소 크기가 바뀌면 ResizeObserver 가 다시 호출해
+  // 좌표계 어긋남(모바일 가로/세로 전환 시 획 위치 틀어짐)을 막는다.
+  // 기존 서명은 임시 캔버스로 스냅샷해 새 크기에 맞춰 복원한다.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    const initCanvas = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const targetW = Math.max(1, Math.round(rect.width * dpr));
+      const targetH = Math.max(1, Math.round(rect.height * dpr));
+      // 크기 변화가 없으면(또는 측정 불가) 재초기화 생략 — 불필요한 화면 지우기 방지
+      if (canvas.width === targetW && canvas.height === targetH) return;
+
+      // 현재 그려진 내용을 스냅샷 (있을 때만)
+      const snapshot = canvas.width > 0 && canvas.height > 0 ? document.createElement('canvas') : null;
+      if (snapshot) {
+        snapshot.width = canvas.width;
+        snapshot.height = canvas.height;
+        snapshot.getContext('2d')?.drawImage(canvas, 0, 0);
+      }
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, rect.width, rect.height);
+      // 스냅샷을 새 캔버스 CSS 크기에 맞춰 늘려 복원 (서명 유지)
+      if (snapshot && snapshot.width > 0) {
+        ctx.drawImage(snapshot, 0, 0, rect.width, rect.height);
+      }
+    };
+
+    initCanvas();
+    const observer = new ResizeObserver(initCanvas);
+    observer.observe(canvas);
+    return () => observer.disconnect();
   }, []);
 
   const acceptFile = async (f: File) => {
@@ -285,6 +315,7 @@ export default function PdfSignPage() {
         {!file && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="서명을 삽입할 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

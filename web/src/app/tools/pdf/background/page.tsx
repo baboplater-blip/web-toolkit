@@ -7,6 +7,7 @@ import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { loadPdfFromFile } from '@/lib/tools/pdf-common';
 
 type Mode = 'color' | 'image';
 
@@ -54,8 +55,8 @@ export default function PdfBackgroundPage() {
     setBusy(true);
     setResult(null);
     try {
-      const { PDFDocument, degrees, rgb } = await loadPdfLib();
-      const doc = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
+      const { degrees, rgb } = await loadPdfLib();
+      const doc = await loadPdfFromFile(file);
       const pages = doc.getPages();
 
       if (mode === 'color') {
@@ -151,6 +152,7 @@ export default function PdfBackgroundPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />

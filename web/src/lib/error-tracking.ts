@@ -138,12 +138,29 @@ export function recordError(raw: RawError): void {
   }
 }
 
-let installed = false;
+/**
+ * 활성 구독자 수. 한 번에 한 쌍의 리스너만 붙도록 refcount 로 관리한다.
+ * boolean 싱글톤은 cleanup 이 모듈 플래그를 영구히 false 로 되돌려, StrictMode
+ * 더블 마운트나 재마운트 후 추적이 죽어버리는 문제가 있었다. refcount 는
+ * mount→unmount→mount 를 정확히 견딘다(0→1 에서 설치, 1→0 에서 해제).
+ */
+let refCount = 0;
+let teardownListeners: (() => void) | null = null;
 
-/** Install global error + unhandledrejection listeners (idempotent). */
+/** Install global error + unhandledrejection listeners (refcounted). */
 export function initErrorTracking(): () => void {
-  if (!isBrowser() || installed) return () => {};
-  installed = true;
+  if (!isBrowser()) return () => {};
+
+  refCount += 1;
+  // 이미 설치돼 있으면 카운트만 올리고, 해제 시 카운트만 내린다.
+  if (refCount > 1) {
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      decrementRefCount();
+    };
+  }
 
   const onError = (event: ErrorEvent) => {
     recordError({
@@ -172,9 +189,25 @@ export function initErrorTracking(): () => void {
   window.addEventListener('error', onError);
   window.addEventListener('unhandledrejection', onRejection);
 
-  return () => {
+  teardownListeners = () => {
     window.removeEventListener('error', onError);
     window.removeEventListener('unhandledrejection', onRejection);
-    installed = false;
+    teardownListeners = null;
   };
+
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    decrementRefCount();
+  };
+}
+
+/** 구독자 수를 줄이고, 마지막 구독자가 떠나면 실제 리스너를 해제한다. */
+function decrementRefCount(): void {
+  if (refCount === 0) return;
+  refCount -= 1;
+  if (refCount === 0 && teardownListeners) {
+    teardownListeners();
+  }
 }

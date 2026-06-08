@@ -171,6 +171,7 @@ export default function PdfCropPage() {
         {!file && !loading && (
           <FileDropZone
             accept="application/pdf"
+            maxBytes={100 * 1024 * 1024}
             description="여백을 자를 PDF 를 업로드하세요"
             onFiles={(files) => acceptFile(files[0])}
           />

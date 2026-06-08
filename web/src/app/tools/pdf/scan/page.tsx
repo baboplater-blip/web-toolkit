@@ -118,7 +118,7 @@ export default function ScanToPdfPage() {
       />
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        <FileDropZone accept="image/*" multiple onFiles={onFiles} onError={(m) => setError(m)} />
+        <FileDropZone accept="image/*" maxBytes={100 * 1024 * 1024} multiple onFiles={onFiles} onError={(m) => setError(m)} />
         {error && <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>}
 
         <div className="rounded-xl border bg-card p-4 space-y-2">

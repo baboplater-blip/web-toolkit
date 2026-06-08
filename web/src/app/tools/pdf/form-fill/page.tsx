@@ -7,6 +7,7 @@ import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { loadPdfFromFile } from '@/lib/tools/pdf-common';
 
 type FieldKind = 'text' | 'checkbox' | 'radio' | 'dropdown' | 'other';
 interface FieldInfo {
@@ -39,8 +40,8 @@ export default function PdfFormFillPage() {
     setFields([]);
     setResult(null);
     try {
-      const { PDFDocument, PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown } = await loadPdfLib();
-      const doc = await PDFDocument.load(await f.arrayBuffer(), { updateMetadata: false });
+      const { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown } = await loadPdfLib();
+      const doc = await loadPdfFromFile(f);
       const form = doc.getForm();
       const list: FieldInfo[] = [];
       for (const field of form.getFields()) {
@@ -78,8 +79,8 @@ export default function PdfFormFillPage() {
     setBusy(true);
     setResult(null);
     try {
-      const { PDFDocument, PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown } = await loadPdfLib();
-      const doc = await PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
+      const { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown } = await loadPdfLib();
+      const doc = await loadPdfFromFile(file);
       const form = doc.getForm();
       for (const f of fields) {
         const field = form.getField(f.name);
@@ -132,6 +133,7 @@ export default function PdfFormFillPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => files[0] && handleLoad(files[0])}
         title="양식이 포함된 PDF 를 끌어다 놓거나 클릭"
       />

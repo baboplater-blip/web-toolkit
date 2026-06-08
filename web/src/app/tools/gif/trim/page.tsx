@@ -19,8 +19,10 @@ import {
   getFFmpeg,
   parseTimeToSeconds,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 
@@ -78,6 +80,11 @@ export default function GifTrimPage() {
       setError('GIF 파일만 업로드 가능합니다.');
       return;
     }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
     setError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (result) URL.revokeObjectURL(result.url);
@@ -112,14 +119,24 @@ export default function GifTrimPage() {
   const runTrim = async () => {
     if (!file) return;
     const start = parseTimeToSeconds(startTime);
-    const end = parseTimeToSeconds(endTime);
+    const typedEnd = parseTimeToSeconds(endTime);
+    // 종료가 GIF 길이를 넘으면 길이로 클램프하고 안내 (넘는 -t 는 빈 꼬리를 만든다).
+    // 길이 probe 가 0/실패면 클램프하지 않고 사용자 입력을 신뢰한다.
+    const clampDuration =
+      duration !== null && Number.isFinite(duration) && duration > 0 ? duration : null;
+    const end = clampDuration !== null ? Math.min(typedEnd, clampDuration) : typedEnd;
     if (end <= start) {
       setError('종료 시간이 시작 시간보다 커야 합니다.');
       return;
     }
+    const clampWarning =
+      clampDuration !== null && typedEnd > clampDuration
+        ? `종료 시간이 GIF 길이(${formatTime(clampDuration)})를 초과해 끝으로 맞췄습니다.`
+        : null;
     const dur = end - start;
     setProcessing(true);
-    setError(null);
+    // 클램프 경고가 있으면 유지, 없으면 기존 에러 초기화.
+    setError(clampWarning);
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
@@ -146,7 +163,7 @@ export default function GifTrimPage() {
           '-i',
           'input.gif',
           '-vf',
-          'palettegen=stats_mode=diff',
+          'palettegen=stats_mode=diff:reserve_transparent=1',
           '-y',
           'palette.png',
         ]);
@@ -162,7 +179,7 @@ export default function GifTrimPage() {
           '-i',
           'palette.png',
           '-lavfi',
-          '[0:v][1:v]paletteuse=dither=bayer:bayer_scale=3',
+          '[0:v][1:v]paletteuse=dither=bayer:bayer_scale=3:alpha_threshold=128',
           '-loop',
           '0',
           '-y',
@@ -180,7 +197,12 @@ export default function GifTrimPage() {
         await cleanupFiles(ffmpeg, created);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '트림 실패');
+      const msg = err instanceof Error ? err.message : '트림 실패';
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setProcessing(false);
       setProgressText('');

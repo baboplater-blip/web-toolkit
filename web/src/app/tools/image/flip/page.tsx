@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 type FlipAxis = 'horizontal' | 'vertical';
 
@@ -63,7 +64,7 @@ export default function ImageFlipPage() {
     setError(null);
     clearResult();
     try {
-      const next = await createImageBitmap(file);
+      const next = await loadBitmap(file);
       setBitmap((prev) => {
         prev?.close();
         return next;
@@ -113,6 +114,7 @@ export default function ImageFlipPage() {
           onFiles={handleFiles}
           onError={setError}
           description="반전할 이미지를 올려주세요."
+          maxBytes={50 * 1024 * 1024}
         />
       )}
 

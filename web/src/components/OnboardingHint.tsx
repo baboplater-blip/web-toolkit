@@ -37,6 +37,8 @@ function markOnboarded(): void {
 
 export function OnboardingHint() {
   const [visible, setVisible] = useState(false);
+  // 포커스·호버 중에는 자동 소멸 타이머를 멈춰, 읽거나 조작하는 동안 사라지지 않게 한다.
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     if (hasOnboarded()) return;
@@ -49,7 +51,7 @@ export function OnboardingHint() {
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || paused) return;
 
     const dismissTimer = window.setTimeout(() => {
       markOnboarded();
@@ -57,7 +59,7 @@ export function OnboardingHint() {
     }, AUTO_DISMISS_MS);
 
     return () => window.clearTimeout(dismissTimer);
-  }, [visible]);
+  }, [visible, paused]);
 
   if (!visible) return null;
 
@@ -70,6 +72,10 @@ export function OnboardingHint() {
     <div
       role="status"
       aria-live="polite"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
       className="fixed right-4 z-40 max-w-[20rem] bottom-[calc(3.5rem+env(safe-area-inset-bottom)+0.5rem)] md:bottom-4"
     >
       <div className="flex items-start gap-3 rounded-xl border bg-card p-3 shadow-lg">

@@ -12,6 +12,12 @@ type Mode = 'full' | 'region';
 const RENDER_DEBOUNCE_MS = 250;
 // 이 픽셀 수를 넘으면 메인스레드 프리징 경고(폭×높이).
 const LARGE_IMAGE_PIXELS = 2400 * 2400;
+// 이 블록 행 수마다 이벤트 루프에 양보해 스피너가 그려지고 탭이 멎지 않게 한다.
+const YIELD_EVERY_BLOCK_ROWS = 16;
+
+function yieldToEventLoop(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
 
 export default function PixelatePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -59,7 +65,7 @@ export default function PixelatePage() {
       ctx.drawImage(img, 0, 0);
 
       if (mode === 'full') {
-        applyPixelate(canvas, 0, 0, w, h, size);
+        await applyPixelate(canvas, 0, 0, w, h, size);
       } else {
         // 퍼센트 좌표를 픽셀로 변환한 뒤 캔버스 범위 안으로 클램프(getImageData 범위 초과 방지).
         const rx = clamp(Math.round((region.x / 100) * w), 0, w);
@@ -67,7 +73,7 @@ export default function PixelatePage() {
         const rw = clamp(Math.round((region.w / 100) * w), 0, w - rx);
         const rh = clamp(Math.round((region.h / 100) * h), 0, h - ry);
         if (rw > 0 && rh > 0) {
-          applyPixelate(canvas, rx, ry, rw, rh, size);
+          await applyPixelate(canvas, rx, ry, rw, rh, size);
         }
       }
 
@@ -102,7 +108,7 @@ export default function PixelatePage() {
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">전체 또는 특정 영역만 모자이크 처리합니다.</p>
 
-      <FileDropZone accept="image/*" onFiles={(f) => setFile(f[0] ?? null)} title="이미지 1장 드롭" />
+      <FileDropZone accept="image/*" onFiles={(f) => setFile(f[0] ?? null)} title="이미지 1장 드롭" onError={setError} maxBytes={50 * 1024 * 1024} />
 
       {file && (
         <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -169,10 +175,11 @@ function RangeBox({ label, v, onChange }: { label: string; v: number; onChange: 
   );
 }
 
-function applyPixelate(canvas: HTMLCanvasElement, x: number, y: number, w: number, h: number, blockSize: number) {
-  const ctx = canvas.getContext('2d');
+async function applyPixelate(canvas: HTMLCanvasElement, x: number, y: number, w: number, h: number, blockSize: number) {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   if (!ctx) throw new Error('캔버스 컨텍스트를 가져올 수 없습니다.');
   const region = ctx.getImageData(x, y, w, h);
+  let blockRow = 0;
   for (let by = 0; by < h; by += blockSize) {
     for (let bx = 0; bx < w; bx += blockSize) {
       let r = 0, g = 0, b = 0, c = 0;
@@ -203,6 +210,11 @@ function applyPixelate(canvas: HTMLCanvasElement, x: number, y: number, w: numbe
           region.data[idx + 2] = b;
         }
       }
+    }
+    // 주기적으로 양보: 큰 이미지에서도 스피너가 보이고 탭이 응답한다.
+    blockRow++;
+    if (blockRow % YIELD_EVERY_BLOCK_ROWS === 0) {
+      await yieldToEventLoop();
     }
   }
   ctx.putImageData(region, x, y);

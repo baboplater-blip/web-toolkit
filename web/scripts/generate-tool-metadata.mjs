@@ -47,7 +47,17 @@ const ZH_TOOL_IDS = parseCopyToolIds(ZH_TOOLS_PATH, 'ZH_TOOLS');
 
 const MARKER = '/* auto-generated metadata layout — generate-tool-metadata.mjs */';
 const SITE_NAME = 'Web Toolkit';
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app').replace(/\/$/, '');
+// JSON-LD 의 절대 URL 은 빌드 시점 리터럴로 굳히지 않고 sentinel 로 박아둔 뒤,
+// 생성된 layout 이 런타임에 `@/lib/site` 의 SITE_URL(=NEXT_PUBLIC_SITE_URL)로
+// 치환한다. 이렇게 하면 도메인 연결 시 env 만 설정하면 전 페이지 JSON-LD 가
+// 자동 정합되고, env 미설정 빌드에도 레거시 도메인이 박히지 않는다.
+const SITE_URL_SENTINEL = 'https://__SITE_URL__';
+const SITE_URL = SITE_URL_SENTINEL;
+if (!process.env.NEXT_PUBLIC_SITE_URL) {
+  console.warn(
+    '[generate-tool-metadata] NEXT_PUBLIC_SITE_URL 미설정 — 생성 JSON-LD 는 런타임 SITE_URL fallback 을 사용합니다. 도메인 연결 후 env 설정 + 재빌드 권장.',
+  );
+}
 
 const CATEGORY_LABEL = {
   image: '이미지',
@@ -273,6 +283,7 @@ function renderLayout(tool) {
 
   return `${MARKER}
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 const TITLE = \`${safeTitle} — ${SITE_NAME}\`;
 const DESCRIPTION = \`${safeDesc}\`;
@@ -318,18 +329,22 @@ export const metadata: Metadata = {
 const JSON_LD = ${jsonLdLiteral} as const;
 const HOWTO_JSON_LD = ${howToJsonLdLiteral} as const;
 
+// JSON-LD 의 sentinel(https://__SITE_URL__) 을 런타임 운영 도메인으로 치환.
+const withSite = (obj: unknown) =>
+  JSON.stringify(obj).replaceAll('${SITE_URL_SENTINEL}', SITE_URL);
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(JSON_LD) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOWTO_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(HOWTO_JSON_LD) }}
       />
       {children}
     </>

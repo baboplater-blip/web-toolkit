@@ -209,6 +209,7 @@ export default function FromJpgPage() {
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <FileDropZone
           accept="image/jpeg,image/png"
+          maxBytes={100 * 1024 * 1024}
           multiple
           title="이미지를 끌어다 놓거나 클릭하여 추가"
           description="JPG, PNG (여러 장 선택 가능)"

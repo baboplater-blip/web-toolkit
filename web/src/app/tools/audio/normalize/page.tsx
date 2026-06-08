@@ -18,10 +18,11 @@ import {
   getFFmpeg,
   probeAudio,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
-import { AUDIO_ACCEPT } from '@/lib/tools/media-limits';
+import { AUDIO_ACCEPT, explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { formatBytes } from '@/lib/compress/format';
 
 interface ResultData {
@@ -58,6 +59,11 @@ export default function AudioNormalizePage() {
   const acceptFile = async (picked: File) => {
     if (!picked.type.startsWith('audio/') && !AUDIO_EXT_RE.test(picked.name)) {
       setError('오디오 파일만 업로드 가능합니다.');
+      return;
+    }
+    const sizeError = validateMediaSize(picked);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setError(null);
@@ -125,7 +131,12 @@ export default function AudioNormalizePage() {
         await cleanupFiles(ffmpeg, [inputName, outputName]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '음량 정규화 실패');
+      const msg = err instanceof Error ? err.message : '음량 정규화 실패';
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setProcessing(false);
       setProgressText('');

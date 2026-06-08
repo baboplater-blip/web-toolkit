@@ -63,6 +63,23 @@ export default function GlobalError({
             </p>
           )}
           <div style={{ marginTop: '20px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            {/* reset() 이 실패해도 사용자가 갇히지 않도록 홈 이동 경로를 항상 제공. */}
+            <button
+              type="button"
+              onClick={() => window.location.assign('/tools')}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255,255,255,0.2)',
+                backgroundColor: 'transparent',
+                color: '#fafafa',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              홈으로
+            </button>
             <button
               type="button"
               onClick={() => reset()}

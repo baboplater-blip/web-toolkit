@@ -41,6 +41,11 @@ export default function PdfToExcelPage() {
         pages.push(rows);
         rowCount += rows.length;
       }
+      // 스캔본 등 텍스트가 전혀 없는 PDF 는 가짜 성공 대신 안내한다.
+      if (rowCount === 0) {
+        setError('표로 인식할 텍스트가 없습니다(스캔본일 수 있음). OCR 도구를 먼저 사용하세요.');
+        return;
+      }
       setPreview({ fileName: file.name.replace(/\.pdf$/i, ''), pages, rowCount });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'PDF를 읽을 수 없습니다.');
@@ -98,7 +103,7 @@ export default function PdfToExcelPage() {
       </header>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
-        <FileDropZone accept="application/pdf" onFiles={onFiles} onError={(m) => setError(m)} />
+        <FileDropZone accept="application/pdf" maxBytes={100 * 1024 * 1024} onFiles={onFiles} onError={(m) => setError(m)} />
         {busy && (
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> 표를 인식하는 중…

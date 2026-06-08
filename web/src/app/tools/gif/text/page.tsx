@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   Download,
@@ -8,6 +8,7 @@ import {
   Loader2,
   RotateCcw,
   Type,
+  X,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,8 +18,10 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 
@@ -40,6 +43,8 @@ export default function GifTextPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  // 취소 여부 — 취소 시 in-flight exec 의 reject 를 에러로 표시하지 않기 위해 사용.
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -55,6 +60,11 @@ export default function GifTextPage() {
   const acceptFile = async (f: File) => {
     if (!/\.gif$/i.test(f.name) && f.type !== 'image/gif') {
       setError('GIF 파일만 업로드 가능합니다.');
+      return;
+    }
+    const sizeError = validateMediaSize(f);
+    if (sizeError) {
+      setError(sizeError);
       return;
     }
     setError(null);
@@ -145,6 +155,7 @@ export default function GifTextPage() {
     }
     setProcessing(true);
     setError(null);
+    cancelledRef.current = false;
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
@@ -173,7 +184,7 @@ export default function GifTextPage() {
           '-i',
           'overlay.png',
           '-filter_complex',
-          '[0:v][1:v]overlay=0:0,palettegen=stats_mode=diff',
+          '[0:v][1:v]overlay=0:0,palettegen=stats_mode=diff:reserve_transparent=1',
           '-y',
           'palette.png',
         ]);
@@ -187,7 +198,7 @@ export default function GifTextPage() {
           '-i',
           'palette.png',
           '-filter_complex',
-          '[0:v][1:v]overlay=0:0[ov];[ov][2:v]paletteuse=dither=bayer:bayer_scale=3',
+          '[0:v][1:v]overlay=0:0[ov];[ov][2:v]paletteuse=dither=bayer:bayer_scale=3:alpha_threshold=128',
           '-loop',
           '0',
           '-y',
@@ -205,12 +216,33 @@ export default function GifTextPage() {
         await cleanupFiles(ffmpeg, created);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '텍스트 삽입 실패');
+      // 취소로 인한 reject 는 에러로 표시하지 않는다 (cancelRun 이 상태를 이미 정리).
+      if (cancelledRef.current) return;
+      const msg = err instanceof Error ? err.message : '텍스트 삽입 실패';
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
-      setProcessing(false);
-      setProgressText('');
-      setProgress(0);
+      // 취소 시엔 cancelRun 이 상태를 정리하므로 건너뛴다.
+      if (!cancelledRef.current) {
+        setProcessing(false);
+        setProgressText('');
+        setProgress(0);
+      }
     }
+  };
+
+  // 처리 중 취소: FFmpeg 워커를 종료(resetFFmpeg)해 즉시 멈춘다.
+  // 워커 종료로 in-flight exec 는 reject 되지만 cancelledRef 로 무시한다.
+  const cancelRun = () => {
+    if (!processing) return;
+    cancelledRef.current = true;
+    resetFFmpeg();
+    setProcessing(false);
+    setProgressText('');
+    setProgress(0);
   };
 
   return (
@@ -354,7 +386,7 @@ export default function GifTextPage() {
             </div>
 
             {processing && (
-              <div>
+              <div className="space-y-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
                   <span className="text-xs text-muted-foreground">{progress}%</span>
@@ -362,6 +394,10 @@ export default function GifTextPage() {
                 <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                   <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
                 </div>
+                <Button variant="outline" size="sm" className="w-full" onClick={cancelRun}>
+                  <X className="h-3.5 w-3.5" />
+                  취소
+                </Button>
               </div>
             )}
 

@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 
 const INITIAL_VISIBLE = 100;
 const LOAD_MORE_STEP = 200;
+/** 메모리 보호: 전체 파일을 텍스트로 읽으므로 과대 파일은 사전에 거부한다. */
+const MAX_BYTES = 25 * 1024 * 1024; // 25MB
 
 type SortDirection = 'asc' | 'desc';
 
@@ -135,6 +137,15 @@ export default function CsvViewerPage() {
     setError(null);
     const file = files[0];
     if (!file) return;
+    // 전체 파일을 메모리에 텍스트로 올리므로 과대 파일은 OOM 방지를 위해 거부한다.
+    if (file.size > MAX_BYTES) {
+      setParsed(null);
+      setFileName(null);
+      setError(
+        `파일이 너무 큽니다. 최대 ${MAX_BYTES / (1024 * 1024)}MB까지 열 수 있습니다.`,
+      );
+      return;
+    }
     try {
       const text = await file.text();
       const allRows = dropEmptyRows(parseCsv(text));
@@ -214,9 +225,10 @@ export default function CsvViewerPage() {
 
       <FileDropZone
         accept=".csv,text/csv"
+        maxBytes={MAX_BYTES}
         onFiles={handleFiles}
         onError={setError}
-        description="CSV 파일(.csv)을 선택하세요"
+        description="CSV 파일(.csv, 최대 25MB)을 선택하세요"
       />
 
       {error && (

@@ -20,10 +20,39 @@ async function loadPdfJs() {
   return pdfjs;
 }
 
-export async function openPdf(file: File): Promise<PDFDocumentProxy> {
+export async function openPdf(file: File, password?: string): Promise<PDFDocumentProxy> {
   const pdfjs = await loadPdfJs();
   const buf = await file.arrayBuffer();
-  return pdfjs.getDocument({ data: new Uint8Array(buf) }).promise;
+  try {
+    // password 가 주어지면 암호화 PDF 의 열람 암호로 전달 (PasswordException 재시도용)
+    return await pdfjs.getDocument({ data: new Uint8Array(buf), password }).promise;
+  } catch (err) {
+    throw normalizePdfjsError(err);
+  }
+}
+
+/**
+ * pdf.js PasswordException 여부 — code 1 = 암호 필요, 2 = 암호 틀림.
+ */
+export function isPasswordException(err: unknown): boolean {
+  return !!err && typeof err === 'object' && (err as { name?: string }).name === 'PasswordException';
+}
+
+/**
+ * PasswordException 의 message 를 한국어로 바꾸되 name/code 는 보존.
+ * 비밀번호 입력 UI 가 name === 'PasswordException' 으로 감지할 수 있게 한다.
+ */
+export function normalizePdfjsError(err: unknown): unknown {
+  if (!isPasswordException(err)) return err;
+  const code = (err as { code?: number }).code;
+  const msg =
+    code === 2
+      ? '비밀번호가 올바르지 않습니다. 다시 입력해주세요.'
+      : '암호화된(또는 비밀번호가 걸린) PDF입니다. 비밀번호를 입력해주세요.';
+  const friendly = new Error(msg) as Error & { name: string; code?: number };
+  friendly.name = 'PasswordException';
+  if (typeof code === 'number') friendly.code = code;
+  return friendly;
 }
 
 /**

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowRightLeft } from 'lucide-react';
+import { ArrowRightLeft, Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -107,6 +107,8 @@ function detectDirection(input: string): Direction {
 
 export default function RomanNumeralPage() {
   const [input, setInput] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   const result = useMemo<ConversionResult | null>(() => {
     if (!input.trim()) return null;
@@ -116,8 +118,18 @@ export default function RomanNumeralPage() {
 
   const direction = input.trim() ? detectDirection(input) : 'toRoman';
 
-  function copy() {
-    if (result?.ok) navigator.clipboard?.writeText(result.value);
+  async function copy() {
+    if (!result?.ok) return;
+    try {
+      await navigator.clipboard.writeText(result.value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 1500);
+    }
   }
 
   return (
@@ -168,7 +180,14 @@ export default function RomanNumeralPage() {
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={copy}>
-            복사
+            {copied ? (
+              <Check className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <Copy className="h-3.5 w-3.5" aria-hidden />
+            )}
+            <span className="ml-1">
+              {copied ? '복사됨' : copyError ? '복사 실패' : '복사'}
+            </span>
           </Button>
         </div>
       )}

@@ -2,7 +2,7 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useRef, useState } from 'react';
-import { Play } from 'lucide-react';
+import { Check, Copy, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // 텍스트 → 모스부호 매핑 (문자, 숫자, 일부 기호)
@@ -84,6 +84,8 @@ function morseToText(morse: string): string {
 export default function MorseCodePage() {
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
   const audioRef = useRef<AudioContext | null>(null);
   const playTimerRef = useRef<number | null>(null);
 
@@ -94,8 +96,18 @@ export default function MorseCodePage() {
     return isMorse ? morseToText(input) : textToMorse(input);
   }, [input, isMorse]);
 
-  function copy() {
-    if (output) navigator.clipboard?.writeText(output);
+  async function copy() {
+    if (!output) return;
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 1500);
+    }
   }
 
   function download() {
@@ -207,7 +219,12 @@ export default function MorseCodePage() {
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={copy} disabled={!output}>
-          복사
+          {copied ? (
+            <Check className="mr-1 h-4 w-4" aria-hidden />
+          ) : (
+            <Copy className="mr-1 h-4 w-4" aria-hidden />
+          )}
+          {copied ? '복사됨' : copyError ? '복사 실패' : '복사'}
         </Button>
         <Button variant="outline" onClick={download} disabled={!output}>
           다운로드

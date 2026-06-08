@@ -11,6 +11,7 @@
   "categories": ["productivity", "utilities"],
   "lang": "ko",
   "dir": "ltr",
+  "_iconsComment": "TODO(아이콘): 다수 안드로이드는 maskable 용 SVG 를 무시한다. 512x512 PNG 를 안전영역(가장자리 ~20% 패딩) 포함해 생성한 뒤 maskable 항목의 src 를 그 PNG 로 교체할 것. 그 전까지는 any/maskable purpose 를 분리해 두어, 마스킹 크롭이 일반 아이콘을 잘라먹지 않도록만 보장한다.",
   "icons": [
     {
       "src": "/icon-192.svg",
@@ -25,8 +26,8 @@
       "purpose": "any"
     },
     {
-      "src": "/icon-192.svg",
-      "sizes": "192x192",
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
     }

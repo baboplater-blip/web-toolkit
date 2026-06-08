@@ -44,9 +44,13 @@ export function NoticeBanner() {
 
   const tone = notice.tone ?? 'info';
   const Icon = tone === 'warning' ? AlertTriangle : tone === 'success' ? CheckCircle2 : Info;
+  // 경고는 즉시 알림(alert=assertive), 그 외는 부드럽게(status=polite).
+  const isWarning = tone === 'warning';
 
   return (
     <div
+      role={isWarning ? 'alert' : 'status'}
+      aria-live={isWarning ? 'assertive' : 'polite'}
       className={cn(
         'flex items-center gap-2 px-3 py-2 text-xs sm:text-sm border-b',
         tone === 'warning'

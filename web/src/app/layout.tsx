@@ -17,6 +17,7 @@ import { RecentTracker } from '@/components/tools/RecentTracker';
 import { ThemeWatcher } from '@/components/ThemeWatcher';
 import { ToastHost } from '@/components/ui/toast';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
+import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
 const geistSans = Geist({
@@ -28,11 +29,6 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
 });
-
-// BOM(U+FEFF) trim — Vercel 환경변수에 invisible 문자가 prefix 되는 사고 방어
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/^﻿/, '').replace(/\/$/, '') ??
-  'https://agent-control-panel-phi.vercel.app';
 
 const SITE_DESC =
   '브라우저에서 완결되는 PDF·이미지·비디오·오디오·OCR·AI 도구 100여 종. 파일이 서버로 전송되지 않습니다.';
@@ -70,6 +66,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': '/',
       'en': '/en',
+      'ja': '/ja',
+      'zh': '/zh',
       'x-default': '/',
     },
   },

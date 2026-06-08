@@ -5,7 +5,7 @@
  *
  * 환경변수:
  *   INDEXNOW_KEY                  — 사용자가 발급한 키 (필수). 미설정 시 no-op
- *   NEXT_PUBLIC_SITE_URL          — 사이트 root URL. 기본 https://agent-control-panel-phi.vercel.app
+ *   NEXT_PUBLIC_SITE_URL          — 사이트 root URL. 기본 https://web-toolkit.vercel.app
  *   INDEXNOW_KEY_LOCATION         — 키 파일 위치 (기본: https://{HOST}/{KEY}.txt)
  *
  * 키 파일:
@@ -26,7 +26,7 @@ if (!KEY) {
   process.exit(0);
 }
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app').replace(/\/$/, '');
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app').replace(/\/$/, '');
 const HOST = SITE_URL.replace(/^https?:\/\//, '');
 const KEY_LOCATION = process.env.INDEXNOW_KEY_LOCATION ?? `${SITE_URL}/${KEY}.txt`;
 

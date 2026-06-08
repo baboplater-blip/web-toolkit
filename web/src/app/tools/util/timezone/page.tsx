@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 
@@ -152,6 +153,8 @@ export default function TimezonePage() {
   const [fromZone, setFromZone] = useState<string>(getLocalZone);
   const [toZone, setToZone] = useState<string>('UTC');
   const [dateTime, setDateTime] = useState<string>(nowLocalInputValue);
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   const result = useMemo(() => {
     if (!dateTime) return null;
@@ -169,9 +172,17 @@ export default function TimezonePage() {
     };
   }, [dateTime, fromZone, toZone, zones]);
 
-  function copyResult() {
-    if (result) {
-      navigator.clipboard?.writeText(result.converted);
+  async function copyResult() {
+    if (!result) return;
+    try {
+      await navigator.clipboard.writeText(result.converted);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      // 보안 컨텍스트(HTTPS) 아님·권한 거부 시 클립보드 API 가 거부될 수 있다.
+      console.error('클립보드 복사 실패', err);
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 1500);
     }
   }
 
@@ -264,7 +275,14 @@ export default function TimezonePage() {
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={copyResult}>
-              복사
+              {copied ? (
+                <Check className="h-3.5 w-3.5" aria-hidden />
+              ) : (
+                <Copy className="h-3.5 w-3.5" aria-hidden />
+              )}
+              <span className="ml-1">
+                {copied ? '복사됨' : copyError ? '복사 실패' : '복사'}
+              </span>
             </Button>
           </div>
 

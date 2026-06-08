@@ -101,6 +101,7 @@ export default function PdfSearchPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         multiple
         onFiles={(arr) => setFiles((prev) => [...prev, ...arr])}
         title="PDF 여러 개를 끌어다 놓거나 클릭"

@@ -36,7 +36,16 @@ export const metadata: Metadata = {
   title: 'Web Toolkit — 브라우저에서 끝나는 무료 도구 100여 종',
   description:
     '회원가입·설치·업로드 없이 PDF·이미지·비디오·오디오·OCR·AI 도구를 브라우저에서 바로 사용하세요. 파일은 서버로 전송되지 않습니다.',
-  alternates: { canonical: '/' },
+  alternates: {
+    canonical: '/',
+    languages: {
+      'ko-KR': '/',
+      en: '/en',
+      ja: '/ja',
+      zh: '/zh',
+      'x-default': '/',
+    },
+  },
   openGraph: {
     title: 'Web Toolkit — 브라우저에서 끝나는 무료 도구',
     description:

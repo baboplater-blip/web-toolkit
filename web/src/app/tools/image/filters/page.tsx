@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
+import { loadBitmap, assertCanvasSize } from '@/lib/tools/image-common';
 
 type FilterId =
   | 'grayscale'
@@ -22,6 +23,15 @@ interface FilterDef {
   /** canvas ctx.filter 문자열로 표현 가능한 필터. 픽셀 연산이 필요하면 null. */
   cssFilter: string | null;
 }
+
+/** 내보내기 포맷. 불투명 사진 필터라 JPEG/WebP 로 PNG 대비 용량을 크게 줄일 수 있다. */
+type ExportFormat = 'png' | 'jpeg' | 'webp';
+
+const EXPORT_FORMATS: { id: ExportFormat; label: string; ext: string; quality?: number }[] = [
+  { id: 'jpeg', label: 'JPG', ext: 'jpg', quality: 0.92 },
+  { id: 'webp', label: 'WebP', ext: 'webp', quality: 0.92 },
+  { id: 'png', label: 'PNG', ext: 'png' },
+];
 
 const FILTERS: FilterDef[] = [
   { id: 'grayscale', label: '흑백', cssFilter: 'grayscale(1)' },
@@ -48,6 +58,7 @@ export default function ImageFiltersPage() {
   const [file, setFile] = useState<File | null>(null);
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [filterId, setFilterId] = useState<FilterId>('grayscale');
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('jpeg');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
   const [processing, setProcessing] = useState(false);
@@ -76,7 +87,7 @@ export default function ImageFiltersPage() {
     setError(null);
     setResultBlob(null);
     try {
-      const bmp = await createImageBitmap(picked);
+      const bmp = await loadBitmap(picked);
       bitmap?.close();
       setBitmap(bmp);
       setFile(picked);
@@ -85,11 +96,13 @@ export default function ImageFiltersPage() {
     }
   }
 
-  async function renderFilter(target: FilterId) {
+  async function renderFilter(target: FilterId, format: ExportFormat) {
     if (!bitmap) return;
     setProcessing(true);
     setError(null);
     try {
+      // 빈(투명) 결과물 방지: 브라우저 캔버스 한계 초과 시 명확히 실패시킨다.
+      assertCanvasSize(bitmap.width, bitmap.height);
       const canvas = canvasRef.current ?? document.createElement('canvas');
       canvasRef.current = canvas;
       canvas.width = bitmap.width;
@@ -100,8 +113,13 @@ export default function ImageFiltersPage() {
       const def = FILTERS.find((f) => f.id === target);
       if (!def) throw new Error('알 수 없는 필터입니다.');
 
-      ctx.filter = def.cssFilter ?? 'none';
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // JPEG 는 알파 미지원 → 흰 배경으로 먼저 채워 투명 영역이 검게 나오지 않게 한다.
+      if (format === 'jpeg') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.filter = def.cssFilter ?? 'none';
       ctx.drawImage(bitmap, 0, 0);
       ctx.filter = 'none';
 
@@ -112,10 +130,12 @@ export default function ImageFiltersPage() {
         ctx.putImageData(imageData, 0, 0);
       }
 
+      const fmt = EXPORT_FORMATS.find((f) => f.id === format);
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           (b) => (b ? resolve(b) : reject(new Error('이미지 변환에 실패했습니다.'))),
-          'image/png',
+          `image/${format}`,
+          fmt?.quality,
         );
       });
       setResultBlob(blob);
@@ -130,13 +150,20 @@ export default function ImageFiltersPage() {
 
   function selectFilter(id: FilterId) {
     setFilterId(id);
-    void renderFilter(id);
+    void renderFilter(id, exportFormat);
+  }
+
+  function selectFormat(format: ExportFormat) {
+    setExportFormat(format);
+    // 이미 결과가 있으면 새 포맷으로 즉시 재인코딩(미리보기/다운로드 일치).
+    if (resultBlob) void renderFilter(filterId, format);
   }
 
   function download() {
     if (!resultBlob || !file) return;
     const base = stripExtension(file.name);
-    triggerDownload(resultBlob, `${base}-${filterId}.png`);
+    const ext = EXPORT_FORMATS.find((f) => f.id === exportFormat)?.ext ?? 'png';
+    triggerDownload(resultBlob, `${base}-${filterId}.${ext}`);
   }
 
   function handleReset() {
@@ -146,6 +173,7 @@ export default function ImageFiltersPage() {
     });
     setFile(null);
     setFilterId('grayscale');
+    setExportFormat('jpeg');
     setResultBlob(null);
     setPreviewUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
@@ -160,7 +188,7 @@ export default function ImageFiltersPage() {
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">흑백·세피아·빈티지 등 인스타 풍 필터를 적용해 저장합니다.</p>
 
-      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} />}
+      {!file && <FileDropZone accept="image/*" onFiles={handleFiles} onError={setError} maxBytes={50 * 1024 * 1024} />}
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -188,6 +216,30 @@ export default function ImageFiltersPage() {
             ))}
           </div>
 
+          <div>
+            <span className="mb-1.5 block text-xs font-medium">저장 포맷</span>
+            <div className="grid grid-cols-3 gap-1.5">
+              {EXPORT_FORMATS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => selectFormat(f.id)}
+                  disabled={processing}
+                  className={`h-9 rounded-md border text-xs transition-colors disabled:opacity-50 ${
+                    exportFormat === f.id
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background hover:bg-muted'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              사진 필터는 JPG·WebP 가 PNG 보다 용량이 훨씬 작습니다.
+            </p>
+          </div>
+
           {processing && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -205,7 +257,7 @@ export default function ImageFiltersPage() {
           </div>
           <Button className="w-full" onClick={download} disabled={!resultBlob}>
             <Download className="h-4 w-4" />
-            PNG 다운로드
+            {EXPORT_FORMATS.find((f) => f.id === exportFormat)?.label ?? 'PNG'} 다운로드
           </Button>
         </div>
       )}

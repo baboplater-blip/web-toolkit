@@ -1,5 +1,6 @@
 /* auto-generated metadata layout — generate-tool-metadata.mjs */
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 const TITLE = `증명사진 규격 변환 — Web Toolkit`;
 const DESCRIPTION = `이력서·여권·반명함 규격으로 크롭·리사이즈 + 배경색.`;
@@ -44,8 +45,12 @@ export const metadata: Metadata = {
   },
 };
 
-const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"증명사진 규격 변환","description":"이력서·여권·반명함 규격으로 크롭·리사이즈 + 배경색.","url":"https://agent-control-panel-phi.vercel.app/tools/image/id-photo","applicationCategory":"MultimediaApplication","applicationSubCategory":"이미지","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://agent-control-panel-phi.vercel.app"}} as const;
-const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"증명사진 규격 변환 사용 방법","description":"이력서·여권·반명함 규격으로 크롭·리사이즈 + 배경색.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"증명사진 규격 변환","url":"https://agent-control-panel-phi.vercel.app/tools/image/id-photo"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/id-photo#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"증명사진 규격 변환에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/id-photo#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://agent-control-panel-phi.vercel.app/tools/image/id-photo#step3"}]} as const;
+const JSON_LD = {"@context":"https://schema.org","@type":"WebApplication","name":"증명사진 규격 변환","description":"이력서·여권·반명함 규격으로 크롭·리사이즈 + 배경색.","url":"https://__SITE_URL__/tools/image/id-photo","applicationCategory":"MultimediaApplication","applicationSubCategory":"이미지","operatingSystem":"Any","browserRequirements":"Requires JavaScript and HTML5 Canvas.","inLanguage":"ko-KR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"Web Toolkit","url":"https://__SITE_URL__"}} as const;
+const HOWTO_JSON_LD = {"@context":"https://schema.org","@type":"HowTo","name":"증명사진 규격 변환 사용 방법","description":"이력서·여권·반명함 규격으로 크롭·리사이즈 + 배경색.","inLanguage":"ko-KR","totalTime":"PT1M","tool":{"@type":"WebApplication","name":"증명사진 규격 변환","url":"https://__SITE_URL__/tools/image/id-photo"},"step":[{"@type":"HowToStep","position":1,"name":"파일 업로드","text":"도구 페이지를 열고 변환할 파일을 드롭존에 끌어다 놓거나 선택합니다. 파일은 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.","url":"https://__SITE_URL__/tools/image/id-photo#step1"},{"@type":"HowToStep","position":2,"name":"옵션 설정","text":"증명사진 규격 변환에 필요한 옵션을 화면에서 선택합니다. 미리보기로 결과를 확인할 수 있습니다.","url":"https://__SITE_URL__/tools/image/id-photo#step2"},{"@type":"HowToStep","position":3,"name":"결과 다운로드","text":"\"다운로드\" 버튼을 눌러 처리된 파일을 기기에 저장합니다.","url":"https://__SITE_URL__/tools/image/id-photo#step3"}]} as const;
+
+// JSON-LD 의 sentinel(https://__SITE_URL__) 을 런타임 운영 도메인으로 치환.
+const withSite = (obj: unknown) =>
+  JSON.stringify(obj).replaceAll('https://__SITE_URL__', SITE_URL);
 
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -53,12 +58,12 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(JSON_LD) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOWTO_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: withSite(HOWTO_JSON_LD) }}
       />
       {children}
     </>

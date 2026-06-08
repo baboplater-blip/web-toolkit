@@ -9,7 +9,7 @@ import { USE_CASE_SLUGS, getUseCase } from '@/lib/use-cases';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/^﻿/, '').replace(/\/$/, '') ??
-  'https://agent-control-panel-phi.vercel.app';
+  'https://web-toolkit.vercel.app';
 
 export const dynamic = 'force-static';
 

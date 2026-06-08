@@ -6,7 +6,7 @@ import { CATEGORY_GUIDES_ZH } from '@/lib/category-guide-content-zh';
 import { ZH_TOOLS, hasZhCopy } from '@/lib/zh-tools';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

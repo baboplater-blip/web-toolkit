@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Download } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { compressionRatio, formatBytes } from '@/lib/compress/format';
@@ -49,6 +49,15 @@ export function ResultCard({
     originalSize > 0 &&
     compressedSize > 0 &&
     !showComparison;
+
+  // blobUrl 은 이 카드의 다운로드 대상이다. 카드가 언마운트되거나 새 결과로
+  // blobUrl 이 바뀌면 직전 URL 을 폐기해 ObjectURL 누수를 막는다.
+  // (다운로드 타깃이므로 언마운트 시 폐기해도 안전 — 소비자가 별도로 보관하지 않는다)
+  useEffect(() => {
+    return () => {
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
+  }, [blobUrl]);
 
   return (
     <div className="rounded-xl border bg-card p-4 space-y-3">

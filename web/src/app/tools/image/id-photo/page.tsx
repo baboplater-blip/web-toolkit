@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Download, IdCard, RotateCcw } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { buttonVariants } from '@/components/ui/button';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 interface Spec {
   id: string;
@@ -33,7 +34,7 @@ export default function IdPhotoPage() {
     const file = files[0];
     if (!file) return;
     try {
-      const bmp = await createImageBitmap(file);
+      const bmp = await loadBitmap(file);
       // 이전 비트맵의 디코드 메모리를 먼저 해제한 뒤 교체(누수 방지).
       setBitmap((prev) => {
         prev?.close();
@@ -131,6 +132,7 @@ export default function IdPhotoPage() {
           accept="image/*"
           onFiles={onFiles}
           onError={(m) => setError(m)}
+          maxBytes={50 * 1024 * 1024}
         />
         {error && <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>}
 

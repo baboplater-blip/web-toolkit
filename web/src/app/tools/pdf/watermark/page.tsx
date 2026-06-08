@@ -319,6 +319,7 @@ export default function PdfWatermarkPage() {
             }}
             fileProps={{
               accept: 'application/pdf',
+              maxBytes: 100 * 1024 * 1024,
               description: '워터마크를 넣을 PDF 를 업로드하세요',
               onFiles: (files) => acceptPdf(files[0]),
             }}

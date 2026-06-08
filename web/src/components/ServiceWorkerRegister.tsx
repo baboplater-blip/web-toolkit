@@ -18,6 +18,11 @@ export function ServiceWorkerRegister() {
     // 개발 모드에서는 등록하지 않음 — HMR 과 충돌 방지.
     if (process.env.NODE_ENV !== 'production') return;
 
+    // 리스너·타이머는 effect cleanup 에서 해제한다.
+    // (beforeunload 는 모바일·BFCache 에서 신뢰할 수 없어 누수 위험 → 사용 안 함)
+    let periodic: ReturnType<typeof setInterval> | undefined;
+    let onVisibility: (() => void) | undefined;
+
     const onLoad = async () => {
       try {
         const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
@@ -62,7 +67,7 @@ export function ServiceWorkerRegister() {
         });
 
         // 탭이 활성화될 때마다 SW 업데이트 체크 (사용자가 돌아오면 새 버전 자동 감지)
-        const onVisibility = () => {
+        onVisibility = () => {
           if (document.visibilityState === 'visible') {
             reg.update().catch(() => {});
           }
@@ -70,17 +75,9 @@ export function ServiceWorkerRegister() {
         document.addEventListener('visibilitychange', onVisibility);
 
         // 주기적으로도 업데이트 체크 (15분마다).
-        const periodic = setInterval(() => {
+        periodic = setInterval(() => {
           reg.update().catch(() => {});
         }, 15 * 60 * 1000);
-        window.addEventListener(
-          'beforeunload',
-          () => {
-            clearInterval(periodic);
-            document.removeEventListener('visibilitychange', onVisibility);
-          },
-          { once: true },
-        );
       } catch (e) {
         // 등록 실패해도 앱 동작에는 지장 없음. 프로덕션 콘솔 오염 방지(BP).
         if (process.env.NODE_ENV !== 'production') {
@@ -93,8 +90,14 @@ export function ServiceWorkerRegister() {
       onLoad();
     } else {
       window.addEventListener('load', onLoad, { once: true });
-      return () => window.removeEventListener('load', onLoad);
     }
+
+    // 언마운트 시 일괄 정리 — load 리스너(아직 안 붙었을 수도)·주기 타이머·가시성 리스너.
+    return () => {
+      window.removeEventListener('load', onLoad);
+      if (periodic !== undefined) clearInterval(periodic);
+      if (onVisibility) document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, []);
 
   return null;

@@ -46,6 +46,11 @@ export default function PdfToMdPage() {
         onProgress: (p) => setProgress(Math.round(p * 100)),
       });
       pdf.destroy();
+      // 스캔본 등 텍스트가 전혀 없는 PDF 는 빈 결과 대신 안내한다.
+      if (text.trim().length === 0) {
+        setError('추출할 텍스트가 없습니다(스캔본일 수 있음). OCR 도구를 먼저 사용하세요.');
+        return;
+      }
       setMd(text);
       const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
       const baseName = file.name.replace(/\.pdf$/i, '');
@@ -95,6 +100,7 @@ export default function PdfToMdPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />

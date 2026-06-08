@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,14 @@ interface PageDiff {
   imageDataUrl: string;
 }
 
+/** 한 번에 비교할 최대 페이지 수 — 초과분은 처리하지 않고 경고. */
+const MAX_DIFF_PAGES = 100;
+
+/** 이벤트 루프에 양보해 UI 가 멈추지 않게 한다. */
+function yieldToUi(): Promise<void> {
+  return new Promise((r) => setTimeout(r, 0));
+}
+
 export default function PdfVisualDiffPage() {
   const [a, setA] = useState<File | null>(null);
   const [b, setB] = useState<File | null>(null);
@@ -21,7 +29,9 @@ export default function PdfVisualDiffPage() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [diffs, setDiffs] = useState<PageDiff[] | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [scale, setScale] = useState(1.0);
+  const abortRef = useRef<{ aborted: boolean } | null>(null);
 
   // 결과 이미지는 canvas.toDataURL 로 만든 data: URL 이라 objectURL 해제가 필요 없다.
 
@@ -31,37 +41,56 @@ export default function PdfVisualDiffPage() {
       return;
     }
     setError(null);
+    setWarning(null);
     setBusy(true);
     setDiffs(null);
     setProgress(0);
+    const token = { aborted: false };
+    abortRef.current = token;
 
+    let pdfA: Awaited<ReturnType<typeof openPdfDoc>> | null = null;
+    let pdfB: Awaited<ReturnType<typeof openPdfDoc>> | null = null;
     try {
-      const [pdfA, pdfB] = await Promise.all([openPdfDoc(a), openPdfDoc(b)]);
-      const pageCount = Math.max(pdfA.numPages, pdfB.numPages);
+      [pdfA, pdfB] = await Promise.all([openPdfDoc(a), openPdfDoc(b)]);
+      const fullCount = Math.max(pdfA.numPages, pdfB.numPages);
+      // 페이지 수 상한 — 초과분은 잘라내고 경고 (메모리·시간 폭주 방지)
+      const pageCount = Math.min(fullCount, MAX_DIFF_PAGES);
+      if (fullCount > MAX_DIFF_PAGES) {
+        setWarning(`페이지가 많아 처음 ${MAX_DIFF_PAGES}페이지까지만 비교합니다(전체 ${fullCount}페이지).`);
+      }
       const out: PageDiff[] = [];
 
       for (let i = 1; i <= pageCount; i++) {
+        if (token.aborted) throw new Error('취소되었습니다.');
         const imgA = i <= pdfA.numPages ? await renderPage(pdfA, i, scale) : null;
         const imgB = i <= pdfB.numPages ? await renderPage(pdfB, i, scale) : null;
-        const { dataUrl, identical, diffPercent } = diffPages(imgA, imgB);
+        const { dataUrl, identical, diffPercent } = diffPages(imgA, imgB, token);
         out.push({ page: i, identical, diffPercent, imageDataUrl: dataUrl });
         setProgress(Math.round((i / pageCount) * 100));
         setDiffs([...out]);
+        // 페이지마다 UI 에 양보 — 큰 PDF 에서 화면이 얼지 않도록
+        await yieldToUi();
       }
-      pdfA.destroy();
-      pdfB.destroy();
     } catch (e) {
       setError(e instanceof Error ? e.message : '비교에 실패했습니다.');
     } finally {
+      pdfA?.destroy();
+      pdfB?.destroy();
       setBusy(false);
     }
   }
 
+  function handleCancel() {
+    if (abortRef.current) abortRef.current.aborted = true;
+  }
+
   function handleReset() {
+    if (abortRef.current) abortRef.current.aborted = true;
     setA(null);
     setB(null);
     setDiffs(null);
     setError(null);
+    setWarning(null);
     setProgress(0);
   }
 
@@ -76,12 +105,12 @@ export default function PdfVisualDiffPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
           <p className="text-xs font-semibold">기준 PDF (A)</p>
-          <FileDropZone accept="application/pdf,.pdf" onFiles={(files) => setA(files[0] ?? null)} title="A" />
+          <FileDropZone accept="application/pdf,.pdf" maxBytes={100 * 1024 * 1024} onFiles={(files) => setA(files[0] ?? null)} title="A" />
           {a && <p className="text-xs text-muted-foreground truncate">{a.name}</p>}
         </div>
         <div className="space-y-2">
           <p className="text-xs font-semibold">비교 PDF (B)</p>
-          <FileDropZone accept="application/pdf,.pdf" onFiles={(files) => setB(files[0] ?? null)} title="B" />
+          <FileDropZone accept="application/pdf,.pdf" maxBytes={100 * 1024 * 1024} onFiles={(files) => setB(files[0] ?? null)} title="B" />
           {b && <p className="text-xs text-muted-foreground truncate">{b.name}</p>}
         </div>
       </div>
@@ -101,11 +130,22 @@ export default function PdfVisualDiffPage() {
           비교
         </Button>
         {busy && (
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-            <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
-          </div>
+          <>
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+            </div>
+            <Button variant="ghost" size="icon" onClick={handleCancel} aria-label="취소">
+              <X className="h-4 w-4" />
+            </Button>
+          </>
         )}
       </div>
+
+      {warning && (
+        <div role="status" className="rounded-md border border-amber-500/50 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+          {warning}
+        </div>
+      )}
 
       {error && (
         <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -155,7 +195,11 @@ async function renderPage(pdf: unknown, n: number, scale: number): Promise<Image
   return ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
 
-function diffPages(a: ImageData | null, b: ImageData | null): { dataUrl: string; identical: boolean; diffPercent: number } {
+function diffPages(
+  a: ImageData | null,
+  b: ImageData | null,
+  token?: { aborted: boolean },
+): { dataUrl: string; identical: boolean; diffPercent: number } {
   const w = Math.max(a?.width ?? 0, b?.width ?? 0);
   const h = Math.max(a?.height ?? 0, b?.height ?? 0);
   const canvas = document.createElement('canvas');
@@ -171,6 +215,8 @@ function diffPages(a: ImageData | null, b: ImageData | null): { dataUrl: string;
   let total = 0;
 
   for (let y = 0; y < h; y++) {
+    // 행 단위로 취소 확인 (픽셀 루프 폭주 차단)
+    if (token?.aborted) throw new Error('취소되었습니다.');
     for (let x = 0; x < w; x++) {
       const idx = (y * w + x) * 4;
       const pa = pixelAt(a, x, y);

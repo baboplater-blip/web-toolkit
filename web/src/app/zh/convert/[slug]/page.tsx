@@ -15,7 +15,7 @@ import { hasZhCopy } from '@/lib/zh-tools';
 import { useCasesForConvert } from '@/lib/use-cases';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

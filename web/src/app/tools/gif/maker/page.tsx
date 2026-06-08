@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   Loader2,
   RotateCcw,
   Trash2,
+  X,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -19,8 +20,10 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
+import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
 import { formatBytes } from '@/lib/compress/format';
 
@@ -42,6 +45,8 @@ export default function GifMakerPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
+  // 취소 여부 — 취소 시 in-flight exec 의 reject 를 에러로 표시하지 않기 위해 사용.
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -58,6 +63,12 @@ export default function GifMakerPage() {
     );
     if (imgs.length === 0) {
       setError('PNG 또는 JPG 이미지만 추가할 수 있습니다.');
+      return;
+    }
+    // 개별 이미지가 한도를 넘으면 거부 (합산은 생성 시 explainFfmpegError 로 안내)
+    const oversized = imgs.map(validateMediaSize).find((m) => m !== null);
+    if (oversized) {
+      setError(oversized);
       return;
     }
     const newItems: QueueItem[] = imgs.map((f) => ({
@@ -103,6 +114,7 @@ export default function GifMakerPage() {
     }
     setProcessing(true);
     setError(null);
+    cancelledRef.current = false;
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgress(0);
@@ -154,7 +166,7 @@ export default function GifMakerPage() {
           '-i',
           concatName,
           '-vf',
-          `${vf},palettegen=stats_mode=full`,
+          `${vf},palettegen=stats_mode=full:reserve_transparent=1`,
           '-y',
           'palette.png',
         ]);
@@ -170,7 +182,7 @@ export default function GifMakerPage() {
           '-i',
           'palette.png',
           '-lavfi',
-          `${vf}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3`,
+          `${vf}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3:alpha_threshold=128`,
           '-loop',
           loop ? '0' : '-1',
           '-y',
@@ -188,12 +200,35 @@ export default function GifMakerPage() {
         await cleanupFiles(ffmpeg, created);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GIF 생성 실패');
+      // 취소로 인한 reject 는 에러로 표시하지 않는다 (cancelRun 이 상태를 이미 정리).
+      if (cancelledRef.current) return;
+      const msg = err instanceof Error ? err.message : 'GIF 생성 실패';
+      // 합산 입력 크기로 OOM 판정 — 여러 이미지가 동시에 MEMFS 에 올라간다.
+      const totalSize = items.reduce((sum, it) => sum + it.file.size, 0);
+      const friendly = explainFfmpegError(msg, totalSize);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
-      setProcessing(false);
-      setProgressText('');
-      setProgress(0);
+      // 취소 시엔 cancelRun 이 상태를 정리하므로 건너뛴다.
+      if (!cancelledRef.current) {
+        setProcessing(false);
+        setProgressText('');
+        setProgress(0);
+      }
     }
+  };
+
+  // 처리 중 취소: FFmpeg 워커를 종료(resetFFmpeg)해 즉시 멈춘다.
+  // 워커 종료로 in-flight exec 는 reject 되지만 cancelledRef 로 무시한다.
+  const cancelRun = () => {
+    if (!processing) return;
+    cancelledRef.current = true;
+    resetFFmpeg();
+    setProcessing(false);
+    setProgressText('');
+    setProgress(0);
   };
 
   return (
@@ -339,7 +374,7 @@ export default function GifMakerPage() {
             </label>
 
             {processing && (
-              <div>
+              <div className="space-y-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium">{progressText}</p>
                   <span className="text-xs text-muted-foreground">{progress}%</span>
@@ -350,6 +385,15 @@ export default function GifMakerPage() {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={cancelRun}
+                >
+                  <X className="h-3.5 w-3.5" />
+                  취소
+                </Button>
               </div>
             )}
 

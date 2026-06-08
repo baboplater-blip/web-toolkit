@@ -20,6 +20,18 @@ export interface FileDropZoneProps {
   validate?: (files: File[]) => string | null;
   /** 유효성 실패 시 */
   onError?: (message: string) => void;
+  /**
+   * 파일당 최대 바이트. 초과 시 onError 호출(처리 차단).
+   * 메인스레드/메모리 폭주(대용량 이미지·PDF·CSV → OOM·프리징) 방어용 공통 가드.
+   */
+  maxBytes?: number;
+}
+
+/** 바이트를 사람이 읽는 단위로(가드 메시지용). */
+function formatMaxBytes(bytes: number): string {
+  if (bytes >= 1024 * 1024 * 1024) return `${Math.round(bytes / (1024 * 1024 * 1024))}GB`;
+  if (bytes >= 1024 * 1024) return `${Math.round(bytes / (1024 * 1024))}MB`;
+  return `${Math.round(bytes / 1024)}KB`;
 }
 
 export function FileDropZone({
@@ -31,6 +43,7 @@ export function FileDropZone({
   hint = '모든 처리는 브라우저 안에서 이루어집니다. 파일은 서버로 전송되지 않습니다.',
   validate,
   onError,
+  maxBytes,
 }: FileDropZoneProps) {
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +52,15 @@ export function FileDropZone({
     (fileList: FileList | null) => {
       if (!fileList || fileList.length === 0) return;
       const files = Array.from(fileList);
+      if (maxBytes != null) {
+        const tooBig = files.find((f) => f.size > maxBytes);
+        if (tooBig) {
+          onError?.(
+            `파일이 너무 큽니다(${formatMaxBytes(tooBig.size)}). 최대 ${formatMaxBytes(maxBytes)}까지 처리할 수 있습니다.`,
+          );
+          return;
+        }
+      }
       if (validate) {
         const err = validate(files);
         if (err) {
@@ -48,7 +70,7 @@ export function FileDropZone({
       }
       onFiles(files);
     },
-    [onFiles, validate, onError],
+    [onFiles, validate, onError, maxBytes],
   );
 
   const openPicker = useCallback(() => inputRef.current?.click(), []);

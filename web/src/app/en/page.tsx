@@ -34,6 +34,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': '/',
       'en': '/en',
+      'ja': '/ja',
+      'zh': '/zh',
       'x-default': '/',
     },
   },

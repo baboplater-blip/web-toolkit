@@ -121,6 +121,7 @@ export default function PdfToEpubPage() {
 
       <FileDropZone
         accept="application/pdf,.pdf"
+        maxBytes={100 * 1024 * 1024}
         onFiles={(files) => files[0] && handleFile(files[0])}
         title="PDF 파일을 끌어다 놓거나 클릭"
       />
