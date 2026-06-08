@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 type Direction = 'json-to-xml' | 'xml-to-json';
 
@@ -91,7 +92,7 @@ export default function JsonXmlPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-xs font-mono h-48 leading-relaxed" aria-label="입력" />
+          className="w-full rounded-md border bg-background p-3 text-xs font-mono min-h-48 resize-y leading-relaxed" aria-label="입력" />
       </div>
 
       <Button onClick={handleConvert}>변환</Button>
@@ -106,12 +107,33 @@ export default function JsonXmlPage() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-xs font-medium">결과</label>
-            <Button variant="outline" size="sm" onClick={handleCopy}>
-              {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-              {copied ? '복사됨' : '복사'}
-            </Button>
+            <div className="flex gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const isXml = direction === 'json-to-xml';
+                  triggerDownload(
+                    new Blob([output], {
+                      type: isXml
+                        ? 'application/xml;charset=utf-8'
+                        : 'application/json;charset=utf-8',
+                    }),
+                    isXml ? 'converted.xml' : 'converted.json',
+                  );
+                }}
+                disabled={!output}
+              >
+                <Download className="mr-1.5 h-3.5 w-3.5" />
+                {direction === 'json-to-xml' ? 'XML' : 'JSON'}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleCopy}>
+                {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+                {copied ? '복사됨' : '복사'}
+              </Button>
+            </div>
           </div>
-          <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono h-48 leading-relaxed" aria-label="결과" />
+          <textarea readOnly value={output} className="w-full rounded-md border bg-card p-3 text-xs font-mono min-h-48 resize-y leading-relaxed" aria-label="결과" />
         </div>
       )}
       </main>

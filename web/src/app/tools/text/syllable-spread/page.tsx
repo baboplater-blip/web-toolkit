@@ -72,7 +72,7 @@ export default function SyllableSpreadPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed" aria-label="한글 텍스트" />
+          className="w-full rounded-md border bg-background p-3 text-sm min-h-40 resize-y leading-relaxed" aria-label="한글 텍스트" />
       </div>
 
       <div className="rounded-xl border bg-card p-3 space-y-2">
@@ -98,7 +98,7 @@ export default function SyllableSpreadPage() {
             {copied ? '복사됨' : '복사'}
           </Button>
         </div>
-        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed font-mono" aria-label="결과" />
+        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm min-h-40 resize-y leading-relaxed font-mono" aria-label="결과" />
       </div>
     </main>
     </div>

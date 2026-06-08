@@ -2,9 +2,10 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { autoSpacing } from '@/lib/tools/korean';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 export default function KoSpacingPage() {
   const [input, setInput] = useState('한국어띄어쓰기가어렵습니다.제가할것은무엇일까요? 100 만원이있습니다.');
@@ -36,7 +37,7 @@ export default function KoSpacingPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-40 leading-relaxed"
+          className="w-full rounded-md border bg-background p-3 text-sm min-h-40 resize-y leading-relaxed"
           placeholder="한국어 문장을 입력하세요." aria-label="원본 텍스트" />
         <p className="text-[10px] text-muted-foreground">{input.length.toLocaleString()} 자</p>
       </div>
@@ -44,15 +45,31 @@ export default function KoSpacingPage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-medium">교정 결과</label>
-          <Button variant="outline" size="sm" onClick={handleCopy}>
-            {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-            {copied ? '복사됨' : '복사'}
-          </Button>
+          <div className="flex gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                triggerDownload(
+                  new Blob([output], { type: 'text/plain;charset=utf-8' }),
+                  'spacing-fixed.txt',
+                )
+              }
+              disabled={!output}
+            >
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              TXT
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+              {copied ? '복사됨' : '복사'}
+            </Button>
+          </div>
         </div>
         <textarea
           readOnly
           value={output}
-          className="w-full rounded-md border bg-card p-3 text-sm h-40 leading-relaxed" aria-label="교정 결과" />
+          className="w-full rounded-md border bg-card p-3 text-sm min-h-40 resize-y leading-relaxed" aria-label="교정 결과" />
       </div>
 
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">

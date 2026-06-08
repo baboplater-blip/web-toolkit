@@ -2,7 +2,7 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { en2ko, ko2en } from '@/lib/tools/korean';
 
@@ -36,6 +36,15 @@ export default function KeyboardFlipPage() {
     } catch {}
   }
 
+  // 변환 결과를 입력으로 보내고 변환 방향을 뒤집어, 역변환을 바로 이어서 수행한다.
+  function handleSwap() {
+    if (!result) return;
+    setInput(result);
+    setDirection((prev) =>
+      prev === 'en2ko' ? 'ko2en' : prev === 'ko2en' ? 'en2ko' : prev,
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-background">
       <ToolHeader title="한영 자판 변환" widthClass="max-w-2xl" />
@@ -62,19 +71,25 @@ export default function KeyboardFlipPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed font-mono"
+          className="w-full rounded-md border bg-background p-3 text-sm min-h-40 resize-y leading-relaxed font-mono"
           placeholder="잘못된 한/영 키로 입력된 글을 붙여넣으세요." aria-label="입력" />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-medium">변환 결과</label>
-          <Button variant="outline" size="sm" onClick={handleCopy}>
-            {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-            {copied ? '복사됨' : '복사'}
-          </Button>
+          <div className="flex gap-1.5">
+            <Button variant="outline" size="sm" onClick={handleSwap} disabled={!result} title="결과를 입력으로 보내고 역변환">
+              <ArrowUpDown className="mr-1.5 h-3.5 w-3.5" />
+              역변환
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+              {copied ? '복사됨' : '복사'}
+            </Button>
+          </div>
         </div>
-        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" aria-label="변환 결과" />
+        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm min-h-40 resize-y leading-relaxed" aria-label="변환 결과" />
       </div>
     </main>
     </div>

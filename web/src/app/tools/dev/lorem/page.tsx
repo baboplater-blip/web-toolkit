@@ -149,7 +149,7 @@ export default function LoremPage() {
       <textarea
         readOnly
         value={output}
-        className="h-72 w-full rounded-md border bg-card p-3 text-sm leading-relaxed" aria-label="결과" />
+        className="min-h-72 w-full resize-y rounded-md border bg-card p-3 text-sm leading-relaxed" aria-label="결과" />
       </main>
     </div>
   );

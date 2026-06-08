@@ -52,7 +52,7 @@ export default function KoSpellCheckPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed"
+          className="w-full rounded-md border bg-background p-3 text-sm min-h-40 resize-y leading-relaxed"
           placeholder="한국어 문장을 입력하세요." aria-label="원본 텍스트" />
       </div>
 
@@ -104,7 +104,7 @@ export default function KoSpellCheckPage() {
         <textarea
           readOnly
           value={fixed}
-          className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" aria-label="일괄 교정 결과" />
+          className="w-full rounded-md border bg-card p-3 text-sm min-h-40 resize-y leading-relaxed" aria-label="일괄 교정 결과" />
         <Button variant="outline" size="sm" onClick={() => setInput(fixed)}>
           <Wand2 className="h-3.5 w-3.5 mr-1.5" />
           교정 결과를 입력란으로 가져오기

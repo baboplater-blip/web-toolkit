@@ -58,7 +58,13 @@ export function CategoryDrawer() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
-        className="top-[8vh] max-w-lg translate-y-0 gap-0 p-0 md:top-[12vh]"
+        className={cn(
+          // 모바일: 하단 바텀시트 — 풀폭·하단 정렬·상단만 둥글게(한 손 조작 친화).
+          'left-0 right-0 bottom-0 top-auto w-full max-w-none translate-x-0 translate-y-0',
+          'max-h-[85vh] rounded-b-none rounded-t-2xl gap-0 p-0',
+          // 데스크탑(sm+): 기존 중앙 상단 다이얼로그 형태 복원.
+          'sm:left-1/2 sm:right-auto sm:bottom-auto sm:top-[12vh] sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:rounded-xl',
+        )}
         aria-label="카테고리 둘러보기"
       >
         <DialogTitle className="border-b px-5 py-4">
@@ -69,7 +75,7 @@ export function CategoryDrawer() {
           이동합니다.
         </DialogDescription>
 
-        <div className="max-h-[68vh] overflow-y-auto px-5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           {/* 전체 도구 바로가기 */}
           <a
             href="/tools"

@@ -185,7 +185,7 @@ export default function ChartPage() {
 
       <div className="space-y-2">
         <label className="text-xs font-medium">데이터 (한 줄에 &quot;레이블, 값&quot;)</label>
-        <textarea value={data} onChange={(e) => setData(e.target.value)} className="w-full rounded-md border bg-background p-3 text-xs font-mono h-32 leading-relaxed" aria-label="데이터" />
+        <textarea value={data} onChange={(e) => setData(e.target.value)} className="w-full rounded-md border bg-background p-3 text-xs font-mono min-h-40 resize-y leading-relaxed" aria-label="데이터" />
       </div>
 
       <div className="relative rounded-xl border bg-card p-2 overflow-x-auto">

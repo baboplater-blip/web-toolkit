@@ -7,10 +7,65 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
-import { Search, CornerDownLeft, ArrowRight } from 'lucide-react';
+import {
+  Search,
+  CornerDownLeft,
+  ArrowRight,
+  ArrowLeftRight,
+  Lightbulb,
+} from 'lucide-react';
 import { filterTools, CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
+import {
+  CONVERT_INDEX,
+  USECASE_INDEX,
+  type ConvertEntry,
+  type UseCaseEntry,
+} from '@/lib/search-index.generated';
 
-const MAX_SUGGESTIONS = 7;
+const MAX_TOOL_SUGGESTIONS = 7;
+const MAX_CONVERT_SUGGESTIONS = 3;
+const MAX_USECASE_SUGGESTIONS = 3;
+
+/** 키보드 네비·렌더를 한 배열로 다루기 위한 통합 제안 항목. */
+type Suggestion =
+  | { kind: 'tool'; href: string; tool: ToolMeta }
+  | { kind: 'convert'; href: string; entry: ConvertEntry }
+  | { kind: 'usecase'; href: string; entry: UseCaseEntry };
+
+/** 공백으로 나눈 토큰이 텍스트에 모두 포함되는지(소문자 부분일치). */
+function matchesAllTokens(haystack: string, tokens: string[]): boolean {
+  return tokens.every((tok) => haystack.includes(tok));
+}
+
+/** 쿼리에 매칭되는 변환 후보(소수)를 찾는다. */
+function matchConverts(query: string, limit: number): ConvertEntry[] {
+  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return [];
+  const out: ConvertEntry[] = [];
+  for (const entry of CONVERT_INDEX) {
+    const hay = `${entry.label} ${entry.from} ${entry.to} ${entry.slug}`.toLowerCase();
+    if (matchesAllTokens(hay, tokens)) {
+      out.push(entry);
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
+}
+
+/** 쿼리에 매칭되는 활용법 후보(소수)를 찾는다. */
+function matchUseCases(query: string, limit: number): UseCaseEntry[] {
+  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return [];
+  const out: UseCaseEntry[] = [];
+  for (const entry of USECASE_INDEX) {
+    const hay = `${entry.h1} ${entry.description} ${entry.keywords.join(' ')}`.toLowerCase();
+    if (matchesAllTokens(hay, tokens)) {
+      out.push(entry);
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
+}
 
 /**
  * 홈 히어로의 즉시 검색 박스 + 자동완성 제안.
@@ -30,12 +85,36 @@ export function HomeSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const suggestions = useMemo<ToolMeta[]>(() => {
+  const suggestions = useMemo<Suggestion[]>(() => {
     const q = query.trim();
     if (q.length === 0) return [];
-    return filterTools(q, 'all')
+
+    const tools = filterTools(q, 'all')
       .filter((t) => t.status === 'ready')
-      .slice(0, MAX_SUGGESTIONS);
+      .slice(0, MAX_TOOL_SUGGESTIONS);
+
+    // 도구로 이미 도달 가능한 변환/활용법 중복을 줄이기 위해, 도구 매칭이
+    // 있더라도 변환·활용법은 소수만 보조로 제안한다(도구 우선).
+    const converts = matchConverts(q, MAX_CONVERT_SUGGESTIONS);
+    const useCases = matchUseCases(q, MAX_USECASE_SUGGESTIONS);
+
+    return [
+      ...tools.map((tool): Suggestion => ({ kind: 'tool', href: tool.href, tool })),
+      ...converts.map(
+        (entry): Suggestion => ({
+          kind: 'convert',
+          href: `/convert/${entry.slug}`,
+          entry,
+        }),
+      ),
+      ...useCases.map(
+        (entry): Suggestion => ({
+          kind: 'usecase',
+          href: `/use/${entry.slug}`,
+          entry,
+        }),
+      ),
+    ];
   }, [query]);
 
   const showPanel = open && query.trim().length > 0;
@@ -135,31 +214,74 @@ export function HomeSearch() {
               일치하는 도구가 없습니다. <kbd className="rounded border bg-muted px-1">Enter</kbd> 로 전체 검색
             </div>
           ) : (
-            <ul ref={listRef} role="listbox" aria-label="도구 제안" className="max-h-72 overflow-y-auto p-1.5">
-              {suggestions.map((t, i) => {
-                const Icon = t.icon;
+            <ul ref={listRef} role="listbox" aria-label="도구 제안" className="max-h-80 overflow-y-auto p-1.5">
+              {suggestions.map((s, i) => {
                 const sel = i === active;
+                // 도구 → 변환·활용법(보조)로 넘어가는 첫 항목 앞에 구분선을 둔다.
+                const showDivider =
+                  s.kind !== 'tool' &&
+                  (i === 0 || suggestions[i - 1].kind === 'tool');
+
                 return (
-                  <li key={t.id} data-idx={i} role="option" aria-selected={sel}>
+                  <li key={`${s.kind}-${s.href}`} data-idx={i} role="option" aria-selected={sel}>
+                    {showDivider && (
+                      <div className="mt-1 mb-0.5 border-t px-2 pt-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                        변환 · 활용법
+                      </div>
+                    )}
                     <a
-                      href={t.href}
+                      href={s.href}
                       onMouseEnter={() => setActive(i)}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                         sel ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'
                       }`}
                     >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                        <Icon className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{t.title}</span>
-                        <span className="block truncate text-[11px] text-muted-foreground">
-                          {t.description}
-                        </span>
-                      </span>
-                      <span className="hidden shrink-0 rounded border bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline">
-                        {CATEGORY_LABELS[t.category]}
-                      </span>
+                      {s.kind === 'tool' ? (
+                        <>
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                            <s.tool.icon className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-medium">{s.tool.title}</span>
+                            <span className="block truncate text-[11px] text-muted-foreground">
+                              {s.tool.description}
+                            </span>
+                          </span>
+                          <span className="hidden shrink-0 rounded border bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline">
+                            {CATEGORY_LABELS[s.tool.category]}
+                          </span>
+                        </>
+                      ) : s.kind === 'convert' ? (
+                        <>
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                            <ArrowLeftRight className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-medium">{s.entry.label}</span>
+                            <span className="block truncate text-[11px] text-muted-foreground">
+                              파일 변환 가이드
+                            </span>
+                          </span>
+                          <span className="hidden shrink-0 rounded border bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline">
+                            변환
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                            <Lightbulb className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-medium">{s.entry.h1}</span>
+                            <span className="block truncate text-[11px] text-muted-foreground">
+                              {s.entry.description}
+                            </span>
+                          </span>
+                          <span className="hidden shrink-0 rounded border bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline">
+                            활용법
+                          </span>
+                        </>
+                      )}
                       {sel && (
                         <CornerDownLeft
                           className="h-3.5 w-3.5 shrink-0 text-muted-foreground"

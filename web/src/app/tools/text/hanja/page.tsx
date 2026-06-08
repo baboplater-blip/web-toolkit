@@ -2,9 +2,10 @@
 
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { hanjaToHangul } from '@/lib/tools/korean';
+import { triggerDownload } from '@/lib/tools/file-utils';
 
 export default function HanjaPage() {
   const [input, setInput] = useState('大韓民國은 東아시아에 있는 나라입니다. 人口는 약 5천萬名.');
@@ -37,18 +38,34 @@ export default function HanjaPage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full rounded-md border bg-background p-3 text-sm h-32 leading-relaxed" aria-label="한자 포함 텍스트" />
+          className="w-full rounded-md border bg-background p-3 text-sm min-h-40 resize-y leading-relaxed" aria-label="한자 포함 텍스트" />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-medium">변환 결과 ({replacements}자 변환)</label>
-          <Button variant="outline" size="sm" onClick={handleCopy}>
-            {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-            {copied ? '복사됨' : '복사'}
-          </Button>
+          <div className="flex gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                triggerDownload(
+                  new Blob([result], { type: 'text/plain;charset=utf-8' }),
+                  'hanja-to-hangul.txt',
+                )
+              }
+              disabled={!result}
+            >
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              TXT
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+              {copied ? '복사됨' : '복사'}
+            </Button>
+          </div>
         </div>
-        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm h-32 leading-relaxed" aria-label="변환 결과" />
+        <textarea readOnly value={result} className="w-full rounded-md border bg-card p-3 text-sm min-h-40 resize-y leading-relaxed" aria-label="변환 결과" />
       </div>
 
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">

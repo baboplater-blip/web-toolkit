@@ -165,7 +165,6 @@ const ITEM_LIST_JSON_LD = {
 export default function ToolsHubPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ToolCategory | 'all'>('all');
-  const [showHelp, setShowHelp] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('relevance');
 
   const { favorites, order: favoriteOrder, toggle, reorder, isFavorite } = useFavorites();
@@ -335,7 +334,6 @@ export default function ToolsHubPage() {
           else searchRef.current?.blur();
           e.preventDefault();
         }
-        if (showHelp) setShowHelp(false);
         return;
       }
       if (e.key === 'g' && !inEditable) {
@@ -357,11 +355,6 @@ export default function ToolsHubPage() {
         });
         return;
       }
-      if (e.key === '?' && !inEditable) {
-        e.preventDefault();
-        setShowHelp((v) => !v);
-        return;
-      }
       // 1-9: 카테고리 점프
       if (!inEditable && /^[1-9]$/.test(e.key)) {
         const idx = Number(e.key);
@@ -373,7 +366,7 @@ export default function ToolsHubPage() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [category, query, showHelp]);
+  }, [category, query]);
 
   return (
     <div className="min-h-dvh bg-background pb-14 md:pb-0">
@@ -391,7 +384,12 @@ export default function ToolsHubPage() {
           </span>
           <button
             type="button"
-            onClick={() => setShowHelp((v) => !v)}
+            onClick={() => {
+              // 전역 ShortcutsOverlay 로 일원화 — `?` keydown 을 합성 디스패치해 연다.
+              window.dispatchEvent(
+                new KeyboardEvent('keydown', { key: '?', bubbles: true }),
+              );
+            }}
             aria-label="키보드 단축키"
             title="키보드 단축키 (?)"
             className="hidden md:inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -489,44 +487,6 @@ export default function ToolsHubPage() {
             </div>
           </div>
         </div>
-
-        {showHelp && (
-          <div className="rounded-xl border bg-card p-3 text-xs leading-relaxed text-muted-foreground md:max-w-md">
-            <p className="mb-1.5 text-foreground font-medium">키보드 단축키</p>
-            <ul className="space-y-1">
-              <li>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">⌘</kbd>
-                <span className="mx-0.5">/</span>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">Ctrl</kbd>
-                <span className="mx-0.5">+</span>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">K</kbd>
-                <span className="ml-2">어디서나 검색 팔레트 열기</span>
-              </li>
-              <li>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">/</kbd>
-                <span className="ml-2">검색 박스로 포커스 (허브)</span>
-              </li>
-              <li>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">g</kbd>
-                <span className="ml-2">다음 카테고리로 점프</span>
-              </li>
-              <li>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">1</kbd>
-                <span className="mx-1">~</span>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">9</kbd>
-                <span className="ml-2">카테고리 직접 선택</span>
-              </li>
-              <li>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd>
-                <span className="ml-2">검색 비우기 / 도움말 닫기</span>
-              </li>
-              <li>
-                <kbd className="rounded border bg-background px-1.5 py-0.5 font-mono text-[10px]">?</kbd>
-                <span className="ml-2">이 도움말 토글</span>
-              </li>
-            </ul>
-          </div>
-        )}
 
         {favoriteTools.length > 0 && (
           <section className="space-y-2">
