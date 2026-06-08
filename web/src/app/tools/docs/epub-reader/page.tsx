@@ -175,7 +175,7 @@ export default function EpubReaderPage() {
             </Button>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-[240px_1fr]">
+          <div className={`grid gap-3 ${tocOpen ? 'md:grid-cols-[240px_1fr]' : 'grid-cols-1'}`}>
             {/* TOC */}
             {tocOpen && (
               <aside className="rounded-xl border bg-card p-2 max-h-[70vh] overflow-y-auto">
@@ -215,7 +215,7 @@ export default function EpubReaderPage() {
                 </p>
               ) : (
                 <div
-                  className="epub-content"
+                  className="epub-content mx-auto w-full max-w-[42rem]"
                   dangerouslySetInnerHTML={{ __html: chapterHtml }}
                 />
               )}
