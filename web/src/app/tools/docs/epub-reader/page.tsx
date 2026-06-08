@@ -200,7 +200,7 @@ export default function EpubReaderPage() {
             {/* 본문 */}
             <div
               ref={containerRef}
-              className="rounded-xl border min-h-[60vh] max-h-[70vh] overflow-y-auto p-6 leading-relaxed"
+              className="rounded-xl border h-[70vh] overflow-y-auto p-6 leading-relaxed"
               style={{
                 background: themeStyle.bg,
                 color: themeStyle.fg,
