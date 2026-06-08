@@ -16,7 +16,7 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-0396422-202606071406';
+const SW_VERSION = 'webtoolkit-sw-8d4fa68-202606081155';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const ASSET_CACHE = `${SW_VERSION}-asset`;

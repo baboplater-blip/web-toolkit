@@ -356,6 +356,156 @@ export function randomUuid(): string {
 }
 
 /* ============================================================
+ * 목차(TOC) 파싱 — EPUB3 nav.xhtml 또는 EPUB2 toc.ncx 의 실제 목차.
+ * ============================================================ */
+
+export interface TocEntry {
+  title: string;
+  /** 매칭되는 spine idref (없으면 null — 비-spine 항목) */
+  idref: string | null;
+  /** 중첩 깊이 (0 = 최상위) */
+  depth: number;
+}
+
+/** TOC 파일 내 상대 src 를 spine idref 로 해석하기 위한 절대경로→idref 맵 구성. */
+function buildAbsToIdref(epub: ParsedEpub): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const idref of epub.spine) {
+    const it = epub.manifest.get(idref);
+    if (it) map.set(resolveHref(epub.opfDir, it.href.split('#')[0]), idref);
+  }
+  return map;
+}
+
+function parseNavXhtml(
+  xml: string,
+  dir: string,
+  absToIdref: Map<string, string>,
+): TocEntry[] {
+  const tocNav = xml.match(
+    /<nav\b[^>]*epub:type\s*=\s*["'][^"']*\btoc\b[^"']*["'][^>]*>([\s\S]*?)<\/nav>/i,
+  );
+  const anyNav = tocNav ? null : xml.match(/<nav\b[^>]*>([\s\S]*?)<\/nav>/i);
+  const block = tocNav ? tocNav[1] : anyNav ? anyNav[1] : '';
+  if (!block) return [];
+
+  const entries: TocEntry[] = [];
+  let depth = 0;
+  const tokenRe = /<(\/?)(ol|ul|a)\b([^>]*)>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = tokenRe.exec(block))) {
+    const closing = m[1] === '/';
+    const tag = m[2].toLowerCase();
+    if (tag === 'ol' || tag === 'ul') {
+      depth = closing ? Math.max(0, depth - 1) : depth + 1;
+    } else if (tag === 'a' && !closing) {
+      const href = attr(`<a ${m[3]}>`, 'href');
+      const after = block.slice(tokenRe.lastIndex);
+      const close = after.search(/<\/a>/i);
+      const inner = close >= 0 ? after.slice(0, close) : '';
+      const title = htmlToPlainText(inner).trim();
+      if (href && title) {
+        const abs = normalizeEpubPath(dir + href.split('#')[0]);
+        entries.push({ title, idref: absToIdref.get(abs) ?? null, depth: Math.max(0, depth - 1) });
+      }
+    }
+  }
+  return entries;
+}
+
+function parseNcx(
+  xml: string,
+  dir: string,
+  absToIdref: Map<string, string>,
+): TocEntry[] {
+  const navMapM = xml.match(/<navMap\b[^>]*>([\s\S]*?)<\/navMap>/i);
+  const block = navMapM ? navMapM[1] : xml;
+  const entries: TocEntry[] = [];
+  let depth = -1;
+  let cur: { title?: string; src?: string; depth: number } | null = null;
+  const flush = () => {
+    if (cur && cur.title && cur.src) {
+      const abs = normalizeEpubPath(dir + cur.src.split('#')[0]);
+      entries.push({
+        title: htmlToPlainText(cur.title).trim(),
+        idref: absToIdref.get(abs) ?? null,
+        depth: cur.depth,
+      });
+    }
+    cur = null;
+  };
+  const re =
+    /<navPoint\b[^>]*>|<\/navPoint>|<navLabel\b[^>]*>\s*<text\b[^>]*>([\s\S]*?)<\/text>|<content\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(block))) {
+    const tok = m[0];
+    if (/^<navPoint/i.test(tok)) {
+      flush();
+      depth++;
+      cur = { depth };
+    } else if (/^<\/navPoint>/i.test(tok)) {
+      flush();
+      depth = Math.max(-1, depth - 1);
+    } else if (m[1] !== undefined) {
+      if (cur && cur.title === undefined) cur.title = m[1];
+    } else if (m[2] !== undefined) {
+      if (cur && cur.src === undefined) cur.src = m[2];
+    }
+  }
+  flush();
+  return entries;
+}
+
+/**
+ * EPUB 의 실제 목차를 반환한다. EPUB3 nav(properties="nav") 우선, 없으면
+ * EPUB2 NCX(.ncx)를 파싱. 각 항목은 spine idref 로 매핑(가능한 경우)되고
+ * 중첩 깊이를 보존한다. 목차가 없으면 빈 배열.
+ */
+export async function parseToc(epub: ParsedEpub): Promise<TocEntry[]> {
+  const absToIdref = buildAbsToIdref(epub);
+
+  // EPUB3 nav
+  let navItem: EpubManifestItem | undefined;
+  for (const it of epub.manifest.values()) {
+    if (it.properties && /(^|\s)nav(\s|$)/.test(it.properties)) {
+      navItem = it;
+      break;
+    }
+  }
+  if (navItem) {
+    const navAbs = resolveHref(epub.opfDir, navItem.href);
+    const f = epub.zip.file(navAbs);
+    if (f) {
+      const xml = await f.async('text');
+      const navDir = navAbs.includes('/') ? navAbs.slice(0, navAbs.lastIndexOf('/') + 1) : '';
+      const entries = parseNavXhtml(xml, navDir, absToIdref);
+      if (entries.length > 0) return entries;
+    }
+  }
+
+  // EPUB2 NCX
+  let ncxItem: EpubManifestItem | undefined;
+  for (const it of epub.manifest.values()) {
+    if (it.mediaType === 'application/x-dtbncx+xml' || it.href.toLowerCase().endsWith('.ncx')) {
+      ncxItem = it;
+      break;
+    }
+  }
+  if (ncxItem) {
+    const ncxAbs = resolveHref(epub.opfDir, ncxItem.href);
+    const f = epub.zip.file(ncxAbs);
+    if (f) {
+      const xml = await f.async('text');
+      const ncxDir = ncxAbs.includes('/') ? ncxAbs.slice(0, ncxAbs.lastIndexOf('/') + 1) : '';
+      const entries = parseNcx(xml, ncxDir, absToIdref);
+      if (entries.length > 0) return entries;
+    }
+  }
+
+  return [];
+}
+
+/* ============================================================
  * EPUB 빌더 — 새 EPUB 3 파일을 처음부터 만든다.
  * ============================================================ */
 
