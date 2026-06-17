@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/zalgo-text',
+      'ja': '/ja/tools/zalgo-text',
+      'zh': '/zh/tools/zalgo-text',
       'x-default': URL_PATH,
     },
   },

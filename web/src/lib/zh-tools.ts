@@ -1379,6 +1379,567 @@ export const ZH_TOOLS: Record<string, ZhToolCopy> = {
       '按任意频率、波形和时长生成纯音并下载为 WAV，使用 Web Audio API 在本地完成。',
     keywords: ['信号发生器', '频率发生器', '测试音', '正弦波', 'tone generator', 'frequency generator'],
   },
+  // ── 补充（en 对齐） ──
+  'ascii-banner': {
+    name: 'ASCII 横幅生成器',
+    tagline: '把文字变成大号 ASCII 艺术字母。',
+    description:
+      '将文字生成为大号 ASCII 艺术横幅，适合 README、终端和代码注释，全程在浏览器本地完成。',
+    keywords: ['ASCII横幅', 'ASCII艺术字', '字符画', 'figlet', 'ascii banner', 'text to ascii'],
+  },
+  'avatar-crop': {
+    name: '圆形头像裁剪',
+    tagline: '把图片裁剪成圆形头像。',
+    description:
+      '将照片裁剪为圆形并导出透明 PNG，非常适合做头像和个人资料图片，全程在浏览器中完成。',
+    keywords: ['圆形裁剪', '头像制作', '头像裁剪', '圆形头像', 'circle crop', 'avatar maker'],
+  },
+  base32: {
+    name: 'Base32 编码 / 解码',
+    tagline: '按 RFC 4648 对文本进行 Base32 编解码。',
+    description:
+      '在本地将文本与 Base32（RFC 4648）互相转换，适合 TOTP 密钥和不区分大小写的编码，全程在浏览器中完成。',
+    keywords: ['Base32编码', 'Base32解码', 'Base32转换', 'TOTP密钥', 'base32', 'rfc 4648'],
+  },
+  bcrypt: {
+    name: 'bcrypt 哈希与校验',
+    tagline: '生成并校验 bcrypt 密码哈希。',
+    description:
+      '按指定成本因子用 bcrypt 对密码做哈希，或校验密码与哈希是否匹配，全程在浏览器本地计算，不上传。',
+    keywords: ['bcrypt', 'bcrypt哈希', '密码哈希', '密码校验', 'bcrypt hash', 'bcrypt verify'],
+  },
+  'binary-text': {
+    name: '文本转二进制',
+    tagline: '在文本和二进制之间互相转换。',
+    description:
+      '将文本编码为二进制（UTF-8），或把二进制解码回文本，全程在浏览器本地完成，不上传。',
+    keywords: ['文本转二进制', '二进制转文本', '二进制转换', 'binary', 'text to binary', 'ascii binary'],
+  },
+  'bionic-reading': {
+    name: '仿生阅读转换器',
+    tagline: '加粗每个单词的前半部分以加快阅读。',
+    description:
+      '将任意文本转换为仿生阅读格式，加粗单词开头来引导视线、提升阅读速度，全程在浏览器本地完成。',
+    keywords: ['仿生阅读', '速读', '快速阅读', '阅读辅助', 'bionic reading', 'speed reading'],
+  },
+  'box-shadow': {
+    name: 'CSS 阴影生成器',
+    tagline: '可视化设计并复制 CSS box-shadow。',
+    description:
+      '调整偏移、模糊、扩展和颜色来构建 box-shadow，实时预览并复制 CSS 代码，全程在浏览器中完成。',
+    keywords: ['阴影生成器', 'CSS阴影', 'box-shadow', '盒子阴影', 'box shadow generator', 'shadow css'],
+  },
+  'caesar-cipher': {
+    name: '凯撒密码 / ROT13',
+    tagline: '对文本进行凯撒移位和 ROT13 加解密。',
+    description:
+      '对文本应用凯撒移位密码或 ROT13 并还原，移位量可调，全程在浏览器本地完成，不上传。',
+    keywords: ['凯撒密码', 'ROT13', '移位密码', '文本加密', 'caesar cipher', 'shift cipher'],
+  },
+  'chmod-calc': {
+    name: 'chmod 权限计算器',
+    tagline: '在八进制和符号表示之间转换 Unix 权限。',
+    description:
+      '勾选所有者、组和其他人的读/写/执行权限，得到 chmod 的八进制和符号表示，全程在浏览器中完成。',
+    keywords: ['chmod计算', 'Unix权限', '文件权限', '八进制权限', 'chmod calculator', 'chmod 755'],
+  },
+  'coin-flip': {
+    name: '抛硬币',
+    tagline: '抛一枚虚拟硬币决定正反面。',
+    description:
+      '抛一枚或多枚硬币，查看正反面结果和统计，结果随机公正，全程在浏览器本地完成。',
+    keywords: ['抛硬币', '掷硬币', '正反面', '随机决定', 'coin flip', 'heads or tails'],
+  },
+  'color-blind': {
+    name: '色盲模拟器',
+    tagline: '预览图片在色盲者眼中的样子。',
+    description:
+      '在图片上模拟红色盲、绿色盲和蓝色盲效果，用于检查配色的无障碍可读性，全程在浏览器中完成。',
+    keywords: ['色盲模拟', '色盲测试', '色弱模拟', '无障碍配色', 'color blindness', 'protanopia'],
+  },
+  'color-name': {
+    name: '颜色名称查找',
+    tagline: '为任意 HEX 或 RGB 值找最接近的 CSS 颜色名。',
+    description:
+      '输入 HEX 或 RGB 颜色，找出最接近的 CSS 命名颜色并标记完全匹配项，全程在浏览器本地完成。',
+    keywords: ['颜色名称', '颜色名查找', 'CSS颜色名', 'HEX转颜色名', 'color name finder', 'css color names'],
+  },
+  'css-units': {
+    name: 'CSS 单位换算',
+    tagline: '在 px、rem、em 和 pt 之间换算。',
+    description:
+      '基于自定义根字号在 px、rem、em、pt 等 CSS 长度单位之间换算，不上传，全程在浏览器中完成。',
+    keywords: ['CSS单位换算', 'px转rem', 'rem转px', 'em转px', 'css unit converter', 'px to rem'],
+  },
+  'csv-merge': {
+    name: 'CSV 合并',
+    tagline: '将多个 CSV 文件合并为一个。',
+    description:
+      '把多个 CSV 文件按表头对齐列合并成一个文件，全程在浏览器本地处理，文件不上传。',
+    keywords: ['CSV合并', '合并CSV', 'CSV拼接', '多CSV合一', 'csv merge', 'combine csv'],
+  },
+  'csv-split': {
+    name: 'CSV 拆分',
+    tagline: '按行数将大 CSV 拆分为多个小文件。',
+    description:
+      '把大 CSV 按每 N 行拆成多块，每个文件都保留表头，并打包为 zip 下载，全程在浏览器中完成。',
+    keywords: ['CSV拆分', '拆分CSV', '分割CSV', '大文件拆分', 'csv split', 'split csv'],
+  },
+  'csv-to-md': {
+    name: 'CSV 转 Markdown 表格',
+    tagline: '把 CSV 转成 GitHub 风格的 Markdown 表格。',
+    description:
+      '粘贴 CSV 即可生成列对齐的 Markdown 表格，可直接用于 README，全程在浏览器中完成。',
+    keywords: ['CSV转Markdown', 'Markdown表格', 'CSV转MD', '表格生成', 'csv to markdown', 'markdown table'],
+  },
+  'cubic-bezier': {
+    name: '三次贝塞尔曲线编辑器',
+    tagline: '用可拖动的贝塞尔曲线设计 CSS 缓动。',
+    description:
+      '拖动控制点为 CSS 过渡设计 cubic-bezier 缓动函数并复制取值，全程在浏览器本地完成。',
+    keywords: ['贝塞尔曲线', '缓动编辑器', 'CSS缓动', '过渡曲线', 'cubic bezier', 'easing editor'],
+  },
+  'curl-to-code': {
+    name: 'cURL 转代码',
+    tagline: '把 cURL 命令转成 fetch、axios 或 Python requests 代码。',
+    description:
+      '粘贴 cURL 命令即可生成可用的 JavaScript fetch、axios 或 Python requests 代码，全程在浏览器中完成。',
+    keywords: ['cURL转代码', 'curl转fetch', 'curl转Python', 'curl转换', 'curl to code', 'curl to fetch'],
+  },
+  'date-diff': {
+    name: '日期计算器',
+    tagline: '计算两日期间隔天数，或加减天数。',
+    description:
+      '计算两个日期之间相差的天数，或从某个日期加减天数，全程在浏览器本地完成。',
+    keywords: ['日期计算', '间隔天数', '日期差', '加减天数', 'date calculator', 'days between dates'],
+  },
+  'dice-roller': {
+    name: '掷骰子',
+    tagline: '掷任意数量、任意面数的骰子。',
+    description:
+      '掷 D4、D6、D20 和自定义骰子，支持总和与修正值，适合桌游，采用密码学随机，全程在浏览器中完成。',
+    keywords: ['掷骰子', '骰子', 'D20', '桌游骰子', 'dice roller', 'rpg dice'],
+  },
+  discount: {
+    name: '折扣计算器',
+    tagline: '计算折后价和省下的金额。',
+    description:
+      '输入原价和折扣即可得到最终价格和省下的金额，也可反算折扣率，全程在浏览器本地完成。',
+    keywords: ['折扣计算', '折后价', '打折计算', '省钱计算', 'discount calculator', 'sale price'],
+  },
+  'dotenv-json': {
+    name: '.env 转 JSON',
+    tagline: '在 .env 文件和 JSON 之间互相转换。',
+    description:
+      '粘贴 .env 内容得到 JSON，或把 JSON 转回 .env 文件，可处理引号和注释，全程在浏览器中完成。',
+    keywords: ['env转JSON', 'dotenv转JSON', 'JSON转env', 'env转换', 'env to json', 'dotenv'],
+  },
+  'fancy-text': {
+    name: '花式文字生成器',
+    tagline: '把文字变成时髦的 Unicode 字体。',
+    description:
+      '将普通文本转换为粗体、斜体、手写体等 Unicode 字体样式，适合社交平台个性签名，全程在浏览器中完成。',
+    keywords: ['花式文字', '特殊字体', 'Unicode字体', '艺术字', 'fancy text', 'instagram fonts'],
+  },
+  'fuel-cost': {
+    name: '油费计算器',
+    tagline: '按里程、油耗和油价估算行程油费。',
+    description:
+      '输入行程里程、油耗和油价，估算总油费和油耗量，全程在浏览器本地完成。',
+    keywords: ['油费计算', '油耗计算', '行程油费', '加油费用', 'fuel cost', 'gas cost'],
+  },
+  'gitignore-gen': {
+    name: '.gitignore 生成器',
+    tagline: '按语言、框架和操作系统生成 .gitignore。',
+    description:
+      '选择技术栈和平台即可拼装出可直接使用的 .gitignore 文件，全程在浏览器本地生成，不上传。',
+    keywords: ['gitignore生成', '生成gitignore', 'git忽略模板', 'gitignore', 'gitignore generator', 'git ignore'],
+  },
+  gpa: {
+    name: 'GPA 计算器',
+    tagline: '计算你的平均学分绩点。',
+    description:
+      '输入课程的学分和成绩，计算加权 GPA（4.0/4.5 制），全程在浏览器本地完成。',
+    keywords: ['GPA计算', '平均绩点', '学分绩点', '加权GPA', 'gpa calculator', 'grade point average'],
+  },
+  'gradient-image': {
+    name: '渐变图片生成器',
+    tagline: '生成渐变背景图并导出 PNG。',
+    description:
+      '选择颜色、方向和尺寸即可生成渐变背景图并下载为 PNG，全程在浏览器本地完成。',
+    keywords: ['渐变图片', '渐变背景', '渐变壁纸', '生成渐变', 'gradient image', 'gradient background'],
+  },
+  'hmac-gen': {
+    name: 'HMAC 生成器',
+    tagline: '用 SHA-1、SHA-256 或 SHA-512 生成 HMAC 签名。',
+    description:
+      '用 Web Crypto API 从密钥和消息计算 HMAC，输出十六进制或 Base64，全程在浏览器本地完成。',
+    keywords: ['HMAC生成', 'HMAC签名', '消息认证码', 'hmac sha256', 'hmac generator', 'hmac'],
+  },
+  htpasswd: {
+    name: '.htpasswd 生成器',
+    tagline: '生成 Apache .htpasswd 凭证行。',
+    description:
+      '根据用户名和密码生成 .htpasswd 条目（bcrypt/APR1-MD5/SHA），全程在浏览器本地完成，不上传。',
+    keywords: ['htpasswd生成', 'Apache密码', '基本认证密码', 'htpasswd', 'htpasswd generator', 'basic auth'],
+  },
+  'http-status': {
+    name: 'HTTP 状态码查询',
+    tagline: '查询任意 HTTP 状态码的含义。',
+    description:
+      '搜索 HTTP 状态码（1xx–5xx），查看含义和常见使用场景的快速参考，全程在浏览器本地完成。',
+    keywords: ['HTTP状态码', '404含义', '500错误', '响应码', 'http status codes', 'http response codes'],
+  },
+  'image-blur': {
+    name: '图片模糊',
+    tagline: '为图片应用高斯模糊。',
+    description:
+      '以可调半径对整张图片进行模糊处理并下载结果，全程在浏览器本地完成，图片不上传。',
+    keywords: ['图片模糊', '高斯模糊', '照片模糊', '模糊处理', 'blur image', 'gaussian blur'],
+  },
+  'image-border': {
+    name: '图片加边框',
+    tagline: '为图片添加彩色边框或画框。',
+    description:
+      '为任意图片添加自定义宽度和颜色的实心边框，全程在浏览器本地完成，不上传。',
+    keywords: ['图片边框', '加边框', '照片画框', '相片边框', 'image border', 'photo frame'],
+  },
+  'image-color-picker': {
+    name: '图片取色器',
+    tagline: '从任意图片中拾取 HEX/RGB 颜色。',
+    description:
+      '上传图片后点击任意位置即可读取该像素的 HEX 和 RGB 颜色，全程在浏览器本地完成，不上传。',
+    keywords: ['图片取色', '取色器', '吸管工具', '从图片取色', 'image color picker', 'eyedropper'],
+  },
+  'image-duotone': {
+    name: '双色调图片',
+    tagline: '把图片映射为双色调风格。',
+    description:
+      '用两种自定义颜色分别映射阴影和高光，把照片转换为时髦的双色调效果，全程在浏览器本地完成。',
+    keywords: ['双色调', '双色图片', '渐变映射', '双色风格', 'duotone', 'two tone photo'],
+  },
+  'image-filters': {
+    name: '图片滤镜',
+    tagline: '为照片套用 Instagram 风格滤镜。',
+    description:
+      '为图片添加黑白、复古、怀旧等滤镜并下载结果，全程在浏览器本地完成，不上传。',
+    keywords: ['图片滤镜', '照片滤镜', '复古滤镜', '黑白滤镜', 'image filters', 'photo filter'],
+  },
+  'image-histogram': {
+    name: '图片直方图',
+    tagline: '分析图片的 RGB 和亮度分布。',
+    description:
+      '上传图片查看其红、绿、蓝和亮度直方图，便于分析曝光，全程在浏览器本地完成，不上传。',
+    keywords: ['图片直方图', 'RGB直方图', '照片直方图', '亮度直方图', 'image histogram', 'rgb histogram'],
+  },
+  'image-placeholder': {
+    name: '占位图生成器',
+    tagline: '生成自定义尺寸和文字的占位图。',
+    description:
+      '为原型设计生成自定义尺寸、颜色和标注文字的纯色占位图，并在本地导出 PNG，全程在浏览器中完成。',
+    keywords: ['占位图', '占位图片', '虚拟图片', '原型图', 'placeholder image', 'dummy image'],
+  },
+  'image-target-size': {
+    name: '压缩图片到指定大小',
+    tagline: '将图片压缩到目标文件体积。',
+    description:
+      '自动调节质量，让 JPEG/WebP 控制在你设定的体积以内（例如 200 KB），全程在浏览器本地完成。',
+    keywords: ['压缩到指定大小', '目标体积', '压缩到KB', '指定大小压缩', 'compress to size', 'target size'],
+  },
+  'ini-json': {
+    name: 'INI 转 JSON',
+    tagline: '在 INI 配置和 JSON 之间互相转换。',
+    description:
+      '把 INI 文件解析为 JSON，或把 JSON 序列化回 INI，全程在浏览器本地完成，不上传。',
+    keywords: ['INI转JSON', 'JSON转INI', 'INI转换', 'INI解析', 'ini to json', 'json to ini'],
+  },
+  'json-diff': {
+    name: 'JSON 差异比较',
+    tagline: '在结构上比较两份 JSON 文档。',
+    description:
+      '在两个 JSON 对象之间做结构化差异比较，找出新增、删除和修改的键，全程在浏览器本地完成。',
+    keywords: ['JSON对比', 'JSON差异', '比较JSON', '结构差异', 'json diff', 'compare json'],
+  },
+  'json-escape': {
+    name: 'JSON 转义 / 反转义',
+    tagline: '为 JSON 转义和反转义字符串。',
+    description:
+      '把文本转义为 JSON 安全字符串（引号、换行、Unicode），或反转义还原，全程在浏览器本地完成。',
+    keywords: ['JSON转义', 'JSON反转义', '字符串转义', 'JSON字符串', 'json escape', 'json unescape'],
+  },
+  'json-flatten': {
+    name: 'JSON 扁平化 / 还原',
+    tagline: '把嵌套 JSON 拍平为点号键，或重新还原。',
+    description:
+      '把嵌套 JSON 转换为点号表示的扁平键，或把点号键还原为嵌套对象，全程在浏览器本地完成。',
+    keywords: ['JSON扁平化', '拍平JSON', 'JSON还原', '点号键', 'json flatten', 'flatten json'],
+  },
+  'json-to-go': {
+    name: 'JSON 转 Go 结构体',
+    tagline: '从 JSON 即时生成 Go struct 类型。',
+    description:
+      '粘贴 JSON 即可得到带 json tag 的强类型 Go 结构体，全程在浏览器本地完成，不上传。',
+    keywords: ['JSON转Go', 'JSON转结构体', 'Go结构体生成', 'golang struct', 'json to go', 'json to struct'],
+  },
+  'jsonl-viewer': {
+    name: 'JSONL 查看器',
+    tagline: '以表格查看 JSON Lines 并导出为 JSON 或 CSV。',
+    description:
+      '打开 JSONL/NDJSON 文件以表格浏览记录，再转换为 JSON 数组或 CSV，全程在浏览器本地完成。',
+    keywords: ['JSONL查看', 'NDJSON查看', 'JSON Lines', 'JSONL转CSV', 'jsonl viewer', 'ndjson'],
+  },
+  'language-detect': {
+    name: '语言检测器',
+    tagline: '检测一段文字是用什么语言写的。',
+    description:
+      '基于字符和 n-gram 启发式估计文本所属语言，全程在浏览器本地完成，不上传。',
+    keywords: ['语言检测', '检测语言', '识别语言', '判断语言', 'language detector', 'detect language'],
+  },
+  'line-numbers': {
+    name: '添加行号',
+    tagline: '为每行文本加上行号，或去除已有行号。',
+    description:
+      '用自定义起始值、补零位数和分隔符为每行文本添加行号，也可移除行号，全程在浏览器本地完成。',
+    keywords: ['添加行号', '行号', '行编号', '去除行号', 'add line numbers', 'number lines'],
+  },
+  'lottery-number': {
+    name: '彩票号码生成器',
+    tagline: '生成随机彩票号码组合。',
+    description:
+      '按自定义范围和数量随机选取彩票号码组合，采用密码学随机，全程在浏览器本地完成。',
+    keywords: ['彩票号码', '随机彩票', '选号器', '随机号码', 'lottery number', 'random numbers'],
+  },
+  'markdown-preview': {
+    name: 'Markdown 预览',
+    tagline: '一边输入一边实时渲染 Markdown。',
+    description:
+      '编写 Markdown，实时并排查看渲染效果和 HTML 源码，全程在浏览器本地完成，不上传。',
+    keywords: ['Markdown预览', 'Markdown编辑器', '实时Markdown', 'MD转HTML', 'markdown preview', 'md editor'],
+  },
+  'mock-data': {
+    name: '模拟数据生成器',
+    tagline: '生成假姓名、邮箱等记录并导出 JSON 或 CSV。',
+    description:
+      '生成逼真的模拟数据（姓名、邮箱、地址、日期）并导出为 JSON 或 CSV 供测试用，全程在浏览器本地完成。',
+    keywords: ['模拟数据', '假数据', '测试数据', '虚拟数据', 'mock data', 'fake data'],
+  },
+  'morse-code': {
+    name: '摩斯电码翻译器',
+    tagline: '在文本和摩斯电码间互译，并可发声。',
+    description:
+      '在文本和摩斯电码之间互相转换，并以音频蜂鸣声播放，全程在浏览器本地完成，不上传。',
+    keywords: ['摩斯电码', '摩尔斯电码', '电码翻译', '电码发声', 'morse code', 'text to morse'],
+  },
+  'nato-phonetic': {
+    name: '北约音标字母',
+    tagline: '用北约音标字母拼读文本。',
+    description:
+      '把任意文本转换为北约音标字母（Alfa、Bravo、Charlie……）以便清晰拼读，全程在浏览器本地完成。',
+    keywords: ['北约音标', '音标字母', '字母拼读', 'NATO', 'nato phonetic', 'alfa bravo charlie'],
+  },
+  'number-to-words': {
+    name: '数字转大写文字',
+    tagline: '把数字写成文字。',
+    description:
+      '把数字转换为对应的英文文字（及金额写法），例如 1234 → one thousand two hundred thirty-four，全程在浏览器本地完成。',
+    keywords: ['数字转文字', '数字转大写', '数字读法', '金额大写', 'number to words', 'spell number'],
+  },
+  'pdf-booklet': {
+    name: 'PDF 小册子拼版',
+    tagline: '将 PDF 拼成可打印的 2 合 1 小册子。',
+    description:
+      '将 PDF 页面重排为骑马钉小册子拼版，便于打印、折叠和装订，全程在浏览器中完成，文件不上传。',
+    keywords: ['PDF小册子', '小册子拼版', 'PDF拼版', '骑马钉', 'pdf booklet', 'pdf imposition'],
+  },
+  'pdf-reverse': {
+    name: 'PDF 页面倒序',
+    tagline: '反转 PDF 的页面顺序。',
+    description:
+      '将 PDF 所有页面的顺序反转并下载结果，全程在浏览器中完成，文件不上传。',
+    keywords: ['PDF倒序', 'PDF反转页序', 'PDF页序', '反转PDF', 'reverse pdf', 'flip pdf order'],
+  },
+  'qr-logo': {
+    name: '带 Logo 的二维码',
+    tagline: '生成中间带 Logo 的二维码。',
+    description:
+      '从文本或网址生成二维码，并在中间叠加你的 Logo，带纠错能力，全程在浏览器本地完成。',
+    keywords: ['Logo二维码', '带标志二维码', '品牌二维码', '自定义二维码', 'qr with logo', 'custom qr'],
+  },
+  'random-number': {
+    name: '随机数生成器',
+    tagline: '按范围、数量和唯一性生成随机数。',
+    description:
+      '在指定范围内生成随机整数，支持数量和不重复选项，采用密码学随机，全程在浏览器本地完成。',
+    keywords: ['随机数', '随机数生成', '随机整数', '随机抽取', 'random number', 'rng'],
+  },
+  'reaction-time': {
+    name: '反应时间测试',
+    tagline: '测试你的反应速度（毫秒）。',
+    description:
+      '信号一变化就立刻点击，跨多轮测量你的反应时间，全程在浏览器本地完成，不上传。',
+    keywords: ['反应时间', '反应测试', '反应速度', '反射测试', 'reaction time', 'reflex test'],
+  },
+  'reverse-text': {
+    name: '文本反转',
+    tagline: '按字符、单词或行反转文本。',
+    description:
+      '即时按字符、单词或行序反转文本，不上传，全程在浏览器本地完成。',
+    keywords: ['文本反转', '倒序文本', '反转字符串', '翻转文字', 'reverse text', 'backwards text'],
+  },
+  'scientific-calc': {
+    name: '科学计算器',
+    tagline: '在浏览器里做三角、对数、幂运算等。',
+    description:
+      '支持三角函数、对数、指数、常量和表达式求值的科学计算器，全程在浏览器本地完成，无需服务器。',
+    keywords: ['科学计算器', '在线计算器', '三角函数计算', '表达式计算', 'scientific calculator', 'math calculator'],
+  },
+  'screen-ruler': {
+    name: '屏幕标尺与 PPI',
+    tagline: '测量像素并计算屏幕 PPI。',
+    description:
+      '根据分辨率和对角线尺寸计算显示屏 PPI，并提供屏上像素标尺，全程在浏览器本地完成。',
+    keywords: ['屏幕标尺', 'PPI计算', '像素标尺', '屏幕DPI', 'screen ruler', 'ppi calculator'],
+  },
+  'secret-split': {
+    name: '秘密分割（Shamir）',
+    tagline: '把秘密分成多份，凑齐若干份即可恢复。',
+    description:
+      '使用 Shamir 秘密共享把秘密分成 N 份，任意 K 份即可重组还原，全程在浏览器本地完成，不上传。',
+    keywords: ['Shamir秘密共享', '秘密分割', '秘密共享', '密钥分割', 'shamir secret sharing', 'split secret'],
+  },
+  sentiment: {
+    name: '情感分析',
+    tagline: '把文本打分为正面或负面。',
+    description:
+      '基于词典的打分器估计文本情感，无需模型、无需上传，并高亮正面和负面词，全程在浏览器本地完成。',
+    keywords: ['情感分析', '正负面分析', '情感打分', '文本情感', 'sentiment analysis', 'text sentiment'],
+  },
+  'subnet-calc': {
+    name: '子网计算器',
+    tagline: '从 CIDR 计算网络地址、广播地址和主机范围。',
+    description:
+      '输入 IPv4 地址和 CIDR 前缀，得到子网掩码、网络与广播地址以及可用主机范围，全程在浏览器本地完成。',
+    keywords: ['子网计算', 'CIDR计算', 'IP子网', '掩码计算', 'subnet calculator', 'cidr calculator'],
+  },
+  summarize: {
+    name: '文本摘要',
+    tagline: '抽取式摘要——挑出关键句子。',
+    description:
+      '对句子打分并抽取最重要的句子来概括全文，无需模型、无需上传，全程在浏览器本地完成。',
+    keywords: ['文本摘要', '自动摘要', '抽取式摘要', '内容概括', 'text summarizer', 'summarize text'],
+  },
+  'svg-optimize': {
+    name: 'SVG 优化器',
+    tagline: '剔除冗余内容缩小 SVG 文件。',
+    description:
+      '移除编辑器元数据、多余空白和过高精度，缩减 SVG 标记体积，全程在浏览器本地完成，不上传。',
+    keywords: ['SVG优化', '优化SVG', 'SVG压缩', 'SVG清理', 'svg optimizer', 'minify svg'],
+  },
+  tdee: {
+    name: 'TDEE 与卡路里计算器',
+    tagline: '估算基础代谢和每日热量需求。',
+    description:
+      '输入身高、体重、年龄和活动水平，计算 BMR 和 TDEE（每日热量需求），全程在浏览器本地完成。',
+    keywords: ['TDEE计算', '卡路里计算', '基础代谢', '每日热量', 'tdee calculator', 'calorie calculator'],
+  },
+  'text-repeat': {
+    name: '文本重复',
+    tagline: '把任意文本重复指定次数。',
+    description:
+      '将文本重复 N 次，副本之间可选分隔符，适合测试和模板，全程在浏览器本地完成。',
+    keywords: ['文本重复', '重复文本', '复制文本', '重复字符串', 'repeat text', 'duplicate text'],
+  },
+  timezone: {
+    name: '时区转换器',
+    tagline: '在不同时区之间转换时间。',
+    description:
+      '选择两个时区来转换时间并查看时差，使用浏览器内置的时区数据，全程在本地完成。',
+    keywords: ['时区转换', '时差计算', '世界时钟', 'UTC转换', 'timezone converter', 'world clock'],
+  },
+  'tip-calc': {
+    name: '小费计算器',
+    tagline: '计算小费并按人均分摊账单。',
+    description:
+      '输入账单金额、小费比例和人数，得到小费、总额和人均金额，全程在浏览器本地完成。',
+    keywords: ['小费计算', 'AA分摊', '账单分摊', '人均费用', 'tip calculator', 'split bill'],
+  },
+  'toml-json': {
+    name: 'TOML 转 JSON',
+    tagline: '在 TOML 和 JSON 之间互相转换。',
+    description:
+      '把 TOML 配置转换为 JSON 并可转回，便于编辑和查看配置文件，全程在浏览器本地完成。',
+    keywords: ['TOML转JSON', 'JSON转TOML', 'TOML转换', 'TOML解析', 'toml to json', 'json to toml'],
+  },
+  tts: {
+    name: '文字转语音',
+    tagline: '用浏览器语音朗读文本。',
+    description:
+      '输入文字，用浏览器内置语音朗读出来，语速和音调可调，全程在浏览器本地完成。',
+    keywords: ['文字转语音', '语音朗读', '朗读文本', 'TTS', 'text to speech', 'read aloud'],
+  },
+  'typing-speed': {
+    name: '打字速度测试',
+    tagline: '以 WPM 衡量你的打字速度。',
+    description:
+      '照着提示输入来测量每分钟字数和准确率，全程在浏览器本地完成，无需注册。',
+    keywords: ['打字速度', '打字测试', 'WPM测试', '每分钟字数', 'typing speed', 'wpm test'],
+  },
+  'user-agent-parser': {
+    name: 'User-Agent 解析器',
+    tagline: '从 User-Agent 字符串识别浏览器、系统和设备。',
+    description:
+      '粘贴任意 User-Agent 字符串即可识别浏览器、引擎、操作系统和设备类型，全程在浏览器本地完成。',
+    keywords: ['UA解析', 'User-Agent解析', 'UA分析', '识别浏览器', 'user agent parser', 'ua parser'],
+  },
+  'video-flip': {
+    name: '视频翻转',
+    tagline: '水平或垂直翻转视频。',
+    description:
+      '把视频左右或上下镜像翻转并重新编码，由 FFmpeg.wasm 驱动，全程在浏览器中完成。',
+    keywords: ['视频翻转', '视频镜像', '水平翻转', '翻转MP4', 'flip video', 'mirror video'],
+  },
+  'video-loop': {
+    name: '视频循环',
+    tagline: '把视频重复 N 次合成一个文件。',
+    description:
+      '将片段自身拼接指定次数，做成无缝循环视频，由 FFmpeg.wasm 驱动，仅在本地完成。',
+    keywords: ['视频循环', '重复视频', '循环视频', '循环MP4', 'loop video', 'repeat video'],
+  },
+  'video-resize': {
+    name: '视频分辨率调整',
+    tagline: '更改视频分辨率（720p、1080p……）。',
+    description:
+      '在保持宽高比的同时把视频重新编码到目标分辨率，由 FFmpeg.wasm 驱动，全程在浏览器中完成。',
+    keywords: ['视频调整分辨率', '改视频分辨率', '缩放视频', '视频720p1080p', 'resize video', 'change resolution'],
+  },
+  'video-reverse': {
+    name: '视频倒放',
+    tagline: '将视频倒序播放并导出。',
+    description:
+      '用 FFmpeg.wasm 把片段在时间上倒放并下载，全程在浏览器中完成，文件不上传。',
+    keywords: ['视频倒放', '倒放视频', '视频倒序', '反向播放', 'reverse video', 'backwards video'],
+  },
+  'webcam-record': {
+    name: '摄像头录制',
+    tagline: '用摄像头录制视频。',
+    description:
+      '采集你的摄像头和麦克风并下载 webm——无需上传、无需安装，全程在浏览器中完成。',
+    keywords: ['摄像头录制', '录摄像头', '相机录制', 'webm录制', 'webcam recorder', 'record webcam'],
+  },
+  'wifi-qr': {
+    name: 'WiFi 二维码生成器',
+    tagline: '生成可连接 WiFi 的二维码。',
+    description:
+      '输入 WiFi 名称、密码和加密类型，生成可扫码即连的二维码，全程在浏览器本地完成。',
+    keywords: ['WiFi二维码', 'WiFi二维码生成', '扫码连WiFi', '分享WiFi', 'wifi qr code', 'wifi password qr'],
+  },
+  'zalgo-text': {
+    name: 'Zalgo 故障文字',
+    tagline: '用组合符号制作诡异的故障文字。',
+    description:
+      '为文字叠加多层组合附加符号，制造故障感的 zalgo 效果，强度可调，全程在浏览器本地完成。',
+    keywords: ['Zalgo文字', '故障文字', '诡异文字', '乱码文字', 'zalgo text', 'glitch text'],
+  },
 };
 
 export const ZH_TOOL_IDS: string[] = Object.keys(ZH_TOOLS);

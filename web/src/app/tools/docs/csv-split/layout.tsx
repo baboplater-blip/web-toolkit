@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/csv-split',
+      'ja': '/ja/tools/csv-split',
+      'zh': '/zh/tools/csv-split',
       'x-default': URL_PATH,
     },
   },

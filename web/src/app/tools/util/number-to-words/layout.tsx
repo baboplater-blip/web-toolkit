@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/number-to-words',
+      'ja': '/ja/tools/number-to-words',
+      'zh': '/zh/tools/number-to-words',
       'x-default': URL_PATH,
     },
   },

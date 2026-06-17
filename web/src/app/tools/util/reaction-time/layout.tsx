@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/reaction-time',
+      'ja': '/ja/tools/reaction-time',
+      'zh': '/zh/tools/reaction-time',
       'x-default': URL_PATH,
     },
   },

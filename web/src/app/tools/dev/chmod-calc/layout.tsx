@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/chmod-calc',
+      'ja': '/ja/tools/chmod-calc',
+      'zh': '/zh/tools/chmod-calc',
       'x-default': URL_PATH,
     },
   },

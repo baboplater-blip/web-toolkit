@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-color-picker',
+      'ja': '/ja/tools/image-color-picker',
+      'zh': '/zh/tools/image-color-picker',
       'x-default': URL_PATH,
     },
   },

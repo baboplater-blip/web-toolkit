@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/bionic-reading',
+      'ja': '/ja/tools/bionic-reading',
+      'zh': '/zh/tools/bionic-reading',
       'x-default': URL_PATH,
     },
   },

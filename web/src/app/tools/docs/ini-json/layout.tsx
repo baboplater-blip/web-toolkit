@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ini-json',
+      'ja': '/ja/tools/ini-json',
+      'zh': '/zh/tools/ini-json',
       'x-default': URL_PATH,
     },
   },

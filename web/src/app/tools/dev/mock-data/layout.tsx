@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/mock-data',
+      'ja': '/ja/tools/mock-data',
+      'zh': '/zh/tools/mock-data',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/date-diff',
+      'ja': '/ja/tools/date-diff',
+      'zh': '/zh/tools/date-diff',
       'x-default': URL_PATH,
     },
   },

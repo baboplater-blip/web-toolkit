@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/scientific-calc',
+      'ja': '/ja/tools/scientific-calc',
+      'zh': '/zh/tools/scientific-calc',
       'x-default': URL_PATH,
     },
   },

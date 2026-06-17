@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/subnet-calc',
+      'ja': '/ja/tools/subnet-calc',
+      'zh': '/zh/tools/subnet-calc',
       'x-default': URL_PATH,
     },
   },

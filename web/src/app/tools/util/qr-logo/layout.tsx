@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/qr-logo',
+      'ja': '/ja/tools/qr-logo',
+      'zh': '/zh/tools/qr-logo',
       'x-default': URL_PATH,
     },
   },

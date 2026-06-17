@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/fancy-text',
+      'ja': '/ja/tools/fancy-text',
+      'zh': '/zh/tools/fancy-text',
       'x-default': URL_PATH,
     },
   },

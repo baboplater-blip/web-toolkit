@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/tdee',
+      'ja': '/ja/tools/tdee',
+      'zh': '/zh/tools/tdee',
       'x-default': URL_PATH,
     },
   },

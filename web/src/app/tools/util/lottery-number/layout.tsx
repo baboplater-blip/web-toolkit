@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/lottery-number',
+      'ja': '/ja/tools/lottery-number',
+      'zh': '/zh/tools/lottery-number',
       'x-default': URL_PATH,
     },
   },

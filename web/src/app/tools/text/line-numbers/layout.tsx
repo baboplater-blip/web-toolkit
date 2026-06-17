@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/line-numbers',
+      'ja': '/ja/tools/line-numbers',
+      'zh': '/zh/tools/line-numbers',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/wifi-qr',
+      'ja': '/ja/tools/wifi-qr',
+      'zh': '/zh/tools/wifi-qr',
       'x-default': URL_PATH,
     },
   },

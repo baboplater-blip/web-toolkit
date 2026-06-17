@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-border',
+      'ja': '/ja/tools/image-border',
+      'zh': '/zh/tools/image-border',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/cubic-bezier',
+      'ja': '/ja/tools/cubic-bezier',
+      'zh': '/zh/tools/cubic-bezier',
       'x-default': URL_PATH,
     },
   },

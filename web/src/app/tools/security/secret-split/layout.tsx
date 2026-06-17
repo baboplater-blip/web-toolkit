@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/secret-split',
+      'ja': '/ja/tools/secret-split',
+      'zh': '/zh/tools/secret-split',
       'x-default': URL_PATH,
     },
   },

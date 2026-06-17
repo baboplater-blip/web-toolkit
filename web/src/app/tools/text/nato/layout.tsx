@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/nato-phonetic',
+      'ja': '/ja/tools/nato-phonetic',
+      'zh': '/zh/tools/nato-phonetic',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/bcrypt',
+      'ja': '/ja/tools/bcrypt',
+      'zh': '/zh/tools/bcrypt',
       'x-default': URL_PATH,
     },
   },

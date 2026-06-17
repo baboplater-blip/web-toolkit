@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-placeholder',
+      'ja': '/ja/tools/image-placeholder',
+      'zh': '/zh/tools/image-placeholder',
       'x-default': URL_PATH,
     },
   },

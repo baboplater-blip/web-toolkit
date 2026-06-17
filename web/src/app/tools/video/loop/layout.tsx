@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-loop',
+      'ja': '/ja/tools/video-loop',
+      'zh': '/zh/tools/video-loop',
       'x-default': URL_PATH,
     },
   },

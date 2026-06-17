@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/caesar-cipher',
+      'ja': '/ja/tools/caesar-cipher',
+      'zh': '/zh/tools/caesar-cipher',
       'x-default': URL_PATH,
     },
   },

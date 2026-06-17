@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/svg-optimize',
+      'ja': '/ja/tools/svg-optimize',
+      'zh': '/zh/tools/svg-optimize',
       'x-default': URL_PATH,
     },
   },

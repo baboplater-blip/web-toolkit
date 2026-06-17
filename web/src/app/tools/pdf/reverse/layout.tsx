@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-reverse',
+      'ja': '/ja/tools/pdf-reverse',
+      'zh': '/zh/tools/pdf-reverse',
       'x-default': URL_PATH,
     },
   },

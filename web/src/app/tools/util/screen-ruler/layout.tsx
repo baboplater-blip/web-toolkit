@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/screen-ruler',
+      'ja': '/ja/tools/screen-ruler',
+      'zh': '/zh/tools/screen-ruler',
       'x-default': URL_PATH,
     },
   },

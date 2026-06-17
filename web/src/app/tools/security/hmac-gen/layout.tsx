@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/hmac-gen',
+      'ja': '/ja/tools/hmac-gen',
+      'zh': '/zh/tools/hmac-gen',
       'x-default': URL_PATH,
     },
   },

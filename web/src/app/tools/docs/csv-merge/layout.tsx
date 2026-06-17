@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/csv-merge',
+      'ja': '/ja/tools/csv-merge',
+      'zh': '/zh/tools/csv-merge',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-units',
+      'ja': '/ja/tools/css-units',
+      'zh': '/zh/tools/css-units',
       'x-default': URL_PATH,
     },
   },

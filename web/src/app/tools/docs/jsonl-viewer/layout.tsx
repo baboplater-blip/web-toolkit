@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/jsonl-viewer',
+      'ja': '/ja/tools/jsonl-viewer',
+      'zh': '/zh/tools/jsonl-viewer',
       'x-default': URL_PATH,
     },
   },

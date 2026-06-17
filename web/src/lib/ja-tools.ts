@@ -1399,6 +1399,568 @@ export const JA_TOOLS: Record<string, JaToolCopy> = {
       '任意の周波数・波形・長さで純音を生成し、WAVとしてダウンロードできます。Web Audio APIを使いブラウザ内で動作します。',
     keywords: ['トーンジェネレーター', '周波数生成', 'テスト音', 'サイン波', 'tone generator', '正弦波'],
   },
+
+  // ── 追加分（en パリティ） ──
+  'ascii-banner': {
+    name: 'アスキーアートバナー生成',
+    tagline: '文字を大きなアスキーアートに変換。',
+    description:
+      'テキストから大きなアスキーアートのバナーを生成します。READMEやターミナル、コメントに最適。すべてブラウザ内で処理します。',
+    keywords: ['アスキーアート', 'アスキーバナー', 'figlet', 'ascii art', 'テキスト 文字絵'],
+  },
+  'avatar-crop': {
+    name: '丸型アバター切り抜き',
+    tagline: '画像を円形のプロフィール画像に切り抜き。',
+    description:
+      '写真を円形に切り抜き、透過PNGとして書き出します。アバターやプロフィール画像に最適。ブラウザ内で完結します。',
+    keywords: ['丸型 切り抜き', 'アバター作成', 'プロフィール画像', 'circle crop', '円形 画像'],
+  },
+  'base32': {
+    name: 'Base32エンコード／デコード',
+    tagline: 'RFC 4648 のBase32でテキストを変換。',
+    description:
+      'テキストをBase32（RFC 4648）に相互変換します。TOTPシークレットや大文字小文字を区別しない符号化に便利。ブラウザ内で動作します。',
+    keywords: ['base32 エンコード', 'base32 デコード', 'base32 変換', 'rfc 4648', 'base32'],
+  },
+  'bcrypt': {
+    name: 'bcryptハッシュ生成・検証',
+    tagline: 'bcryptのパスワードハッシュを生成・照合。',
+    description:
+      '任意のコスト係数でパスワードをbcryptハッシュ化、またはハッシュとパスワードを照合します。すべてブラウザ内で計算します。',
+    keywords: ['bcrypt 生成', 'bcrypt ハッシュ', 'パスワード ハッシュ', 'bcrypt 検証', 'bcrypt'],
+  },
+  'binary-text': {
+    name: 'テキスト ⇄ 2進数',
+    tagline: 'テキストを2進数に、2進数をテキストに変換。',
+    description:
+      'テキストを2進数（UTF-8）に符号化、または2進数をテキストに復号します。すべてブラウザ内で処理します。',
+    keywords: ['テキスト 2進数', 'バイナリ 変換', '2進数 変換', 'binary text', 'ascii バイナリ'],
+  },
+  'bionic-reading': {
+    name: 'バイオニックリーディング変換',
+    tagline: '各単語の先頭を太字にして速読を補助。',
+    description:
+      'テキストを単語の頭部分が強調されるバイオニックリーディング形式に変換し、視線誘導で読みやすくします。すべてブラウザ内で処理します。',
+    keywords: ['バイオニックリーディング', '速読', '太字 変換', 'bionic reading', '読書補助'],
+  },
+  'box-shadow': {
+    name: 'CSS box-shadow ジェネレーター',
+    tagline: 'CSSの影を視覚的に作成してコピー。',
+    description:
+      'オフセット・ぼかし・広がり・色を調整してbox-shadowを作成し、ライブプレビューしながらCSSをコピーできます。ブラウザ内で完結します。',
+    keywords: ['box shadow 生成', 'css 影', 'box-shadow', 'シャドウ css', '影 作成'],
+  },
+  'caesar-cipher': {
+    name: 'シーザー暗号 / ROT13',
+    tagline: 'シーザー暗号やROT13で暗号化・復号。',
+    description:
+      'テキストにシーザー暗号（シフト）やROT13を適用し、元に戻すこともできます。シフト量も調整可能。ブラウザ内で動作します。',
+    keywords: ['シーザー暗号', 'rot13', 'シフト暗号', '暗号化 復号', 'caesar cipher'],
+  },
+  'chmod-calc': {
+    name: 'chmod計算機',
+    tagline: 'Unixのファイル権限を8進数と記号表記で変換。',
+    description:
+      '所有者・グループ・その他の読み取り・書き込み・実行を切り替えて、chmodの8進数と記号表記を求めます。ブラウザ内で動作します。',
+    keywords: ['chmod 計算', 'unix パーミッション', 'ファイル権限', 'chmod 755', '8進数 権限'],
+  },
+  'coin-flip': {
+    name: 'コイントス',
+    tagline: '仮想コインを投げて表か裏かを決める。',
+    description:
+      '1枚または複数枚のコインを投げ、表裏の結果と集計を表示します。公平な乱数でブラウザ内で動作します。',
+    keywords: ['コイントス', 'コイン 投げる', '表 裏', 'coin flip', 'ランダム 決定'],
+  },
+  'color-blind': {
+    name: '色覚シミュレーター',
+    tagline: '色覚特性のある見え方で画像をプレビュー。',
+    description:
+      '第一色覚（P型）・第二色覚（D型）・第三色覚（T型）を画像にシミュレートし、アクセシビリティを確認できます。ブラウザ内で処理します。',
+    keywords: ['色覚シミュレーター', '色覚 テスト', '色弱 確認', 'アクセシビリティ 色', 'color blind'],
+  },
+  'color-name': {
+    name: 'カラー名検索',
+    tagline: 'HEXやRGBに最も近いCSSの色名を検索。',
+    description:
+      'HEXまたはRGBの色を入力すると、最も近いCSSの名前付き色を表示し、完全一致も判定します。ブラウザ内で動作します。',
+    keywords: ['カラー名 検索', 'hex 色名', 'css カラー名', '近い色名', 'color name'],
+  },
+  'css-units': {
+    name: 'CSS単位コンバーター',
+    tagline: 'px・rem・em・ptを相互変換。',
+    description:
+      'ルートのフォントサイズを指定して、CSSの長さ単位（px・rem・em・pt）を相互変換します。アップロード不要、ブラウザ内で完結します。',
+    keywords: ['css 単位 変換', 'px rem 変換', 'rem px', 'em px', 'css units'],
+  },
+  'csv-merge': {
+    name: 'CSV結合',
+    tagline: '複数のCSVファイルを1つにまとめる。',
+    description:
+      '複数のCSVをヘッダーで列を揃えながら1つのファイルに結合します。すべての処理はブラウザ内で行われます。',
+    keywords: ['csv 結合', 'csv まとめる', 'csv 連結', 'merge csv', 'csv 統合'],
+  },
+  'csv-split': {
+    name: 'CSV分割',
+    tagline: '大きなCSVを行数ごとに小さく分割。',
+    description:
+      '大きなCSVをN行ごとのチャンクに分割し、各ファイルにヘッダーを残してZIPでダウンロードできます。ブラウザ内で完結します。',
+    keywords: ['csv 分割', 'csv 切り分け', '大きい csv 分割', 'split csv', 'csv 分ける'],
+  },
+  'csv-to-md': {
+    name: 'CSV → Markdown表',
+    tagline: 'CSVをGitHub形式のMarkdown表に変換。',
+    description:
+      'CSVを貼り付けると、列を揃えたきれいなMarkdownの表に変換します。READMEにそのまま使えます。ブラウザ内で完結します。',
+    keywords: ['csv markdown 表', 'markdown テーブル', 'csv md', 'csv 表 変換', 'markdown table'],
+  },
+  'cubic-bezier': {
+    name: 'cubic-bezier エディター',
+    tagline: 'ドラッグでCSSのイージング曲線を作成。',
+    description:
+      '制御点をドラッグしてCSSトランジション用のcubic-bezierタイミング関数を設計し、値をコピーできます。ブラウザ内で完結します。',
+    keywords: ['cubic bezier', 'イージング エディター', 'css タイミング関数', 'ベジェ曲線 css', 'easing'],
+  },
+  'curl-to-code': {
+    name: 'cURL → コード変換',
+    tagline: 'cURLコマンドをfetch・axios・Pythonに変換。',
+    description:
+      'cURLコマンドを貼り付けると、すぐ使えるJavaScriptのfetch・axios、またはPython requestsのコードに変換します。ブラウザ内で完結します。',
+    keywords: ['curl コード変換', 'curl fetch', 'curl python', 'curl 変換', 'curl axios'],
+  },
+  'date-diff': {
+    name: '日付計算機',
+    tagline: '日付の差を計算、または日数を加減算。',
+    description:
+      '2つの日付の間の日数を求めたり、ある日付に日数を足し引きしたりできます。すべてブラウザ内で動作します。',
+    keywords: ['日付 計算', '日数 計算', '日付 差', '日付 加算', 'date calculator'],
+  },
+  'dice-roller': {
+    name: 'サイコロ',
+    tagline: '任意の面数のサイコロを好きな個数だけ振る。',
+    description:
+      'D4・D6・D20やカスタムのサイコロを振り、合計や補正値を表示します。テーブルゲーム向け。暗号学的乱数でブラウザ内で動作します。',
+    keywords: ['サイコロ', 'ダイス ロール', 'd20', 'trpg サイコロ', 'dice roller'],
+  },
+  'discount': {
+    name: '割引計算機',
+    tagline: 'セール価格と割引額を計算。',
+    description:
+      '価格と割引率を入力して、割引後の価格と割引額を計算したり、割引率を逆算したりできます。ブラウザ内で完結します。',
+    keywords: ['割引 計算', 'セール価格 計算', 'パーセント オフ', '値引き 計算', 'discount'],
+  },
+  'dotenv-json': {
+    name: '.env ⇄ JSON 変換',
+    tagline: '.envファイルとJSONを相互変換。',
+    description:
+      '.envの内容を貼り付けてJSONに変換、またはJSONを.envファイルに変換します。引用符やコメントにも対応。すべてブラウザ内で処理します。',
+    keywords: ['env json 変換', 'dotenv json', 'json env', 'env 変換', 'env 解析'],
+  },
+  'fancy-text': {
+    name: 'おしゃれ文字ジェネレーター',
+    tagline: 'テキストを装飾的なUnicodeフォントに変換。',
+    description:
+      'プレーンなテキストを太字・斜体・筆記体などのUnicodeフォントスタイルに変換します。SNSのプロフィールに。ブラウザ内で完結します。',
+    keywords: ['おしゃれ文字', 'unicode フォント', 'インスタ フォント', 'かわいい文字', 'fancy text'],
+  },
+  'fuel-cost': {
+    name: 'ガソリン代計算機',
+    tagline: '距離・燃費・価格から旅行の燃料費を概算。',
+    description:
+      '走行距離・燃費・燃料価格を入力して、合計の燃料費と消費量を概算します。すべてブラウザ内で動作します。',
+    keywords: ['ガソリン代 計算', '燃料費 計算', '旅行 燃料費', '燃費 計算', 'fuel cost'],
+  },
+  'gitignore-gen': {
+    name: '.gitignore ジェネレーター',
+    tagline: '言語・フレームワーク・OSから.gitignoreを生成。',
+    description:
+      '技術スタックやプラットフォームを選んで、すぐ使える.gitignoreファイルを組み立てます。ローカルで生成し、アップロードしません。',
+    keywords: ['gitignore 生成', 'gitignore 作成', 'git ignore テンプレート', 'gitignore', 'git 無視'],
+  },
+  'gpa': {
+    name: 'GPA計算機',
+    tagline: '成績の平均点（GPA）を計算。',
+    description:
+      '科目ごとの単位数と成績を入力して、加重GPA（4.0／4.5スケール）を計算します。ブラウザ内で完結します。',
+    keywords: ['gpa 計算', '成績 平均', '加重 gpa', '評定平均', 'gpa calculator'],
+  },
+  'gradient-image': {
+    name: 'グラデーション画像生成',
+    tagline: 'グラデーションの背景画像をPNGで作成。',
+    description:
+      '色・方向・サイズを選んでグラデーションの背景画像を生成し、PNGとしてダウンロードできます。ブラウザ内で完結します。',
+    keywords: ['グラデーション 画像', 'グラデーション 背景 png', 'グラデーション 壁紙', 'gradient image', '背景 生成'],
+  },
+  'hmac-gen': {
+    name: 'HMACジェネレーター',
+    tagline: 'SHA-1/256/512でHMAC署名を生成。',
+    description:
+      '秘密鍵とメッセージからWeb Crypto APIでHMACを計算します。出力はhexまたはBase64。すべてブラウザ内で処理します。',
+    keywords: ['hmac 生成', 'hmac sha256', 'hmac', 'メッセージ認証コード', 'hmac 署名'],
+  },
+  'htpasswd': {
+    name: '.htpasswd ジェネレーター',
+    tagline: 'Apacheの.htpasswd認証行を作成。',
+    description:
+      'ユーザー名とパスワードから.htpasswdの行（bcrypt／APR1-MD5／SHA）を生成します。すべてブラウザ内で処理します。',
+    keywords: ['htpasswd 生成', 'apache htpasswd', 'basic 認証', 'htpasswd bcrypt', 'htpasswd'],
+  },
+  'http-status': {
+    name: 'HTTPステータスコード一覧',
+    tagline: 'HTTPステータスコードの意味を調べる。',
+    description:
+      'HTTPステータスコード（1xx〜5xx）を説明や代表的な用途とともに検索できます。手軽なリファレンス。すべてブラウザ内で動作します。',
+    keywords: ['http ステータスコード', '404 意味', '500 エラー', 'http レスポンス', 'status code'],
+  },
+  'image-blur': {
+    name: '画像をぼかす',
+    tagline: '画像にガウスぼかしを適用。',
+    description:
+      '画像全体に半径を調整できるぼかしをかけ、結果をダウンロードできます。すべての処理はブラウザ内で行われます。',
+    keywords: ['画像 ぼかし', 'ぼかし 加工', 'ガウスぼかし', '写真 ぼかし', 'blur image'],
+  },
+  'image-border': {
+    name: '画像に枠線を追加',
+    tagline: '画像に色付きの枠やフレームを追加。',
+    description:
+      '任意の幅と色のべた塗りの枠を画像のまわりに追加します。アップロード不要、すべてブラウザ内で完結します。',
+    keywords: ['画像 枠線', '画像 フレーム', '写真 枠', 'ボーダー 追加', 'image border'],
+  },
+  'image-color-picker': {
+    name: '画像カラーピッカー',
+    tagline: '画像から色（HEX/RGB）を抽出。',
+    description:
+      '画像を読み込んで好きな場所をクリックすると、その画素のHEXとRGBの色を読み取れます。すべてブラウザ内で処理します。',
+    keywords: ['画像 カラーピッカー', '画像 色 抽出', 'スポイト', 'hex 抽出', 'color picker'],
+  },
+  'image-duotone': {
+    name: 'デュオトーン画像',
+    tagline: '画像を2色のデュオトーンに変換。',
+    description:
+      '影とハイライトに2つの色を割り当てて、写真をおしゃれなデュオトーンに変換します。ブラウザ内で完結します。',
+    keywords: ['デュオトーン', '2色 画像', 'ツートン 写真', 'グラデーションマップ', 'duotone'],
+  },
+  'image-filters': {
+    name: '画像フィルター',
+    tagline: '写真にインスタ風フィルターを適用。',
+    description:
+      'モノクロ・セピア・ビンテージなどのフィルターを画像に適用し、結果をダウンロードできます。ブラウザ内で動作します。',
+    keywords: ['画像 フィルター', '写真 フィルター', 'インスタ フィルター', 'セピア モノクロ', 'image filter'],
+  },
+  'image-histogram': {
+    name: '画像ヒストグラム',
+    tagline: '画像のRGB・輝度の分布を分析。',
+    description:
+      '画像を読み込むと、赤・緑・青と輝度のヒストグラムを表示します。露出の分析に便利。すべてブラウザ内で処理します。',
+    keywords: ['画像 ヒストグラム', 'rgb ヒストグラム', '写真 ヒストグラム', '輝度 分布', 'histogram'],
+  },
+  'image-placeholder': {
+    name: 'プレースホルダー画像生成',
+    tagline: 'サイズと文字を指定したダミー画像を生成。',
+    description:
+      'モックアップ用に、任意のサイズ・色・ラベル文字のべた塗りプレースホルダー画像を作成します。ブラウザ内でPNG書き出しします。',
+    keywords: ['プレースホルダー 画像', 'ダミー 画像', 'placeholder png', 'モックアップ 画像', 'image placeholder'],
+  },
+  'image-target-size': {
+    name: '目標サイズに画像圧縮',
+    tagline: '指定したファイルサイズまで画像を縮小。',
+    description:
+      '画質を自動調整して、JPEG/WebPを指定したサイズ（例：200KB）以下に収めます。すべてブラウザ内で処理します。',
+    keywords: ['画像 サイズ 圧縮', '目標 容量', 'kb 縮小', '200kb 画像', 'target size'],
+  },
+  'ini-json': {
+    name: 'INI ⇄ JSON 変換',
+    tagline: 'INI設定とJSONを相互変換。',
+    description:
+      'INIファイルをJSONに解析、またはJSONをINIに直列化します。すべてブラウザ内で完結します。',
+    keywords: ['ini json 変換', 'json ini', 'ini 変換', 'ini 解析', 'ini json'],
+  },
+  'json-diff': {
+    name: 'JSON差分',
+    tagline: '2つのJSONを構造的に比較。',
+    description:
+      '2つのJSONオブジェクトの間で追加・削除・変更されたキーを構造的な差分として表示します。ブラウザ内で動作します。',
+    keywords: ['json 差分', 'json 比較', 'json diff', '構造 比較', 'json 比べる'],
+  },
+  'json-escape': {
+    name: 'JSONエスケープ／解除',
+    tagline: 'JSON用に文字列をエスケープ・復元。',
+    description:
+      'テキストをJSONに安全な文字列（引用符・改行・Unicode）にエスケープ、または元に戻します。ブラウザ内で完結します。',
+    keywords: ['json エスケープ', 'json アンエスケープ', '文字列 エスケープ', 'json string', 'json escape'],
+  },
+  'json-flatten': {
+    name: 'JSONフラット化／復元',
+    tagline: 'ネストしたJSONをドット記法に、または元に戻す。',
+    description:
+      'ネストしたJSONをドット記法のフラットなキーに変換、またはドット付きキーをネストしたオブジェクトに復元します。ブラウザ内で動作します。',
+    keywords: ['json フラット化', 'json 平坦化', 'json ドット記法', 'ネスト json 変換', 'json flatten'],
+  },
+  'json-to-go': {
+    name: 'JSON → Go構造体',
+    tagline: 'JSONからGoの構造体型を即座に生成。',
+    description:
+      'JSONを貼り付けると、jsonタグ付きの型付きGo構造体を生成します。すべてブラウザ内で処理します。',
+    keywords: ['json go 変換', 'json struct', 'golang 構造体 生成', 'go 型 json', 'json golang'],
+  },
+  'jsonl-viewer': {
+    name: 'JSONLビューア',
+    tagline: 'JSON Linesを表で表示しJSON/CSVに書き出し。',
+    description:
+      'JSONL/NDJSONファイルを開いてレコードを表で閲覧し、JSON配列やCSVに変換できます。ブラウザ内で動作します。',
+    keywords: ['jsonl ビューア', 'ndjson ビューア', 'json lines', 'jsonl csv', 'jsonl json'],
+  },
+  'language-detect': {
+    name: '言語判定',
+    tagline: 'テキストが何語で書かれているかを判定。',
+    description:
+      '文字種とn-gramのヒューリスティックを使って、テキストの言語を推定します。すべてブラウザ内で完結します。',
+    keywords: ['言語 判定', '言語 検出', '何語', '言語 識別', 'language detect'],
+  },
+  'line-numbers': {
+    name: '行番号を追加',
+    tagline: 'テキストの各行に行番号を付与、または削除。',
+    description:
+      '開始番号・桁揃え・区切り文字を指定して各行の先頭に番号を付与、または行番号を削除できます。すべてブラウザ内で処理します。',
+    keywords: ['行番号 追加', '行 番号付け', '行番号 削除', 'テキスト 行番号', 'line numbers'],
+  },
+  'lottery-number': {
+    name: '宝くじ番号ジェネレーター',
+    tagline: 'ランダムな宝くじの番号の組を生成。',
+    description:
+      '範囲と個数を指定して、宝くじ用のランダムな数字の組を選びます。暗号学的乱数でブラウザ内で動作します。',
+    keywords: ['宝くじ 番号', 'ロト 番号 生成', 'ランダム 数字', '当選番号 生成', 'lottery number'],
+  },
+  'markdown-preview': {
+    name: 'Markdownプレビュー',
+    tagline: '入力しながらMarkdownをライブ描画。',
+    description:
+      'Markdownを書くと、描画結果とHTMLを並べてリアルタイムに表示します。すべてブラウザ内で動作します。',
+    keywords: ['markdown プレビュー', 'markdown エディタ', 'ライブ markdown', 'md html プレビュー', 'markdown'],
+  },
+  'mock-data': {
+    name: 'モックデータ生成',
+    tagline: 'ダミーの名前・メール・レコードをJSON/CSVで生成。',
+    description:
+      'テスト用にリアルなモックデータ（名前・メール・住所・日付）を作成し、JSONやCSVで書き出します。ブラウザ内で完結します。',
+    keywords: ['モックデータ 生成', 'ダミーデータ', 'テストデータ 生成', 'ダミー json csv', 'mock data'],
+  },
+  'morse-code': {
+    name: 'モールス信号翻訳',
+    tagline: 'テキストとモールス信号を音付きで相互変換。',
+    description:
+      'テキストとモールス信号を相互変換し、ビープ音で再生できます。すべてブラウザ内で処理します。',
+    keywords: ['モールス信号 変換', 'テキスト モールス', 'モールス 解読', 'モールス 音', 'morse code'],
+  },
+  'nato-phonetic': {
+    name: 'NATOフォネティックコード',
+    tagline: 'テキストをNATOフォネティックコードで読み上げ表記。',
+    description:
+      '任意のテキストをNATOフォネティックコード（Alfa、Bravo、Charlie…）に変換し、明瞭に綴れます。ブラウザ内で完結します。',
+    keywords: ['nato フォネティックコード', '通話表', 'alfa bravo charlie', 'フォネティック 綴り', 'nato phonetic'],
+  },
+  'number-to-words': {
+    name: '数字を言葉に変換',
+    tagline: '数字を言葉のつづりに変換。',
+    description:
+      '数字を英語や日本語の言葉に変換します（例：1234 → 千二百三十四）。金額表記にも。ブラウザ内で完結します。',
+    keywords: ['数字 言葉 変換', '数字 つづり', '数 漢字 変換', '金額 文字', 'number to words'],
+  },
+  'pdf-booklet': {
+    name: 'PDF小冊子メーカー',
+    tagline: 'PDFを印刷用の2up小冊子に面付け。',
+    description:
+      'PDFのページを中綴じ小冊子の面付けに並べ替え、印刷して折って綴じられるようにします。すべてブラウザ内で処理します。',
+    keywords: ['pdf 小冊子', '冊子 面付け', 'pdf 製本', '中綴じ pdf', 'pdf booklet'],
+  },
+  'pdf-reverse': {
+    name: 'PDFページの順序を逆転',
+    tagline: 'PDFのページ順を逆にする。',
+    description:
+      'PDFの全ページの順序を逆にして結果をダウンロードできます。アップロード不要、すべてブラウザ内で完結します。',
+    keywords: ['pdf ページ 逆順', 'pdf 順序 逆', 'pdf ページ順', 'pdf 逆転', 'reverse pdf'],
+  },
+  'qr-logo': {
+    name: 'ロゴ入りQRコード',
+    tagline: '中央にロゴを入れたQRコードを生成。',
+    description:
+      'テキストやURLからQRコードを作成し、中央にロゴを重ねます。誤り訂正にも対応。ブラウザ内で完結します。',
+    keywords: ['ロゴ qrコード', 'カスタム qrコード', 'ブランド qr', 'ロゴ qr 生成', 'qr logo'],
+  },
+  'random-number': {
+    name: '乱数ジェネレーター',
+    tagline: '範囲・個数・重複なしを指定して乱数を生成。',
+    description:
+      '範囲を指定した整数の乱数を、個数や重複なしのオプション付きで生成します。暗号学的乱数でブラウザ内で動作します。',
+    keywords: ['乱数 生成', 'ランダム 数字', '乱数', '数字 抽選', 'random number'],
+  },
+  'reaction-time': {
+    name: '反応速度テスト',
+    tagline: 'ミリ秒単位で反応の速さを測定。',
+    description:
+      '合図が変わった瞬間にクリックして、複数回の反応速度を測定します。ブラウザ内で完結します。',
+    keywords: ['反応速度 テスト', '反射神経 テスト', '反応 速さ', 'クリック 反応', 'reaction time'],
+  },
+  'reverse-text': {
+    name: 'テキストを逆順に',
+    tagline: '文字・単語・行の順序を逆転。',
+    description:
+      'テキストを文字単位・単語単位・行単位で即座に反転します。アップロード不要、ブラウザ内で動作します。',
+    keywords: ['テキスト 逆順', '逆さ 文字', '文字列 反転', '文字 逆', 'reverse text'],
+  },
+  'scientific-calc': {
+    name: '関数電卓',
+    tagline: '三角関数・対数・累乗などをブラウザで計算。',
+    description:
+      '三角関数・対数・指数・定数・数式評価に対応した関数電卓です。サーバー処理はありません。',
+    keywords: ['関数電卓', '電卓 オンライン', '三角関数 計算', '数式 計算', 'scientific calculator'],
+  },
+  'screen-ruler': {
+    name: '画面定規・PPI',
+    tagline: 'ピクセルを測定し画面のPPIを計算。',
+    description:
+      '解像度と対角サイズからディスプレイのPPIを計算し、画面上のピクセル定規も使えます。ブラウザ内で完結します。',
+    keywords: ['画面 定規', 'ppi 計算', 'ピクセル 定規', '画面 dpi', 'screen ruler'],
+  },
+  'secret-split': {
+    name: 'シークレット分割（Shamir）',
+    tagline: '秘密を複数の断片に分割し一部で復元。',
+    description:
+      'シャミアの秘密分散を使って秘密をN個の断片に分割し、任意のK個で復元できます。ブラウザ内で動作します。',
+    keywords: ['シャミア 秘密分散', '秘密 分割', '秘密分散 ツール', '鍵 分割', 'secret split'],
+  },
+  'sentiment': {
+    name: '感情分析',
+    tagline: 'テキストのポジティブ・ネガティブを採点。',
+    description:
+      '辞書ベースの採点で感情を推定します。モデルもアップロードも不要。肯定・否定の語を強調表示します。ブラウザ内で完結します。',
+    keywords: ['感情分析', 'ポジティブ ネガティブ', '感情 採点', 'テキスト 感情', 'sentiment'],
+  },
+  'subnet-calc': {
+    name: 'サブネット計算機',
+    tagline: 'CIDRからネットワーク・ブロードキャスト・ホスト範囲を計算。',
+    description:
+      'IPv4アドレスとCIDRプレフィックスを入力して、ネットマスク・ネットワークアドレス・ブロードキャストアドレス・利用可能ホスト範囲を求めます。ブラウザ内で動作します。',
+    keywords: ['サブネット 計算', 'cidr 計算', 'ip サブネット', 'ipv4 計算', 'subnet calculator'],
+  },
+  'summarize': {
+    name: 'テキスト要約',
+    tagline: '抽出型要約 — 重要な文を抜き出す。',
+    description:
+      '文をスコアリングして重要な文を抜き出し、テキストを要約します。モデルもアップロードも不要。ブラウザ内で完結します。',
+    keywords: ['テキスト 要約', '文章 要約', '抽出 要約', '要約 生成', 'summarize'],
+  },
+  'svg-optimize': {
+    name: 'SVG最適化',
+    tagline: '不要な要素を除去してSVGを軽量化。',
+    description:
+      'エディタのメタデータ・余分な空白・過剰な精度をSVGから取り除いてサイズを削減します。ブラウザ内で完結します。',
+    keywords: ['svg 最適化', 'svg 軽量化', 'svg 圧縮', 'svg クリーナー', 'svg optimize'],
+  },
+  'tdee': {
+    name: 'TDEE・カロリー計算機',
+    tagline: '基礎代謝と1日の必要カロリーを概算。',
+    description:
+      '身長・体重・年齢・活動レベルを入力して、基礎代謝（BMR）とTDEE（1日の消費カロリー）を計算します。ブラウザ内で動作します。',
+    keywords: ['tdee 計算', 'カロリー 計算', '基礎代謝 計算', '消費カロリー', 'tdee'],
+  },
+  'text-repeat': {
+    name: 'テキスト繰り返し',
+    tagline: 'テキストを指定回数だけ繰り返す。',
+    description:
+      'テキストを区切り文字を任意に挟みながらN回複製します。テスト用やテンプレート作成に便利。すべてブラウザ内で動作します。',
+    keywords: ['テキスト 繰り返し', '文字 反復', '文字列 複製', '繰り返し 生成', 'text repeat'],
+  },
+  'timezone': {
+    name: 'タイムゾーン変換',
+    tagline: 'タイムゾーン間で時刻を変換。',
+    description:
+      '2つのタイムゾーンを選んで時刻を変換し、時差を確認できます。ブラウザ内蔵のタイムゾーンデータを使用。ブラウザ内で完結します。',
+    keywords: ['タイムゾーン 変換', '時差 計算', '世界時計', 'utc 変換', 'timezone'],
+  },
+  'tip-calc': {
+    name: 'チップ計算機',
+    tagline: 'チップを計算し、割り勘を1人あたりで算出。',
+    description:
+      '会計金額・チップ率・人数を入力して、チップ・合計・1人あたりの金額を求めます。すべてブラウザ内で動作します。',
+    keywords: ['チップ 計算', '割り勘 計算', 'チップ 計算機', '1人あたり 計算', 'tip calculator'],
+  },
+  'toml-json': {
+    name: 'TOML ⇄ JSON 変換',
+    tagline: 'TOMLとJSONを相互変換。',
+    description:
+      'TOML設定をJSONに、JSONをTOMLに変換します。設定ファイルの編集や確認に便利。すべてブラウザ内で完結します。',
+    keywords: ['toml json 変換', 'json toml', 'toml 変換', 'toml 変換 ツール', 'toml json'],
+  },
+  'tts': {
+    name: '音声読み上げ（TTS）',
+    tagline: 'ブラウザの音声でテキストを読み上げ。',
+    description:
+      'テキストを入力すると、ブラウザ内蔵の音声で読み上げます。速度やピッチも調整可能。すべてブラウザ内で動作します。',
+    keywords: ['音声読み上げ', 'tts', '読み上げ', '音声合成', 'text to speech'],
+  },
+  'typing-speed': {
+    name: 'タイピング速度テスト',
+    tagline: 'タイピング速度をWPMで測定。',
+    description:
+      '表示された文章を打って、1分あたりの語数（WPM）と正確性を測定します。登録不要、すべてブラウザ内で動作します。',
+    keywords: ['タイピング 速度', 'wpm 測定', 'タイピング テスト', '入力速度', 'typing speed'],
+  },
+  'user-agent-parser': {
+    name: 'User-Agent解析',
+    tagline: 'User-Agentからブラウザ・OS・端末を判定。',
+    description:
+      '任意のUser-Agent文字列を貼り付けて、ブラウザ・エンジン・OS・端末種別を識別します。すべてブラウザ内で動作します。',
+    keywords: ['user agent 解析', 'ua 解析', 'ユーザーエージェント', 'ブラウザ 判定', 'user agent parser'],
+  },
+  'video-flip': {
+    name: '動画反転',
+    tagline: '動画を左右または上下に反転。',
+    description:
+      '動画を左右ミラーまたは上下反転して再エンコードします。FFmpeg.wasmによりブラウザ内で完結します。',
+    keywords: ['動画 反転', 'ミラー 動画', '動画 左右反転', 'mp4 反転', 'flip video'],
+  },
+  'video-loop': {
+    name: '動画ループ',
+    tagline: '動画をN回繰り返して1つのファイルに。',
+    description:
+      'クリップを指定した回数だけ自身に連結して、シームレスなループを作ります。FFmpeg.wasmでブラウザ内で完結します。',
+    keywords: ['動画 ループ', '動画 繰り返し', 'ループ 動画 作成', 'mp4 ループ', 'loop video'],
+  },
+  'video-resize': {
+    name: '動画リサイズ',
+    tagline: '動画の解像度（720p・1080p…）を変更。',
+    description:
+      'アスペクト比を保ったまま動画を目標の解像度に再エンコードします。FFmpeg.wasmでブラウザ内で動作します。',
+    keywords: ['動画 リサイズ', '動画 解像度 変更', '動画 縮小', '動画 720p 1080p', 'resize video'],
+  },
+  'video-reverse': {
+    name: '動画逆再生',
+    tagline: '動画を逆再生で書き出す。',
+    description:
+      'FFmpeg.wasmでクリップを時間軸で逆向きにしてダウンロードできます。すべてブラウザ内で処理し、アップロードしません。',
+    keywords: ['動画 逆再生', '動画 巻き戻し', '逆再生 動画', 'リバース 動画', 'reverse video'],
+  },
+  'webcam-record': {
+    name: 'ウェブカメラ録画',
+    tagline: 'ウェブカメラの映像を録画。',
+    description:
+      'ウェブカメラとマイクをキャプチャしてwebmをダウンロードします。アップロード不要、インストール不要、ブラウザ内で動作します。',
+    keywords: ['ウェブカメラ 録画', 'webカメラ 録画', 'カメラ 録画', 'webm 録画', 'webcam record'],
+  },
+  'wifi-qr': {
+    name: 'WiFi QRコード生成',
+    tagline: 'WiFiに接続できるQRコードを作成。',
+    description:
+      'WiFiのSSID・パスワード・暗号方式を入力して、読み取るだけで接続できるQRコードを生成します。すべてブラウザ内で処理します。',
+    keywords: ['wifi qrコード', 'wifi qr 生成', 'wifi 接続 qr', 'wifi 共有 qr', 'wifi qr'],
+  },
+  'zalgo-text': {
+    name: 'ザルゴ・グリッチ文字',
+    tagline: '結合文字で不気味なグリッチ文字を作成。',
+    description:
+      'テキストに結合分音記号を重ねて、強度を調整できるグリッチなザルゴ効果を作ります。ブラウザ内で完結します。',
+    keywords: ['ザルゴ 文字', 'グリッチ 文字', '不気味 文字', '崩れた文字', 'zalgo text'],
+  },
 };
 
 /** IDs that have curated Japanese copy, in insertion order. */

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/json-flatten',
+      'ja': '/ja/tools/json-flatten',
+      'zh': '/zh/tools/json-flatten',
       'x-default': URL_PATH,
     },
   },

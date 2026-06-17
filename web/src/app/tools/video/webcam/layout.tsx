@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/webcam-record',
+      'ja': '/ja/tools/webcam-record',
+      'zh': '/zh/tools/webcam-record',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/morse-code',
+      'ja': '/ja/tools/morse-code',
+      'zh': '/zh/tools/morse-code',
       'x-default': URL_PATH,
     },
   },

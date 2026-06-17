@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-flip',
+      'ja': '/ja/tools/video-flip',
+      'zh': '/zh/tools/video-flip',
       'x-default': URL_PATH,
     },
   },

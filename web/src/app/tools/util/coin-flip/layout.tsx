@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/coin-flip',
+      'ja': '/ja/tools/coin-flip',
+      'zh': '/zh/tools/coin-flip',
       'x-default': URL_PATH,
     },
   },

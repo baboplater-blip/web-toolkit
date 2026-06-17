@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/htpasswd',
+      'ja': '/ja/tools/htpasswd',
+      'zh': '/zh/tools/htpasswd',
       'x-default': URL_PATH,
     },
   },

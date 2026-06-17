@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gitignore-gen',
+      'ja': '/ja/tools/gitignore-gen',
+      'zh': '/zh/tools/gitignore-gen',
       'x-default': URL_PATH,
     },
   },

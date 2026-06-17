@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-duotone',
+      'ja': '/ja/tools/image-duotone',
+      'zh': '/zh/tools/image-duotone',
       'x-default': URL_PATH,
     },
   },

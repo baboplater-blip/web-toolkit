@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/dotenv-json',
+      'ja': '/ja/tools/dotenv-json',
+      'zh': '/zh/tools/dotenv-json',
       'x-default': URL_PATH,
     },
   },

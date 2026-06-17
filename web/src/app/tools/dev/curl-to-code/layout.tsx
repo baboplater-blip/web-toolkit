@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/curl-to-code',
+      'ja': '/ja/tools/curl-to-code',
+      'zh': '/zh/tools/curl-to-code',
       'x-default': URL_PATH,
     },
   },

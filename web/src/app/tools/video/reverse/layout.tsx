@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-reverse',
+      'ja': '/ja/tools/video-reverse',
+      'zh': '/zh/tools/video-reverse',
       'x-default': URL_PATH,
     },
   },

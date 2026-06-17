@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gradient-image',
+      'ja': '/ja/tools/gradient-image',
+      'zh': '/zh/tools/gradient-image',
       'x-default': URL_PATH,
     },
   },

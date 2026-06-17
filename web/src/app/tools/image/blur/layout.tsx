@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-blur',
+      'ja': '/ja/tools/image-blur',
+      'zh': '/zh/tools/image-blur',
       'x-default': URL_PATH,
     },
   },

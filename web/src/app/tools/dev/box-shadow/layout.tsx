@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/box-shadow',
+      'ja': '/ja/tools/box-shadow',
+      'zh': '/zh/tools/box-shadow',
       'x-default': URL_PATH,
     },
   },

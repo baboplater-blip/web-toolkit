@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/avatar-crop',
+      'ja': '/ja/tools/avatar-crop',
+      'zh': '/zh/tools/avatar-crop',
       'x-default': URL_PATH,
     },
   },
