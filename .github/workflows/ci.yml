@@ -81,6 +81,12 @@ jobs:
         # dev 서버(npm run dev)는 640 라우트를 on-demand 컴파일해 타임아웃 플레이키가
         # 심하다. 빌드 잡의 정적 산출물(out)을 serve 로 띄워 안정적으로 검증한다.
         # PLAYWRIGHT_BASE_URL 이 설정되면 playwright.config 가 webServer 를 안 띄운다.
+        #
+        # test:e2e 는 e2e/ 전 스펙을 실행한다. 그중 all-tools-smoke.spec.ts 가
+        # 286 도구 + 허브 라우트의 마운트(HTTP 200 · heading · 에러 0)를 전수 검증하는
+        # 게이트다. 정적 빌드(프로덕션 React)는 하이드레이션 불일치를 throw 하지 않고
+        # console.error(Minified React error #418/#423/#425)로만 남기므로, 이 스펙은
+        # pageerror 뿐 아니라 해당 console 시그니처도 감시해 하이드레이션 회귀를 잡는다.
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:3000
         run: |

@@ -320,10 +320,32 @@ function isBenign(message: string): boolean {
   return /ResizeObserver loop/i.test(message) || /^Script error\.?$/i.test(message);
 }
 
+/**
+ * 하이드레이션 불일치 시그니처.
+ * 개발 모드에서는 pageerror 로 throw 되지만, **프로덕션 빌드(정적 out 서빙, CI)** 에서는
+ * throw 되지 않고 React 가 console.error 로 축약 코드(#418 HTML 불일치 / #423·#425 텍스트
+ * 불일치)만 남긴다. CI 가 정적 산출물을 serve 하므로 console 까지 감시해야 회귀를 잡는다.
+ */
+function isHydrationError(message: string): boolean {
+  return (
+    /Minified React error #(418|421|423|425)/.test(message) ||
+    /react\.dev\/errors\/(418|421|423|425)/.test(message) ||
+    /Hydration failed/i.test(message) ||
+    /did not match the (client|server)/i.test(message) ||
+    /server rendered (HTML|text) didn't match/i.test(message)
+  );
+}
+
 async function smoke(page: import('@playwright/test').Page, route: string) {
   const errors: string[] = [];
   page.on('pageerror', (e) => {
     if (!isBenign(e.message)) errors.push(e.message);
+  });
+  // 프로덕션 React 는 하이드레이션 불일치를 throw 하지 않고 console.error 로만 남긴다.
+  page.on('console', (msg) => {
+    if (msg.type() === 'error' && isHydrationError(msg.text())) {
+      errors.push(`[hydration] ${msg.text()}`);
+    }
   });
 
   const resp = await page.goto(route, { waitUntil: 'load' });
@@ -331,8 +353,10 @@ async function smoke(page: import('@playwright/test').Page, route: string) {
 
   // 헤더 스타일 무관: 페이지에 heading 이 하나라도 보여야 함
   await expect(page.getByRole('heading').first()).toBeVisible();
+  // 하이드레이션 등 늦게 발생하는 콘솔 에러를 수집할 짧은 여유.
+  await page.waitForTimeout(120);
 
-  expect(errors, `pageerror on ${route}: ${errors.join(' | ')}`).toEqual([]);
+  expect(errors, `error on ${route}: ${errors.join(' | ')}`).toEqual([]);
 }
 
 test.describe('허브 라우트 스모크', () => {
