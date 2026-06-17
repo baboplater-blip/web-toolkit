@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/upside-down',
+      'ja': '/ja/tools/upside-down',
+      'zh': '/zh/tools/upside-down',
       'x-default': URL_PATH,
     },
   },

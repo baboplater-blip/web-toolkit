@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/gif-reverse',
+      'ja': '/ja/tools/gif-reverse',
+      'zh': '/zh/tools/gif-reverse',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-waveform',
+      'ja': '/ja/tools/audio-waveform',
+      'zh': '/zh/tools/audio-waveform',
       'x-default': URL_PATH,
     },
   },

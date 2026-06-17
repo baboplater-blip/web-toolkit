@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/time-duration',
+      'ja': '/ja/tools/time-duration',
+      'zh': '/zh/tools/time-duration',
       'x-default': URL_PATH,
     },
   },

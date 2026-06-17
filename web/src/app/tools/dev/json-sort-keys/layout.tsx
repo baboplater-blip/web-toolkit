@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/json-sort-keys',
+      'ja': '/ja/tools/json-sort-keys',
+      'zh': '/zh/tools/json-sort-keys',
       'x-default': URL_PATH,
     },
   },

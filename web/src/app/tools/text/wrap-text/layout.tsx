@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/wrap-text',
+      'ja': '/ja/tools/wrap-text',
+      'zh': '/zh/tools/wrap-text',
       'x-default': URL_PATH,
     },
   },

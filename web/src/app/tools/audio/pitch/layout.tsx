@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/audio-pitch',
+      'ja': '/ja/tools/audio-pitch',
+      'zh': '/zh/tools/audio-pitch',
       'x-default': URL_PATH,
     },
   },

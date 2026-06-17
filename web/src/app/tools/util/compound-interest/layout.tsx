@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/compound-interest',
+      'ja': '/ja/tools/compound-interest',
+      'zh': '/zh/tools/compound-interest',
       'x-default': URL_PATH,
     },
   },

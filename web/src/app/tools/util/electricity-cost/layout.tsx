@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/electricity-cost',
+      'ja': '/ja/tools/electricity-cost',
+      'zh': '/zh/tools/electricity-cost',
       'x-default': URL_PATH,
     },
   },

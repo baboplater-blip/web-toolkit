@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/video-contact-sheet',
+      'ja': '/ja/tools/video-contact-sheet',
+      'zh': '/zh/tools/video-contact-sheet',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-minify',
+      'ja': '/ja/tools/css-minify',
+      'zh': '/zh/tools/css-minify',
       'x-default': URL_PATH,
     },
   },

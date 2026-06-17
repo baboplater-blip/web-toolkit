@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ratio-calc',
+      'ja': '/ja/tools/ratio-calc',
+      'zh': '/zh/tools/ratio-calc',
       'x-default': URL_PATH,
     },
   },

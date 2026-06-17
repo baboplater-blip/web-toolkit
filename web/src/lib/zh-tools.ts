@@ -1940,6 +1940,245 @@ export const ZH_TOOLS: Record<string, ZhToolCopy> = {
       '为文字叠加多层组合附加符号，制造故障感的 zalgo 效果，强度可调，全程在浏览器本地完成。',
     keywords: ['Zalgo文字', '故障文字', '诡异文字', '乱码文字', 'zalgo text', 'glitch text'],
   },
+  // ── 补充3（en 对齐） ──
+  'ascii-table': {
+    name: 'ASCII 码表',
+    tagline: '查询 ASCII 字符的十进制、十六进制和八进制编码。',
+    description:
+      '在线浏览并搜索完整的 ASCII 码表，含十进制、十六进制、八进制编码及控制字符说明，方便随手查阅，全程在浏览器本地完成。',
+    keywords: ['ASCII码表', 'ascii table', 'ASCII编码', '字符编码', 'ascii code', '字符码表'],
+  },
+  'audio-pitch': {
+    name: '音频变调',
+    tagline: '只改变音高，不改变播放速度。',
+    description:
+      '将音频按半音升高或降低，同时保持原有节奏不变，使用 FFmpeg 在浏览器本地处理，文件不上传服务器。',
+    keywords: ['音频变调', 'audio pitch', '变调', '改变音高', 'pitch shift', '音高调整'],
+  },
+  'audio-waveform': {
+    name: '音频波形图',
+    tagline: '将音频文件渲染为波形 PNG 图片。',
+    description:
+      '从音频文件生成波形图片，可自定义颜色和尺寸，使用 Web Audio 在本地解码，文件全程不离开你的设备。',
+    keywords: ['音频波形', 'audio waveform', '波形图', '声波图', 'waveform', '音频可视化'],
+  },
+  'cc-validate': {
+    name: '银行卡号校验（Luhn）',
+    tagline: '用 Luhn 算法校验卡号并识别卡组织。',
+    description:
+      '使用 Luhn 算法校验信用卡或银行卡号是否有效，并识别所属卡组织，全程在浏览器本地完成，数据不上传。',
+    keywords: ['卡号校验', 'luhn校验', 'credit card validator', '信用卡校验', 'Luhn算法', '卡号验证'],
+  },
+  'checksum-verify': {
+    name: '校验和核对',
+    tagline: '把文件哈希与期望校验值进行比对。',
+    description:
+      '在本地计算文件的 SHA-256 或 SHA-512 哈希，并与期望的校验值比对以确认文件完整性，文件不上传服务器。',
+    keywords: ['校验和', 'checksum', '文件哈希', 'sha256校验', '完整性校验', 'hash compare'],
+  },
+  'code-case': {
+    name: '代码命名格式转换',
+    tagline: '在 camelCase、snake_case、kebab-case 等之间转换。',
+    description:
+      '将变量名和标识符在驼峰、下划线、短横线、帕斯卡和常量大写等命名风格之间互相转换，全程在浏览器本地完成。',
+    keywords: ['命名转换', 'camelCase', 'snake_case', 'kebab-case', '驼峰命名', 'case converter'],
+  },
+  'compound-interest': {
+    name: '复利计算器',
+    tagline: '测算复利与定期投入下的资产增长。',
+    description:
+      '输入本金、利率、期限和定期投入金额，估算复利增长与累计利息，结果在浏览器本地计算，数据不上传。',
+    keywords: ['复利计算', 'compound interest', '利息计算', '投资计算', '理财计算', '复利计算器'],
+  },
+  'count-occurrences': {
+    name: '出现次数统计',
+    tagline: '统计某个词或短语出现的次数。',
+    description:
+      '统计指定字符串在文本中出现的次数，支持区分大小写和全词匹配选项，全程在浏览器本地完成。',
+    keywords: ['出现次数', 'count occurrences', '词频统计', '统计次数', '字符串计数', '文本统计'],
+  },
+  'css-minify': {
+    name: 'CSS 压缩与美化',
+    tagline: '一键压缩或格式化 CSS 代码。',
+    description:
+      '去除空白和注释来压缩 CSS，或按统一缩进重新美化排版，全程在浏览器本地完成，代码不上传。',
+    keywords: ['CSS压缩', 'css minify', 'CSS美化', '格式化CSS', 'css beautifier', '压缩样式'],
+  },
+  'css-specificity': {
+    name: 'CSS 优先级计算器',
+    tagline: '计算任意 CSS 选择器的优先级。',
+    description:
+      '输入 CSS 选择器即可计算其优先级（id、类、标签的数量），帮助你判断哪条规则会生效，全程在浏览器本地完成。',
+    keywords: ['CSS优先级', 'css specificity', '选择器优先级', '权重计算', 'selector weight', '样式优先级'],
+  },
+  'csv-stats': {
+    name: 'CSV 统计分析',
+    tagline: '查看 CSV 各列的统计指标。',
+    description:
+      '分析 CSV 文件，针对数值列给出每列的计数、求和、均值、最小值、最大值和缺失值，全程在浏览器本地完成。',
+    keywords: ['CSV统计', 'csv stats', 'CSV分析', '列统计', 'csv summary', '数据分析'],
+  },
+  'electricity-cost': {
+    name: '电费计算器',
+    tagline: '估算任意电器的用电成本。',
+    description:
+      '输入功率、使用时长和每度电价格，估算电器每天、每月和每年的用电费用，结果在浏览器本地计算。',
+    keywords: ['电费计算', 'electricity cost', '用电成本', '度数计算', 'kwh费用', '电费计算器'],
+  },
+  'extract-emails': {
+    name: '提取邮箱地址',
+    tagline: '从任意文本中提取所有邮箱地址。',
+    description:
+      '从粘贴的文本中查找并提取所有电子邮箱地址，自动去重并每行输出一个，全程在浏览器本地完成。',
+    keywords: ['提取邮箱', 'extract emails', '邮箱提取', '抓取邮箱', 'email extractor', '邮件地址'],
+  },
+  'extract-urls': {
+    name: '提取网址链接',
+    tagline: '从任意文本中提取所有链接。',
+    description:
+      '从粘贴的文本中查找并提取所有网址 URL，自动去重并每行输出一个，全程在浏览器本地完成。',
+    keywords: ['提取网址', 'extract urls', '提取链接', '抓取链接', 'url extractor', '链接提取'],
+  },
+  'gif-reverse': {
+    name: 'GIF 倒放',
+    tagline: '让 GIF 反向播放。',
+    description:
+      '将动图 GIF 的帧顺序倒转，制作反向播放的循环动画，全程在浏览器本地处理，文件不上传。',
+    keywords: ['GIF倒放', 'reverse gif', 'GIF反转', '倒放动图', '反向GIF', 'gif reverser'],
+  },
+  'image-black-white': {
+    name: '黑白图片转换',
+    tagline: '把图片转为灰度或纯黑白。',
+    description:
+      '将图片转换为灰度，或按阈值生成纯黑白效果，阈值水平可调，全程在浏览器本地完成，图片不上传。',
+    keywords: ['黑白图片', 'black and white', '灰度转换', '图片转黑白', 'grayscale', '单色图片'],
+  },
+  'image-info': {
+    name: '图片信息查看',
+    tagline: '查看图片的尺寸、格式、大小和比例。',
+    description:
+      '拖入图片即可立即查看其宽度、高度、宽高比、文件格式和大小，无需上传，全程在浏览器本地完成。',
+    keywords: ['图片信息', 'image info', '图片尺寸', '查看分辨率', 'image dimensions', '图片属性'],
+  },
+  'json-sort-keys': {
+    name: 'JSON 键排序',
+    tagline: '按字母顺序排列 JSON 对象的键。',
+    description:
+      '将 JSON 对象的所有键按字母顺序排序，支持嵌套对象，并可选格式化输出，全程在浏览器本地完成。',
+    keywords: ['JSON排序', 'sort json keys', 'JSON键排序', '键排序', 'json sorter', 'JSON整理'],
+  },
+  'json-stats': {
+    name: 'JSON 结构分析',
+    tagline: '查看 JSON 文档的键、深度和类型。',
+    description:
+      '分析 JSON 文档，统计键总数、最大嵌套深度、数组大小，并给出各类值类型的分布，全程在浏览器本地完成。',
+    keywords: ['JSON分析', 'json stats', 'JSON结构', '嵌套深度', 'json analyzer', '解析JSON'],
+  },
+  'json-to-python': {
+    name: 'JSON 转 Python',
+    tagline: '从 JSON 生成 Python dataclass 或 TypedDict。',
+    description:
+      '粘贴 JSON 即可生成带类型推断的 Python dataclass 或 TypedDict 定义，全程在浏览器本地完成，数据不上传。',
+    keywords: ['JSON转Python', 'json to python', 'dataclass生成', 'TypedDict', 'python类型', 'JSON转换'],
+  },
+  'lorem-ko': {
+    name: '韩文假文生成',
+    tagline: '为排版稿生成韩文占位（假文）文本。',
+    description:
+      '生成自然的韩文填充段落、句子或词语，用于设计稿和原型占位，全程在浏览器本地完成。',
+    keywords: ['韩文假文', 'korean lorem', '占位文本', '韩文填充', '假文生成', 'lorem ipsum'],
+  },
+  'pace-calc': {
+    name: '跑步配速计算器',
+    tagline: '计算跑步的配速、用时或距离。',
+    description:
+      '根据距离和用时计算跑步配速，或根据目标配速预测完赛时间，支持公里和英里，全程在浏览器本地完成。',
+    keywords: ['配速计算', 'pace calculator', '跑步配速', '马拉松配速', '每公里用时', '完赛时间'],
+  },
+  'pdf-resize': {
+    name: 'PDF 页面尺寸调整',
+    tagline: '将 PDF 页面缩放到 A4、Letter 或自定义尺寸。',
+    description:
+      '把 PDF 每一页调整为标准纸张尺寸（A4、Letter 等），内容自动缩放并居中，全程在浏览器本地完成，文件不上传。',
+    keywords: ['PDF调整尺寸', 'resize pdf', 'PDF页面大小', '缩放PDF', 'A4尺寸', 'PDF纸张'],
+  },
+  'random-bytes': {
+    name: '随机字节 / 令牌生成',
+    tagline: '生成密码学安全的随机令牌。',
+    description:
+      '使用 Web Crypto API 生成安全的随机字节，输出为十六进制、Base64 或 UUID，适合密钥和令牌，全程在浏览器本地完成。',
+    keywords: ['随机字节', 'random bytes', '令牌生成', '随机十六进制', 'secure token', '密钥生成'],
+  },
+  'ratio-calc': {
+    name: '比例计算器',
+    tagline: '求解比例（a:b = c:x）并化简比值。',
+    description:
+      '求解比例中缺失的项，并将比值化为最简形式，全程在浏览器本地完成，无需上传任何数据。',
+    keywords: ['比例计算', 'ratio calculator', '比例求解', '化简比值', '比例换算', '求比例'],
+  },
+  'remove-accents': {
+    name: '去除变音符号',
+    tagline: '去掉文字中的重音符号（café → cafe）。',
+    description:
+      '通过 Unicode 规范化去除文字中的重音和变音符号，生成对 ASCII 友好的纯净文本，全程在浏览器本地完成。',
+    keywords: ['去除重音', 'remove accents', '去变音符', 'strip diacritics', '规范化文本', '去音标'],
+  },
+  'remove-line-breaks': {
+    name: '去除换行',
+    tagline: '把多行文本并为一行，或将换行替换为空格。',
+    description:
+      '删除换行符把文本合并为一行，可选将换行折叠为空格并保留段落间隔，全程在浏览器本地完成。',
+    keywords: ['去除换行', 'remove line breaks', '合并行', '删除换行', '文本一行', 'join lines'],
+  },
+  'sleep-calc': {
+    name: '睡眠计算器',
+    tagline: '按睡眠周期推算最佳入睡与起床时间。',
+    description:
+      '根据 90 分钟睡眠周期和入睡所需时间，推荐最佳入睡时间或起床时间，全程在浏览器本地计算。',
+    keywords: ['睡眠计算', 'sleep calculator', '入睡时间', '起床时间', '睡眠周期', '最佳睡眠'],
+  },
+  'time-duration': {
+    name: '时间间隔计算器',
+    tagline: '计算两个时间之差，或加减时长。',
+    description:
+      '计算两个时间点之间的间隔，或对小时、分钟、秒进行加减运算，全程在浏览器本地完成。',
+    keywords: ['时间间隔', 'time duration', '时间差', '加时间', '时长计算', '小时计算'],
+  },
+  'unit-price': {
+    name: '单价比较',
+    tagline: '按每单位价格比较多件商品。',
+    description:
+      '输入多件商品的规格和价格，找出哪件单位价格最划算，购物比价好帮手，全程在浏览器本地完成。',
+    keywords: ['单价比较', 'unit price', '每单位价格', '比价', '成本比较', '划算计算'],
+  },
+  'upside-down': {
+    name: '倒置文字',
+    tagline: '用 Unicode 字符把文字上下颠倒。',
+    description:
+      '将文字转换为上下颠倒的 Unicode 字符，适合趣味社交帖文和用户名，全程在浏览器本地完成。',
+    keywords: ['倒置文字', 'upside down', '颠倒文字', '翻转文字', 'flip text', '倒写文字'],
+  },
+  'uuid-namespace': {
+    name: 'UUID v5 生成器',
+    tagline: '根据命名空间生成确定性 UUID（v5）。',
+    description:
+      '基于命名空间和名称用 SHA-1 生成符合 RFC 4122 的 v5 版 UUID，相同输入始终得到相同结果，全程在浏览器本地完成。',
+    keywords: ['UUID v5', '命名空间UUID', '确定性UUID', 'uuid生成', 'rfc 4122', 'UUID生成器'],
+  },
+  'video-contact-sheet': {
+    name: '视频缩略图拼图',
+    tagline: '从视频生成缩略图网格。',
+    description:
+      '从视频中按等间隔提取多帧画面，拼成一张缩略图总览图，全程在浏览器本地处理，文件不上传。',
+    keywords: ['视频缩略图', 'contact sheet', '缩略图网格', '视频预览图', '帧拼图', '视频截图'],
+  },
+  'wrap-text': {
+    name: '文本换行',
+    tagline: '按指定列宽对文本进行硬换行。',
+    description:
+      '在设定的字符宽度处对长行硬换行且不拆断单词，适用于邮件、注释和纯文本，全程在浏览器本地完成。',
+    keywords: ['文本换行', 'wrap text', '自动换行', '硬换行', '列宽换行', 'word wrap'],
+  },
 };
 
 export const ZH_TOOL_IDS: string[] = Object.keys(ZH_TOOLS);

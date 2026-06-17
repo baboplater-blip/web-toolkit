@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ascii-table',
+      'ja': '/ja/tools/ascii-table',
+      'zh': '/zh/tools/ascii-table',
       'x-default': URL_PATH,
     },
   },

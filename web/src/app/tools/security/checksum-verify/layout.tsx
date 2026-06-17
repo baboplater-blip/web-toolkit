@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/checksum-verify',
+      'ja': '/ja/tools/checksum-verify',
+      'zh': '/zh/tools/checksum-verify',
       'x-default': URL_PATH,
     },
   },

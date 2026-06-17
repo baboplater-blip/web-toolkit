@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-black-white',
+      'ja': '/ja/tools/image-black-white',
+      'zh': '/zh/tools/image-black-white',
       'x-default': URL_PATH,
     },
   },

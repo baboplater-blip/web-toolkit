@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/sleep-calc',
+      'ja': '/ja/tools/sleep-calc',
+      'zh': '/zh/tools/sleep-calc',
       'x-default': URL_PATH,
     },
   },

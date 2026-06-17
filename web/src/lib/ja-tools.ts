@@ -1961,6 +1961,246 @@ export const JA_TOOLS: Record<string, JaToolCopy> = {
       'テキストに結合分音記号を重ねて、強度を調整できるグリッチなザルゴ効果を作ります。ブラウザ内で完結します。',
     keywords: ['ザルゴ 文字', 'グリッチ 文字', '不気味 文字', '崩れた文字', 'zalgo text'],
   },
+
+  // ── 追加分3（en パリティ） ──────────────────────────────────────────────
+  'ascii-table': {
+    name: 'ASCIIコード表',
+    tagline: 'ASCII文字を10進・16進・8進コードで検索。',
+    description:
+      'ASCIIコード表を10進・16進・8進コードと制御文字の説明つきで一覧・検索できます。手早く使えるリファレンスです。',
+    keywords: ['ascii 表', 'ascii コード', '文字コード', 'ascii table', 'ascii 一覧'],
+  },
+  'audio-pitch': {
+    name: 'オーディオ ピッチ変更',
+    tagline: '再生速度を変えずに音の高さを変更。',
+    description:
+      '再生速度を保ったまま音程を半音単位で上下できます。FFmpegでブラウザ内処理し、ファイルはどこにも送信されません。',
+    keywords: ['ピッチ変更', '音程 変更', 'キー変更', 'pitch shift', 'オーディオ 移調'],
+  },
+  'audio-waveform': {
+    name: '波形画像の生成',
+    tagline: '音声ファイルの波形をPNG画像に。',
+    description:
+      '音声ファイルから波形画像を生成。色やサイズを指定でき、Web Audioでローカル解析するためアップロードしません。',
+    keywords: ['波形 画像', '波形 生成', 'オーディオ 可視化', 'waveform', '音声 波形'],
+  },
+  'cc-validate': {
+    name: 'クレジットカード番号チェック（Luhn）',
+    tagline: 'Luhnチェックサムとカードブランドを判定。',
+    description:
+      'クレジットカード番号をLuhnアルゴリズムで検証し、カードブランドを判別します。データはブラウザの外に出ません。',
+    keywords: ['カード番号 チェック', 'luhn 判定', 'クレジットカード 検証', 'luhn algorithm', 'カードブランド 判定'],
+  },
+  'checksum-verify': {
+    name: 'チェックサム照合',
+    tagline: 'ファイルのハッシュを期待値と照合。',
+    description:
+      'ファイルのSHA-256/512ハッシュを計算し、期待する値と比較して整合性を確認します。すべてブラウザ内で処理します。',
+    keywords: ['チェックサム 照合', 'ハッシュ 確認', 'sha256 検証', 'ファイル 整合性', 'hash 比較'],
+  },
+  'code-case': {
+    name: 'コード命名ケース変換',
+    tagline: 'camelCase・snake_case・kebab-caseなどを相互変換。',
+    description:
+      '変数や識別子の名前をcamelCase・snake_case・kebab-case・PascalCase・CONSTANT_CASEへ相互変換します。ブラウザ内で完結します。',
+    keywords: ['ケース変換', 'スネークケース', 'キャメルケース', 'case converter', '命名 変換'],
+  },
+  'compound-interest': {
+    name: '複利計算',
+    tagline: '複利と積立で資産の成長を試算。',
+    description:
+      '元本・利率・期間・定期積立を入力すると、複利での成長と利息合計を試算します。計算はブラウザ内で行われます。',
+    keywords: ['複利 計算', '積立 シミュレーション', '利息 計算', '資産運用 計算', 'compound interest'],
+  },
+  'count-occurrences': {
+    name: '出現回数カウント',
+    tagline: '単語やフレーズの出現回数を数える。',
+    description:
+      'テキスト中の文字列の出現回数を数えます。大文字小文字の区別や単語単位の指定が可能で、すべてブラウザ内で処理します。',
+    keywords: ['出現回数 カウント', '単語 数える', '文字列 検索', '出現頻度', 'count occurrences'],
+  },
+  'css-minify': {
+    name: 'CSS圧縮・整形',
+    tagline: 'CSSを瞬時に圧縮または整形。',
+    description:
+      '空白やコメントを除去してCSSを圧縮したり、揃ったインデントで整形したりできます。すべてブラウザ内で処理します。',
+    keywords: ['css 圧縮', 'css 整形', 'css minify', 'css フォーマット', 'css 軽量化'],
+  },
+  'css-specificity': {
+    name: 'CSS詳細度の計算',
+    tagline: '任意のCSSセレクタの詳細度を計算。',
+    description:
+      'CSSセレクタを入力すると詳細度（id・class・要素の数）を計算し、どのルールが優先されるかを把握できます。ブラウザ内で完結します。',
+    keywords: ['css 詳細度', 'セレクタ 優先度', 'specificity 計算', 'css 優先順位', 'セレクタ 重み'],
+  },
+  'csv-stats': {
+    name: 'CSV統計',
+    tagline: 'CSVの列ごとの統計を取得。',
+    description:
+      'CSVを解析し、数値列の件数・合計・平均・最小・最大・欠損値を列ごとに表示します。処理はブラウザ内で行われます。',
+    keywords: ['csv 統計', 'csv 集計', 'csv 解析', 'csv サマリー', 'csv データ分析'],
+  },
+  'electricity-cost': {
+    name: '電気代計算',
+    tagline: '家電の使用コストを概算。',
+    description:
+      '消費電力・使用時間・1kWhあたりの料金を入力すると、1日・1か月・1年の電気代を概算します。計算はブラウザ内で行われます。',
+    keywords: ['電気代 計算', '消費電力 コスト', 'kwh 料金', '家電 電気代', '電力 コスト 計算'],
+  },
+  'extract-emails': {
+    name: 'メールアドレス抽出',
+    tagline: 'テキストから全メールアドレスを抜き出す。',
+    description:
+      '貼り付けたテキストからすべてのメールアドレスを抽出します。重複除去と1行1件の出力に対応し、ブラウザ内で処理します。',
+    keywords: ['メール 抽出', 'メールアドレス 抜き出し', 'email 抽出', 'アドレス 収集', 'extract emails'],
+  },
+  'extract-urls': {
+    name: 'URL抽出',
+    tagline: 'テキストから全リンク・URLを抜き出す。',
+    description:
+      '貼り付けたテキストからすべてのURLを抽出します。重複除去と1行1件の出力に対応し、すべてブラウザ内で処理します。',
+    keywords: ['url 抽出', 'リンク 抜き出し', 'url 収集', 'リンク 抽出', 'extract urls'],
+  },
+  'gif-reverse': {
+    name: 'GIF逆再生',
+    tagline: 'GIFを逆向きに再生。',
+    description:
+      'アニメーションGIFのフレーム順を反転し、逆再生するループを作成します。すべてブラウザ内で処理されます。',
+    keywords: ['gif 逆再生', 'gif 反転', 'gif 逆向き', 'reverse gif', 'gif リバース'],
+  },
+  'image-black-white': {
+    name: '白黒・グレースケール変換',
+    tagline: '画像をグレースケールや純白黒に変換。',
+    description:
+      '画像をグレースケールに変換したり、しきい値で純粋な白黒にできます。レベルは調整可能で、すべてブラウザ内で処理します。',
+    keywords: ['白黒 変換', 'グレースケール', 'モノクロ 変換', 'image 白黒', '画像 グレースケール'],
+  },
+  'image-info': {
+    name: '画像情報ビューア',
+    tagline: '画像の寸法・形式・サイズ・比率を確認。',
+    description:
+      '画像をドロップするだけで、幅・高さ・アスペクト比・ファイル形式・サイズを即座に表示します。アップロード不要、ブラウザ内で完結します。',
+    keywords: ['画像 情報', '画像 寸法', '画像 サイズ 確認', '画像 プロパティ', '解像度 確認'],
+  },
+  'json-sort-keys': {
+    name: 'JSONキーの並べ替え',
+    tagline: 'JSONオブジェクトのキーをアルファベット順に。',
+    description:
+      'ネストしたオブジェクトも含め、JSONのキーをすべてアルファベット順に並べ替えます。整形出力も選べ、ブラウザ内で処理します。',
+    keywords: ['json キー 並べ替え', 'json ソート', 'json キー 順', 'json sort keys', 'json 整列'],
+  },
+  'json-stats': {
+    name: 'JSON構造アナライザー',
+    tagline: 'JSONのキー数・深さ・型を調べる。',
+    description:
+      'JSONを解析して総キー数・最大ネスト深さ・配列サイズ・値の型の内訳を表示します。処理はブラウザ内で行われます。',
+    keywords: ['json 解析', 'json 構造', 'json 深さ', 'json 統計', 'json 調査'],
+  },
+  'json-to-python': {
+    name: 'JSON→Python変換',
+    tagline: 'JSONからPythonのdataclass・TypedDictを生成。',
+    description:
+      'JSONを貼り付けると、型を推論したPythonのdataclassやTypedDictを生成します。すべてブラウザ内で処理します。',
+    keywords: ['json python 変換', 'json dataclass', 'json typeddict', 'python 型 生成', 'json to python'],
+  },
+  'lorem-ko': {
+    name: '韓国語ダミーテキスト',
+    tagline: 'モックアップ用の韓国語ダミー文を生成。',
+    description:
+      'デザインのモックアップ向けに、自然な見た目の韓国語の段落・文・単語を生成します。すべてブラウザ内で処理します。',
+    keywords: ['韓国語 ダミー', 'ハングル ダミーテキスト', '韓国語 プレースホルダ', 'ダミー文 韓国語', 'lorem ipsum'],
+  },
+  'pace-calc': {
+    name: 'ランニングペース計算',
+    tagline: 'ランニングのペース・時間・距離を計算。',
+    description:
+      '距離とタイムからペースを計算したり、目標ペースからゴールタイムを予測したりできます。kmとマイルに対応、ブラウザ内で完結します。',
+    keywords: ['ペース 計算', 'ランニング ペース', 'マラソン ペース', 'キロ何分', 'タイム 計算'],
+  },
+  'pdf-resize': {
+    name: 'PDFページのサイズ変更',
+    tagline: 'PDFのページをA4・Letterなどに拡縮。',
+    description:
+      'PDFの全ページを標準用紙サイズ（A4・Letterなど）に変更し、内容を拡縮して中央に配置します。すべてブラウザ内で処理します。',
+    keywords: ['pdf サイズ変更', 'pdf ページサイズ', 'pdf a4 変換', 'pdf 用紙サイズ', 'pdf 拡縮'],
+  },
+  'random-bytes': {
+    name: 'ランダムバイト・トークン生成',
+    tagline: '暗号学的に安全なランダムトークンを生成。',
+    description:
+      'Web Crypto APIで安全なランダムバイトをhex・Base64・UUIDとして生成します。鍵やトークンに便利、ブラウザ内で完結します。',
+    keywords: ['ランダムバイト 生成', 'トークン 生成', 'ランダム hex', '暗号 乱数', '秘密鍵 生成'],
+  },
+  'ratio-calc': {
+    name: '比率計算',
+    tagline: '比例（a:b = c:x）を解き、比を簡約。',
+    description:
+      '比例の不明な項を求めたり、比を最も簡単な形に約分したりできます。すべてブラウザ内で処理します。',
+    keywords: ['比率 計算', '比例 計算', '比 簡約', '比 解く', 'ratio calculator'],
+  },
+  'remove-accents': {
+    name: 'アクセント記号の除去',
+    tagline: 'テキストから発音区別符号を除去（café → cafe）。',
+    description:
+      'Unicode正規化でアクセントや発音区別符号を除去し、プレーンなASCII向けの出力を作ります。ブラウザ内で完結します。',
+    keywords: ['アクセント 除去', '発音区別符号 削除', 'ダイアクリティカル 除去', 'accent remover', 'テキスト 正規化'],
+  },
+  'remove-line-breaks': {
+    name: '改行の削除',
+    tagline: '複数行を1行に結合、または改行を空白に置換。',
+    description:
+      '改行を取り除いてテキストを1行に結合します。空白への置換や段落区切りの維持も選べ、ブラウザ内で完結します。',
+    keywords: ['改行 削除', '行 結合', '改行 除去', 'テキスト 1行化', '改行コード 削除'],
+  },
+  'sleep-calc': {
+    name: '睡眠時間計算',
+    tagline: '睡眠サイクルから最適な就寝・起床時刻を算出。',
+    description:
+      '90分の睡眠サイクルと入眠までの時間をもとに、最適な就寝時刻や起床時刻を提案します。計算はブラウザ内で行われます。',
+    keywords: ['睡眠 計算', '就寝時刻 計算', '睡眠サイクル', '起床時刻', '寝る時間 計算'],
+  },
+  'time-duration': {
+    name: '時間差・経過時間の計算',
+    tagline: '2つの時刻の差を求め、時間を加減算。',
+    description:
+      '2つの時刻の間の長さを計算したり、時・分・秒を加算・減算したりできます。すべてブラウザ内で処理します。',
+    keywords: ['時間差 計算', '経過時間', '時間 加算', '時間 減算', '時間 計算'],
+  },
+  'unit-price': {
+    name: '単価比較',
+    tagline: '単位あたりの価格で商品を比較。',
+    description:
+      '複数商品の容量と価格を入力すると、単位あたりが最も安い商品が分かります。買い物に便利、ブラウザ内で完結します。',
+    keywords: ['単価 計算', '単位あたり 価格', 'コスト 比較', '価格 比較', 'お得 計算'],
+  },
+  'upside-down': {
+    name: '上下反転テキスト',
+    tagline: 'Unicode文字でテキストを上下反転。',
+    description:
+      'テキストを上下反転したUnicode文字に変換します。SNS投稿やユーザー名の遊びに使えて、すべてブラウザ内で処理します。',
+    keywords: ['上下反転 テキスト', '反転 文字', '逆さ 文字', 'umop apisdn', 'upside down'],
+  },
+  'uuid-namespace': {
+    name: 'UUID v5ジェネレーター',
+    tagline: '決定的な名前空間UUID（v5）を生成。',
+    description:
+      '名前空間と名前からSHA-1を使ってRFC 4122のバージョン5 UUIDを生成します。同じ入力なら常に同じUUIDに。ブラウザ内で完結します。',
+    keywords: ['uuid v5', '名前空間 uuid', '決定的 uuid', 'uuid 生成', 'rfc 4122'],
+  },
+  'video-contact-sheet': {
+    name: '動画コンタクトシート',
+    tagline: '動画からサムネイル一覧を作成。',
+    description:
+      '動画から等間隔でフレームを抽出し、1枚のコンタクトシート画像に並べます。処理はブラウザ内で行われます。',
+    keywords: ['動画 コンタクトシート', '動画 サムネイル 一覧', 'フレーム グリッド', '動画 プレビュー', 'サムネイル 一覧'],
+  },
+  'wrap-text': {
+    name: 'テキスト折り返し',
+    tagline: '指定した桁幅でテキストを折り返す。',
+    description:
+      '単語を分断せずに指定文字幅で長い行を折り返します。メールやコメント、プレーンテキストに便利で、ブラウザ内で完結します。',
+    keywords: ['テキスト 折り返し', 'ワードラップ', '折り返し', '行幅 揃え', 'wrap text'],
+  },
 };
 
 /** IDs that have curated Japanese copy, in insertion order. */

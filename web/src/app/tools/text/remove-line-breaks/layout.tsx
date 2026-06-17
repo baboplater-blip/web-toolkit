@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/remove-line-breaks',
+      'ja': '/ja/tools/remove-line-breaks',
+      'zh': '/zh/tools/remove-line-breaks',
       'x-default': URL_PATH,
     },
   },

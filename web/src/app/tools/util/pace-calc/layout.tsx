@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pace-calc',
+      'ja': '/ja/tools/pace-calc',
+      'zh': '/zh/tools/pace-calc',
       'x-default': URL_PATH,
     },
   },

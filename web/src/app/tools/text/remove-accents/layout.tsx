@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/remove-accents',
+      'ja': '/ja/tools/remove-accents',
+      'zh': '/zh/tools/remove-accents',
       'x-default': URL_PATH,
     },
   },

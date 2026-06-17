@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/lorem-ko',
+      'ja': '/ja/tools/lorem-ko',
+      'zh': '/zh/tools/lorem-ko',
       'x-default': URL_PATH,
     },
   },

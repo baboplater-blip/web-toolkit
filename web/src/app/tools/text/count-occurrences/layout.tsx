@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/count-occurrences',
+      'ja': '/ja/tools/count-occurrences',
+      'zh': '/zh/tools/count-occurrences',
       'x-default': URL_PATH,
     },
   },

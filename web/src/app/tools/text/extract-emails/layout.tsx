@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/extract-emails',
+      'ja': '/ja/tools/extract-emails',
+      'zh': '/zh/tools/extract-emails',
       'x-default': URL_PATH,
     },
   },
