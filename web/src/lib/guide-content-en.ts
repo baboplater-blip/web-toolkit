@@ -606,6 +606,816 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'qr-code': {
+    metaTitle: 'QR Code Generator & Reader — Free, No Signup',
+    metaDescription:
+      'Make a QR code from any URL or text, customize colors and error correction, then download a PNG. Or upload an image to decode the QR back to text. Free, no signup.',
+    intro:
+      'This tool both generates and reads QR codes. Type a URL like https://example.com or any text and it draws a scannable QR instantly; adjust the size, foreground/background color and error-correction level, then download a PNG. Switch to read mode and upload a photo or screenshot to decode the QR back into its original text.',
+    features: [
+      'Two modes: generate a QR from text/URL, or decode a QR out of an uploaded image.',
+      'Four error-correction levels — L (~7%), M (~15%), Q (~25%), H (~30%) — higher levels survive more damage but pack more dots.',
+      'Custom foreground and background colors plus an adjustable size from 128px to 1024px.',
+      'Decoded URLs get a clickable "open link" shortcut, and any decoded text copies in one tap.',
+      'Runs entirely in your browser — nothing you encode or scan is uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Choose generate or read',
+        body: 'Tap "QR generate" to build a code, or "QR read" to decode one. In generate mode, type the content — for example https://example.com or plain text like a Wi-Fi note.',
+      },
+      {
+        title: 'Tune the options',
+        body: 'Set the size (e.g. 512px), pick foreground/background colors, and choose an error-correction level. Use H (~30%) if you plan to print the code or place a logo over it; M (~15%) is fine for screens.',
+      },
+      {
+        title: 'Download or decode',
+        body: 'Click "Download PNG" to save the generated code. To read instead, drop in an image containing a QR — it decodes to text and, if the content is a URL, offers an "open link" shortcut.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is there a data limit on a QR code?',
+        a: 'Yes. A QR code maxes out around 4,296 alphanumeric or 2,953 binary characters at the lowest error correction. In practice keep URLs and text short — the more you cram in, the denser the dots get, which makes the code harder to scan, especially when printed small.',
+      },
+      {
+        q: 'Which error-correction level should I use?',
+        a: 'L (~7%) holds the most data with the fewest dots and suits clean on-screen codes. M (~15%) is the common default. Use Q (~25%) or H (~30%) when the code may get smudged, printed small, or partly covered by a logo — they can still scan with damage.',
+      },
+      {
+        q: 'Why won’t my uploaded image decode?',
+        a: 'The decoder needs a reasonably sharp, well-lit QR. Blurry photos, heavy glare, extreme angles, or a code that fills only a tiny part of the frame often fail. Crop closer to the code and retry with a clearer image.',
+      },
+    ],
+  },
+
+  base64: {
+    metaTitle: 'Base64 Encode / Decode — Text & Files, Data URI',
+    metaDescription:
+      'Encode text or any file to Base64 and decode it back. "Hi" becomes SGk=, and a file shows a data:URI you can paste into CSS or HTML. UTF-8 safe. Free, no upload.',
+    intro:
+      'This tool encodes and decodes Base64 for both text and files. Type "Hi" and it returns SGk=; paste Base64 back and it decodes to the original UTF-8 text. Drop in a file (image, PDF, anything) and it gives you the Base64 plus a ready-to-use data: URI for embedding in CSS or HTML.',
+    features: [
+      'Three modes: text → Base64, Base64 → text, and file → Base64.',
+      'UTF-8 safe — encodes Korean, emoji and other multi-byte characters correctly, not just ASCII.',
+      'File mode outputs both the raw Base64 and a data:<mime>;base64,… URI you can paste straight into an <img> or CSS background.',
+      'Decode mode can save the result as a binary file when the Base64 is not text.',
+      'Runs entirely in your browser — files and text are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Pick a mode',
+        body: 'Choose "text → Base64", "Base64 → text", or "file → Base64". The text modes share one input box; file mode shows a drop zone.',
+      },
+      {
+        title: 'Enter your input',
+        body: 'For encoding, type or paste text — "Hi" gives SGk=. For decoding, paste a Base64 string (whitespace and line breaks are ignored). For files, drop in any file to get its Base64 and data: URI.',
+      },
+      {
+        title: 'Copy or save the result',
+        body: 'Copy the output with one click. In file mode, grab the data:image/png;base64,… URI for an HTML/CSS embed; in decode mode, use "save binary" if the decoded bytes are not plain text.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the Base64 about 33% larger than the original?',
+        a: 'Base64 encodes every 3 bytes as 4 ASCII characters, so output grows by roughly 4/3 — about 33% bigger. That overhead is the trade-off for representing arbitrary binary data using only safe text characters.',
+      },
+      {
+        q: 'What is a data URI and when do I use one?',
+        a: 'A data URI like data:image/png;base64,iVBOR… embeds the file’s bytes directly in HTML or CSS so no separate download is needed. It is handy for tiny icons or inlining small images, but for large files a normal URL is more efficient.',
+      },
+      {
+        q: 'Does it handle non-English text and emoji?',
+        a: 'Yes. The text is encoded as UTF-8 before Base64, so Korean, accented letters and emoji round-trip correctly. A common bug in naive btoa() code is breaking on such characters — this tool avoids it.',
+      },
+      {
+        q: 'Is Base64 a form of encryption?',
+        a: 'No. Base64 is reversible encoding, not encryption — anyone can decode it instantly with no key. Never use it to hide passwords or secrets; it only makes binary data safe to transport as text.',
+      },
+    ],
+  },
+
+  'json-format': {
+    metaTitle: 'JSON Formatter & Validator — Pretty Print / Minify',
+    metaDescription:
+      'Format, minify and validate JSON in your browser. Pretty-print with 2 or 4 spaces, collapse to one line, and catch syntax errors with a clear message. Free, no signup.',
+    intro:
+      'This JSON formatter pretty-prints, minifies and validates JSON as you type. Paste {"hello":"world","items":[1,2,3]} and it indents it cleanly with 2 or 4 spaces; switch to minify and it collapses to a single line. Invalid JSON is flagged immediately with the parser’s error message, and you get size and key-count stats.',
+    features: [
+      'Pretty-print with a choice of 2 or 4 space indentation, or minify to a single compact line.',
+      'Live validation — a green "valid JSON" check or the exact parser error (e.g. "Unexpected token } in JSON") as you type.',
+      'Shows input size, output size and total key count so you can see how much minifying saves.',
+      'Copy the formatted output or download it as a .json file.',
+      'Runs entirely in your browser with no signup or upload.',
+    ],
+    steps: [
+      {
+        title: 'Paste your JSON',
+        body: 'Drop your JSON into the input — for example {"hello":"world","items":[1,2,3]}. A built-in sample button loads example data if you just want to try it.',
+      },
+      {
+        title: 'Pick pretty-print or minify',
+        body: 'Choose "format" to indent with 2 or 4 spaces, or "minify" to strip all whitespace into one line. The output and the size stats update instantly.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Use "Copy" to grab the result, or "Download .json" to save it as formatted.json. If the input is invalid, fix the spot shown in the red error message first.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does formatting change my data?',
+        a: 'No. Pretty-print and minify only add or remove whitespace — the keys, values, order and structure are identical. Minifying just removes spaces and line breaks to shrink the file for transport.',
+      },
+      {
+        q: 'Why does it say my JSON is invalid?',
+        a: 'The most common causes are trailing commas, single quotes instead of double quotes, unquoted keys, or a missing bracket. The red error message reports what the parser expected — fix that spot and the green "valid" check returns.',
+      },
+      {
+        q: 'How much smaller does minifying make a file?',
+        a: 'It depends on indentation, but removing the whitespace from a pretty-printed file typically cuts 20–50% of the bytes. The tool shows input size versus output size so you can see the exact reduction.',
+      },
+    ],
+  },
+
+  'password-gen': {
+    metaTitle: 'Secure Password Generator — Strong Random + Strength',
+    metaDescription:
+      'Generate strong random passwords with crypto-grade randomness. A 20-char password with symbols scores ~120 bits of entropy. Set length, character sets, bulk count. Free.',
+    intro:
+      'This password generator creates strong, random passwords using the Web Crypto API (crypto.getRandomValues), not Math.random. Set the length and which character sets to include, and it generates a batch at once with a live strength meter — a 20-character password with symbols lands around 120 bits of entropy and rates "very strong".',
+    features: [
+      'Crypto-grade randomness via crypto.getRandomValues — unpredictable, unlike Math.random.',
+      'Toggle lowercase, uppercase, digits and symbols, and set length from 6 to 64 characters.',
+      'Optional "exclude ambiguous characters" removes look-alikes like I, l, 1, O and 0.',
+      'Generates up to 100 passwords at once, each with an entropy-bit strength rating.',
+      'Runs entirely in your browser — generated passwords are never sent anywhere.',
+    ],
+    steps: [
+      {
+        title: 'Set length and character sets',
+        body: 'Drag the length slider (20 is a solid default) and tick the sets you want — lowercase, uppercase, digits and symbols. Including all four maximizes strength per character.',
+      },
+      {
+        title: 'Generate a batch',
+        body: 'Choose how many to create (e.g. 5) and click "Generate". Each password shows a strength bar and its entropy in bits — aim for "strong" (70+ bits) or higher.',
+      },
+      {
+        title: 'Copy the one you want',
+        body: 'Tap the copy icon next to any password to put it on your clipboard. Optionally enable "exclude ambiguous characters" first so you never confuse l and 1 when typing it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How random are these passwords?',
+        a: 'They use crypto.getRandomValues, the browser’s cryptographically secure random source — the same class of randomness used for keys and tokens. This is far stronger than Math.random, which is predictable and unsuitable for passwords.',
+      },
+      {
+        q: 'How long should my password be?',
+        a: 'Length matters more than complexity. With all character sets on, 16 characters gives roughly 100 bits of entropy and 20 characters around 120 bits — both well beyond what brute force can crack. The tool rates anything 16+ with symbols as strong.',
+      },
+      {
+        q: 'What does the entropy "bits" number mean?',
+        a: 'Entropy estimates how hard the password is to guess: each extra bit doubles the number of possibilities. Under ~50 bits is weak, 70+ is strong, and 90+ is very strong. Adding length or more character types raises the bits.',
+      },
+      {
+        q: 'Are the passwords stored or logged?',
+        a: 'No. They are generated locally and held only in the page. Refreshing or closing the tab discards them, and nothing is transmitted — so copy the one you need before leaving.',
+      },
+    ],
+  },
+
+  'uuid-gen': {
+    metaTitle: 'UUID Generator (v4) — Single & Bulk, Free Online',
+    metaDescription:
+      'Generate random UUID v4 identifiers like 3f50…-… in bulk. Make one or up to 10,000 at once, choose uppercase, no-hyphen or {braces} format, copy or download as TXT. Free.',
+    intro:
+      'This tool generates version 4 (random) UUIDs using crypto.randomUUID. Make a single identifier or up to 10,000 at once, then format them as standard lowercase, uppercase, hyphen-free, or wrapped in {braces}. Copy one, copy all, or download the whole list as a .txt file.',
+    features: [
+      'Generates UUID v4 using the browser’s crypto.randomUUID (cryptographically random), with a getRandomValues fallback.',
+      'Bulk mode produces 1 to 10,000 UUIDs in one click — handy for seeding test data.',
+      'Four output formats: default lowercase, UPPERCASE, no-hyphen (32 chars), and {braced}.',
+      'Copy a single UUID, copy the whole list, or download it as uuids.txt.',
+      'Runs entirely in your browser — no signup or upload.',
+    ],
+    steps: [
+      {
+        title: 'Set the count',
+        body: 'Enter how many UUIDs you need — 1 for a single id, or up to 10,000 for a bulk batch of test data.',
+      },
+      {
+        title: 'Choose a format',
+        body: 'Pick default (lowercase like 3f50a1c2-…-…), UPPERCASE, no-hyphen (32 hex chars), or {braces}. The whole list re-renders in that format instantly.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Use the copy icon on any row, "copy all" to grab the full newline-separated list, or "TXT" to download it as uuids.txt for importing elsewhere.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is a UUID v4?',
+        a: 'A version 4 UUID is a 128-bit identifier whose bits are almost entirely random, formatted as 8-4-4-4-12 hex digits (e.g. 3f50a1c2-9b7e-4d3a-b8f1-2c6e0a1d4e5f). The "4" in the third group marks the version.',
+      },
+      {
+        q: 'Can two generated UUIDs collide?',
+        a: 'In practice, no. With 122 random bits the odds of a collision are astronomically small — you would need to generate billions of UUIDs before a clash became remotely likely, which is why they are used as globally unique keys without coordination.',
+      },
+      {
+        q: 'What is the difference between UUID v4 and v1?',
+        a: 'v1 is derived from the timestamp and MAC address, so it leaks when and (partly) where it was made and is roughly sortable. v4 is purely random, leaks nothing, and is the right default for database keys and tokens. This tool generates v4.',
+      },
+    ],
+  },
+
+  'jwt-decoder': {
+    metaTitle: 'JWT Decoder — Inspect Header, Payload, Signature',
+    metaDescription:
+      'Decode a JWT into its header, payload and signature. See claims like sub, iat and exp in plain JSON, with expiry status. Does NOT verify the signature. Free, no upload.',
+    intro:
+      'This JWT decoder splits a token into its three dot-separated parts — header, payload and signature — and shows the header and payload as readable JSON. It decodes the Base64URL segments, displays standard claims (sub, iat, exp, nbf) with human-readable timestamps, and flags whether the token is expired. A "Bearer " prefix is stripped automatically.',
+    features: [
+      'Splits the JWT at its two dots into header.payload.signature and decodes each Base64URL segment.',
+      'Pretty-prints the header and payload JSON, and copies each section independently.',
+      'Interprets time claims — iat, exp and nbf are shown as UTC timestamps, and exp drives a valid/expired badge.',
+      'Accepts a raw token or one with a "Bearer " prefix.',
+      'Runs entirely in your browser — the token is decoded locally and never sent to a server.',
+    ],
+    steps: [
+      {
+        title: 'Paste the token',
+        body: 'Paste your JWT (with or without a leading "Bearer "). A valid token has exactly three parts separated by dots — header.payload.signature — like eyJhbGci…​.eyJzdWIi…​.dQw4w9.',
+      },
+      {
+        title: 'Read the header and payload',
+        body: 'The header shows the algorithm (e.g. {"alg":"HS256","typ":"JWT"}) and the payload shows the claims as JSON. Time claims such as exp are rendered as a readable UTC time, with a valid or expired badge.',
+      },
+      {
+        title: 'Copy what you need',
+        body: 'Use the copy button on the header, payload or signature to grab just that piece. The signature is shown as-is — it is not checked (see below).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does decoding verify the signature?',
+        a: 'No. This tool only decodes and displays the token — it does NOT verify the signature. Verification requires the secret or public key, which lives on your server. Never trust a JWT’s contents based on decoding alone; always verify it server-side.',
+      },
+      {
+        q: 'Is it safe to paste a real token here?',
+        a: 'The decoding happens entirely in your browser and nothing is uploaded. Still, a JWT is a credential — anyone who sees it can act as you until it expires — so avoid pasting production tokens into any tool you don’t control, and prefer expired or test tokens.',
+      },
+      {
+        q: 'What do the sub, iat and exp claims mean?',
+        a: 'sub is the subject (usually the user id), iat is "issued at" (when the token was created), exp is the expiry time, and nbf is "not before" (when it becomes valid). iat/exp/nbf are Unix timestamps, which this tool converts to readable UTC times.',
+      },
+      {
+        q: 'Why is the payload readable without a key?',
+        a: 'A JWT payload is only Base64URL-encoded, not encrypted, so anyone can read it. The signature does not hide the data — it only proves the token has not been tampered with. Never put secrets in a JWT payload.',
+      },
+    ],
+  },
+
+  'url-encoder': {
+    metaTitle: 'URL Encoder / Decoder & Parser — Query Params',
+    metaDescription:
+      'Encode or decode URLs and analyze their parts. A space becomes %20, "안녕" becomes %EC%95%88…, and parse mode breaks a URL into host, path and query params. Free, no signup.',
+    intro:
+      'This tool encodes, decodes and analyzes URLs. Encode mode turns special characters into percent-escapes (a space becomes %20, "안녕" becomes %EC%95%88%EB%85%95); decode mode reverses it; and parse mode breaks a full URL into protocol, host, path, query and hash, listing every query parameter as a key/value pair.',
+    features: [
+      'Three modes: encode, decode, and parse (analyze the URL’s components).',
+      'Choose encodeURIComponent (recommended for query values, escapes & = ? #) or encodeURI (preserves URL structure).',
+      'Parse mode lists protocol, hostname, port, path, query string and hash, plus each query parameter split out.',
+      'Handles non-ASCII text — Korean and emoji encode to UTF-8 percent-escapes correctly.',
+      'Runs entirely in your browser with one-click copy of any field.',
+    ],
+    steps: [
+      {
+        title: 'Pick a mode',
+        body: 'Choose "encode", "decode", or "parse". For encode/decode, the "Component" checkbox controls whether reserved characters like & and ? are escaped — leave it on for query values.',
+      },
+      {
+        title: 'Enter the URL or text',
+        body: 'Paste your input — e.g. https://example.com/search?q=안녕 세상&page=2. Encoding turns the space into %20 and the Korean into %EC%95%88…; parse mode breaks it into host, path and query parts.',
+      },
+      {
+        title: 'Read and copy the result',
+        body: 'For encode/decode, copy the single output. In parse mode, each component and each query parameter (q = "안녕 세상", page = "2") has its own copy button.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between encodeURIComponent and encodeURI?',
+        a: 'encodeURIComponent escapes everything that isn’t safe in a single value — including & = ? # / — so it’s right for query parameter values. encodeURI keeps those structural characters intact, so it’s for encoding a whole URL. The "Component" checkbox switches between them.',
+      },
+      {
+        q: 'Why does a space become %20 (or sometimes +)?',
+        a: 'In a URL path and with percent-encoding a space is %20. The + form for spaces is specific to application/x-www-form-urlencoded query strings. This tool uses standard percent-encoding, so spaces show as %20.',
+      },
+      {
+        q: 'How is non-English text encoded?',
+        a: 'Characters outside ASCII are first encoded as UTF-8 bytes, then each byte becomes a %XX escape. So "안녕" becomes %EC%95%88%EB%85%95 — three bytes per Hangul character. Decoding reverses this back to the original text.',
+      },
+    ],
+  },
+
+  'regex-tester': {
+    metaTitle: 'Regex Tester — Live Matches, Groups & Replace',
+    metaDescription:
+      'Test a regular expression live against your text. See highlighted matches, capture groups and match index, toggle g/i/m/s/u flags, and preview replacements. Free, no signup.',
+    intro:
+      'This regex tester evaluates a JavaScript regular expression against your sample text live as you type. It highlights every match in context, lists each match with its index and capture groups, and lets you toggle the g/i/m/s/u flags. A replace box previews the result with $1, $2 group references, and built-in presets cover email, URL, IPv4 and dates.',
+    features: [
+      'Live highlighting of all matches in the test string, with a running match count.',
+      'Per-match detail: the matched text, its index, and any capture groups.',
+      'Toggle the g, i, m, s and u flags individually and watch results update.',
+      'Replace preview supporting $1/$2 group back-references, plus presets for email, URL, phone, IPv4 and YYYY-MM-DD.',
+      'Runs entirely in your browser; large inputs (over 100,000 chars) pause live eval to avoid freezing the tab.',
+    ],
+    steps: [
+      {
+        title: 'Enter a pattern and flags',
+        body: 'Type your regex in the pattern box — for example \\b\\w+@\\w+\\.\\w+\\b for emails — and toggle flags like g (global) and i (case-insensitive). Or click a preset such as "Email" to load one.',
+      },
+      {
+        title: 'Paste your test string',
+        body: 'Put the text to search in the test box. Matches are highlighted inline and listed below with their index and capture groups, e.g. alice@example.com at index 4.',
+      },
+      {
+        title: 'Preview a replacement',
+        body: 'Type a replacement in the replace box — use $1, $2 to reference capture groups — and the bottom panel shows the substituted text. Copy whichever result you need.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which regex dialect does this use?',
+        a: 'It uses the JavaScript (ECMAScript) regular-expression engine — the same one in browsers and Node. Syntax differs from PCRE/Python in places (e.g. no inline (?i) flags; named groups use (?<name>…)), so test here matches how it will behave in JS.',
+      },
+      {
+        q: 'What do the g, i, m, s and u flags do?',
+        a: 'g finds all matches (not just the first), i is case-insensitive, m makes ^ and $ match line starts/ends, s lets . match newlines (dotall), and u enables full Unicode handling. Toggle each and the match list updates.',
+      },
+      {
+        q: 'How do capture groups and replacement references work?',
+        a: 'Parentheses ( ) create capture groups, shown per match in the results. In the replace box you reference them with $1, $2, etc. — so a pattern (\\w+)@(\\w+) with replacement $2-$1 swaps the two halves.',
+      },
+      {
+        q: 'Why did live matching stop on a big input?',
+        a: 'A complex regex on a very large string can cause catastrophic backtracking that freezes the tab, so live evaluation pauses past about 100,000 characters. You can opt in to "run anyway", but simplify the pattern first if it hangs.',
+      },
+    ],
+  },
+
+  'text-diff': {
+    metaTitle: 'Text Diff Tool — Compare Two Texts Line by Line',
+    metaDescription:
+      'Compare two blocks of text and see what changed. Added lines highlight green, removed lines red, with line/word/character diff modes and +/− counts. Free, no signup.',
+    intro:
+      'This text diff tool compares two versions side by side and highlights the differences. Added content shows in green, removed in red, and you can diff by line, word or character. A running tally shows how many lines were added, removed and unchanged — useful for reviewing edits, config changes or document revisions.',
+    features: [
+      'Three granularities: line-by-line, word-by-word, or character-by-character diff.',
+      'Color-coded output — green for additions, red strike-through for removals, plain for unchanged.',
+      'Live +/−/= counts so you see at a glance how much changed.',
+      'Side-by-side input boxes for the original (A) and revised (B) text.',
+      'Runs entirely in your browser — your text is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Paste the two versions',
+        body: 'Put the original in the "A" box and the revised text in the "B" box — for example two versions of a config file or a paragraph you edited.',
+      },
+      {
+        title: 'Choose the diff unit',
+        body: 'Pick line, word or character mode. Line mode is best for code and lists; word mode is better for prose where you tweaked a few words within a line.',
+      },
+      {
+        title: 'Read the highlighted result',
+        body: 'The diff panel shows additions in green and removals in red strike-through, with a +12 / −3 / =40 summary so you know exactly what changed.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'When should I use line vs word vs character diff?',
+        a: 'Use line diff for code, logs and structured lists — it shows whole changed lines. Use word diff for prose where you changed a few words inside a sentence. Character diff is the most granular, good for spotting a single typo or a changed digit.',
+      },
+      {
+        q: 'Does it ignore whitespace or line-ending differences?',
+        a: 'No. The diff is exact, so trailing spaces, tabs vs spaces, and different line endings count as changes. If a line shows as changed but looks identical, an invisible whitespace difference is usually the cause.',
+      },
+      {
+        q: 'Can it handle large files?',
+        a: 'It works for typical documents and code files, but character and word diffs are O(n×m), so very large inputs get slow. The comparison is deferred slightly so typing stays responsive; for huge files, line mode is fastest.',
+      },
+    ],
+  },
+
+  'text-count': {
+    metaTitle: 'Word & Character Counter — Live Counts, Reading Time',
+    metaDescription:
+      'Count words, characters, lines, sentences and UTF-8 bytes live as you type. See reading time at 200 wpm, plus Korean/English/digit breakdown and top word frequency. Free.',
+    intro:
+      'This counter tallies your text in real time: characters (with and without spaces), words, lines, paragraphs, sentences and UTF-8 byte size. It also estimates reading time at 200 words per minute, breaks down Korean vs English vs digit characters, and lists your most frequent words — handy for essays, social posts and SEO snippets.',
+    features: [
+      'Live counts of characters, characters without spaces, words, lines, paragraphs and sentences.',
+      'UTF-8 byte size — useful for database fields and meta-description limits, where a Korean character is 3 bytes.',
+      'Reading-time estimate at 200 wpm, plus average word length.',
+      'Character breakdown by script (Korean / English / digits) and a top-10 word frequency chart.',
+      'Runs entirely in your browser; counts update instantly, even on large pastes.',
+    ],
+    steps: [
+      {
+        title: 'Type or paste your text',
+        body: 'Drop your text into the box — an essay, a tweet draft, or a meta description you’re trimming. Counting starts immediately, no button needed.',
+      },
+      {
+        title: 'Read the live statistics',
+        body: 'The stats grid updates as you type: characters, words, lines, sentences and UTF-8 bytes, plus an estimated reading time like "about 3 min" at 200 wpm.',
+      },
+      {
+        title: 'Check the breakdowns',
+        body: 'Below the stats, see how many Korean, English and digit characters there are, and a top-10 word frequency chart to spot repetition.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is a "word" counted?',
+        a: 'Words are runs of non-whitespace separated by spaces, tabs or line breaks. This matches how most word counters work for English. Note that for languages without spaces (like Chinese), the character count is the more meaningful figure.',
+      },
+      {
+        q: 'Why does the byte count differ from the character count?',
+        a: 'Bytes are measured in UTF-8, where ASCII letters are 1 byte but a Korean or emoji character is 3–4 bytes. So "안녕" is 2 characters but 6 bytes. This matters for byte-limited fields and meta tags.',
+      },
+      {
+        q: 'How is reading time calculated?',
+        a: 'It divides the word count by 200 words per minute, a common average adult reading speed, and rounds up. A 600-word article shows roughly 3 minutes. It’s an estimate — technical text reads slower, light text faster.',
+      },
+    ],
+  },
+
+  'pdf-merge': {
+    metaTitle: 'Merge PDF Files Online — Combine PDFs Free, No Upload',
+    metaDescription:
+      'Combine multiple PDFs into one in your browser. Drag to reorder pages, or pick a folder to auto-sort by name (so 2.pdf comes before 10.pdf). No upload, free, no signup.',
+    intro:
+      'This tool merges several PDF files into a single document, entirely in your browser. Add files and drag them into the order you want — the pages are stitched together top to bottom — or point it at a folder and it auto-sorts naturally so 2.pdf comes before 10.pdf. The combined PDF downloads directly; nothing is uploaded.',
+    features: [
+      'Combine any number of PDFs; the final order follows your arrangement.',
+      'Reorder files by dragging, or with up/down buttons, before merging.',
+      'Folder mode auto-sorts with natural numeric ordering (2.pdf before 10.pdf) and previews the merge order.',
+      'Reports the total page count of the merged result.',
+      'Runs entirely in your browser — your PDFs are never uploaded to a server.',
+    ],
+    steps: [
+      {
+        title: 'Add your PDFs',
+        body: 'Drop in two or more PDF files, or switch to folder mode to pull in every PDF from a folder. You need at least 2 files to merge.',
+      },
+      {
+        title: 'Set the order',
+        body: 'Drag the rows (or use the ↑↓ buttons) to arrange the files — the merged document follows this top-to-bottom order. In folder mode, pick a sort like "name (natural)" so 2.pdf lands before 10.pdf.',
+      },
+      {
+        title: 'Merge and download',
+        body: 'Click "Merge PDF". The combined file is built locally and offered for download, with the total page count shown — e.g. "30 pages combined".',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are my PDFs uploaded anywhere?',
+        a: 'No. The merge is done with pdf-lib directly in your browser, so the files never leave your device — which makes it safe for contracts, statements and other sensitive documents. You can confirm in the Network tab that nothing is sent.',
+      },
+      {
+        q: 'How do I control the order of the merged pages?',
+        a: 'In file mode, drag the rows or use the up/down buttons; the merged PDF follows that order. In folder mode, choose a sort option — "natural" handles numbered files correctly (page 2 before page 10), and a preview shows the exact order before you merge.',
+      },
+      {
+        q: 'Can it merge password-protected PDFs?',
+        a: 'An encrypted PDF must be unlocked first — you’ll need to remove the password before merging. Once a PDF opens without a password, it can be combined like any other file.',
+      },
+      {
+        q: 'Is there a limit on file count or size?',
+        a: 'There’s no hard file-count limit, but everything is processed in your browser’s memory, so very large or numerous PDFs (hundreds of MB total) can get slow or run out of memory. For big jobs, merge in smaller batches.',
+      },
+    ],
+  },
+
+  'pdf-split': {
+    metaTitle: 'Split PDF Online — By Page Ranges, Free, No Upload',
+    metaDescription:
+      'Split a PDF by page ranges, every N pages, or one page each. Enter 1-3, 4-6 to get two PDFs, or burst a 10-page file into 10 files. Downloads as a ZIP. Free, no upload.',
+    intro:
+      'This tool splits one PDF into several, entirely in your browser. Type ranges like 1-3, 4-6 to carve out independent PDFs, choose "every N pages" for even chunks, or "each page" to burst the file into one PDF per page. A single output downloads directly; multiple outputs are bundled into a ZIP.',
+    features: [
+      'Three split modes: custom page ranges, every N pages, or one PDF per page.',
+      'Range mode treats each comma-separated segment as its own output — 1-3, 4-6 yields two PDFs.',
+      'Auto-detects the page count and pre-fills the full range when you load a file.',
+      'Single result downloads as a PDF; multiple results are zipped into one download.',
+      'Runs entirely in your browser — your PDF is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload the PDF',
+        body: 'Drop in a single PDF. The tool reads its page count (say 12 pages) and pre-fills the range field as 1-12.',
+      },
+      {
+        title: 'Choose how to split',
+        body: 'Pick "ranges" and type something like 1-3, 4-6, 7 to make three files; or "every N pages" to chunk evenly; or "each page" to get one PDF per page (12 files for a 12-page document).',
+      },
+      {
+        title: 'Run and download',
+        body: 'Click "Split". One output downloads as a single PDF; several outputs come back as a ZIP — named like document-split.zip with each part inside.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I write the page ranges?',
+        a: 'Use comma-separated segments where each becomes its own PDF. 1-3, 4-6 produces two files (pages 1–3 and 4–6). A single number like 7 extracts just that page. Pages are 1-based and must be within the document’s page count.',
+      },
+      {
+        q: 'When do I get a ZIP versus a single PDF?',
+        a: 'If the split produces one output (one range), it downloads as a plain PDF. If it produces multiple outputs (several ranges, every-N, or each-page), they’re bundled into a single ZIP so you don’t get a flurry of separate downloads.',
+      },
+      {
+        q: 'Is my file uploaded to split it?',
+        a: 'No. The split runs locally with pdf-lib in your browser, so the PDF stays on your device — safe for confidential documents. Files up to about 100 MB are supported, subject to your browser’s memory.',
+      },
+    ],
+  },
+
+  'image-resize': {
+    metaTitle: 'Resize Image Online — By Pixels, Percent or Target KB',
+    metaDescription:
+      'Resize images by exact pixels, by percentage, or to a target file size in KB. Use presets like 1080×1080 or 1280×720, keep aspect ratio, batch a whole folder. Free, no upload.',
+    intro:
+      'This image resizer changes dimensions three ways: exact pixels (e.g. 1920×1080), a percentage of the original, or a target file size in KB where it auto-tunes quality and dimensions to hit your number. It keeps aspect ratio by default, includes presets for Instagram, YouTube and OG sizes, and can batch-resize an entire folder.',
+    features: [
+      'Three modes: pixel dimensions, percentage scale, or target file size in KB (auto-optimized).',
+      'One-tap presets — Instagram 1080×1080, story 1080×1920, YouTube thumbnail 1280×720, OG 1200×630.',
+      'Keep-aspect-ratio toggle so width and height stay proportional.',
+      'Output as JPEG, PNG, WebP or AVIF with a quality slider, and batch a whole folder to a ZIP.',
+      'Runs entirely in your browser — images are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload an image (or a folder)',
+        body: 'Drop in one image, or switch to folder mode to resize many at once. The tool reads the original dimensions, e.g. 4000×3000.',
+      },
+      {
+        title: 'Pick a resize mode',
+        body: 'Choose "pixels" and type 1920×1080 (or tap a preset like 1080×1080); or "percent" to scale to, say, 50%; or "target KB" to auto-fit under, e.g., 200 KB. Keep "maintain aspect ratio" on to avoid stretching.',
+      },
+      {
+        title: 'Set format and download',
+        body: 'Pick an output format (WebP often saves the most) and quality, then run. The result shows the new size and dimensions; folder jobs download as a ZIP.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between resizing and compressing?',
+        a: 'Resizing changes the pixel dimensions (e.g. 4000×3000 → 1920×1080), which usually shrinks the file too. Compressing keeps the dimensions but lowers quality to reduce bytes. The "target KB" mode here combines both — it lowers quality first, then dimensions, to hit your size.',
+      },
+      {
+        q: 'Will resizing make my image blurry?',
+        a: 'Shrinking an image (downscaling) keeps it sharp. Enlarging it past its original pixels (upscaling) interpolates new pixels and looks soft, since no extra detail exists. For crisp results, resize down rather than up.',
+      },
+      {
+        q: 'Which output format should I choose?',
+        a: 'WebP typically cuts size 25–35% versus JPEG at similar quality and supports transparency. JPEG is the most compatible for photos, PNG is best for graphics with sharp edges or transparency, and AVIF compresses smallest but isn’t supported everywhere.',
+      },
+      {
+        q: 'Are the images uploaded to a server?',
+        a: 'No. Resizing uses the Canvas API in your browser, so the images stay on your device — nothing is uploaded, even in folder batch mode.',
+      },
+    ],
+  },
+
+  'image-convert': {
+    metaTitle: 'Image Converter — JPG, PNG, WebP, AVIF (Batch)',
+    metaDescription:
+      'Convert images between JPG, PNG, WebP and AVIF in your browser. Switch a folder of PNGs to WebP to cut size 25–35%, with a quality slider. Multi-file batch to ZIP. Free.',
+    intro:
+      'This image converter changes format between JPG, PNG, WebP and AVIF with a quality slider. Convert a single image or drop a whole folder — converting PNGs to WebP typically trims 25–35% off the file size. Multiple files come back as a ZIP, and AVIF is offered only when your browser can encode it.',
+    features: [
+      'Convert between JPEG, PNG, WebP and AVIF, with a quality slider for the lossy formats.',
+      'Multi-file and folder batch — converts many images at once and bundles them into a ZIP.',
+      'Detects AVIF encoding support and disables it gracefully when the browser can’t do it.',
+      'Shows the resulting size so you can see the savings from a format switch.',
+      'Runs entirely in your browser — images are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Add images',
+        body: 'Drop one or several images, or switch to folder mode for a whole directory. JPG, PNG, WebP, AVIF, BMP and GIF inputs are accepted.',
+      },
+      {
+        title: 'Choose the output format',
+        body: 'Pick the target — WebP for a good size/quality balance, PNG for lossless graphics, AVIF for the smallest files (if supported). For lossy formats, set the quality (85% is a sensible default).',
+      },
+      {
+        title: 'Convert and download',
+        body: 'Click "Convert to WEBP" (or your chosen format). A single image downloads directly; multiple images download as a ZIP like converted-webp.zip.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'AVIF vs WebP — which should I pick?',
+        a: 'AVIF usually compresses smaller than WebP at the same quality, especially for photos, but it encodes slower and isn’t supported in every browser (this tool disables it when yours can’t encode it). WebP is faster, near-universally supported now, and still beats JPEG — a safe default. Use AVIF when you need the absolute smallest files.',
+      },
+      {
+        q: 'Does converting PNG to JPG lose quality?',
+        a: 'JPEG is lossy and doesn’t support transparency, so a PNG with a transparent background gets a solid background and some compression artifacts. For photos that’s usually fine; for logos, screenshots or images with transparency, keep PNG or use WebP, which is lossy-or-lossless and keeps transparency.',
+      },
+      {
+        q: 'How much smaller is WebP than JPEG?',
+        a: 'At comparable visual quality, WebP is typically 25–35% smaller than JPEG, and it also supports transparency and animation. The tool shows the output size so you can confirm the saving for your specific images.',
+      },
+      {
+        q: 'Are the images uploaded for conversion?',
+        a: 'No. Conversion uses the Canvas API locally in your browser, so your images never leave your device — including folder and multi-file batches.',
+      },
+    ],
+  },
+
+  'image-heic-to-jpg': {
+    metaTitle: 'HEIC to JPG Converter — iPhone Photos, Free, No Upload',
+    metaDescription:
+      'Convert iPhone HEIC/HEIF photos to JPG or PNG in your browser. Set JPEG quality, convert one photo or a whole folder to a ZIP. No upload, free, no signup.',
+    intro:
+      'This tool converts iPhone HEIC/HEIF photos to JPG or PNG so they open everywhere — Windows, older apps, websites and editors that don’t support HEIC. Convert a single photo or a whole folder; for JPEG you can set the quality, and folder batches download as a ZIP. Everything runs in your browser.',
+    features: [
+      'Converts .heic and .heif (Apple’s photo format) to widely-supported JPG or PNG.',
+      'Adjustable JPEG quality, or lossless PNG output.',
+      'Single-photo or whole-folder batch — folder results come back as a ZIP.',
+      'Decodes locally with the heic2any library; processes one at a time to manage memory.',
+      'Runs entirely in your browser — your photos are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Add your HEIC photos',
+        body: 'Drop in a .heic/.heif file from your iPhone, or switch to folder mode to convert every HEIC in a folder at once.',
+      },
+      {
+        title: 'Choose format and quality',
+        body: 'Pick JPG (best for sharing, with a quality slider — 90% is a good default) or PNG (lossless, larger). For a folder, the same setting applies to every photo.',
+      },
+      {
+        title: 'Convert and save',
+        body: 'Click "Convert". A single photo gives you a JPG/PNG to download; a folder produces a ZIP of converted images, keeping the original file names.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why won’t HEIC photos open on Windows?',
+        a: 'HEIC (High Efficiency Image Format) is Apple’s default and Windows doesn’t fully support it without extra codecs, so many apps and websites can’t open it. Converting to JPG or PNG makes the photos open everywhere, which is why this tool exists.',
+      },
+      {
+        q: 'Does converting HEIC to JPG lose quality?',
+        a: 'JPEG is lossy, so there is some quality loss versus the HEIC original — but at 90%+ quality it’s visually negligible for normal viewing and sharing. Choose PNG if you want a lossless result, though the files will be much larger.',
+      },
+      {
+        q: 'Why is the JPG larger than the original HEIC?',
+        a: 'HEIC compresses more efficiently than JPEG — it’s roughly half the size for similar quality. So a converted JPG (and especially a PNG) is often bigger than the HEIC it came from. That’s the trade-off for universal compatibility.',
+      },
+      {
+        q: 'Are my photos uploaded to convert them?',
+        a: 'No. Decoding and conversion happen entirely in your browser with the heic2any library, so your photos never leave your device — safe for personal pictures. Folder batches are processed one at a time to keep memory in check.',
+      },
+    ],
+  },
+
+  'unit-converter': {
+    metaTitle: 'Unit Converter — Length, Weight, Temperature & More',
+    metaDescription:
+      'Convert length, weight, temperature, area, speed and volume. 1 m shows cm, in, ft and mi at once; 100°F = 37.78°C; 1 pyeong = 3.31 m². Free, instant, no signup.',
+    intro:
+      'This unit converter handles six categories — length, weight, temperature, area, speed and volume. Enter a value in one unit and it shows every other unit in that category at once: type 1 m and you instantly get 100 cm, 39.37 in and 0.000621 mi; switch to temperature and 100°F resolves to 37.78°C and 310.15 K.',
+    features: [
+      'Six categories: length, weight, temperature, area, speed and volume.',
+      'One-to-many — enter one value and see all the other units in the category at the same time.',
+      'Includes regional units like 평 (pyeong = 3.3058 m²) and knots, alongside metric and imperial.',
+      'Handles temperature correctly with the proper offset formulas (not just a ratio).',
+      'Copy any single converted value, and everything recalculates live in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Pick a category',
+        body: 'Tap a category chip — length, weight, temperature, area, speed or volume. The available units switch to match (m, kg, °C, m², km/h, L, and so on).',
+      },
+      {
+        title: 'Enter a value and its unit',
+        body: 'Type the number and choose the source unit, e.g. 1 with "m" selected. Every other unit updates instantly — 100 cm, 39.37 in, 3.28 ft, 0.000621 mi.',
+      },
+      {
+        title: 'Copy the result you need',
+        body: 'Each converted row has a copy button — grab just the value you want, like "37.78" when converting 100°F to Celsius.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I convert Fahrenheit to Celsius here?',
+        a: 'Select the temperature category, enter the value with °F selected, and read the °C row. The tool uses the real formula (°C = (°F − 32) × 5/9), so 100°F correctly gives 37.78°C — not a simple ratio, which is a common mistake with temperature.',
+      },
+      {
+        q: 'What is a 평 (pyeong) and how does it convert?',
+        a: 'Pyeong is a traditional Korean unit of area, equal to about 3.3058 m². It’s included in the area category, so 1 pyeong shows as 3.31 m² (≈ 35.6 ft²) — handy for real-estate sizes in Korea.',
+      },
+      {
+        q: 'How precise are the conversions?',
+        a: 'Conversions use standard factors (e.g. 1 inch = 0.0254 m, 1 lb = 453.592 g) and display up to 6 significant digits, switching to scientific notation for very large or tiny results so you don’t lose precision.',
+      },
+    ],
+  },
+
+  percentage: {
+    metaTitle: 'Percentage Calculator — Discount, Tip, % Change & More',
+    metaDescription:
+      'Six percentage modes in one: X% of a number, what % one value is of another, percent change, add/subtract a %, tip/VAT, and ratio. 15% of 200,000 = 30,000. Free, no signup.',
+    intro:
+      'This percentage calculator covers six common tasks in one place: X% of a number, what percent one value is of another, percent change between two numbers, adding or subtracting a percentage, a tip/VAT add-on, and splitting a ratio into percentages. Enter two numbers and the answer appears instantly — 15% of 200,000 is 30,000.',
+    features: [
+      'Six modes: % of a value, value-as-percent, percent change, add/subtract %, tip/VAT, and ratio.',
+      'Add/subtract mode shows both the +X% and −X% results side by side.',
+      'Tip/VAT mode shows the total and the added amount separately.',
+      'Accepts comma-formatted numbers (50,000) and computes live as you type.',
+      'Copy any result with one tap; runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Pick the mode',
+        body: 'Choose the calculation you need — for example "% change" to compare two figures, or "discount/add" to apply a percentage to a price. The two input labels update to match the mode.',
+      },
+      {
+        title: 'Enter the two numbers',
+        body: 'Fill in the fields shown. For "X% of a value", enter 15 and 200,000 to get 30,000. Commas are accepted, so 200,000 works as typed.',
+      },
+      {
+        title: 'Read and copy the answer',
+        body: 'The result shows immediately, with a secondary figure where relevant (e.g. add/subtract shows both the increased and decreased amounts). Tap copy to grab the number.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I calculate a discount?',
+        a: 'Use the add/subtract mode: enter the original price and the discount percent. It shows both the −X% result (the sale price) and the +X% result. For example, 50,000 with 20% gives 40,000 as the discounted price.',
+      },
+      {
+        q: 'How is percent change calculated?',
+        a: 'Percent change is (new − old) / |old| × 100. Going from 100 to 130 is a +30% change; 130 to 100 is about −23%. The "change" mode does this for you — enter the start and end values.',
+      },
+      {
+        q: 'What’s the difference between "X% of N" and "X is what % of N"?',
+        a: 'The first finds a part from a percentage: 15% of 200 is 30. The second finds the percentage from a part: 30 is 15% of 200. They’re inverse operations, and this tool has a separate mode for each so you don’t have to rearrange the formula.',
+      },
+    ],
+  },
+
+  compress: {
+    metaTitle: 'Compress Image & PDF Online — Reduce File Size Free',
+    metaDescription:
+      'Shrink images and PDFs in your browser. Drop a JPG to cut quality and dimensions, or a PDF and use smart mode to re-compress images while keeping text crisp. No upload, free.',
+    intro:
+      'This tool reduces the file size of images and PDFs, entirely in your browser. Drop a JPG/PNG/WebP and tune quality and max dimension; drop a PDF and pick a mode — "smart" re-compresses only the embedded images so text and vectors stay sharp, while "rasterize" flattens pages to JPEG for the biggest cut. Folders can be batch-compressed to a ZIP.',
+    features: [
+      'Handles both images (JPG/PNG/WebP) and PDFs — it auto-detects which you dropped.',
+      'Image options: quality slider, max dimension (long edge), and output as JPEG, WebP or PNG.',
+      'PDF modes — light (strip metadata, ~5–15%), smart (re-encode images, keep text selectable), rasterize (flatten to JPEG, max reduction).',
+      'Folder batch applies image settings to images and PDF settings to PDFs automatically, output as a ZIP.',
+      'Runs entirely in your browser — your files are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Drop a file or folder',
+        body: 'Add an image or a PDF (or switch to folder mode for a mix of both). The tool detects the type and shows the right options — image controls for images, PDF modes for PDFs.',
+      },
+      {
+        title: 'Choose the settings',
+        body: 'For images, lower the quality (e.g. 75%) and cap the long edge (e.g. 1920px). For PDFs, pick "smart" to keep text crisp while shrinking images, or "rasterize" for the smallest possible size.',
+      },
+      {
+        title: 'Compress and download',
+        body: 'Click "Compress". The result card shows the before/after size and the percent saved; folder jobs download as a single ZIP.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Will compressing hurt quality?',
+        a: 'It can, depending on how hard you push it. Images use lossy quality, so lower settings introduce visible artifacts — 70–80% is usually a good balance. For PDFs, "smart" mode keeps text and vectors perfectly crisp and only re-compresses images, so it’s the safest choice; "rasterize" affects everything for the biggest reduction.',
+      },
+      {
+        q: 'Which PDF mode should I use?',
+        a: 'Use "light" to just strip metadata (small saving, no quality change). Use "smart" (recommended) to re-encode embedded images while keeping text selectable, bookmarks and forms intact. Use "rasterize" only when you need the absolute smallest file and don’t mind losing selectable text — it flattens each page to a JPEG image.',
+      },
+      {
+        q: 'Why didn’t my PDF get much smaller?',
+        a: 'Smart mode shrinks images, so a PDF that is mostly text or vector graphics has little to compress — its size is already efficient. Big savings come from PDFs full of high-resolution photos or scans. For a text-heavy PDF, expect only a modest reduction.',
+      },
+      {
+        q: 'Are my files uploaded to compress them?',
+        a: 'No. Compression runs locally in your browser (Canvas for images, pdf-lib/PDF.js for PDFs), so files never leave your device — safe for private documents and photos, including folder batches.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {
