@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -260,9 +260,14 @@ const PRESETS = [
 
 export default function CronExplainerPage() {
   const [expression, setExpression] = useState(DEFAULT_EXPRESSION);
+  // "다음 실행 시각" 은 현재 시각(new Date()) 기반이라 SSR↔클라이언트 값이 달라
+  // 하이드레이션 불일치를 유발한다 → 마운트 후 클라이언트에서만 계산한다.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
 
   const parsed = useMemo(() => parseCron(expression), [expression]);
-  const upcoming = useMemo(() => nextRuns(parsed, 7), [parsed]);
+  const upcoming = useMemo(() => (mounted ? nextRuns(parsed, 7) : []), [parsed, mounted]);
 
   const handleReset = () => setExpression(DEFAULT_EXPRESSION);
 

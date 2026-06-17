@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Copy, Download, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,10 +43,16 @@ function formatUuid(u: string, format: Format): string {
 export default function UuidPage() {
   const [count, setCount] = useState(DEFAULT_COUNT);
   const [format, setFormat] = useState<Format>('default');
-  const [list, setList] = useState<string[]>(() =>
-    Array.from({ length: DEFAULT_COUNT }, () => generateUuidV4()),
-  );
+  // 무작위 UUID 를 초기 state 에서 만들면 SSR↔클라이언트 값이 달라 하이드레이션
+  // 불일치가 난다 → 빈 배열로 시작하고 마운트 후 클라이언트에서 생성한다.
+  const [list, setList] = useState<string[]>([]);
   const [copiedIdx, setCopiedIdx] = useState<number | 'all' | null>(null);
+
+  useEffect(() => {
+    // 마운트 후 1회 클라이언트에서 생성(하이드레이션 안전). 의도된 패턴.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setList(Array.from({ length: DEFAULT_COUNT }, () => generateUuidV4()));
+  }, []);
 
   const generate = () => {
     const n = Math.max(1, Math.min(10000, count));

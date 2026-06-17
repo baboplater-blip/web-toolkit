@@ -9,19 +9,26 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 type Unit = 'ms' | 's';
 
 export default function TimestampPage() {
-  const [now, setNow] = useState(Date.now());
-  const [tsInput, setTsInput] = useState(String(Math.floor(Date.now() / 1000)));
+  // SSR/클라이언트 시각 차이로 인한 하이드레이션 불일치를 막기 위해
+  // 시간 의존 상태는 결정적 초기값으로 두고 마운트 후 useEffect 에서 채운다.
+  const [now, setNow] = useState(0);
+  const [tsInput, setTsInput] = useState('');
   const [unit, setUnit] = useState<Unit>('s');
-  const [isoInput, setIsoInput] = useState(new Date().toISOString().slice(0, 19));
+  const [isoInput, setIsoInput] = useState('');
   const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
+    // 마운트 후 1회 클라이언트 시각 주입(하이드레이션 안전). 의도된 패턴.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(Date.now());
+    setTsInput(String(Math.floor(Date.now() / 1000)));
+    setIsoInput(new Date().toISOString().slice(0, 19));
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
   const tsNum = Number(tsInput);
-  const fromTimestamp = Number.isFinite(tsNum)
+  const fromTimestamp = tsInput.trim() !== '' && Number.isFinite(tsNum)
     ? new Date(unit === 's' ? tsNum * 1000 : tsNum)
     : null;
   const fromIso = (() => {
@@ -68,15 +75,15 @@ export default function TimestampPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
           <div>
             <p className="text-[10px] text-muted-foreground">Unix (초)</p>
-            <p className="font-mono">{Math.floor(now / 1000)}</p>
+            <p className="font-mono">{now > 0 ? Math.floor(now / 1000) : '—'}</p>
           </div>
           <div>
             <p className="text-[10px] text-muted-foreground">Unix (밀리초)</p>
-            <p className="font-mono">{now}</p>
+            <p className="font-mono">{now > 0 ? now : '—'}</p>
           </div>
           <div>
             <p className="text-[10px] text-muted-foreground">ISO 8601 (UTC)</p>
-            <p className="font-mono text-xs">{new Date(now).toISOString()}</p>
+            <p className="font-mono text-xs">{now > 0 ? new Date(now).toISOString() : '—'}</p>
           </div>
         </div>
       </section>
