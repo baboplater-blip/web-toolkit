@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Calculator } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -331,14 +330,6 @@ export default function ScientificCalcPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="공학용 계산기" onReset={reset} />
       <main className="mx-auto max-w-xl space-y-5 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Calculator className="h-5 w-5 text-primary" aria-hidden />
-            공학용 계산기
-          </h1>
-          <p className="text-sm text-muted-foreground">삼각함수·로그·거듭제곱 등 공학 계산을 수행합니다.</p>
-        </header>
-
         <div className="space-y-3 rounded-xl border bg-card p-4">
           <div className="flex items-center justify-between gap-2">
             <Input

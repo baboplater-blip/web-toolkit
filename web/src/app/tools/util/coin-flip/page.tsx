@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Coins } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -77,14 +76,6 @@ export default function CoinFlipPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="동전 던지기" onReset={reset} />
       <main className="mx-auto max-w-xl space-y-5 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Coins className="h-5 w-5 text-primary" aria-hidden />
-            동전 던지기
-          </h1>
-          <p className="text-sm text-muted-foreground">앞면·뒷면을 무작위로 결정하고 통계를 보여줍니다.</p>
-        </header>
-
         <div className="space-y-4 rounded-xl border bg-card p-4">
           <label className="block space-y-1">
             <span className="text-sm font-medium">던질 횟수</span>

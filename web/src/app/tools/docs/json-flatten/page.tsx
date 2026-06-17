@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ListTree } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -163,16 +162,6 @@ export default function JsonFlattenPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="JSON 평탄화" onReset={reset} />
       <main className="mx-auto max-w-2xl space-y-4 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <ListTree className="h-5 w-5 text-primary" aria-hidden />
-            JSON 평탄화
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            중첩 JSON 을 점 표기 키로 펼치거나(평탄화) 다시 중첩 구조로 되돌립니다(복원).
-          </p>
-        </header>
-
         <div
           className="inline-flex rounded-lg border p-1"
           role="radiogroup"

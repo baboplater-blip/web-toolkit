@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Combine, Loader2, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
@@ -144,16 +144,6 @@ export default function CsvMergePage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="CSV 병합" onReset={reset} />
       <main className="mx-auto max-w-2xl space-y-4 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Combine className="h-5 w-5 text-primary" aria-hidden />
-            CSV 병합
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            여러 CSV 파일을 헤더 합집합 기준으로 하나로 합칩니다. 없는 칸은 빈 값으로 채워집니다.
-          </p>
-        </header>
-
         <FileDropZone
           accept=".csv,text/csv"
           multiple

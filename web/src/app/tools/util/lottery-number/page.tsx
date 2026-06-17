@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Ticket } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -116,16 +115,6 @@ export default function LotteryNumberPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="로또 번호 생성기" onReset={reset} />
       <main className="mx-auto max-w-xl space-y-5 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Ticket className="h-5 w-5 text-primary" aria-hidden />
-            로또 번호 생성기
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            범위 내에서 중복 없는 무작위 번호 조합을 세트별로 생성합니다.
-          </p>
-        </header>
-
         <div className="space-y-4 rounded-xl border bg-card p-4">
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-1">

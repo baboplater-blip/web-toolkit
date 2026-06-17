@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Receipt } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -72,16 +71,6 @@ export default function TipCalcPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="팁 계산기" onReset={reset} />
       <main className="mx-auto max-w-xl space-y-5 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Receipt className="h-5 w-5 text-primary" aria-hidden />
-            팁 계산기
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            계산서 금액과 팁 비율, 인원수로 팁액·총액·1인당 금액을 계산합니다.
-          </p>
-        </header>
-
         <div className="space-y-4 rounded-xl border bg-card p-4">
           <label className="block space-y-1">
             <span className="text-sm font-medium">계산서 금액 (₩)</span>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Scissors, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
@@ -157,16 +157,6 @@ export default function CsvSplitPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="CSV 분할" onReset={reset} />
       <main className="mx-auto max-w-2xl space-y-4 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Scissors className="h-5 w-5 text-primary" aria-hidden />
-            CSV 분할
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            큰 CSV 를 지정한 행 수마다 나눠 ZIP 으로 묶습니다. 헤더는 모든 조각에 유지됩니다.
-          </p>
-        </header>
-
         <FileDropZone
           accept=".csv,text/csv"
           maxBytes={MAX_BYTES}

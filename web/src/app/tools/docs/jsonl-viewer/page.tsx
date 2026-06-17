@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { Table2 } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
@@ -142,16 +141,6 @@ export default function JsonlViewerPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="JSONL 뷰어" widthClass="max-w-4xl" onReset={reset} />
       <main className="mx-auto max-w-4xl space-y-4 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Table2 className="h-5 w-5 text-primary" aria-hidden />
-            JSONL 뷰어
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            JSON Lines(NDJSON) 파일을 표로 보고 JSON 배열·CSV 로 내보냅니다.
-          </p>
-        </header>
-
         <FileDropZone
           accept=".jsonl,.ndjson,.json,application/json,text/plain"
           maxBytes={MAX_BYTES}

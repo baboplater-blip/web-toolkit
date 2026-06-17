@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Shuffle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -106,14 +105,6 @@ export default function RandomNumberPage() {
     <div className="min-h-dvh bg-background">
       <ToolHeader title="난수 생성기" onReset={reset} />
       <main className="mx-auto max-w-xl space-y-5 p-4">
-        <header className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-semibold">
-            <Shuffle className="h-5 w-5 text-primary" aria-hidden />
-            난수 생성기
-          </h1>
-          <p className="text-sm text-muted-foreground">범위·개수·중복 옵션으로 난수를 생성합니다.</p>
-        </header>
-
         <div className="space-y-4 rounded-xl border bg-card p-4">
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-1">
