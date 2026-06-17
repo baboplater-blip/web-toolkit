@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -54,9 +54,8 @@ function countCorrectChars(typed: string, target: string): number {
 }
 
 export default function TypingSpeedPage() {
-  const [sentenceIndex, setSentenceIndex] = useState(() =>
-    Math.floor(Math.random() * SENTENCES.length),
-  );
+  // SSR↔클라이언트 문장 불일치(하이드레이션) 방지 — 0 으로 시작하고 마운트 후 무작위 선택.
+  const [sentenceIndex, setSentenceIndex] = useState(0);
   const [input, setInput] = useState('');
   const [phase, setPhase] = useState<Phase>('ready');
   const [result, setResult] = useState<Result | null>(null);
@@ -65,6 +64,12 @@ export default function TypingSpeedPage() {
   const startTimeRef = useRef<number | null>(null);
 
   const sentence = SENTENCES[sentenceIndex];
+
+  // 마운트 후 무작위 문장으로 교체(첫 렌더는 결정적 0번).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSentenceIndex(Math.floor(Math.random() * SENTENCES.length));
+  }, []);
 
   const finishMeasurement = useCallback(
     (typed: string) => {

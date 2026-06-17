@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -150,11 +150,19 @@ function nowLocalInputValue(): string {
 
 export default function TimezonePage() {
   const zones = useMemo(() => getTimeZones(), []);
-  const [fromZone, setFromZone] = useState<string>(getLocalZone);
+  // 서버 TZ·시각과 클라이언트가 달라 하이드레이션 불일치가 나므로
+  // 결정적 기본값(UTC·빈 입력)으로 시작하고 마운트 후 로컬값을 주입한다.
+  const [fromZone, setFromZone] = useState<string>('UTC');
   const [toZone, setToZone] = useState<string>('UTC');
-  const [dateTime, setDateTime] = useState<string>(nowLocalInputValue);
+  const [dateTime, setDateTime] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFromZone(getLocalZone());
+    setDateTime(nowLocalInputValue());
+  }, []);
 
   const result = useMemo(() => {
     if (!dateTime) return null;
