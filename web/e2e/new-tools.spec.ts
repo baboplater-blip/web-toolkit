@@ -148,4 +148,23 @@ test.describe('신규 도구 — 기능 정확성', () => {
     await page.getByLabel('입력').fill('{"a":{"b":1}}');
     await expect(page.getByLabel('결과')).toHaveValue(/"a\.b": 1/);
   });
+
+  // ── 도구 팩 3 (320) 대표 기능 ──
+  test('text/remove-accents — café → cafe', async ({ page }) => {
+    await page.goto('/tools/text/remove-accents');
+    await page.getByLabel('입력').fill('café résumé');
+    await expect(page.getByLabel('결과')).toHaveValue('cafe resume');
+  });
+
+  test('security/cc-validate — 4111... → Visa', async ({ page }) => {
+    await page.goto('/tools/security/cc-validate');
+    await page.getByPlaceholder('예: 4111 1111 1111 1111').fill('4111111111111111');
+    await expect(page.getByText(/Visa/i).first()).toBeVisible();
+  });
+
+  test('dev/code-case — helloWorld → hello_world', async ({ page }) => {
+    await page.goto('/tools/dev/code-case');
+    await page.getByPlaceholder(/userProfileId/).fill('helloWorld');
+    await expect(page.getByText('hello_world').first()).toBeVisible();
+  });
 });

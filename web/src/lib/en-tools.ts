@@ -1968,6 +1968,244 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Rearrange PDF pages into booklet (saddle-stitch) imposition so you can print, fold, and staple. All in your browser.',
     keywords: ['pdf booklet', 'booklet maker', 'pdf imposition', 'saddle stitch pdf', 'print booklet pdf'],
   },
+  'uuid-namespace': {
+    name: 'UUID v5 Generator',
+    tagline: 'Generate deterministic namespace UUIDs (v5).',
+    description:
+      'Create RFC 4122 version 5 UUIDs from a namespace and name using SHA-1. Same input always yields the same UUID. Client-side.',
+    keywords: ['uuid v5', 'namespace uuid', 'deterministic uuid', 'uuid generator', 'rfc 4122'],
+  },
+  'css-minify': {
+    name: 'CSS Minifier & Beautifier',
+    tagline: 'Minify or pretty-print CSS instantly.',
+    description:
+      'Compress CSS by removing whitespace and comments, or beautify it with consistent indentation. Runs in your browser.',
+    keywords: ['css minifier', 'css beautifier', 'minify css', 'format css', 'compress css'],
+  },
+  'code-case': {
+    name: 'Code Case Converter',
+    tagline: 'Convert identifiers between camelCase, snake_case, kebab-case, and more.',
+    description:
+      'Transform variable and identifier names between camelCase, snake_case, kebab-case, PascalCase, and CONSTANT_CASE. Client-side.',
+    keywords: ['camelcase converter', 'snake case', 'kebab case', 'pascalcase', 'case converter code'],
+  },
+  'json-to-python': {
+    name: 'JSON to Python',
+    tagline: 'Generate Python dataclasses or TypedDicts from JSON.',
+    description:
+      'Paste JSON and get typed Python dataclasses or TypedDicts with inferred field types. Runs entirely in your browser.',
+    keywords: ['json to python', 'json to dataclass', 'json to typeddict', 'python types from json', 'json converter'],
+  },
+  'ascii-table': {
+    name: 'ASCII Table',
+    tagline: 'Look up ASCII characters with decimal, hex, and octal codes.',
+    description:
+      'Browse and search the full ASCII table with decimal, hexadecimal, octal codes and control-character descriptions. A quick reference.',
+    keywords: ['ascii table', 'ascii code', 'ascii chart', 'character codes', 'ascii reference'],
+  },
+  'json-sort-keys': {
+    name: 'JSON Key Sorter',
+    tagline: 'Alphabetically sort the keys of a JSON object.',
+    description:
+      'Sort all keys of a JSON object alphabetically, including nested objects, with optional pretty-printing. Runs in your browser.',
+    keywords: ['sort json keys', 'alphabetize json', 'json key order', 'json sorter', 'order json keys'],
+  },
+  'css-specificity': {
+    name: 'CSS Specificity Calculator',
+    tagline: 'Calculate the specificity of any CSS selector.',
+    description:
+      'Enter a CSS selector to compute its specificity (id, class, type counts) and understand which rule wins. Client-side.',
+    keywords: ['css specificity calculator', 'selector specificity', 'css priority', 'specificity score', 'css selector weight'],
+  },
+  'remove-line-breaks': {
+    name: 'Remove Line Breaks',
+    tagline: 'Join multi-line text into one line, or replace breaks with spaces.',
+    description:
+      'Strip line breaks to merge text into a single line, optionally collapsing into spaces and keeping paragraph gaps. Client-side.',
+    keywords: ['remove line breaks', 'join lines', 'delete line breaks', 'text to one line', 'strip newlines'],
+  },
+  'extract-emails': {
+    name: 'Extract Emails',
+    tagline: 'Pull all email addresses out of any text.',
+    description:
+      'Find and extract every email address from pasted text, with de-duplication and one-per-line output. Runs in your browser.',
+    keywords: ['extract emails', 'email extractor', 'find emails in text', 'grab email addresses', 'email scraper'],
+  },
+  'extract-urls': {
+    name: 'Extract URLs',
+    tagline: 'Pull all links and URLs out of any text.',
+    description:
+      'Find and extract every URL from pasted text, with de-duplication and one-per-line output. Runs entirely in your browser.',
+    keywords: ['extract urls', 'url extractor', 'find links in text', 'grab urls', 'link extractor'],
+  },
+  'wrap-text': {
+    name: 'Wrap Text',
+    tagline: 'Hard-wrap text at a chosen column width.',
+    description:
+      'Wrap long lines at a set character width without breaking words, useful for emails, comments, and plain-text. Client-side.',
+    keywords: ['wrap text', 'word wrap', 'hard wrap', 'line length', 'format text columns'],
+  },
+  'remove-accents': {
+    name: 'Remove Accents',
+    tagline: 'Strip diacritics from text (café → cafe).',
+    description:
+      'Remove accents and diacritical marks from text via Unicode normalization, producing plain ASCII-friendly output. Client-side.',
+    keywords: ['remove accents', 'strip diacritics', 'remove diacritics', 'accent remover', 'normalize text'],
+  },
+  'upside-down': {
+    name: 'Upside Down Text',
+    tagline: 'Flip text upside down with Unicode characters.',
+    description:
+      'Convert text into upside-down Unicode characters for fun social posts and usernames. Runs entirely in your browser.',
+    keywords: ['upside down text', 'flip text', 'reversed text generator', 'umop apisdn', 'upside down generator'],
+  },
+  'count-occurrences': {
+    name: 'Count Occurrences',
+    tagline: 'Count how many times a word or phrase appears.',
+    description:
+      'Count occurrences of a substring in text, with case-sensitive and whole-word options. Runs entirely in your browser.',
+    keywords: ['count occurrences', 'word frequency', 'count substring', 'how many times', 'text counter'],
+  },
+  'lorem-ko': {
+    name: 'Korean Lorem Ipsum',
+    tagline: 'Generate Korean placeholder (dummy) text for mockups.',
+    description:
+      'Produce natural-looking Korean filler paragraphs, sentences, or words for design mockups. Runs entirely in your browser.',
+    keywords: ['korean lorem ipsum', 'hangul dummy text', 'korean placeholder text', 'filler text korean', 'lorem ipsum'],
+  },
+  'compound-interest': {
+    name: 'Compound Interest Calculator',
+    tagline: 'Project growth with compound interest and contributions.',
+    description:
+      'Enter principal, rate, period, and regular contributions to estimate compound growth and total interest. Runs in your browser.',
+    keywords: ['compound interest calculator', 'investment calculator', 'interest growth', 'savings interest', 'compounding calculator'],
+  },
+  'pace-calc': {
+    name: 'Running Pace Calculator',
+    tagline: 'Calculate pace, time, or distance for running.',
+    description:
+      'Compute running pace from distance and time, or predict finish time from a target pace. Supports km and miles. Client-side.',
+    keywords: ['pace calculator', 'running pace', 'marathon pace', 'min per km', 'race time calculator'],
+  },
+  'time-duration': {
+    name: 'Time Duration Calculator',
+    tagline: 'Find the gap between two times, or add and subtract durations.',
+    description:
+      'Calculate the duration between two times, or add and subtract hours, minutes, and seconds. Runs entirely in your browser.',
+    keywords: ['time duration calculator', 'time between', 'add time', 'subtract time', 'hours calculator'],
+  },
+  'ratio-calc': {
+    name: 'Ratio Calculator',
+    tagline: 'Solve proportions (a:b = c:x) and simplify ratios.',
+    description:
+      'Solve for the missing term in a proportion and reduce ratios to simplest form. Runs entirely in your browser.',
+    keywords: ['ratio calculator', 'proportion calculator', 'simplify ratio', 'solve ratio', 'ratio solver'],
+  },
+  'sleep-calc': {
+    name: 'Sleep Calculator',
+    tagline: 'Find the best bedtimes and wake times by sleep cycles.',
+    description:
+      'Suggest optimal bedtimes or wake-up times based on 90-minute sleep cycles and fall-asleep time. Runs in your browser.',
+    keywords: ['sleep calculator', 'bedtime calculator', 'sleep cycle', 'wake up time', 'best time to sleep'],
+  },
+  'electricity-cost': {
+    name: 'Electricity Cost Calculator',
+    tagline: 'Estimate the running cost of any appliance.',
+    description:
+      'Enter wattage, hours of use, and price per kWh to estimate daily, monthly, and yearly electricity cost. Runs in your browser.',
+    keywords: ['electricity cost calculator', 'energy cost', 'kwh cost', 'appliance running cost', 'power cost calculator'],
+  },
+  'unit-price': {
+    name: 'Unit Price Comparison',
+    tagline: 'Compare products by price per unit.',
+    description:
+      'Enter sizes and prices for several products to find which is cheapest per unit. Great for grocery shopping. Client-side.',
+    keywords: ['unit price calculator', 'price per unit', 'cost comparison', 'price comparison', 'best value calculator'],
+  },
+  'cc-validate': {
+    name: 'Credit Card Validator (Luhn)',
+    tagline: 'Check a card number\'s Luhn checksum and brand.',
+    description:
+      'Validate a credit card number with the Luhn algorithm and detect the card brand. No data leaves your browser.',
+    keywords: ['credit card validator', 'luhn check', 'card number validator', 'luhn algorithm', 'card brand detector'],
+  },
+  'random-bytes': {
+    name: 'Random Bytes / Token Generator',
+    tagline: 'Generate cryptographically secure random tokens.',
+    description:
+      'Produce secure random bytes as hex, Base64, or UUID using the Web Crypto API. Useful for keys and tokens. Client-side.',
+    keywords: ['random bytes generator', 'secure token generator', 'random hex', 'crypto random', 'secret key generator'],
+  },
+  'checksum-verify': {
+    name: 'Checksum Verifier',
+    tagline: 'Verify a file\'s hash against an expected checksum.',
+    description:
+      'Compute a file\'s SHA-256/512 hash and compare it to an expected value to confirm integrity. All in your browser.',
+    keywords: ['checksum verifier', 'verify file hash', 'sha256 checksum', 'file integrity check', 'hash compare'],
+  },
+  'csv-stats': {
+    name: 'CSV Statistics',
+    tagline: 'Get per-column stats for any CSV.',
+    description:
+      'Analyze a CSV to see per-column count, sum, mean, min, max, and missing values for numeric fields. Runs in your browser.',
+    keywords: ['csv statistics', 'csv column stats', 'analyze csv', 'csv summary', 'csv data analysis'],
+  },
+  'json-stats': {
+    name: 'JSON Structure Analyzer',
+    tagline: 'Inspect a JSON document\'s keys, depth, and types.',
+    description:
+      'Analyze JSON to report total keys, maximum nesting depth, array sizes, and a breakdown of value types. Runs in your browser.',
+    keywords: ['json analyzer', 'json structure', 'json depth', 'json stats', 'inspect json'],
+  },
+  'image-black-white': {
+    name: 'Black & White Image',
+    tagline: 'Convert an image to grayscale or pure black & white.',
+    description:
+      'Convert images to grayscale or apply a threshold for pure black-and-white, with adjustable level. All in your browser.',
+    keywords: ['black and white image', 'grayscale converter', 'convert image to bw', 'monochrome image', 'image to grayscale'],
+  },
+  'image-info': {
+    name: 'Image Info Viewer',
+    tagline: 'See an image\'s dimensions, format, size, and ratio.',
+    description:
+      'Drop an image to instantly view its width, height, aspect ratio, file format, and size — no upload. Runs in your browser.',
+    keywords: ['image info', 'image dimensions', 'image size checker', 'image properties', 'image resolution viewer'],
+  },
+  'pdf-resize': {
+    name: 'Resize PDF Pages',
+    tagline: 'Scale PDF pages to A4, Letter, or a custom size.',
+    description:
+      'Resize every page of a PDF to a standard paper size (A4, Letter, etc.) with content scaled and centered. All in your browser.',
+    keywords: ['resize pdf', 'pdf page size', 'scale pdf to a4', 'change pdf size', 'pdf paper size'],
+  },
+  'audio-pitch': {
+    name: 'Audio Pitch Shifter',
+    tagline: 'Change audio pitch without changing speed.',
+    description:
+      'Shift the pitch of audio up or down by semitones while keeping the tempo, processed locally with FFmpeg. In your browser.',
+    keywords: ['audio pitch shifter', 'change pitch', 'pitch shift', 'transpose audio', 'pitch changer'],
+  },
+  'audio-waveform': {
+    name: 'Audio Waveform Image',
+    tagline: 'Render an audio file\'s waveform as a PNG.',
+    description:
+      'Generate a waveform image from an audio file with custom color and size, decoded locally via Web Audio. In your browser.',
+    keywords: ['audio waveform', 'waveform generator', 'waveform image', 'audio visualizer', 'sound wave png'],
+  },
+  'video-contact-sheet': {
+    name: 'Video Contact Sheet',
+    tagline: 'Make a thumbnail grid from a video.',
+    description:
+      'Extract evenly spaced frames from a video and arrange them into a single contact-sheet image. Processed in your browser.',
+    keywords: ['video contact sheet', 'video thumbnail grid', 'frame grid', 'video preview sheet', 'thumbnail sheet generator'],
+  },
+  'gif-reverse': {
+    name: 'Reverse GIF',
+    tagline: 'Play a GIF backwards.',
+    description:
+      'Reverse the frame order of an animated GIF to create a backwards-playing loop. Processed entirely in your browser.',
+    keywords: ['reverse gif', 'reverse animated gif', 'play gif backwards', 'gif reverser', 'backwards gif'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
