@@ -72,27 +72,80 @@ test.describe('신규 도구 36종 — 골든 패스 스모크', () => {
   }
 });
 
-test.describe('신규 도구 — 대표 기능 동작', () => {
-  test('util/tip-calc — 금액·팁 입력 시 결과 노출', async ({ page }) => {
-    await page.goto('/tools/util/tip-calc');
-    // 입력창(계산서 금액)에 값 입력 — Input 은 textbox role
-    await page.getByRole('textbox').first().fill('50000');
-    // 결과 영역에 통화/숫자가 나타남 (구체 UI 비의존: 숫자 그룹 등장)
-    await expect(page.getByText(/원|₩|[0-9],[0-9]{3}/).first()).toBeVisible();
+test.describe('신규 도구 — 기능 정확성', () => {
+  test('dev/css-units — 16px = 1rem 환산', async ({ page }) => {
+    await page.goto('/tools/dev/css-units');
+    await page.getByPlaceholder('예: 16').fill('16');
+    await expect(page.getByText('1rem')).toBeVisible();
   });
 
-  test('security/base32 — 인코딩 결과 생성', async ({ page }) => {
+  test('dev/chmod-calc — 755 → rwxr-xr-x', async ({ page }) => {
+    await page.goto('/tools/dev/chmod-calc');
+    await page.getByRole('textbox').fill('755');
+    await expect(page.getByText('rwxr-xr-x')).toBeVisible();
+  });
+
+  test('dev/color-name — #ff0000 → red 정확 일치', async ({ page }) => {
+    await page.goto('/tools/dev/color-name');
+    await page.getByRole('textbox').fill('#ff0000');
+    await expect(page.getByText('정확히 일치')).toBeVisible();
+    await expect(page.getByText(/\bred\b/)).toBeVisible();
+  });
+
+  test('dev/json-to-go — JSON → Go struct', async ({ page }) => {
+    await page.goto('/tools/dev/json-to-go');
+    await page.getByLabel('JSON 입력').fill('{"id":1,"title":"x"}');
+    await expect(page.getByText(/struct/).first()).toBeVisible();
+  });
+
+  test('dev/http-status — 404 검색 → Not Found', async ({ page }) => {
+    await page.goto('/tools/dev/http-status');
+    await page.getByLabel('상태 코드 검색').fill('404');
+    await expect(page.getByText(/Not Found/i).first()).toBeVisible();
+  });
+
+  test('text/reverse-text — abc → cba', async ({ page }) => {
+    await page.goto('/tools/text/reverse-text');
+    await page.getByLabel('입력').fill('abc');
+    await expect(page.getByLabel('결과')).toHaveValue('cba');
+  });
+
+  test('text/line-numbers — 줄 번호 부여', async ({ page }) => {
+    await page.goto('/tools/text/line-numbers');
+    await page.getByLabel('입력').fill('foo\nbar');
+    await expect(page.getByLabel('결과')).toHaveValue(/1\. foo[\s\S]*2\. bar/);
+  });
+
+  test('util/tip-calc — 50000 + 15% = 총액 ₩57,500', async ({ page }) => {
+    await page.goto('/tools/util/tip-calc');
+    await page.getByPlaceholder('예: 50000').fill('50000');
+    await expect(page.getByText(/₩?57,500/).first()).toBeVisible();
+  });
+
+  test('util/subnet-calc — 기본 /24 결과', async ({ page }) => {
+    await page.goto('/tools/util/subnet-calc');
+    // 기본값 192.168.0.1 /24 → 즉시 결정적 결과
+    await expect(page.getByText('255.255.255.0')).toBeVisible();
+    await expect(page.getByText('192.168.0.255')).toBeVisible();
+  });
+
+  test('security/base32 — hello → NBSWY3DP', async ({ page }) => {
     await page.goto('/tools/security/base32');
-    const ta = page.getByRole('textbox').first();
-    await ta.fill('hello');
-    // RFC4648 'hello' → 'NBSWY3DP'
+    await page.getByLabel('입력').fill('hello');
     await expect(page.getByText(/NBSWY3DP/i)).toBeVisible();
   });
 
-  test('dev/css-units — 변환 표 노출', async ({ page }) => {
-    await page.goto('/tools/dev/css-units');
-    await page.getByRole('textbox').first().fill('16');
-    // 16px = 1rem 환산 결과 어딘가 노출
-    await expect(page.getByText(/rem/i).first()).toBeVisible();
+  test('security/hmac-gen — HMAC-SHA256 64자리 hex 생성', async ({ page }) => {
+    await page.goto('/tools/security/hmac-gen');
+    await page.getByLabel('비밀키').fill('key');
+    await page.getByLabel('메시지').fill('hello');
+    await page.getByRole('button', { name: 'HMAC 생성' }).click();
+    await expect(page.getByText(/^[0-9a-f]{64}$/)).toBeVisible();
+  });
+
+  test('docs/json-flatten — 중첩 → 점 표기 키', async ({ page }) => {
+    await page.goto('/tools/docs/json-flatten');
+    await page.getByLabel('입력').fill('{"a":{"b":1}}');
+    await expect(page.getByLabel('결과')).toHaveValue(/"a\.b": 1/);
   });
 });
