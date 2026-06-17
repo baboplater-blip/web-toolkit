@@ -11,6 +11,7 @@ import {
   RotateCcw,
   Scan,
   Trash2,
+  X,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -371,6 +372,9 @@ export default function BlurFacePage() {
 
   const [detecting, setDetecting] = useState(false);
   const [detectStatus, setDetectStatus] = useState('');
+  // 단일 모드 자동 감지 취소 플래그 — MediaPipe/YuNet 추론은 중단 API 가 없어
+  // 진행 중 결과를 폐기하는 방식으로 취소한다(detector 는 finally 에서 close).
+  const detectCancelRef = useRef(false);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
   const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
@@ -524,6 +528,7 @@ export default function BlurFacePage() {
   }, [sensitivity]);
 
   const detectFaces = useCallback(async (info: LoadedImage) => {
+    detectCancelRef.current = false;
     setDetecting(true);
     setDetectStatus('MediaPipe 로드 중');
     setError(null);
@@ -541,6 +546,7 @@ export default function BlurFacePage() {
         sensitivity === 'max',
         setDetectStatus,
       );
+      if (detectCancelRef.current) return;
       const detected: FaceBox[] = scored.map((b, i) => ({
         id: `auto-${Date.now()}-${i}`,
         x: b.x,
@@ -556,14 +562,24 @@ export default function BlurFacePage() {
       if (detected.length === 0)
         setError('얼굴이 자동 감지되지 않았습니다. "영역 직접 그리기"로 지정하세요.');
     } catch (err) {
-      setError(
-        `자동 감지 실패: ${err instanceof Error ? err.message : '알 수 없음'}. 영역을 직접 그릴 수 있습니다.`,
-      );
+      if (!detectCancelRef.current) {
+        setError(
+          `자동 감지 실패: ${err instanceof Error ? err.message : '알 수 없음'}. 영역을 직접 그릴 수 있습니다.`,
+        );
+      }
     } finally {
       detector?.close();
       setDetecting(false);
+      setDetectStatus('');
     }
   }, [sensitivity]);
+
+  const cancelDetect = () => {
+    if (!detecting) return;
+    detectCancelRef.current = true;
+    setDetecting(false);
+    setDetectStatus('');
+  };
 
   const acceptFile = async (f: File) => {
     if (!f.type.startsWith('image/')) {
@@ -997,13 +1013,34 @@ export default function BlurFacePage() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{file.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {formatBytes(file.size)} · {loaded.width}×{loaded.height} · 박스 {boxes.length} · {invert ? '남길' : '가릴'} {enabledCount}
+                  {formatBytes(file.size)} · {loaded.width}×{loaded.height}
+                  {!detecting && target === 'face' && (
+                    <>
+                      {' · '}
+                      <span className="text-foreground font-medium">
+                        얼굴 {boxes.filter((b) => b.source === 'auto').length}개 감지
+                      </span>
+                    </>
+                  )}
+                  {' · 박스 '}
+                  {boxes.length} · {invert ? '남길' : '가릴'} {enabledCount}
                 </p>
               </div>
               {detecting && (
-                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  {detectStatus}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    {detectStatus}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-[10px] px-1.5"
+                    onClick={cancelDetect}
+                  >
+                    <X className="h-3 w-3" />
+                    취소
+                  </Button>
                 </div>
               )}
             </div>

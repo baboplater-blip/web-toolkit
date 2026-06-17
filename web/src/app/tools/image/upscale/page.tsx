@@ -8,6 +8,7 @@ import {
   Loader2,
   Maximize,
   RotateCcw,
+  X,
   Zap,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -149,6 +150,8 @@ export default function ImageUpscalePage() {
   const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  // 단일 모드 취소 플래그 — upscaler 는 중단 API 가 없어 진행 중 결과를 폐기하는 방식.
+  const singleCancelRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -323,9 +326,12 @@ export default function ImageUpscalePage() {
     if (result) URL.revokeObjectURL(result.url);
     setResult(null);
     setProgressPct(0);
+    setCancelling(false);
+    singleCancelRef.current = false;
     let runtime: UpscalerRuntime | null = null;
     try {
       runtime = await initUpscalerRuntime(flavor, scale, (s) => setProgressText(s));
+      if (singleCancelRef.current) return;
       setProgressText('업스케일 처리 중');
       const base64 = await runtime.upscaler.upscale(loaded.element, {
         patchSize: 64,
@@ -337,6 +343,7 @@ export default function ImageUpscalePage() {
         },
       });
 
+      if (singleCancelRef.current) return;
       setProgressText('최종 인코딩');
       const { blob, width: outW, height: outH } = await encodeUpscaledOutput(
         base64,
@@ -344,6 +351,7 @@ export default function ImageUpscalePage() {
         quality,
       );
 
+      if (singleCancelRef.current) return;
       const newName = renameWithSuffix(file.name, `-${scale}x`, formatExtension(outputFormat));
       setResult({
         blob,
@@ -353,21 +361,32 @@ export default function ImageUpscalePage() {
         outH,
       });
     } catch (err) {
-      setError(
-        err instanceof Error ? `업스케일 실패: ${err.message}` : '업스케일 처리에 실패했습니다.',
-      );
+      if (!singleCancelRef.current) {
+        setError(
+          err instanceof Error ? `업스케일 실패: ${err.message}` : '업스케일 처리에 실패했습니다.',
+        );
+      }
     } finally {
       runtime?.disposeAll();
       setProcessing(false);
       setProgressText('');
       setProgressPct(0);
+      setCancelling(false);
     }
   };
 
   const cancelRun = () => {
+    // 폴더(배치) 모드: AbortController 로 워커 루프 중단.
     if (abortRef.current && !cancelling) {
       setCancelling(true);
       abortRef.current.abort();
+      return;
+    }
+    // 단일 모드: 진행 중 추론 결과를 폐기.
+    if (inputMode === 'files' && processing && !singleCancelRef.current) {
+      singleCancelRef.current = true;
+      setCancelling(true);
+      setProgressText('취소 중...');
     }
   };
 
@@ -584,21 +603,39 @@ export default function ImageUpscalePage() {
 
             <Separator />
 
-            <Button onClick={runUpscale} disabled={processing} className="w-full">
-              {processing ? (
-                <>
+            {processing && inputMode === 'files' ? (
+              <div className="flex gap-2">
+                <Button disabled className="flex-1">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {inputMode === 'folder' ? '일괄 처리 중...' : '처리 중... (수 분 소요 가능)'}
-                </>
-              ) : (
-                <>
-                  <Maximize className="h-4 w-4" />
-                  {inputMode === 'folder'
-                    ? `${folderFiles.length}장 ${scale}× 업스케일`
-                    : `${scale}× 업스케일 실행`}
-                </>
-              )}
-            </Button>
+                  처리 중... (수 분 소요 가능)
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={cancelRun}
+                  disabled={cancelling}
+                  className="shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                  {cancelling ? '취소 중...' : '취소'}
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={runUpscale} disabled={processing} className="w-full">
+                {processing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    일괄 처리 중...
+                  </>
+                ) : (
+                  <>
+                    <Maximize className="h-4 w-4" />
+                    {inputMode === 'folder'
+                      ? `${folderFiles.length}장 ${scale}× 업스케일`
+                      : `${scale}× 업스케일 실행`}
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         )}
 

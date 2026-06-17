@@ -8,6 +8,7 @@ import {
   FileImage,
   Loader2,
   RotateCcw,
+  X,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -30,6 +31,8 @@ import {
 type Quality = 'fast' | 'medium' | 'high';
 
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
+/** 단일 이미지 권장 상한(50MB). 초과 시 메모리 부족·매우 느린 처리 위험을 안내. */
+const MAX_IMAGE_BYTES = 50 * 1024 * 1024;
 
 export default function RemoveBackgroundPage() {
   const { mode: inputMode, setMode: setInputMode } = useBatchMode();
@@ -44,6 +47,9 @@ export default function RemoveBackgroundPage() {
   const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  // 단일 모드 취소 플래그 — @imgly/background-removal 은 AbortSignal 을 받지 않으므로
+  // 진행 중 결과를 폐기하는 방식으로 취소를 구현한다(추론은 백그라운드에서 끝나면 버려짐).
+  const singleCancelRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
@@ -67,6 +73,10 @@ export default function RemoveBackgroundPage() {
   const accept = (f: File) => {
     if (!f.type.startsWith('image/')) {
       setError('이미지 파일만 지원합니다.');
+      return;
+    }
+    if (f.size > MAX_IMAGE_BYTES) {
+      setError('이미지가 너무 큽니다(50MB 초과). 더 작은 이미지로 시도하세요.');
       return;
     }
     setError(null);
@@ -172,6 +182,8 @@ export default function RemoveBackgroundPage() {
     setProcessing(true);
     setResult(null);
     setProgressPct(0);
+    setCancelling(false);
+    singleCancelRef.current = false;
     setProgressText('AI 모델 로드 중 (최초 실행 시 ~40MB)');
 
     try {
@@ -191,22 +203,35 @@ export default function RemoveBackgroundPage() {
         },
       });
 
+      // 취소되었으면 결과를 폐기(blob URL 도 만들지 않음).
+      if (singleCancelRef.current) return;
       const url = URL.createObjectURL(outBlob);
       const fileName = renameWithSuffix(file.name, '-no-bg', 'png');
       setResult({ blob: outBlob, url, fileName });
     } catch (err) {
-      setError(err instanceof Error ? err.message : '배경 제거 실패');
+      if (!singleCancelRef.current) {
+        setError(err instanceof Error ? err.message : '배경 제거 실패');
+      }
     } finally {
       setProcessing(false);
       setProgressText('');
       setProgressPct(0);
+      setCancelling(false);
     }
   };
 
   const cancelRun = () => {
+    // 폴더(배치) 모드: AbortController 로 워커 루프 중단.
     if (abortRef.current && !cancelling) {
       setCancelling(true);
       abortRef.current.abort();
+      return;
+    }
+    // 단일 모드: 진행 중 추론 결과를 폐기.
+    if (inputMode === 'files' && processing && !singleCancelRef.current) {
+      singleCancelRef.current = true;
+      setCancelling(true);
+      setProgressText('취소 중...');
     }
   };
 
@@ -347,21 +372,39 @@ export default function RemoveBackgroundPage() {
 
             <Separator />
 
-            <Button onClick={runRemove} disabled={processing} className="w-full">
-              {processing ? (
-                <>
+            {processing && inputMode === 'files' ? (
+              <div className="flex gap-2">
+                <Button disabled className="flex-1">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {inputMode === 'folder' ? '일괄 처리 중...' : '처리 중...'}
-                </>
-              ) : (
-                <>
-                  <Eraser className="h-4 w-4" />
-                  {inputMode === 'folder'
-                    ? `${folderFiles.length}장 일괄 배경 제거`
-                    : '배경 제거'}
-                </>
-              )}
-            </Button>
+                  처리 중...
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={cancelRun}
+                  disabled={cancelling}
+                  className="shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                  {cancelling ? '취소 중...' : '취소'}
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={runRemove} disabled={processing} className="w-full">
+                {processing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    일괄 처리 중...
+                  </>
+                ) : (
+                  <>
+                    <Eraser className="h-4 w-4" />
+                    {inputMode === 'folder'
+                      ? `${folderFiles.length}장 일괄 배경 제거`
+                      : '배경 제거'}
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         )}
 
