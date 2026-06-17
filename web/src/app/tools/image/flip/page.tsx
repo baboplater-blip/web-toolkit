@@ -1,16 +1,30 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FlipHorizontal2, FlipVertical2, Download, Loader2 } from 'lucide-react';
-import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
+import { DualDropZone, useBatchMode } from '@/components/tools/DualDropZone';
+import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
+import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
+import { BatchResultPanel } from '@/components/tools/BatchResultPanel';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { loadBitmap } from '@/lib/tools/image-common';
+import { loadBitmap, assertCanvasSize } from '@/lib/tools/image-common';
+import {
+  commonRoot,
+  filterFiles,
+  replaceExtension,
+  runBatch,
+  type BatchOutput,
+  type RelativeFile,
+} from '@/lib/tools/folder-batch';
 
 type FlipAxis = 'horizontal' | 'vertical';
 
+const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.bmp', '.gif'];
+
 async function flipImage(bitmap: ImageBitmap, axis: FlipAxis): Promise<Blob> {
+  assertCanvasSize(bitmap.width, bitmap.height);
   const canvas = document.createElement('canvas');
   canvas.width = bitmap.width;
   canvas.height = bitmap.height;
@@ -33,13 +47,33 @@ async function flipImage(bitmap: ImageBitmap, axis: FlipAxis): Promise<Blob> {
   return blob;
 }
 
+/** File → 반전된 PNG Blob (폴더 일괄 모드 공용 — 비트맵 메모리 즉시 해제) */
+async function flipFile(file: File, axis: FlipAxis): Promise<Blob> {
+  const bitmap = await loadBitmap(file);
+  try {
+    return await flipImage(bitmap, axis);
+  } finally {
+    bitmap.close();
+  }
+}
+
 export default function ImageFlipPage() {
+  const { mode: inputMode, setMode: setInputMode } = useBatchMode();
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [fileName, setFileName] = useState('image');
   const [axis, setAxis] = useState<FlipAxis>('horizontal');
   const [result, setResult] = useState<{ url: string; blob: Blob } | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [allFolderFiles, setAllFolderFiles] = useState<RelativeFile[]>([]);
+  const [folderFiles, setFolderFiles] = useState<RelativeFile[]>([]);
+  const [progress, setProgress] = useState<{ done: number; total: number; current: string } | null>(
+    null,
+  );
+  const [cancelling, setCancelling] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
   useEffect(() => () => bitmap?.close(), [bitmap]);
   useEffect(() => {
@@ -63,6 +97,7 @@ export default function ImageFlipPage() {
     }
     setError(null);
     clearResult();
+    setBatchResults(null);
     try {
       const next = await loadBitmap(file);
       setBitmap((prev) => {
@@ -76,7 +111,59 @@ export default function ImageFlipPage() {
     }
   }
 
+  function onFolderPicked(files: RelativeFile[]) {
+    setError(null);
+    clearResult();
+    setBatchResults(null);
+    const filtered = filterFiles(files, { mimePrefixes: ['image/'], extensions: IMAGE_EXTS });
+    if (filtered.length === 0) {
+      setError('폴더 안에 처리할 이미지가 없습니다.');
+      setAllFolderFiles([]);
+      setFolderFiles([]);
+      return;
+    }
+    setAllFolderFiles(filtered);
+    setFolderFiles(filtered);
+  }
+
   async function handleFlip() {
+    if (inputMode === 'folder') {
+      if (folderFiles.length === 0) {
+        setError('처리할 파일을 선택하세요.');
+        return;
+      }
+      setProcessing(true);
+      setError(null);
+      setBatchResults(null);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      setCancelling(false);
+      setProgress({ done: 0, total: folderFiles.length, current: '' });
+      try {
+        const results = await runBatch(
+          folderFiles,
+          async (rf) => {
+            const blob = await flipFile(rf.file, axis);
+            return { relativePath: replaceExtension(rf.relativePath, '.png'), blob };
+          },
+          {
+            concurrency: 2,
+            signal: ctrl.signal,
+            onProgress: (d, t, p) => setProgress({ done: d, total: t, current: p }),
+          },
+        );
+        setBatchResults(results);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '일괄 처리에 실패했습니다.');
+      } finally {
+        abortRef.current = null;
+        setProgress(null);
+        setCancelling(false);
+        setProcessing(false);
+      }
+      return;
+    }
+
     if (!bitmap) return;
     setError(null);
     setProcessing(true);
@@ -91,6 +178,13 @@ export default function ImageFlipPage() {
     }
   }
 
+  function cancelRun() {
+    if (abortRef.current && !cancelling) {
+      setCancelling(true);
+      abortRef.current.abort();
+    }
+  }
+
   function handleReset() {
     setBitmap((prev) => {
       prev?.close();
@@ -99,22 +193,40 @@ export default function ImageFlipPage() {
     setFileName('image');
     setAxis('horizontal');
     clearResult();
+    setBatchResults(null);
+    setAllFolderFiles([]);
+    setFolderFiles([]);
     setError(null);
   }
 
+  const hasInput = inputMode === 'files' ? !!bitmap : allFolderFiles.length > 0;
+
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="이미지 반전" widthClass="max-w-2xl" onReset={bitmap ? handleReset : undefined} />
+      <ToolHeader title="이미지 반전" widthClass="max-w-2xl" onReset={hasInput ? handleReset : undefined} />
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">이미지를 좌우 또는 상하로 뒤집어 저장합니다.</p>
 
-      {!bitmap && (
-        <FileDropZone
-          accept="image/*"
-          onFiles={handleFiles}
-          onError={setError}
-          description="반전할 이미지를 올려주세요."
-          maxBytes={50 * 1024 * 1024}
+      {((inputMode === 'files' && !bitmap) ||
+        (inputMode === 'folder' && allFolderFiles.length === 0)) && (
+        <DualDropZone
+          mode={inputMode}
+          onModeChange={(m) => {
+            setInputMode(m);
+            setError(null);
+          }}
+          fileProps={{
+            accept: 'image/*',
+            description: '반전할 이미지를 올려주세요.',
+            maxBytes: 50 * 1024 * 1024,
+            onFiles: handleFiles,
+            onError: setError,
+          }}
+          folderProps={{
+            accept: 'image/*',
+            description: '폴더 안 모든 이미지에 같은 반전을 적용해 ZIP 으로 내보냅니다.',
+            onFolder: onFolderPicked,
+          }}
         />
       )}
 
@@ -127,7 +239,16 @@ export default function ImageFlipPage() {
         </div>
       )}
 
-      {bitmap && (
+      {inputMode === 'folder' && allFolderFiles.length > 0 && (
+        <FolderPreviewPanel
+          files={allFolderFiles}
+          onSelectionChange={setFolderFiles}
+          fileKindLabel="이미지"
+        />
+      )}
+
+      {((inputMode === 'files' && bitmap) ||
+        (inputMode === 'folder' && allFolderFiles.length > 0)) && (
         <div className="space-y-4">
           <fieldset>
             <legend className="mb-1.5 text-xs font-medium">반전 방향</legend>
@@ -168,7 +289,7 @@ export default function ImageFlipPage() {
             {processing ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
             ) : null}
-            반전 적용
+            {inputMode === 'folder' ? `폴더 일괄 적용 (${folderFiles.length}개)` : '반전 적용'}
           </Button>
         </div>
       )}
@@ -194,6 +315,26 @@ export default function ImageFlipPage() {
             PNG 다운로드
           </Button>
         </div>
+      )}
+
+      {progress && (
+        <BatchProgressPanel
+          done={progress.done}
+          total={progress.total}
+          current={progress.current}
+          onCancel={cancelRun}
+          label="반전 중"
+          cancelling={cancelling}
+        />
+      )}
+
+      {batchResults && (
+        <BatchResultPanel
+          results={batchResults}
+          zipRootName={commonRoot(folderFiles) || 'flipped'}
+          zipFileName={`${commonRoot(folderFiles) || 'images'}-flipped.zip`}
+          totalInputSize={folderFiles.reduce((s, f) => s + f.file.size, 0)}
+        />
       )}
       </main>
     </div>
