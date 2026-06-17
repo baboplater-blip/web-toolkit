@@ -1716,6 +1716,258 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Estimate sentiment with a lexicon-based scorer — no model, no upload. Highlights positive and negative words. Local-only.',
     keywords: ['sentiment analysis', 'positive negative text', 'sentiment scorer', 'text sentiment'],
   },
+  'curl-to-code': {
+    name: 'cURL to Code Converter',
+    tagline: 'Turn a cURL command into fetch, axios, or Python requests code.',
+    description:
+      'Paste a cURL command and get ready-to-use JavaScript fetch, axios, or Python requests code. Runs fully in your browser.',
+    keywords: ['curl to code', 'curl to fetch', 'curl to python', 'curl converter', 'curl to axios'],
+  },
+  'json-to-go': {
+    name: 'JSON to Go Struct',
+    tagline: 'Generate Go struct types from JSON instantly.',
+    description:
+      'Paste JSON and get typed Go structs with json tags. Everything runs locally in your browser.',
+    keywords: ['json to go', 'json to struct', 'golang struct generator', 'go type from json', 'json to golang'],
+  },
+  'css-units': {
+    name: 'CSS Unit Converter',
+    tagline: 'Convert between px, rem, em, and pt for CSS.',
+    description:
+      'Convert CSS length units (px, rem, em, pt) with a custom root font size. No uploads, all in your browser.',
+    keywords: ['css unit converter', 'px to rem', 'rem to px', 'em to px', 'px to pt'],
+  },
+  'chmod-calc': {
+    name: 'chmod Calculator',
+    tagline: 'Convert Unix file permissions between octal and symbolic.',
+    description:
+      'Toggle read/write/execute for owner, group, and others to get the chmod octal and symbolic notation. Runs in your browser.',
+    keywords: ['chmod calculator', 'unix permissions', 'file permission calculator', 'octal permissions', 'chmod 755'],
+  },
+  'user-agent-parser': {
+    name: 'User-Agent Parser',
+    tagline: 'Detect browser, OS, and device from a User-Agent string.',
+    description:
+      'Paste any User-Agent string to identify the browser, engine, operating system, and device type. Fully client-side.',
+    keywords: ['user agent parser', 'parse user agent', 'ua parser', 'detect browser', 'user agent string'],
+  },
+  'http-status': {
+    name: 'HTTP Status Codes',
+    tagline: 'Look up the meaning of any HTTP status code.',
+    description:
+      'Search HTTP status codes (1xx–5xx) with descriptions and common use cases. A quick reference, all in your browser.',
+    keywords: ['http status codes', '404 meaning', '500 error', 'http response codes', 'status code reference'],
+  },
+  'dotenv-json': {
+    name: '.env to JSON Converter',
+    tagline: 'Convert .env files to JSON and back.',
+    description:
+      'Paste .env contents to get JSON, or convert JSON into a .env file. Handles quotes and comments, all in your browser.',
+    keywords: ['env to json', 'dotenv to json', 'json to env', 'env converter', 'parse env file'],
+  },
+  'color-name': {
+    name: 'Color Name Finder',
+    tagline: 'Find the nearest named CSS color for any hex or RGB value.',
+    description:
+      'Enter a hex or RGB color to find the closest CSS named color, with the exact match flagged. Runs in your browser.',
+    keywords: ['color name finder', 'hex to color name', 'css color names', 'nearest color name', 'rgb to name'],
+  },
+  'reverse-text': {
+    name: 'Reverse Text',
+    tagline: 'Reverse characters, words, or lines of text.',
+    description:
+      'Flip text by characters, words, or line order instantly. No uploads, runs in your browser.',
+    keywords: ['reverse text', 'backwards text', 'reverse string', 'flip text', 'reverse words'],
+  },
+  'line-numbers': {
+    name: 'Add Line Numbers',
+    tagline: 'Number every line of text, or strip existing numbers.',
+    description:
+      'Prefix each line with a number using a custom start, padding, and separator — or remove line numbers. Client-side only.',
+    keywords: ['add line numbers', 'number lines', 'line numbering', 'remove line numbers', 'text line numbers'],
+  },
+  'text-repeat': {
+    name: 'Repeat Text',
+    tagline: 'Repeat any text a set number of times.',
+    description:
+      'Duplicate text N times with an optional separator between copies. Useful for testing and templates. Runs in your browser.',
+    keywords: ['repeat text', 'text repeater', 'duplicate text', 'repeat string', 'copy text multiple times'],
+  },
+  'bionic-reading': {
+    name: 'Bionic Reading Converter',
+    tagline: 'Bold the first part of each word for faster reading.',
+    description:
+      'Convert any text into a bionic reading format that highlights word beginnings to guide your eyes. All client-side.',
+    keywords: ['bionic reading', 'speed reading', 'bionic text', 'fast reading converter', 'reading aid'],
+  },
+  'ascii-banner': {
+    name: 'ASCII Banner Generator',
+    tagline: 'Turn text into big ASCII art letters.',
+    description:
+      'Generate large ASCII art banners from text for READMEs, terminals, and comments. Runs entirely in your browser.',
+    keywords: ['ascii banner', 'ascii art text', 'figlet generator', 'text to ascii art', 'ascii art generator'],
+  },
+  'zalgo-text': {
+    name: 'Zalgo Glitch Text',
+    tagline: 'Create creepy glitch text with combining marks.',
+    description:
+      'Add layered combining diacritics to your text for a glitchy zalgo effect, with adjustable intensity. Client-side.',
+    keywords: ['zalgo text', 'glitch text', 'creepy text', 'cursed text generator', 'zalgo generator'],
+  },
+  'tip-calc': {
+    name: 'Tip Calculator',
+    tagline: 'Calculate tip and split the bill per person.',
+    description:
+      'Enter the bill, tip percentage, and number of people to get the tip, total, and amount per person. Runs in your browser.',
+    keywords: ['tip calculator', 'split bill', 'gratuity calculator', 'tip per person', 'bill splitter'],
+  },
+  'dice-roller': {
+    name: 'Dice Roller',
+    tagline: 'Roll any number of dice with any number of sides.',
+    description:
+      'Roll D4, D6, D20 and custom dice, with totals and modifiers for tabletop games. Cryptographically random, in your browser.',
+    keywords: ['dice roller', 'roll dice online', 'd20 roller', 'rpg dice', 'virtual dice'],
+  },
+  'coin-flip': {
+    name: 'Coin Flip',
+    tagline: 'Flip a virtual coin to decide heads or tails.',
+    description:
+      'Flip one or many coins and see heads/tails results and tallies. Fairly random, runs in your browser.',
+    keywords: ['coin flip', 'flip a coin', 'heads or tails', 'coin toss', 'random decision'],
+  },
+  'subnet-calc': {
+    name: 'Subnet Calculator',
+    tagline: 'Compute network, broadcast, and host range from a CIDR.',
+    description:
+      'Enter an IPv4 address and CIDR prefix to get the netmask, network and broadcast addresses, and usable host range. Client-side.',
+    keywords: ['subnet calculator', 'cidr calculator', 'ip subnet', 'ipv4 calculator', 'netmask calculator'],
+  },
+  'scientific-calc': {
+    name: 'Scientific Calculator',
+    tagline: 'Trig, logs, powers, and more in your browser.',
+    description:
+      'A scientific calculator supporting trigonometry, logarithms, exponents, constants, and expression evaluation. No server.',
+    keywords: ['scientific calculator', 'online calculator', 'trig calculator', 'math calculator', 'expression calculator'],
+  },
+  'fuel-cost': {
+    name: 'Fuel Cost Calculator',
+    tagline: 'Estimate trip fuel cost from distance, economy, and price.',
+    description:
+      'Enter trip distance, fuel economy, and fuel price to estimate total fuel cost and consumption. Runs in your browser.',
+    keywords: ['fuel cost calculator', 'gas cost calculator', 'trip fuel cost', 'fuel economy calculator', 'mileage cost'],
+  },
+  'lottery-number': {
+    name: 'Lottery Number Generator',
+    tagline: 'Generate random lottery number combinations.',
+    description:
+      'Pick random number sets for lotteries with custom range and count. Cryptographically random, runs in your browser.',
+    keywords: ['lottery number generator', 'random lottery numbers', 'lotto generator', 'powerball generator', 'random number picker'],
+  },
+  'random-number': {
+    name: 'Random Number Generator',
+    tagline: 'Generate random numbers with range, count, and uniqueness.',
+    description:
+      'Generate random integers within a range, with options for count and no-duplicates. Cryptographically random, client-side.',
+    keywords: ['random number generator', 'rng', 'random integer', 'number generator', 'random picker'],
+  },
+  'hmac-gen': {
+    name: 'HMAC Generator',
+    tagline: 'Generate HMAC signatures with SHA-1, SHA-256, or SHA-512.',
+    description:
+      'Compute an HMAC from a secret key and message using the Web Crypto API. Output in hex or Base64, all in your browser.',
+    keywords: ['hmac generator', 'hmac sha256', 'hmac online', 'message authentication code', 'hmac signature'],
+  },
+  'base32': {
+    name: 'Base32 Encode / Decode',
+    tagline: 'Encode and decode text with RFC 4648 Base32.',
+    description:
+      'Convert text to and from Base32 (RFC 4648). Useful for TOTP secrets and case-insensitive encoding. Runs in your browser.',
+    keywords: ['base32 encode', 'base32 decode', 'base32 converter', 'rfc 4648', 'base32 online'],
+  },
+  'bcrypt': {
+    name: 'bcrypt Hash & Verify',
+    tagline: 'Generate and verify bcrypt password hashes.',
+    description:
+      'Hash a password with bcrypt at a chosen cost factor, or verify a password against a hash. Computed locally in your browser.',
+    keywords: ['bcrypt generator', 'bcrypt hash', 'bcrypt verify', 'password hash', 'bcrypt online'],
+  },
+  'wifi-qr': {
+    name: 'WiFi QR Code Generator',
+    tagline: 'Create a QR code that connects to your WiFi.',
+    description:
+      'Enter your WiFi SSID, password, and security type to generate a scannable QR code for instant connection. All client-side.',
+    keywords: ['wifi qr code', 'wifi qr generator', 'qr code for wifi', 'share wifi qr', 'wifi password qr'],
+  },
+  'json-flatten': {
+    name: 'JSON Flatten / Unflatten',
+    tagline: 'Flatten nested JSON to dot keys, or rebuild it.',
+    description:
+      'Convert nested JSON into flat dot-notation keys, or unflatten dotted keys back into nested objects. Runs in your browser.',
+    keywords: ['json flatten', 'flatten json', 'unflatten json', 'json dot notation', 'nested json converter'],
+  },
+  'csv-merge': {
+    name: 'CSV Merge',
+    tagline: 'Combine multiple CSV files into one.',
+    description:
+      'Merge several CSV files into a single file, aligning columns by header. All processing happens in your browser.',
+    keywords: ['csv merge', 'combine csv files', 'merge csv', 'join csv', 'concatenate csv'],
+  },
+  'csv-split': {
+    name: 'CSV Split',
+    tagline: 'Split a large CSV into smaller files by row count.',
+    description:
+      'Break a big CSV into chunks of N rows each, keeping the header in every file, and download them as a zip. Client-side.',
+    keywords: ['csv split', 'split csv file', 'split large csv', 'divide csv', 'csv splitter'],
+  },
+  'jsonl-viewer': {
+    name: 'JSONL Viewer',
+    tagline: 'View JSON Lines as a table and export to JSON or CSV.',
+    description:
+      'Open a JSONL/NDJSON file to browse records in a table, then convert to a JSON array or CSV. Runs in your browser.',
+    keywords: ['jsonl viewer', 'ndjson viewer', 'json lines viewer', 'jsonl to csv', 'jsonl to json'],
+  },
+  'image-blur': {
+    name: 'Blur Image',
+    tagline: 'Apply a Gaussian blur to your image.',
+    description:
+      'Blur an entire image with an adjustable radius, then download the result. All processing stays in your browser.',
+    keywords: ['blur image', 'image blur online', 'gaussian blur', 'blur photo', 'blur picture'],
+  },
+  'image-border': {
+    name: 'Add Image Border',
+    tagline: 'Add a colored border or frame around your image.',
+    description:
+      'Add a solid border with custom width and color around any image. Runs entirely in your browser, no upload.',
+    keywords: ['add border to image', 'image border', 'photo frame', 'picture border', 'image frame online'],
+  },
+  'image-placeholder': {
+    name: 'Placeholder Image Generator',
+    tagline: 'Generate placeholder images with custom size and text.',
+    description:
+      'Create solid-color placeholder images with custom dimensions, colors, and label text for mockups. Client-side PNG export.',
+    keywords: ['placeholder image generator', 'dummy image', 'placeholder png', 'mockup image', 'image placeholder'],
+  },
+  'image-histogram': {
+    name: 'Image Histogram',
+    tagline: 'Analyze the RGB and luminance distribution of an image.',
+    description:
+      'Upload an image to see its red, green, blue, and luminance histograms. Useful for exposure analysis. Runs in your browser.',
+    keywords: ['image histogram', 'rgb histogram', 'photo histogram', 'luminance histogram', 'histogram analyzer'],
+  },
+  'pdf-reverse': {
+    name: 'Reverse PDF Pages',
+    tagline: 'Flip the page order of a PDF.',
+    description:
+      'Reverse the order of all pages in a PDF and download the result. Runs entirely in your browser, no upload.',
+    keywords: ['reverse pdf pages', 'flip pdf order', 'pdf page order', 'reverse pdf', 'rearrange pdf pages'],
+  },
+  'pdf-booklet': {
+    name: 'PDF Booklet Maker',
+    tagline: 'Impose a PDF into a printable 2-up booklet.',
+    description:
+      'Rearrange PDF pages into booklet (saddle-stitch) imposition so you can print, fold, and staple. All in your browser.',
+    keywords: ['pdf booklet', 'booklet maker', 'pdf imposition', 'saddle stitch pdf', 'print booklet pdf'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
