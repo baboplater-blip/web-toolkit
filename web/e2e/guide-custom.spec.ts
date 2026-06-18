@@ -151,6 +151,12 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     { guide: 'morse-code', prefix: '', expectLinks: ['caesar-cipher', 'binary-text', 'nato-phonetic'] },
     { guide: 'bmi-calc', prefix: '', expectLinks: ['tdee', 'loan-calc', 'unit-converter'] },
     { guide: 'pdf-to-txt', prefix: '', expectLinks: ['pdf-to-word', 'pdf-to-md', 'pdf-to-html'] },
+    // 라운드6 — 신규 34종 클러스터
+    { guide: 'meta-tags', prefix: '', expectLinks: ['robots-txt', 'json-schema', 'html-format'] },
+    { guide: 'image-sepia', prefix: '', expectLinks: ['image-black-white', 'image-duotone', 'image-tint'] },
+    { guide: 'iban-validator', prefix: '/en', expectLinks: ['cc-validate', 'luhn-generator', 'checksum-verify'] },
+    { guide: 'world-clock', prefix: '', expectLinks: ['timezone', 'countdown', 'dday'] },
+    { guide: 'pdf-delete-pages', prefix: '', expectLinks: ['pdf-organize', 'pdf-split', 'pdf-insert'] },
   ];
 
   for (const { guide, prefix, expectLinks } of CLUSTERS) {

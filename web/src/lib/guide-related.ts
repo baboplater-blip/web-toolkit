@@ -44,13 +44,13 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   base64: ['url-encoder', 'html-entities', 'file-hash', 'json-format'],
   'url-encoder': ['base64', 'html-entities', 'jwt-decoder', 'json-format'],
   'jwt-decoder': ['base64', 'url-encoder', 'totp', 'hmac-gen'],
-  'css-units': ['color-converter', 'color-name', 'css-minify', 'css-specificity'],
-  'color-converter': ['color-name', 'css-units', 'color-contrast', 'css-gradient'],
-  'color-name': ['color-converter', 'css-units', 'color-contrast', 'css-gradient'],
+  'css-units': ['css-clamp', 'color-converter', 'color-name', 'css-minify'],
+  'color-converter': ['color-name', 'tailwind-shades', 'css-units', 'color-contrast'],
+  'color-name': ['color-converter', 'tailwind-shades', 'css-units', 'color-contrast'],
   'code-case': ['text-case', 'slugify', 'json-to-go', 'css-units'],
   'http-status': ['user-agent-parser', 'url-encoder', 'curl-to-code', 'json-format'],
   'timestamp-converter': ['cron-explainer', 'date-diff', 'timezone', 'age-calc'],
-  'cron-explainer': ['timestamp-converter', 'regex-tester', 'chmod-calc', 'code-case'],
+  'cron-explainer': ['crontab-builder', 'timestamp-converter', 'regex-tester', 'chmod-calc'],
   'chmod-calc': ['cron-explainer', 'subnet-calc', 'file-hash', 'base64'],
   'lorem-ipsum': ['lorem-ko', 'text-count', 'text-case', 'slugify'],
   'uuid-gen': ['password-gen', 'uuid-namespace', 'totp', 'json-format'],
@@ -58,7 +58,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
 
   // ── 텍스트 ──
   'text-diff': ['text-count', 'text-case', 'regex-tester', 'remove-accents'],
-  'text-count': ['text-diff', 'word-frequency', 'count-occurrences', 'text-case'],
+  'text-count': ['readability-score', 'text-diff', 'word-frequency', 'count-occurrences'],
   'text-case': ['code-case', 'slugify', 'text-count', 'remove-accents'],
   'regex-tester': ['text-diff', 'text-case', 'json-format', 'text-count'],
   'remove-accents': ['slugify', 'text-case', 'text-count', 'html-entities'],
@@ -123,7 +123,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'json-xml': ['json-format', 'yaml-json', 'csv-json', 'xml-format'],
 
   // ── 라운드5: 계산/유틸 ──
-  'bmi-calc': ['tdee', 'loan-calc', 'unit-converter', 'percentage'],
+  'bmi-calc': ['ideal-weight', 'tdee', 'loan-calc', 'unit-converter'],
   'loan-calc': ['compound-interest', 'percentage', 'discount', 'bmi-calc'],
   discount: ['percentage', 'tip-calc', 'vat-calc', 'loan-calc'],
   timezone: ['timestamp-converter', 'date-diff', 'unit-converter', 'cron-explainer'],
@@ -141,6 +141,51 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'word-frequency': ['text-count', 'count-occurrences', 'text-diff', 'remove-accents'],
   'md-html': ['markdown-toc', 'markdown-stats', 'html-format', 'docx-to-md'],
   'pdf-to-txt': ['pdf-to-word', 'pdf-to-md', 'pdf-to-html', 'pdf-to-jpg'],
+
+  // ── 라운드6: 신규 34종(+cc-validate) 워크플로 클러스터 ──
+  // 개발: SEO/CSS/JSON/문자열
+  'meta-tags': ['robots-txt', 'json-schema', 'html-format', 'url-encoder'],
+  'robots-txt': ['meta-tags', 'json-schema', 'http-status', 'url-parser'],
+  'css-clamp': ['css-units', 'tailwind-shades', 'css-gradient', 'css-minify'],
+  'json-schema': ['json-format', 'json-to-ts', 'json-to-go', 'mock-data'],
+  'string-escape': ['url-encoder', 'html-entities', 'base64', 'json-escape'],
+  'unicode-lookup': ['ascii-table', 'string-escape', 'html-entities', 'text-count'],
+  'crontab-builder': ['cron-explainer', 'timestamp-converter', 'timezone', 'chmod-calc'],
+  'tailwind-shades': ['css-clamp', 'color-converter', 'color-name', 'css-gradient'],
+  // 텍스트: 분석/리스트/유니코드 스타일
+  'readability-score': ['text-count', 'word-frequency', 'syllable-counter', 'markdown-stats'],
+  'sort-numbers': ['text-sort', 'dedupe-lines', 'list-shuffle', 'number-to-words'],
+  'list-shuffle': ['text-sort', 'sort-numbers', 'random-pick', 'dedupe-lines'],
+  'syllable-counter': ['readability-score', 'text-count', 'word-frequency', 'manuscript-count'],
+  'strikethrough-text': ['fancy-text', 'superscript-text', 'zalgo-text', 'upside-down'],
+  'superscript-text': ['fancy-text', 'strikethrough-text', 'unicode-lookup', 'zalgo-text'],
+  // 유틸: 시간/랜덤결정/돈/건강/운세
+  'world-clock': ['timezone', 'countdown', 'dday', 'date-diff'],
+  countdown: ['dday', 'world-clock', 'timer-stopwatch', 'date-diff'],
+  'magic-8-ball': ['decision-wheel', 'coin-flip', 'dice-roller', 'random-pick'],
+  'decision-wheel': ['magic-8-ball', 'random-pick', 'coin-flip', 'lottery-number'],
+  'bill-split': ['tip-calc', 'vat-calc', 'discount', 'percentage'],
+  'ideal-weight': ['bmi-calc', 'tdee', 'sleep-calc', 'pace-calc'],
+  zodiac: ['numerology', 'age-calc', 'dday', 'date-diff'],
+  numerology: ['zodiac', 'age-calc', 'lottery-number', 'random-number'],
+  // 보안: 해시/체크섬/랜덤
+  'hash-identifier': ['text-hash', 'bcrypt', 'checksum-verify', 'base32'],
+  'iban-validator': ['cc-validate', 'luhn-generator', 'checksum-verify', 'random-bytes'],
+  'luhn-generator': ['cc-validate', 'iban-validator', 'random-pin', 'random-bytes'],
+  'random-pin': ['password-gen', 'random-bytes', 'luhn-generator', 'diceware'],
+  'cc-validate': ['luhn-generator', 'iban-validator', 'checksum-verify', 'base32'],
+  // 이미지: 필터/효과
+  'image-sepia': ['image-black-white', 'image-duotone', 'image-tint', 'image-filters'],
+  'image-vignette': ['image-blur', 'image-sepia', 'image-filters', 'image-border'],
+  'image-tint': ['image-duotone', 'image-sepia', 'image-color-adjust', 'image-filters'],
+  'screenshot-shadow': ['image-border', 'image-round-corners', 'image-watermark', 'gradient-image'],
+  // 문서: 표 변환
+  'csv-to-html': ['csv-to-md', 'csv-viewer', 'markdown-table-gen', 'csv-json'],
+  'markdown-table-gen': ['md-table', 'csv-to-md', 'markdown-toc', 'csv-to-html'],
+  // PDF: 페이지 편집
+  'pdf-delete-pages': ['pdf-organize', 'pdf-split', 'pdf-insert', 'pdf-reverse'],
+  // 오디오
+  metronome: ['tone-gen', 'audio-speed', 'mic-record', 'audio-waveform'],
 };
 
 /**
