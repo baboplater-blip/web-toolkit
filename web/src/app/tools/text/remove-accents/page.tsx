@@ -3,14 +3,7 @@
 import { useMemo, useState } from 'react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-
-// 결합 분음 기호 범위 U+0300–U+036F (이스케이프로 표기해 인코딩에 무관하게 안전).
-const COMBINING_MARKS = /[̀-ͯ]/g;
-
-/** 분해 정규화(NFD) 후 결합 분음 기호를 제거한다. café → cafe */
-function removeAccents(value: string): string {
-  return value.normalize('NFD').replace(COMBINING_MARKS, '');
-}
+import { removeAccents } from '@/lib/tools/remove-accents';
 
 export default function RemoveAccentsPage() {
   const [input, setInput] = useState('');

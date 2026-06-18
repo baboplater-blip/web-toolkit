@@ -1,56 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { ToolHeader } from '@/components/tools/ToolHeader';
-
-interface Rgb {
-  r: number;
-  g: number;
-  b: number;
-}
-
-/** #RGB / #RRGGBB hex 문자열을 0~255 RGB 로 파싱한다. 실패 시 null. */
-function parseHex(value: string): Rgb | null {
-  const cleaned = value.trim().replace(/^#/, '');
-  let hex = cleaned;
-  if (/^[0-9a-f]{3}$/i.test(cleaned)) {
-    hex = cleaned
-      .split('')
-      .map((c) => c + c)
-      .join('');
-  }
-  if (!/^[0-9a-f]{6}$/i.test(hex)) return null;
-  return {
-    r: parseInt(hex.slice(0, 2), 16),
-    g: parseInt(hex.slice(2, 4), 16),
-    b: parseInt(hex.slice(4, 6), 16),
-  };
-}
-
-/** RGB 를 항상 #RRGGBB 형태로 정규화한다(컬러 인풋 동기화용). */
-function toHexString(rgb: Rgb): string {
-  const part = (n: number) => n.toString(16).padStart(2, '0');
-  return `#${part(rgb.r)}${part(rgb.g)}${part(rgb.b)}`;
-}
-
-/** WCAG 상대 휘도(relative luminance) 계산. */
-function relativeLuminance({ r, g, b }: Rgb): number {
-  const channel = (value: number): number => {
-    const srgb = value / 255;
-    return srgb <= 0.03928 ? srgb / 12.92 : Math.pow((srgb + 0.055) / 1.055, 2.4);
-  };
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-}
-
-/** 두 색의 WCAG 대비비(1~21)를 계산한다. */
-function contrastRatio(fg: Rgb, bg: Rgb): number {
-  const l1 = relativeLuminance(fg);
-  const l2 = relativeLuminance(bg);
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-  return (lighter + 0.05) / (darker + 0.05);
-}
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
+import { parseHex, toHexString, contrastRatio } from '@/lib/tools/color-contrast';
 
 function Badge({ label, pass }: { label: string; pass: boolean }) {
   return (
@@ -70,8 +25,13 @@ function Badge({ label, pass }: { label: string; pass: boolean }) {
 }
 
 export default function ColorContrastPage() {
-  const [fgInput, setFgInput] = useState('#1a1a1a');
-  const [bgInput, setBgInput] = useState('#ffffff');
+  // 전경·배경색을 URL 쿼리로 관리(공유·복원, 다른 도구에서 ?fg=·?bg= 로 전달받음).
+  // 초기 렌더는 결정적 기본값, URL 읽기는 훅 내부 마운트 후 useEffect 에서만.
+  const [urlState, patchUrlState] = useToolUrlState({ fg: '#1a1a1a', bg: '#ffffff' });
+  const fgInput = urlState.fg;
+  const bgInput = urlState.bg;
+  const setFgInput = (value: string) => patchUrlState({ fg: value });
+  const setBgInput = (value: string) => patchUrlState({ bg: value });
 
   const fg = useMemo(() => parseHex(fgInput), [fgInput]);
   const bg = useMemo(() => parseHex(bgInput), [bgInput]);
@@ -83,13 +43,14 @@ export default function ColorContrastPage() {
   const bgHex = bg ? toHexString(bg) : '#ffffff';
 
   const handleReset = () => {
-    setFgInput('#1a1a1a');
-    setBgInput('#ffffff');
+    patchUrlState({ fg: '#1a1a1a', bg: '#ffffff' });
   };
 
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="색상 대비 검사기" widthClass="max-w-xl" onReset={handleReset} />
+      <ToolHeader title="색상 대비 검사기" widthClass="max-w-xl" onReset={handleReset}>
+        <ShareLinkButton />
+      </ToolHeader>
       <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           두 색의 WCAG 명도 대비비를 계산하고 AA·AAA 통과 여부를 보여줍니다.

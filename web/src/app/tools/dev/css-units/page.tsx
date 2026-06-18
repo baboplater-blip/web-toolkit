@@ -5,54 +5,28 @@ import { Ruler, Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
-
-type Unit = 'px' | 'rem' | 'em' | 'pt';
-
-const UNITS: readonly Unit[] = ['px', 'rem', 'em', 'pt'];
-const DEFAULT_ROOT_FONT_SIZE = 16;
-/** CSS 표준: 1pt = 1/72 in, 1px = 1/96 in → 1px = 0.75pt */
-const PX_PER_PT = 96 / 72;
-
-/** 입력 값을 기준 단위에서 px 로 환산한다. em 은 rem 과 동일하게 root font-size 기준으로 본다. */
-function toPx(value: number, unit: Unit, rootFontSize: number): number {
-  switch (unit) {
-    case 'px':
-      return value;
-    case 'rem':
-    case 'em':
-      return value * rootFontSize;
-    case 'pt':
-      return value * PX_PER_PT;
-    default:
-      return value;
-  }
-}
-
-/** px 값을 대상 단위로 환산한다. */
-function fromPx(px: number, unit: Unit, rootFontSize: number): number {
-  switch (unit) {
-    case 'px':
-      return px;
-    case 'rem':
-    case 'em':
-      return rootFontSize === 0 ? 0 : px / rootFontSize;
-    case 'pt':
-      return px / PX_PER_PT;
-    default:
-      return px;
-  }
-}
-
-/** 불필요한 소수점 0 을 제거한 최대 4자리 문자열 */
-function formatNumber(value: number): string {
-  if (!Number.isFinite(value)) return '0';
-  return String(Number(value.toFixed(4)));
-}
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
+import {
+  toPx,
+  fromPx,
+  formatNumber,
+  UNITS,
+  DEFAULT_ROOT_FONT_SIZE,
+  type Unit,
+} from '@/lib/tools/css-units';
 
 export default function CssUnitsPage() {
-  const [valueText, setValueText] = useState('');
-  const [unit, setUnit] = useState<Unit>('px');
-  const [rootText, setRootText] = useState(String(DEFAULT_ROOT_FONT_SIZE));
+  // 입력·옵션을 URL 쿼리로 관리(공유·새로고침 시 복원). 초기 렌더는 결정적
+  // 기본값으로 그리고, URL 읽기는 훅 내부의 마운트 후 useEffect 에서만 수행한다.
+  const [urlState, patchUrlState] = useToolUrlState(
+    { value: '', unit: 'px' as Unit, root: String(DEFAULT_ROOT_FONT_SIZE) },
+  );
+  const { value: valueText, unit, root: rootText } = urlState;
+  const setValueText = (value: string) => patchUrlState({ value });
+  const setUnit = (next: Unit) => patchUrlState({ unit: next });
+  const setRootText = (root: string) => patchUrlState({ root });
+
   const [copiedUnit, setCopiedUnit] = useState<Unit | null>(null);
 
   const rootFontSize = useMemo(() => {
@@ -81,15 +55,15 @@ export default function CssUnitsPage() {
   }
 
   function reset() {
-    setValueText('');
-    setUnit('px');
-    setRootText(String(DEFAULT_ROOT_FONT_SIZE));
+    patchUrlState({ value: '', unit: 'px', root: String(DEFAULT_ROOT_FONT_SIZE) });
     setCopiedUnit(null);
   }
 
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="CSS 단위 변환" onReset={reset} />
+      <ToolHeader title="CSS 단위 변환" onReset={reset}>
+        <ShareLinkButton />
+      </ToolHeader>
       <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Ruler className="h-4 w-4 text-primary" aria-hidden />

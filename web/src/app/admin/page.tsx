@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AlertTriangle,
+  BarChart3,
   CheckCircle2,
+  Database,
   Eye,
   EyeOff,
   GitCommit,
@@ -19,8 +21,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { TOOLS, CATEGORY_LABELS } from '@/lib/tools/registry';
-import { useUsageStats } from '@/lib/hooks/useUsage';
 import {
   clearAdsConfigCache,
   loadAdsConfig,
@@ -30,6 +30,7 @@ import {
 import { AD_SLOT_SIZES, processAdImage } from '@/lib/ads-image';
 import { CwvStats } from '@/components/admin/CwvStats';
 import { ErrorStats } from '@/components/admin/ErrorStats';
+import { PopularToolsPanel } from '@/components/admin/PopularToolsPanel';
 
 const ADMIN_KEY_ENV = process.env.NEXT_PUBLIC_ADMIN_KEY ?? '';
 const REPO_ENV = process.env.NEXT_PUBLIC_GITHUB_REPO ?? 'baboplater-blip/web-toolkit';
@@ -55,7 +56,6 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [preview, setPreview] = useState<AdSlotKey | null>(null);
-  const stats = useUsageStats();
 
   useEffect(() => {
     const k = new URL(window.location.href).searchParams.get('key');
@@ -172,15 +172,6 @@ export default function AdminPage() {
     const fresh = await loadAdsConfig(true);
     setConfig(fresh);
   };
-
-  const topTools = useMemo(() => {
-    const map = new Map(TOOLS.map((t) => [t.id, t]));
-    return Object.entries(stats)
-      .map(([id, count]) => ({ tool: map.get(id), count }))
-      .filter((e): e is { tool: (typeof TOOLS)[number]; count: number } => !!e.tool)
-      .sort((a, b) => b.count - a.count);
-  }, [stats]);
-  const totalUsage = Object.values(stats).reduce((s, n) => s + n, 0);
 
   if (!authChecked) return null;
 
@@ -560,48 +551,25 @@ export default function AdminPage() {
 
         <Separator />
 
-        <CwvStats />
-
-        <Separator />
-
-        <ErrorStats />
-
-        <Separator />
-
-
-        <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              사이트 사용 통계 (이 브라우저)
-            </h2>
-            <span className="text-[11px] text-muted-foreground">총 {totalUsage}회</span>
+        {/* ── 관측 대시보드: CWV · 에러 · 인기 도구 (전부 이 브라우저 로컬 데이터) ── */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            <h2 className="text-base font-semibold">관측 대시보드</h2>
           </div>
-          <div className="rounded-xl border bg-card p-3">
-            <p className="text-[10px] text-muted-foreground mb-2 leading-relaxed">
-              모든 처리가 클라이언트에서 일어나므로 사이트 전체 집계는 수집되지 않습니다. 이 통계는 어드민 본인이 자기 브라우저에서 사용한 도구 카운트입니다.
-            </p>
-            {topTools.length === 0 ? (
-              <p className="text-xs text-muted-foreground text-center py-4">사용 기록 없음</p>
-            ) : (
-              <ul className="space-y-1">
-                {topTools.slice(0, 20).map(({ tool, count }) => (
-                  <li
-                    key={tool.id}
-                    className="flex items-center justify-between gap-2 text-xs py-1 px-2 rounded hover:bg-muted"
-                  >
-                    <span className="flex items-center gap-2 min-w-0">
-                      <tool.icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                      <span className="truncate">{tool.title}</span>
-                      <span className="text-[10px] text-muted-foreground shrink-0">
-                        {CATEGORY_LABELS[tool.category]}
-                      </span>
-                    </span>
-                    <span className="text-xs font-semibold tabular-nums shrink-0">{count}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="rounded-lg border border-dashed border-primary/30 bg-primary/5 p-3 text-[11px] text-muted-foreground leading-relaxed inline-flex items-start gap-2">
+            <Database className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden />
+            <span>
+              아래 세 패널(Core Web Vitals · JS 에러 · 인기 도구)은 모두{' '}
+              <strong>내 브라우저의 localStorage 로컬 데이터</strong>입니다. 사이트는 어떤 데이터도
+              서버로 전송·수집하지 않으므로, 다른 사용자의 측정·에러·사용량은 보이지 않습니다(어드민
+              본인 기기 한정).
+            </span>
           </div>
+
+          <CwvStats />
+          <ErrorStats />
+          <PopularToolsPanel />
         </section>
       </main>
 
@@ -669,6 +637,8 @@ function AdImpressionStats() {
     try {
       const imp = localStorage.getItem('webtoolkit/ads/impressions');
       const clk = localStorage.getItem('webtoolkit/ads/clicks');
+      // 마운트 후 localStorage 읽기(하이드레이션 안전). 의도된 1회 주입.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (imp) setImpressions(JSON.parse(imp));
       if (clk) setClicks(JSON.parse(clk));
     } catch {}

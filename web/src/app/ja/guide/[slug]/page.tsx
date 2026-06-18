@@ -8,6 +8,7 @@ import { hasZhCopy } from '@/lib/zh-tools';
 import { buildGuideJa } from '@/lib/guide-content-ja';
 import { getRelatedTools } from '@/lib/guide-related';
 import { renderInlineGuide, stripInlineGuide } from '@/lib/guide-inline';
+import { SponsoredTip } from '@/components/SponsoredTip';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
@@ -308,6 +309,8 @@ export default async function JapaneseGuidePage({ params }: PageProps) {
             </a>
           </section>
         )}
+
+        <SponsoredTip toolId={tool.id} category={tool.category} locale="ja" />
 
         <section className="rounded-xl border-2 border-primary/20 bg-primary/5 p-5 text-center space-y-3">
           <p className="text-sm font-medium">{ja.name}を試してみませんか？</p>

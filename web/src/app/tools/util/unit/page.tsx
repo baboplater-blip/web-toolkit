@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
 
 type Category = 'length' | 'weight' | 'temperature' | 'area' | 'speed' | 'volume';
 
@@ -90,16 +92,36 @@ function format(n: number): string {
   return n.toLocaleString('en-US', { maximumFractionDigits: 6 });
 }
 
+const isCategory = (value: string): value is Category =>
+  Object.prototype.hasOwnProperty.call(CATEGORIES, value);
+
 export default function UnitPage() {
-  const [category, setCategory] = useState<Category>('length');
-  const [fromId, setFromId] = useState('m');
-  const [value, setValue] = useState('1');
+  // 카테고리·단위·값을 URL 쿼리로 관리(공유·복원). 초기 렌더는 결정적 기본값.
+  const [urlState, patchUrlState, hydrated] = useToolUrlState({
+    category: 'length',
+    from: 'm',
+    value: '1',
+  });
+  const category: Category = isCategory(urlState.category) ? urlState.category : 'length';
+  const { from: fromId, value } = urlState;
+  const setValue = (next: string) => patchUrlState({ value: next });
+
   const [copied, setCopied] = useState<string | null>(null);
 
-  // 카테고리 변경 시 from 단위 초기화
+  // 카테고리 변경 시 from 단위를 그 카테고리의 첫 단위로 초기화한다.
+  // 단, 마운트 직후 URL 하이드레이션으로 들어온 from 값은 덮어쓰지 않도록
+  // 첫 실행을 건너뛴다(공유 링크의 단위 복원을 보존).
+  const skipNextCategoryEffect = useRef(true);
   useEffect(() => {
-    setFromId(CATEGORIES[category].units[0].id);
-  }, [category]);
+    if (!hydrated) return;
+    if (skipNextCategoryEffect.current) {
+      skipNextCategoryEffect.current = false;
+      return;
+    }
+    patchUrlState({ from: CATEGORIES[category].units[0].id });
+    // category 변경에만 반응. patchUrlState 는 안정 참조.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, hydrated]);
 
   const cat = CATEGORIES[category];
   const fromUnit = cat.units.find((u) => u.id === fromId) ?? cat.units[0];
@@ -115,13 +137,15 @@ export default function UnitPage() {
   }
 
   function handleReset() {
-    setCategory('length');
-    setValue('1');
+    skipNextCategoryEffect.current = true;
+    patchUrlState({ category: 'length', from: 'm', value: '1' });
   }
 
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="단위 변환기" widthClass="max-w-2xl" onReset={handleReset} />
+      <ToolHeader title="단위 변환기" widthClass="max-w-2xl" onReset={handleReset}>
+        <ShareLinkButton />
+      </ToolHeader>
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           길이·무게·온도·면적·속도·부피 단위를 상호 변환합니다.
@@ -132,7 +156,7 @@ export default function UnitPage() {
           <button
             key={c}
             type="button"
-            onClick={() => setCategory(c)}
+            onClick={() => patchUrlState({ category: c })}
             className={`h-8 shrink-0 rounded-full border px-3 text-xs ${
               category === c
                 ? 'border-primary bg-primary text-primary-foreground'
@@ -154,7 +178,7 @@ export default function UnitPage() {
             className="font-mono" aria-label="입력" />
           <select
             value={fromId}
-            onChange={(e) => setFromId(e.target.value)}
+            onChange={(e) => patchUrlState({ from: e.target.value })}
             className="h-10 rounded-md border bg-background px-3 text-sm"
           >
             {cat.units.map((u) => (

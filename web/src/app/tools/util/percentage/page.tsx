@@ -5,6 +5,8 @@ import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
 
 type Mode =
   | 'of' // X% of N = ?
@@ -37,10 +39,18 @@ function fmt(n: number): string {
   return fixed;
 }
 
+const MODE_IDS = MODES.map((m) => m.id);
+const isMode = (value: string): value is Mode => (MODE_IDS as string[]).includes(value);
+
 export default function PercentagePage() {
-  const [mode, setMode] = useState<Mode>('of');
-  const [a, setA] = useState('');
-  const [b, setB] = useState('');
+  // 입력·모드를 URL 쿼리로 관리(공유·복원). 초기 렌더는 결정적 기본값.
+  const [urlState, patchUrlState] = useToolUrlState({ mode: 'of', a: '', b: '' });
+  // URL 에서 들어온 mode 는 임의 문자열일 수 있으므로 화이트리스트로 검증.
+  const mode: Mode = isMode(urlState.mode) ? urlState.mode : 'of';
+  const { a, b } = urlState;
+  const setA = (value: string) => patchUrlState({ a: value });
+  const setB = (value: string) => patchUrlState({ b: value });
+
   const [copied, setCopied] = useState<string | null>(null);
 
   const result = useMemo(() => {
@@ -112,13 +122,14 @@ export default function PercentagePage() {
   };
 
   const handleReset = () => {
-    setA('');
-    setB('');
+    patchUrlState({ a: '', b: '' });
   };
 
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="퍼센트 계산기" onReset={a || b ? handleReset : undefined} />
+      <ToolHeader title="퍼센트 계산기" onReset={a || b ? handleReset : undefined}>
+        <ShareLinkButton />
+      </ToolHeader>
 
       <main className="p-4 max-w-3xl mx-auto space-y-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">
@@ -127,11 +138,7 @@ export default function PercentagePage() {
               <button
                 key={m.id}
                 type="button"
-                onClick={() => {
-                  setMode(m.id);
-                  setA('');
-                  setB('');
-                }}
+                onClick={() => patchUrlState({ mode: m.id, a: '', b: '' })}
                 className={`h-12 text-xs rounded-md border text-left px-2 ${
                   mode === m.id
                     ? 'bg-primary text-primary-foreground border-primary'

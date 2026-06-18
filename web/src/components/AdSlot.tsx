@@ -56,7 +56,8 @@ export function AdSlot({ size, slotKey, className }: AdSlotProps) {
 
   if (config && !config.enabled) return null;
 
-  const dims = isSidebar ? '160 × 600' : isInline ? '728 × 90' : '728 × 90';
+  // placeholder 안내 라벨은 실제로 예약된 박스 크기(아래 containerCls)와 일치시킨다.
+  const dims = isSidebar ? '160 × 600' : '970 × 90';
   // Lighthouse 의 image-aspect-ratio · image-size-responsive 감사 통과를 위해
   // 표준 슬롯 크기를 명시. 실제 이미지가 다른 비율이어도 object-contain 으로 letterbox.
   const imgWidth = isSidebar ? 160 : 970;

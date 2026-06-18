@@ -4,6 +4,10 @@ import { useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRightLeft, Check, Copy, Type } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
+
+const DEFAULT_TEXT = 'Hello World Example Text — 안녕하세요';
 
 type CaseKind =
   | 'upper'
@@ -91,7 +95,12 @@ const KINDS: { kind: CaseKind; label: string; sample: string }[] = [
 ];
 
 export default function TextCasePage() {
-  const [text, setText] = useState('Hello World Example Text — 안녕하세요');
+  // 원본 텍스트를 URL 쿼리로 관리(공유·복원). 초기 렌더는 결정적 샘플 텍스트.
+  // 훅이 512자를 넘는 값은 URL 에 싣지 않아 대용량 입력이 주소로 새지 않는다.
+  const [urlState, patchUrlState] = useToolUrlState({ text: DEFAULT_TEXT });
+  const text = urlState.text;
+  const setText = (next: string) => patchUrlState({ text: next });
+
   const [copiedKind, setCopiedKind] = useState<CaseKind | null>(null);
 
   const results = useMemo(
@@ -120,14 +129,17 @@ export default function TextCasePage() {
             <ArrowRightLeft className="h-5 w-5" />
             <h1 className="font-semibold text-base">대소문자·케이스 변환</h1>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={() => setText('')}
-          >
-            지우기
-          </Button>
+          <div className="flex items-center gap-1">
+            <ShareLinkButton />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => setText('')}
+            >
+              지우기
+            </Button>
+          </div>
         </div>
       </header>
 

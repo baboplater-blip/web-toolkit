@@ -5,8 +5,9 @@ import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
-
-type Radix = 2 | 8 | 10 | 16;
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
+import { parseInput, type Radix } from '@/lib/tools/base-converter';
 
 const RADIX_OPTIONS: Array<{ value: Radix; label: string }> = [
   { value: 2, label: '2진수' },
@@ -15,67 +16,20 @@ const RADIX_OPTIONS: Array<{ value: Radix; label: string }> = [
   { value: 16, label: '16진수' },
 ];
 
-const RADIX_PATTERN: Record<Radix, RegExp> = {
-  2: /^[01]+$/,
-  8: /^[0-7]+$/,
-  10: /^[0-9]+$/,
-  16: /^[0-9a-f]+$/i,
-};
-
-interface Converted {
-  binary: string;
-  octal: string;
-  decimal: string;
-  hex: string;
-  bitLength: number;
-  negative: boolean;
-}
-
-/**
- * 입력 문자열을 지정한 진법으로 파싱해 BigInt 로 변환한다.
- * 잘못된 형식이거나 빈 값이면 에러 메시지를 반환한다.
- */
-function parseInput(raw: string, radix: Radix): Converted | { error: string } {
-  const trimmed = raw.trim();
-  if (!trimmed) return { error: '' };
-
-  const negative = trimmed.startsWith('-');
-  const digits = negative ? trimmed.slice(1) : trimmed;
-
-  if (!digits) {
-    return { error: '숫자를 입력해 주세요.' };
-  }
-  if (!RADIX_PATTERN[radix].test(digits)) {
-    return {
-      error: `선택한 진법(${radix})에 맞지 않는 문자가 있습니다.`,
-    };
-  }
-
-  let value: bigint;
-  try {
-    // BigInt 는 16진수 0x, 2진수 0b, 8진수 0o 접두사를 인식한다.
-    const prefix = radix === 16 ? '0x' : radix === 8 ? '0o' : radix === 2 ? '0b' : '';
-    value = BigInt(prefix + digits);
-  } catch {
-    return { error: '숫자를 변환할 수 없습니다.' };
-  }
-
-  const magnitude = value; // digits 는 부호 없는 양수
-  const sign = negative ? '-' : '';
-
-  return {
-    binary: sign + magnitude.toString(2),
-    octal: sign + magnitude.toString(8),
-    decimal: sign + magnitude.toString(10),
-    hex: sign + magnitude.toString(16).toUpperCase(),
-    bitLength: magnitude === BigInt(0) ? 1 : magnitude.toString(2).length,
-    negative,
-  };
-}
+const ALLOWED_RADIX: Radix[] = [2, 8, 10, 16];
+const isRadix = (value: number): value is Radix => (ALLOWED_RADIX as number[]).includes(value);
 
 export default function BaseConverterPage() {
-  const [input, setInput] = useState('255');
-  const [radix, setRadix] = useState<Radix>(10);
+  // 입력 값·진법을 URL 쿼리로 관리(공유·복원). 초기 렌더는 결정적 기본값.
+  const [urlState, patchUrlState] = useToolUrlState(
+    { value: '255', radix: 10 },
+    { numericKeys: ['radix'] },
+  );
+  const input = urlState.value;
+  const radix: Radix = isRadix(urlState.radix) ? urlState.radix : 10;
+  const setInput = (next: string) => patchUrlState({ value: next });
+  const setRadix = (next: Radix) => patchUrlState({ radix: next });
+
   const [copied, setCopied] = useState<string | null>(null);
 
   const parsed = useMemo(() => parseInput(input, radix), [input, radix]);
@@ -93,13 +47,14 @@ export default function BaseConverterPage() {
   };
 
   const handleReset = () => {
-    setInput('255');
-    setRadix(10);
+    patchUrlState({ value: '255', radix: 10 });
   };
 
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="진수 변환기" widthClass="max-w-xl" onReset={handleReset} />
+      <ToolHeader title="진수 변환기" widthClass="max-w-xl" onReset={handleReset}>
+        <ShareLinkButton />
+      </ToolHeader>
       <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="text-sm text-muted-foreground">
           2·8·10·16진수를 서로 변환하고 비트 표현을 함께 보여줍니다.

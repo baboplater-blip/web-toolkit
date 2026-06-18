@@ -5,6 +5,9 @@ import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ToolHeader } from '@/components/tools/ToolHeader';
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { SendToTool } from '@/components/tools/SendToTool';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
 
 interface RGB { r: number; g: number; b: number; a: number }
 interface HSL { h: number; s: number; l: number; a: number }
@@ -125,10 +128,16 @@ function toOklch(rgb: RGB): string {
 }
 
 export default function ColorConverterPage() {
-  const [input, setInput] = useState('#3b82f6');
+  // 색상 입력을 URL 쿼리로 관리(공유·복원). 초기 렌더는 기본 색으로 결정적.
+  const [urlState, patchUrlState] = useToolUrlState({ value: '#3b82f6' });
+  const input = urlState.value;
+  const setInput = (next: string) => patchUrlState({ value: next });
+
+  // 기본 입력 '#3b82f6' 에 대응하는 결정적 초기 rgb (SSR/첫 렌더 일치).
   const [rgb, setRgb] = useState<RGB | null>({ r: 59, g: 130, b: 246, a: 1 });
   const [copied, setCopied] = useState<string | null>(null);
 
+  // input 변경(기본값·URL 하이드레이션·사용자 입력) 시 rgb 재파싱.
   useEffect(() => {
     setRgb(parseAny(input));
   }, [input]);
@@ -145,9 +154,14 @@ export default function ColorConverterPage() {
     setInput('#3b82f6');
   }
 
+  // 현재 색을 #RRGGBB 로 정규화해 체이닝 대상에 넘긴다(유효한 색일 때만).
+  const sharedHex = rgb ? toHex({ ...rgb, a: 1 }) : null;
+
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="색상 변환기" widthClass="max-w-2xl" onReset={handleReset} />
+      <ToolHeader title="색상 변환기" widthClass="max-w-2xl" onReset={handleReset}>
+        <ShareLinkButton />
+      </ToolHeader>
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <p className="text-sm text-muted-foreground">
           HEX · RGB · HSL · OKLCH 표기를 상호 변환합니다.
@@ -203,6 +217,23 @@ export default function ColorConverterPage() {
               );
             })}
           </div>
+
+          {sharedHex && (
+            <SendToTool
+              targets={[
+                {
+                  href: '/tools/dev/color-contrast',
+                  label: '색상 대비 검사',
+                  params: { fg: sharedHex },
+                },
+                {
+                  href: '/tools/dev/color-name',
+                  label: '색상 이름 찾기',
+                  params: { value: sharedHex },
+                },
+              ]}
+            />
+          )}
         </>
       )}
 

@@ -5,6 +5,8 @@ import { Palette, Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToolHeader } from '@/components/tools/ToolHeader';
+import { ShareLinkButton } from '@/components/tools/ShareLinkButton';
+import { useToolUrlState } from '@/lib/use-tool-url-state';
 
 interface Rgb {
   r: number;
@@ -119,7 +121,12 @@ function findNearest(rgb: Rgb): Match {
 }
 
 export default function ColorNamePage() {
-  const [input, setInput] = useState('');
+  // 색상 입력을 URL 쿼리로 관리(공유·복원, 다른 도구에서 ?value= 로 전달받음).
+  // 초기 렌더는 빈 값으로 결정적, URL 읽기는 훅 내부 마운트 후 useEffect 에서만.
+  const [urlState, patchUrlState] = useToolUrlState({ value: '' });
+  const input = urlState.value;
+  const setInput = (next: string) => patchUrlState({ value: next });
+
   const [copied, setCopied] = useState(false);
 
   const parsed = useMemo(() => (input.trim() ? parseColor(input) : null), [input]);
@@ -146,7 +153,9 @@ export default function ColorNamePage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <ToolHeader title="색상 이름 찾기" onReset={reset} />
+      <ToolHeader title="색상 이름 찾기" onReset={reset}>
+        <ShareLinkButton />
+      </ToolHeader>
       <main className="mx-auto max-w-xl space-y-5 p-4">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Palette className="h-4 w-4 text-primary" aria-hidden />
