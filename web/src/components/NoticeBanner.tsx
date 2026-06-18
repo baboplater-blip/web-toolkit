@@ -60,7 +60,7 @@ export function NoticeBanner() {
             : 'bg-primary/10 border-primary/30 text-foreground',
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
       <p className="flex-1 leading-relaxed">
         {notice.message}
         {notice.href && (
@@ -72,8 +72,8 @@ export function NoticeBanner() {
           </>
         )}
       </p>
-      <button onClick={handleDismiss} aria-label="공지 닫기" className="rounded p-0.5 hover:bg-foreground/10 shrink-0">
-        <X className="h-3.5 w-3.5" />
+      <button type="button" onClick={handleDismiss} aria-label="공지 닫기" className="rounded p-0.5 hover:bg-foreground/10 shrink-0">
+        <X className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
     </div>
   );

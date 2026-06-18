@@ -20,6 +20,17 @@ import { triggerDownload } from '@/lib/tools/file-utils';
 type Mode = 'generate' | 'read';
 type ErrorLevel = 'L' | 'M' | 'Q' | 'H';
 
+/** 용도별 입력 템플릿 — 클릭 시 올바른 QR 페이로드 형식을 채워준다. */
+const QR_PRESETS: { key: string; label: string; template: string }[] = [
+  { key: 'url', label: '웹사이트', template: 'https://' },
+  { key: 'wifi', label: 'Wi-Fi 접속', template: 'WIFI:T:WPA;S:네트워크이름;P:비밀번호;;' },
+  { key: 'email', label: '이메일', template: 'mailto:name@example.com?subject=제목&body=내용' },
+  { key: 'tel', label: '전화 걸기', template: 'tel:+82-10-1234-5678' },
+  { key: 'sms', label: 'SMS 문자', template: 'smsto:+82-10-1234-5678:메시지' },
+  { key: 'geo', label: '위치 좌표', template: 'geo:37.5665,126.9780' },
+  { key: 'vcard', label: '연락처(vCard)', template: 'BEGIN:VCARD\nVERSION:3.0\nN:홍길동\nTEL:+82-10-1234-5678\nEMAIL:name@example.com\nEND:VCARD' },
+];
+
 export default function QrCodePage() {
   const [mode, setMode] = useState<Mode>('generate');
 
@@ -38,6 +49,7 @@ export default function QrCodePage() {
   const [decodedText, setDecodedText] = useState<string | null>(null);
   const [reading, setReading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedImg, setCopiedImg] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -85,6 +97,24 @@ export default function QrCodePage() {
     const res = await fetch(qrDataUrl);
     const blob = await res.blob();
     triggerDownload(blob, 'qr-code.png');
+  };
+
+  // 생성된 QR 이미지를 클립보드에 복사 (지원 브라우저 한정).
+  const copyQrImage = async () => {
+    if (!qrDataUrl) return;
+    try {
+      const res = await fetch(qrDataUrl);
+      const blob = await res.blob();
+      if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) {
+        setError('이 브라우저는 이미지 복사를 지원하지 않습니다. PNG 다운로드를 사용하세요.');
+        return;
+      }
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      setCopiedImg(true);
+      setTimeout(() => setCopiedImg(false), 2000);
+    } catch {
+      setError('이미지 복사 실패. PNG 다운로드를 사용하세요.');
+    }
   };
 
   const acceptImage = async (f: File) => {
@@ -208,6 +238,22 @@ export default function QrCodePage() {
         {mode === 'generate' && (
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div>
+              <label className="text-xs font-medium mb-1.5 block">용도별 템플릿</label>
+              <div className="flex flex-wrap gap-1.5" role="group" aria-label="QR 용도 프리셋">
+                {QR_PRESETS.map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => setText(p.template)}
+                    className="h-7 rounded-md border border-border bg-background px-2.5 text-[11px] hover:bg-muted"
+                    title={`${p.label} 형식으로 채우기`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
               <label className="text-xs font-medium mb-1.5 block">내용 (URL 또는 텍스트)</label>
               <textarea
                 value={text}
@@ -289,10 +335,25 @@ export default function QrCodePage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={qrDataUrl} alt="QR" className="max-w-full max-h-[50vh]" />
                 </div>
-                <Button onClick={downloadQr} className="w-full">
-                  <Download className="h-4 w-4" />
-                  PNG 다운로드
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button onClick={downloadQr}>
+                    <Download className="h-4 w-4" />
+                    PNG 다운로드
+                  </Button>
+                  <Button variant="outline" onClick={copyQrImage}>
+                    {copiedImg ? (
+                      <>
+                        <Check className="h-4 w-4" />
+                        복사됨
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" />
+                        이미지 복사
+                      </>
+                    )}
+                  </Button>
+                </div>
               </>
             )}
             {generating && (

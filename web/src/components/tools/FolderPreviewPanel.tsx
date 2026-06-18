@@ -126,9 +126,9 @@ function TreeRow({
             aria-label={isExpanded ? '접기' : '펼치기'}
           >
             {isExpanded ? (
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3 w-3" aria-hidden="true" />
             ) : (
-              <ChevronRight className="h-3 w-3" />
+              <ChevronRight className="h-3 w-3" aria-hidden="true" />
             )}
           </button>
         ) : (
@@ -270,7 +270,7 @@ export function FolderPreviewPanel({
                   : 'text-muted-foreground hover:bg-muted',
               )}
             >
-              <Icon className="h-3 w-3" />
+              <Icon className="h-3 w-3" aria-hidden="true" />
               {label}
             </button>
           ))}
@@ -278,7 +278,7 @@ export function FolderPreviewPanel({
       </div>
 
       <div className="relative">
-        <Search className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+        <Search className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
         <Input
           type="search"
           value={query}
@@ -293,7 +293,7 @@ export function FolderPreviewPanel({
             className="absolute right-1.5 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded text-muted-foreground hover:bg-muted"
             aria-label="검색어 지우기"
           >
-            <X className="h-3 w-3" />
+            <X className="h-3 w-3" aria-hidden="true" />
           </button>
         )}
       </div>

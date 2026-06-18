@@ -42,6 +42,13 @@ import {
 
 type FileKind = 'image' | 'pdf' | 'unsupported';
 
+/** 이미지 품질 1클릭 프리셋. */
+const IMG_QUALITY_PRESETS: { label: string; value: number; hint: string }[] = [
+  { label: '고압축', value: 50, hint: '용량 최소 (50%)' },
+  { label: '균형', value: 75, hint: '용량·화질 균형 (75%)' },
+  { label: '고품질', value: 90, hint: '화질 우선 (90%)' },
+];
+
 interface ResultState {
   fileName: string;
   originalSize: number;
@@ -380,6 +387,26 @@ export default function CompressPage() {
                     <label className="text-xs font-medium">품질</label>
                     <span className="text-xs text-muted-foreground">{imgQuality}%</span>
                   </div>
+                  {imgFormat !== 'png' && (
+                    <div className="flex gap-1.5 mb-2" role="group" aria-label="품질 프리셋">
+                      {IMG_QUALITY_PRESETS.map((p) => (
+                        <button
+                          key={p.label}
+                          type="button"
+                          onClick={() => setImgQuality(p.value)}
+                          disabled={processing}
+                          title={p.hint}
+                          className={`flex-1 h-7 text-[11px] rounded-md border transition-colors ${
+                            imgQuality === p.value
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-background hover:bg-muted border-border'
+                          } disabled:opacity-50`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <input
                     type="range"
                     min={20}

@@ -86,6 +86,10 @@ const INTENSIFIERS = new Set<string>([
 const NEGATION_WINDOW = 2; // 감성어 앞 몇 토큰까지 부정어를 탐색하는가.
 const INTENSIFIER_BOOST = 1.5; // 강조어가 있을 때 곱하는 가중치.
 
+// 분석 대상 문자 상한. 한국어 어간 사전 부분일치 검사가 토큰×사전이라 매우 긴 입력은
+// 메인스레드를 막을 수 있어 앞부분만 분석한다.
+const MAX_CHARS = 100_000;
+
 type Polarity = 'positive' | 'negative' | 'neutral';
 
 interface WordToken {
@@ -110,6 +114,8 @@ interface SentimentResult {
   negativeScore: number; // 가중 부정 합
   score: number; // -1 ~ 1
   label: '긍정' | '중립' | '부정';
+  truncated: boolean; // 입력이 MAX_CHARS 초과로 앞부분만 분석했는지
+  sourceChars: number; // 원본 전체 문자 수
 }
 
 /** 한 단어의 기본(부정어 반전 전) 극성을 사전에서 조회한다. */
@@ -222,7 +228,10 @@ function analyzeTokens(text: string): { tokens: WordToken[]; positiveScore: numb
 }
 
 /** 전체 본문 + 문장별 결과를 산출한다. */
-function analyze(text: string): SentimentResult {
+function analyze(fullText: string): SentimentResult {
+  const sourceChars = fullText.length;
+  const truncated = fullText.length > MAX_CHARS;
+  const text = truncated ? fullText.slice(0, MAX_CHARS) : fullText;
   const { tokens, positiveScore, negativeScore } = analyzeTokens(text);
 
   const total = positiveScore + negativeScore;
@@ -249,6 +258,8 @@ function analyze(text: string): SentimentResult {
     negativeScore,
     score,
     label: scoreToLabel(score),
+    truncated,
+    sourceChars,
   };
 }
 
@@ -300,6 +311,12 @@ export default function SentimentPage() {
 
         {result && (
           <>
+            {result.truncated && (
+              <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+                입력이 매우 길어({result.sourceChars.toLocaleString()}자) 앞 {MAX_CHARS.toLocaleString()}자까지만
+                분석했습니다.
+              </div>
+            )}
             <div className="grid gap-3 sm:grid-cols-3">
               <div className={`rounded-xl border p-4 text-center ${LABEL_STYLES[result.label]}`}>
                 <p className="text-xs font-medium uppercase tracking-wider opacity-80">판정</p>

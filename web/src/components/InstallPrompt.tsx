@@ -92,13 +92,13 @@ export function InstallPrompt() {
     >
       <div className="flex items-start gap-3 p-3">
         <div className="shrink-0 rounded-lg bg-primary/10 p-2">
-          <SquareDashedBottom className="h-5 w-5 text-primary" />
+          <SquareDashedBottom className="h-5 w-5 text-primary" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1 text-sm">
           <p className="font-semibold">홈 화면에 추가하세요</p>
           {platform === 'ios' ? (
             <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
-              하단 <Share className="inline h-3 w-3 align-[-2px]" /> 공유 →{' '}
+              하단 <Share className="inline h-3 w-3 align-[-2px]" aria-hidden="true" /> 공유 →{' '}
               <span className="font-medium">홈 화면에 추가</span> 로 앱처럼 쓰면 푸시 알림도 받을 수 있어요.
             </p>
           ) : (
@@ -112,7 +112,7 @@ export function InstallPrompt() {
               onClick={handleInstall}
               className="mt-2 inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               홈 화면에 추가
             </button>
           )}
@@ -123,7 +123,7 @@ export function InstallPrompt() {
           className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-accent"
           aria-label="닫기"
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>

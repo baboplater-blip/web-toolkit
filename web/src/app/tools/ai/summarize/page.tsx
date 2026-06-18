@@ -40,6 +40,10 @@ const STOP_WORDS = new Set<string>([
 // 입력 길이 상한. 매우 긴 본문은 O(n^2) 유사도 그래프가 무거워지므로 안전 상한을 둔다.
 const MAX_SENTENCES = 400;
 
+// 분석 대상 문자 상한. 이를 넘으면 앞부분만 분석해 메인스레드 프리징을 막는다.
+// (문장 상한과 별개로, 한 문장이 비정상적으로 긴 입력의 토큰화 폭주도 함께 방어)
+const MAX_CHARS = 200_000;
+
 interface ScoredSentence {
   text: string;
   index: number;
@@ -54,6 +58,8 @@ interface SummaryResult {
   summaryChars: number;
   sourceSentences: number;
   summarySentences: number;
+  /** 입력이 MAX_CHARS 를 넘어 앞부분만 분석했는지 여부. */
+  truncated: boolean;
 }
 
 /**
@@ -212,8 +218,11 @@ function extractKeywords(weights: Map<string, number>, limit: number): string[] 
  * @param keywordCount 추출할 키워드 개수
  */
 function summarize(text: string, ratio: number, keywordCount: number): SummaryResult {
-  const trimmed = text.trim();
-  const sourceChars = trimmed.length;
+  const fullTrimmed = text.trim();
+  const sourceChars = fullTrimmed.length;
+  // 안전 상한 초과 시 앞부분만 분석한다(메인스레드 프리징 방지).
+  const truncated = fullTrimmed.length > MAX_CHARS;
+  const trimmed = truncated ? fullTrimmed.slice(0, MAX_CHARS) : fullTrimmed;
   const allSentences = splitSentences(trimmed);
 
   // 첫 문장(또는 첫 줄)을 제목 후보로 본다 — 제목 유사도 가중에 사용.
@@ -229,6 +238,7 @@ function summarize(text: string, ratio: number, keywordCount: number): SummaryRe
       summaryChars: trimmed.length,
       sourceSentences: allSentences.length,
       summarySentences: allSentences.length,
+      truncated,
     };
   }
 
@@ -291,6 +301,7 @@ function summarize(text: string, ratio: number, keywordCount: number): SummaryRe
     summaryChars: summary.length,
     sourceSentences: allSentences.length,
     summarySentences: topSentences.length,
+    truncated,
   };
 }
 
@@ -376,6 +387,13 @@ export default function SummarizePage() {
           />
         </div>
 
+        {result?.truncated && (
+          <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+            입력이 매우 길어({result.sourceChars.toLocaleString()}자) 앞 {MAX_CHARS.toLocaleString()}자까지만
+            분석했습니다. 전체를 요약하려면 본문을 나눠서 처리하세요.
+          </div>
+        )}
+
         {result && (
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border bg-card p-3 text-center">
@@ -411,6 +429,13 @@ export default function SummarizePage() {
           </div>
         )}
 
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-medium text-muted-foreground">원문</span>
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {input.length.toLocaleString()}자
+            {input.length > MAX_CHARS && ` (앞 ${MAX_CHARS.toLocaleString()}자만 분석)`}
+          </span>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <textarea
             className="min-h-64 rounded-xl border bg-card p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"

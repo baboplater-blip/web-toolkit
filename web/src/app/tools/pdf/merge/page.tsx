@@ -342,7 +342,7 @@ export default function PdfMergePage() {
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 파일 순서 ({items.length}개)
               </h2>
-              <span className="text-[10px] text-muted-foreground">↑↓ 버튼으로 순서 변경</span>
+              <span className="text-[10px] text-muted-foreground">드래그·↑↓ 버튼·Alt+화살표로 순서 변경</span>
             </div>
 
             <div className="space-y-1.5">
@@ -350,6 +350,9 @@ export default function PdfMergePage() {
                 <div
                   key={it.id}
                   draggable={!processing}
+                  tabIndex={processing ? -1 : 0}
+                  role="listitem"
+                  aria-label={`${idx + 1}번째 — ${it.file.name}. Alt+위/아래 화살표로 순서 변경`}
                   onDragStart={() => setDragIdx(idx)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
@@ -358,7 +361,18 @@ export default function PdfMergePage() {
                     setDragIdx(null);
                   }}
                   onDragEnd={() => setDragIdx(null)}
-                  className={`flex items-center gap-2 rounded-lg border p-2 ${
+                  onKeyDown={(e) => {
+                    if (processing) return;
+                    // Alt+화살표로 키보드 순서 변경 (스크린리더·키보드 사용자 지원)
+                    if (e.altKey && e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      moveItem(it.id, -1);
+                    } else if (e.altKey && e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      moveItem(it.id, 1);
+                    }
+                  }}
+                  className={`flex items-center gap-2 rounded-lg border p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     dragIdx === idx ? 'opacity-50' : ''
                   } ${processing ? '' : 'cursor-grab active:cursor-grabbing'}`}
                 >

@@ -25,7 +25,7 @@ import {
   type ImageFormat,
 } from '@/lib/tools/image-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
-import { formatBytes } from '@/lib/compress/format';
+import { formatBytes, compressionRatio } from '@/lib/compress/format';
 import {
   commonRoot,
   filterFiles,
@@ -61,6 +61,7 @@ export default function ImageConvertPage() {
     fileName: string;
     count: number;
     totalSize: number;
+    inputSize: number;
   } | null>(null);
   const [batchResults, setBatchResults] = useState<BatchOutput[] | null>(null);
 
@@ -192,7 +193,7 @@ export default function ImageConvertPage() {
         setProgressText('변환 중');
         const blob = await convertOne(items[0].file);
         const fileName = `${stripExtension(items[0].file.name)}.${ext}`;
-        setResult({ blob, fileName, count: 1, totalSize: blob.size });
+        setResult({ blob, fileName, count: 1, totalSize: blob.size, inputSize: items[0].file.size });
         return;
       }
 
@@ -222,6 +223,7 @@ export default function ImageConvertPage() {
           fileName: `converted-${ext}.zip`,
           count: items.length,
           totalSize,
+          inputSize: items.reduce((s, it) => s + it.file.size, 0),
         });
       } finally {
         abortRef.current = null;
@@ -421,7 +423,7 @@ export default function ImageConvertPage() {
             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               완료
             </h2>
-            <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="grid grid-cols-3 gap-2 text-center">
               <div>
                 <p className="text-[10px] text-muted-foreground">변환 파일</p>
                 <p className="text-sm font-semibold mt-0.5">{result.count}개</p>
@@ -431,6 +433,21 @@ export default function ImageConvertPage() {
                   {result.count === 1 ? '크기' : '합계'}
                 </p>
                 <p className="text-sm font-semibold mt-0.5">{formatBytes(result.totalSize)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground">용량 변화</p>
+                {(() => {
+                  const r = compressionRatio(result.inputSize, result.totalSize);
+                  return (
+                    <p
+                      className={`text-sm font-semibold mt-0.5 ${
+                        r > 0 ? 'text-green-500' : 'text-yellow-500'
+                      }`}
+                    >
+                      {r > 0 ? `-${r}%` : `+${-r}%`}
+                    </p>
+                  );
+                })()}
               </div>
             </div>
             <Button

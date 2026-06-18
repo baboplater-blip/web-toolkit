@@ -192,7 +192,7 @@ export function BatchResultPanel({
           결과 ({okResults.length}/{results.length})
           {errCount > 0 && (
             <span className="ml-2 inline-flex items-center gap-1 text-destructive">
-              <AlertTriangle className="h-3 w-3" />
+              <AlertTriangle className="h-3 w-3" aria-hidden="true" />
               실패 {errCount}
             </span>
           )}
@@ -208,7 +208,7 @@ export function BatchResultPanel({
             }`}
             aria-pressed={showRename}
           >
-            <Pencil className="h-3 w-3" />
+            <Pencil className="h-3 w-3" aria-hidden="true" />
             이름 규칙{hasRenameRules ? ' (적용 중)' : ''}
           </button>
           <Button variant="ghost" size="sm" className="h-7 text-[10px]" onClick={selectAll}>
@@ -319,9 +319,9 @@ export function BatchResultPanel({
                 className="h-3 w-3 shrink-0"
               />
               {r.error ? (
-                <AlertTriangle className="h-3 w-3 shrink-0" />
+                <AlertTriangle className="h-3 w-3 shrink-0" aria-hidden="true" />
               ) : (
-                <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />
+                <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" aria-hidden="true" />
               )}
               <span
                 className="flex-1 truncate font-mono text-[11px]"
@@ -342,7 +342,7 @@ export function BatchResultPanel({
                   className="h-5 w-5 shrink-0 flex items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
                   aria-label={`${finalPath} 다운로드`}
                 >
-                  <Download className="h-3 w-3" />
+                  <Download className="h-3 w-3" aria-hidden="true" />
                 </button>
               )}
             </li>
@@ -360,12 +360,12 @@ export function BatchResultPanel({
         >
           {zipping ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               ZIP 생성 중 {Math.round(zipProgress)}%
             </>
           ) : (
             <>
-              <Archive className="h-4 w-4" />
+              <Archive className="h-4 w-4" aria-hidden="true" />
               ZIP 다운로드 ({selected.size})
             </>
           )}
@@ -380,12 +380,12 @@ export function BatchResultPanel({
         >
           {saving ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               저장 중...
             </>
           ) : (
             <>
-              <FolderDown className="h-4 w-4" />
+              <FolderDown className="h-4 w-4" aria-hidden="true" />
               폴더에 저장
             </>
           )}
@@ -397,7 +397,7 @@ export function BatchResultPanel({
           disabled={selected.size === 0}
           className="w-full"
         >
-          <Download className="h-4 w-4" />
+          <Download className="h-4 w-4" aria-hidden="true" />
           개별 다운로드
         </Button>
       </div>

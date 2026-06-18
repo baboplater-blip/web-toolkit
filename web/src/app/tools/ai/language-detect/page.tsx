@@ -46,6 +46,10 @@ interface ScriptCounts {
 // 입력이 이보다 짧으면 신뢰도 경고를 띄운다.
 const SHORT_INPUT_THRESHOLD = 12;
 
+// 분석 대상 문자 상한. 언어 판별은 앞부분 표본만으로 충분하므로, 매우 긴 입력은
+// 앞부분만 검사해 메인스레드 프리징을 막는다.
+const MAX_CHARS = 100_000;
+
 /** 텍스트를 순회하며 스크립트별 문자 수를 센다(공백·구두점 제외). */
 function countScripts(text: string): ScriptCounts {
   const counts: ScriptCounts = {
@@ -209,8 +213,11 @@ function detectScriptLanguages(counts: ScriptCounts): LanguageCandidate[] {
 
 /** 전체 감지 파이프라인. 입력이 비면 null. */
 function detectLanguage(text: string): DetectionResult | null {
-  const trimmed = text.trim();
-  if (!trimmed) return null;
+  const fullTrimmed = text.trim();
+  if (!fullTrimmed) return null;
+
+  // 언어 판별은 앞부분 표본이면 충분하므로 상한을 넘는 입력은 잘라 분석한다.
+  const trimmed = fullTrimmed.length > MAX_CHARS ? fullTrimmed.slice(0, MAX_CHARS) : fullTrimmed;
 
   const counts = countScripts(trimmed);
   const charCount = counts.total;

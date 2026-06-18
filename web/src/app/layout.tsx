@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { AdSlot } from '@/components/AdSlot';
 import { BottomNav } from '@/components/BottomNav';
-import { CommandPalette } from '@/components/CommandPalette';
+import { CommandPaletteLauncher } from '@/components/CommandPaletteLauncher';
 import { CategoryDrawer } from '@/components/CategoryDrawer';
 import { ShortcutsOverlay } from '@/components/ShortcutsOverlay';
 import { OnboardingHint } from '@/components/OnboardingHint';
@@ -304,7 +304,7 @@ export default function RootLayout({
           </div>
         </div>
         <BottomNav />
-        <CommandPalette />
+        <CommandPaletteLauncher />
         <CategoryDrawer />
         <ShortcutsOverlay />
         <OnboardingHint />

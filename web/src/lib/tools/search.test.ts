@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { Wand2 } from 'lucide-react';
-import { toChoseong, isChoseongQuery, scoreTool, searchTools } from './search';
+import {
+  toChoseong,
+  isChoseongQuery,
+  scoreTool,
+  searchTools,
+  expandTokens,
+  highlightMatch,
+} from './search';
 import { filterTools, TOOLS, type ToolMeta } from './registry';
 
 /* 합성 도구 — 랭킹 규칙을 격리 검증 */
@@ -85,6 +92,54 @@ describe('searchTools 정렬', () => {
   });
   it('빈 쿼리는 전체 통과', () => {
     expect(searchTools('   ', pool)).toHaveLength(pool.length);
+  });
+});
+
+describe('동의어 확장', () => {
+  it('동의어가 OR 그룹으로 확장된다', () => {
+    const groups = expandTokens(['사진', '압축']);
+    expect(groups[0]).toContain('이미지');
+    expect(groups[1]).toContain('compress');
+  });
+  it('동의어 없는 토큰은 단일 그룹', () => {
+    expect(expandTokens(['xyz'])).toEqual([['xyz']]);
+  });
+  it('동의어로 매칭된다(원어 미포함이어도)', () => {
+    const t = tool({ title: '이미지 압축', keywords: ['compress'] });
+    // "사진"은 제목에 없지만 동의어 "이미지"로 매칭돼야 한다.
+    expect(scoreTool(t, ['사진'])).toBeGreaterThan(0);
+  });
+});
+
+describe('신호 가중(searchTools signals)', () => {
+  const pool = [
+    tool({ id: 'a', title: 'merge 도구', keywords: [] }),
+    tool({ id: 'b', title: 'merge 도구', keywords: [] }),
+  ];
+  it('인기도 높은 도구가 동률에서 위로 온다', () => {
+    const r = searchTools('merge', pool, { usage: { b: 50 } });
+    expect(r[0].id).toBe('b');
+  });
+  it('최근 사용 도구가 가산된다', () => {
+    const r = searchTools('merge', pool, { recentIds: ['b'] });
+    expect(r[0].id).toBe('b');
+  });
+});
+
+describe('highlightMatch', () => {
+  it('매칭 구간만 표시한다', () => {
+    const segs = highlightMatch('PDF 합치기', 'pdf');
+    const matched = segs.filter((s) => s.match).map((s) => s.text);
+    expect(matched).toContain('PDF');
+    // 합쳐서 원문 복원
+    expect(segs.map((s) => s.text).join('')).toBe('PDF 합치기');
+  });
+  it('초성 쿼리는 강조하지 않는다(매칭 0)', () => {
+    const segs = highlightMatch('얼굴 모자이크', 'ㅇㄱ');
+    expect(segs.some((s) => s.match)).toBe(false);
+  });
+  it('빈 쿼리는 단일 비매칭 세그먼트', () => {
+    expect(highlightMatch('text', '  ')).toEqual([{ text: 'text', match: false }]);
   });
 });
 

@@ -16,6 +16,8 @@ import {
   ArrowRightLeft,
   GitCompare,
   Wrench,
+  LayoutGrid,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -24,15 +26,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { useFavorites, useRecent } from '@/lib/hooks/useUsage';
+import { useFavorites, useRecent, useUsageStats } from '@/lib/hooks/useUsage';
 import {
   CATEGORY_LABELS,
-  filterTools,
   TOOLS,
   type ToolCategory,
   type ToolMeta,
 } from '@/lib/tools/registry';
-import { isChoseongQuery, toChoseong } from '@/lib/tools/search';
+import {
+  highlightMatch,
+  isChoseongQuery,
+  searchTools,
+  toChoseong,
+  type SearchSignals,
+} from '@/lib/tools/search';
 import { CONVERT_INDEX, COMPARE_INDEX, USECASE_INDEX } from '@/lib/search-index.generated';
 import { cn } from '@/lib/utils';
 
@@ -61,6 +68,8 @@ type PaletteItem = {
   href: string;
   icon: LucideIcon;
   badge?: string;
+  /** 도구 항목이면 카테고리 라벨(Tab 으로 카테고리 점프 안내·이동). */
+  category?: ToolCategory;
 };
 
 type Section = {
@@ -70,6 +79,28 @@ type Section = {
   items: PaletteItem[];
 };
 
+/** 쿼리 매칭 구간을 강조해 렌더 (정규식 미사용 — 입력 안전). */
+function Highlighted({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  const segs = highlightMatch(text, query);
+  return (
+    <>
+      {segs.map((s, i) =>
+        s.match ? (
+          <mark
+            key={i}
+            className="rounded-[2px] bg-primary/20 text-inherit"
+          >
+            {s.text}
+          </mark>
+        ) : (
+          <span key={i}>{s.text}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 function toolToItem(t: ToolMeta): PaletteItem {
   return {
     key: `tool-${t.id}`,
@@ -78,6 +109,7 @@ function toolToItem(t: ToolMeta): PaletteItem {
     href: t.href,
     icon: t.icon,
     badge: CATEGORY_LABELS[t.category],
+    category: t.category,
   };
 }
 
@@ -156,8 +188,10 @@ function searchExtras(entries: ExtraEntry[], tokens: string[]): PaletteItem[] {
     .map(({ hay: _hay, cho: _cho, ...item }) => item);
 }
 
-export function CommandPalette() {
-  const [open, setOpen] = useState(false);
+export function CommandPalette({ defaultOpen = false }: { defaultOpen?: boolean } = {}) {
+  // defaultOpen: 지연 로드 런처(CommandPaletteLauncher)가 첫 트리거 직후 마운트하며
+  // 즉시 열기 위해 사용. 일반 마운트는 false(닫힘)로 시작.
+  const [open, setOpen] = useState(defaultOpen);
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -166,6 +200,13 @@ export function CommandPalette() {
 
   const { favorites } = useFavorites();
   const recent = useRecent();
+  const usage = useUsageStats();
+
+  // 검색 랭킹용 신호 — 인기도(누적 사용)·최근 사용 순서.
+  const signals = useMemo<SearchSignals>(
+    () => ({ usage, recentIds: recent.map((r) => r.id) }),
+    [usage, recent],
+  );
 
   /* 글로벌 단축키 + 커스텀 이벤트 */
   useEffect(() => {
@@ -274,10 +315,13 @@ export function CommandPalette() {
     const tokens = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
     const out: Section[] = [];
 
-    const toolResults = filterTools(trimmed, 'all')
-      .filter((t) => t.status === 'ready')
-      .slice(0, MAX_RESULTS)
-      .map(toolToItem);
+    // 인기도·최근 사용을 가산한 랭킹(searchTools + signals).
+    const toolMatches = searchTools(
+      trimmed,
+      TOOLS.filter((t) => t.status === 'ready'),
+      signals,
+    ).slice(0, MAX_RESULTS);
+    const toolResults = toolMatches.map(toolToItem);
     if (toolResults.length > 0) {
       out.push({ key: 'tools', label: `도구 ${toolResults.length}개`, items: toolResults });
     }
@@ -309,8 +353,35 @@ export function CommandPalette() {
         items: useResults,
       });
     }
+
+    // 빈 결과: 추천(인기/최근)으로 막다른 길을 피한다.
+    if (out.length === 0) {
+      const toolById = new Map(TOOLS.map((t) => [t.id, t]));
+      const picks: ToolMeta[] = [];
+      const seen = new Set<string>();
+      const push = (t: ToolMeta | undefined) => {
+        if (t && t.status === 'ready' && !seen.has(t.id)) {
+          seen.add(t.id);
+          picks.push(t);
+        }
+      };
+      // 최근 → 인기(usage) → phase 순으로 6개 채움.
+      for (const r of recent) push(toolById.get(r.id));
+      [...TOOLS]
+        .filter((t) => t.status === 'ready')
+        .sort((a, b) => (usage[b.id] ?? 0) - (usage[a.id] ?? 0) || a.phase - b.phase)
+        .forEach(push);
+      if (picks.length > 0) {
+        out.push({
+          key: 'suggested',
+          label: '이런 도구는 어때요?',
+          icon: <Sparkles className="h-3.5 w-3.5" />,
+          items: picks.slice(0, 6).map(toolToItem),
+        });
+      }
+    }
     return out;
-  }, [query, favorites, recent]);
+  }, [query, favorites, recent, usage, signals]);
 
   /* 평탄화된 인덱스 (키보드 네비용) */
   const flat = useMemo(() => sections.flatMap((s) => s.items), [sections]);
@@ -328,13 +399,23 @@ export function CommandPalette() {
     el?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex, open]);
 
-  const navigateTo = useCallback((item: PaletteItem) => {
+  const navigateTo = useCallback((href: string) => {
     setOpen(false);
-    window.location.assign(item.href);
+    window.location.assign(href);
   }, []);
 
   const handleKeyDown = useCallback(
     (e: ReactKeyboardEvent<HTMLInputElement>) => {
+      // Tab: 활성 도구의 카테고리 허브로 점프(빠른 액션). 결과가 없을 때는
+      //      기본 포커스 이동을 막지 않는다.
+      if (e.key === 'Tab' && !e.shiftKey) {
+        const t = flat[activeIndex];
+        if (t?.category) {
+          e.preventDefault();
+          navigateTo(`/tools?category=${t.category}`);
+          return;
+        }
+      }
       if (flat.length === 0) return;
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -345,7 +426,7 @@ export function CommandPalette() {
       } else if (e.key === 'Enter') {
         e.preventDefault();
         const t = flat[activeIndex];
-        if (t) navigateTo(t);
+        if (t) navigateTo(t.href);
       } else if (e.key === 'Home') {
         e.preventDefault();
         setActiveIndex(0);
@@ -428,7 +509,7 @@ export function CommandPalette() {
                     data-cmdk-index={idx}
                     type="button"
                     onMouseEnter={() => setActiveIndex(idx)}
-                    onClick={() => navigateTo(item)}
+                    onClick={() => navigateTo(item.href)}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors',
                       active ? 'bg-accent text-accent-foreground' : 'hover:bg-muted',
@@ -436,16 +517,27 @@ export function CommandPalette() {
                   >
                     <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate">{item.title}</div>
+                      <div className="truncate">
+                        <Highlighted text={item.title} query={query} />
+                      </div>
                       {item.subtitle && (
                         <div className="truncate text-xs text-muted-foreground">
-                          {item.subtitle}
+                          <Highlighted text={item.subtitle} query={query} />
                         </div>
                       )}
                     </div>
                     {item.badge && (
                       <span className="hidden shrink-0 rounded border bg-background/50 px-1.5 py-0.5 text-[10px] text-muted-foreground md:inline">
                         {item.badge}
+                      </span>
+                    )}
+                    {active && item.category && (
+                      <span
+                        className="hidden shrink-0 items-center gap-0.5 text-[10px] text-muted-foreground sm:inline-flex"
+                        title="Tab: 이 카테고리 전체 보기"
+                      >
+                        <kbd className="rounded border bg-background px-1">Tab</kbd>
+                        <LayoutGrid className="h-3 w-3" aria-hidden />
                       </span>
                     )}
                     {active && (
@@ -468,6 +560,10 @@ export function CommandPalette() {
             <span className="flex items-center gap-1">
               <kbd className="rounded border bg-background px-1">↵</kbd>
               선택
+            </span>
+            <span className="hidden items-center gap-1 sm:flex">
+              <kbd className="rounded border bg-background px-1">Tab</kbd>
+              카테고리
             </span>
           </div>
           <span className="hidden md:inline">

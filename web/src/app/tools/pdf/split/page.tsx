@@ -94,6 +94,9 @@ export default function PdfSplitPage() {
     return parts;
   };
 
+  // 실행 전 결과 미리보기 — 생성될 파트 수와 각 파트의 페이지 범위.
+  const previewParts = pageCount > 0 ? buildParts(pageCount) : [];
+
   const runSplit = async () => {
     if (!file) return;
     setProcessing(true);
@@ -313,9 +316,32 @@ export default function PdfSplitPage() {
               </p>
             )}
 
+            {previewParts.length > 0 && (
+              <div className="rounded-lg border bg-muted/40 p-2.5">
+                <p className="text-[11px] font-medium text-muted-foreground mb-1">
+                  미리보기 · {previewParts.length}개 파일 생성
+                </p>
+                <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                  {previewParts.slice(0, 60).map((p, i) => (
+                    <span
+                      key={i}
+                      className="rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
+                    >
+                      {p[0] === p[p.length - 1] ? `p${p[0]}` : `p${p[0]}–${p[p.length - 1]}`}
+                    </span>
+                  ))}
+                  {previewParts.length > 60 && (
+                    <span className="px-1.5 py-0.5 text-[10px] italic text-muted-foreground">
+                      … 외 {previewParts.length - 60}개
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
             <Separator />
 
-            <Button onClick={runSplit} disabled={processing} className="w-full">
+            <Button onClick={runSplit} disabled={processing || previewParts.length === 0} className="w-full">
               {processing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />

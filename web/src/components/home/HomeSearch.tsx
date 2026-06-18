@@ -14,7 +14,9 @@ import {
   ArrowLeftRight,
   Lightbulb,
 } from 'lucide-react';
-import { filterTools, CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
+import { TOOLS, CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
+import { searchTools, highlightMatch, type SearchSignals } from '@/lib/tools/search';
+import { useRecent, useUsageStats } from '@/lib/hooks/useUsage';
 import {
   CONVERT_INDEX,
   USECASE_INDEX,
@@ -35,6 +37,24 @@ type Suggestion =
 /** 공백으로 나눈 토큰이 텍스트에 모두 포함되는지(소문자 부분일치). */
 function matchesAllTokens(haystack: string, tokens: string[]): boolean {
   return tokens.every((tok) => haystack.includes(tok));
+}
+
+/** 쿼리 매칭 구간 강조 (정규식 미사용 — 입력 안전). */
+function Highlighted({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  return (
+    <>
+      {highlightMatch(text, query).map((s, i) =>
+        s.match ? (
+          <mark key={i} className="rounded-[2px] bg-primary/20 text-inherit">
+            {s.text}
+          </mark>
+        ) : (
+          <span key={i}>{s.text}</span>
+        ),
+      )}
+    </>
+  );
 }
 
 /** 쿼리에 매칭되는 변환 후보(소수)를 찾는다. */
@@ -85,13 +105,22 @@ export function HomeSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
+  const usage = useUsageStats();
+  const recent = useRecent();
+  const signals = useMemo<SearchSignals>(
+    () => ({ usage, recentIds: recent.map((r) => r.id) }),
+    [usage, recent],
+  );
+
   const suggestions = useMemo<Suggestion[]>(() => {
     const q = query.trim();
     if (q.length === 0) return [];
 
-    const tools = filterTools(q, 'all')
-      .filter((t) => t.status === 'ready')
-      .slice(0, MAX_TOOL_SUGGESTIONS);
+    const tools = searchTools(
+      q,
+      TOOLS.filter((t) => t.status === 'ready'),
+      signals,
+    ).slice(0, MAX_TOOL_SUGGESTIONS);
 
     // 도구로 이미 도달 가능한 변환/활용법 중복을 줄이기 위해, 도구 매칭이
     // 있더라도 변환·활용법은 소수만 보조로 제안한다(도구 우선).
@@ -115,7 +144,7 @@ export function HomeSearch() {
         }),
       ),
     ];
-  }, [query]);
+  }, [query, signals]);
 
   const showPanel = open && query.trim().length > 0;
 
@@ -242,7 +271,9 @@ export function HomeSearch() {
                             <s.tool.icon className="h-4 w-4" aria-hidden="true" />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate font-medium">{s.tool.title}</span>
+                            <span className="block truncate font-medium">
+                              <Highlighted text={s.tool.title} query={query} />
+                            </span>
                             <span className="block truncate text-[11px] text-muted-foreground">
                               {s.tool.description}
                             </span>
@@ -257,7 +288,9 @@ export function HomeSearch() {
                             <ArrowLeftRight className="h-4 w-4" aria-hidden="true" />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate font-medium">{s.entry.label}</span>
+                            <span className="block truncate font-medium">
+                              <Highlighted text={s.entry.label} query={query} />
+                            </span>
                             <span className="block truncate text-[11px] text-muted-foreground">
                               파일 변환 가이드
                             </span>
@@ -272,7 +305,9 @@ export function HomeSearch() {
                             <Lightbulb className="h-4 w-4" aria-hidden="true" />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate font-medium">{s.entry.h1}</span>
+                            <span className="block truncate font-medium">
+                              <Highlighted text={s.entry.h1} query={query} />
+                            </span>
                             <span className="block truncate text-[11px] text-muted-foreground">
                               {s.entry.description}
                             </span>
