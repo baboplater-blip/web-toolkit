@@ -1416,6 +1416,870 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'color-converter': {
+    metaTitle: 'Color Converter — HEX, RGB, HSL & OKLCH Online',
+    metaDescription:
+      'Convert a color between HEX, RGB, HSL and OKLCH at once. Paste #3b82f6 and get rgb(59, 130, 246), hsl(217, 91%, 60%) and oklch(). Alpha supported. Free, no signup.',
+    intro:
+      'This color converter takes one color in any common notation and shows it as HEX, RGB, HSL and OKLCH simultaneously. Type #3b82f6 (or rgb(59, 130, 246), or use the color picker) and it instantly returns rgb(59, 130, 246), hsl(217, 91%, 60%) and the OKLCH equivalent — alpha like #3b82f680 is preserved as a 0.50 channel.',
+    features: [
+      'Four formats at once: enter any one of HEX, RGB, HSL or OKLCH and read all four.',
+      'Accepts #rgb, #rrggbb, #rrggbbaa, rgb()/rgba() and hsl()/hsla() input, plus a live color picker.',
+      'Alpha (transparency) is carried through — #3b82f680 shows as rgba(..., 0.50) and a checkered swatch.',
+      'OKLCH output uses the Björn Ottosson sRGB→OKLab transform for perceptually even colors.',
+      'Copy any single row (just the HEX, or just the HSL) with one click.',
+    ],
+    steps: [
+      {
+        title: 'Enter or pick a color',
+        body: 'Type a value in any notation — for example #3b82f6 — or click the swatch picker. The tool auto-detects the format, so rgb(59, 130, 246) and hsl(217, 91%, 60%) work too.',
+      },
+      {
+        title: 'Read all four conversions',
+        body: 'The HEX, RGB, HSL and OKLCH rows update live. For #3b82f6 you get rgb(59, 130, 246), hsl(217, 91%, 60%) and oklch(62.3% 0.214 259.8) — a ready-to-paste set for any stylesheet.',
+      },
+      {
+        title: 'Copy the format you need',
+        body: 'Tap "Copy" on a single row to grab just that string, e.g. the hsl(217, 91%, 60%) value for a CSS variable. Add an alpha channel (e.g. #3b82f680) to see the rgba()/hsla() forms.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is OKLCH and why use it?',
+        a: 'OKLCH is a modern CSS color space (Lightness, Chroma, Hue) built on OKLab. It is perceptually uniform, so changing Lightness or Hue looks even to the eye — unlike HSL, where the same lightness value can look very different across hues. It is great for generating accessible palettes.',
+      },
+      {
+        q: 'Does it support transparency (alpha)?',
+        a: 'Yes. Use an 8-digit hex like #3b82f680, or rgba()/hsla() with a fourth value. The converter keeps the alpha and shows it as a 0–1 channel (0.50 for 80 hex) in every output, plus a checkerboard swatch.',
+      },
+      {
+        q: 'How accurate is the OKLCH conversion?',
+        a: 'It uses the standard sRGB→linear→OKLab→OKLCH math, accurate to design tolerances. Because OKLCH can describe colors outside the sRGB gamut, round-tripping an out-of-gamut OKLCH value back to HEX may clip slightly.',
+      },
+    ],
+  },
+
+  'timestamp-converter': {
+    metaTitle: 'Unix Timestamp Converter — Epoch ↔ ISO / Local Time',
+    metaDescription:
+      'Convert a Unix timestamp to a human date and back. 1700000000 becomes 2023-11-14T22:13:20Z; pick a date to get the epoch seconds and milliseconds. Free, no signup.',
+    intro:
+      'This Unix timestamp converter turns epoch numbers into readable dates and back. Enter 1700000000 (seconds) and it shows 2023-11-14T22:13:20.000Z plus your local time; switch to a date picker and it returns the epoch in both seconds and milliseconds. A live clock shows the current timestamp too.',
+    features: [
+      'Timestamp → date and date → timestamp, in one screen.',
+      'Seconds / milliseconds toggle — read 1700000000 as 2023-11-14, or 1700000000000 as the same instant.',
+      'Live "now" panel showing the current Unix seconds, milliseconds and ISO 8601 UTC string.',
+      'Outputs both UTC (ISO 8601) and your local timezone so you can spot offset issues.',
+      'Copy any value (epoch or ISO) with one tap.',
+    ],
+    steps: [
+      {
+        title: 'Convert a timestamp to a date',
+        body: 'Paste the number — e.g. 1700000000 — and choose the unit (seconds or ms). You get 2023-11-14T22:13:20.000Z in UTC plus the same moment in your local time.',
+      },
+      {
+        title: 'Convert a date to a timestamp',
+        body: 'Use the date-time picker in the "date → timestamp" section. Pick 2023-11-14 22:13:20 and it returns 1700000000 seconds and 1700000000000 milliseconds, ready to copy.',
+      },
+      {
+        title: 'Grab the current time',
+        body: 'The "now" panel ticks every second with the live epoch. Copy the current seconds value (e.g. for a created_at field) directly from there.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is a Unix timestamp in seconds or milliseconds?',
+        a: 'Classic Unix time is seconds since 1970-01-01 UTC, so 1700000000 is about 10 digits. JavaScript Date.now() returns milliseconds (13 digits), e.g. 1700000000000. Use the seconds/ms toggle to match — feeding ms as seconds would land you in the year 55,000+.',
+      },
+      {
+        q: 'What timezone is the result in?',
+        a: 'The ISO 8601 output ends in Z, meaning UTC. The tool also shows the same instant in your browser’s local timezone so you can compare. The underlying epoch number itself is timezone-independent.',
+      },
+      {
+        q: 'Why does 1700000000 show as 2023, not 1970?',
+        a: 'Epoch counts seconds since 1970. 1,700,000,000 seconds is roughly 53.9 years, which lands in November 2023. Small numbers like 86400 map to 1970-01-02 (one day after the epoch).',
+      },
+    ],
+  },
+
+  'cron-explainer': {
+    metaTitle: 'Cron Expression Explainer — Decode & Next Run Times',
+    metaDescription:
+      'Paste a 5-field cron like 0 9 * * 1-5 and get a plain-English meaning plus the next 7 run times. Supports */5, ranges, JAN-DEC and SUN-SAT aliases. Free, no signup.',
+    intro:
+      'This cron explainer decodes a standard 5-field cron expression and shows what it actually does, plus the next 7 times it would fire. Enter 0 9 * * 1-5 and it reads "at 09:00 on weekdays"; enter */5 * * * * and it explains "every 5 minutes" with the upcoming run schedule in your local time.',
+    features: [
+      'Plain-language summary of any 5-field cron (minute hour day month weekday).',
+      'Computes the next 7 run times in your local timezone so you can sanity-check.',
+      'Supports steps (*/5), ranges (1-5), lists (1,3,5) and JAN-DEC / SUN-SAT name aliases.',
+      'Per-field breakdown showing exactly which values each field matches.',
+      'One-click presets like "every 5 minutes" (*/5 * * * *) and "weekdays 9am" (0 9 * * 1-5).',
+    ],
+    steps: [
+      {
+        title: 'Enter your cron expression',
+        body: 'Type the five space-separated fields, e.g. 0 9 * * 1-5 (minute hour day-of-month month day-of-week). Invalid input like a 6th field or */0 is flagged with a clear error.',
+      },
+      {
+        title: 'Read the explanation',
+        body: 'The summary translates it to words — 0 9 * * 1-5 becomes "weekdays at 09:00" — and the field grid shows how many values each part matches (e.g. weekday = 5 values: Mon–Fri).',
+      },
+      {
+        title: 'Check the next run times',
+        body: 'The "next runs" list shows the upcoming 7 fire times in your local time. For */5 * * * * you would see times five minutes apart, confirming the schedule before you deploy it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does */5 mean in cron?',
+        a: 'A step value. */5 in the minute field means "every 5 minutes" (0, 5, 10, … 55). Likewise */2 in the hour field is every 2 hours. The step starts from the lowest value of the field.',
+      },
+      {
+        q: 'Is Sunday 0 or 7 in the weekday field?',
+        a: 'Both. The day-of-week field is 0–6 where 0 = Sunday, but standard Unix cron also accepts 7 as Sunday. This tool folds 7 back to 0, so 0 0 * * 0 and 0 0 * * 7 both mean Sunday midnight.',
+      },
+      {
+        q: 'How do the day-of-month and day-of-week fields combine?',
+        a: 'Per standard cron, when BOTH the day-of-month and day-of-week fields are restricted (not *), they are OR-ed — the job runs if either matches. If one is *, they are effectively AND-ed. This tool follows that rule when computing the next runs.',
+      },
+      {
+        q: 'Does it support seconds or @yearly shortcuts?',
+        a: 'No. It handles the classic 5-field format (minute hour day month weekday). It does not parse 6-field (with-seconds) crontabs or named macros like @daily / @reboot.',
+      },
+    ],
+  },
+
+  'pdf-to-jpg': {
+    metaTitle: 'PDF to JPG — Convert PDF Pages to Images Online',
+    metaDescription:
+      'Turn each PDF page into a JPG or PNG image. Render at up to 4x for crisp output, pick pages like 1, 3, 5-7, and download a single image or a ZIP. Free, no signup.',
+    intro:
+      'This PDF-to-JPG tool renders each page of a PDF as a separate image. Convert all pages or just a range like 1, 3, 5-7; choose JPG or PNG, set the render scale up to 4x for sharpness, and get one image back or a ZIP when there are several. Everything renders in your browser via PDF.js.',
+    features: [
+      'Renders every PDF page to a real raster image (JPG or PNG), not just a screenshot.',
+      'Page selection: convert all pages or a custom range such as 1, 3, 5-7.',
+      'Render scale from 1x to 4x — higher means crisper images and larger files.',
+      'Adjustable JPEG quality; multiple pages are bundled into a single ZIP download.',
+      'Runs fully in-browser (PDF.js) — your PDF is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload your PDF',
+        body: 'Drop in a PDF (up to 100MB). The tool reads the page count so you know the valid range — for a 20-page file you can pick anything from 1 to 20.',
+      },
+      {
+        title: 'Pick format, scale and pages',
+        body: 'Choose JPG (with a quality slider) or PNG, set the render scale — 2x is a good default, 4x for print sharpness — and either keep "all pages" or type a range like 5-7.',
+      },
+      {
+        title: 'Convert and download',
+        body: 'Click convert. A single page downloads as one .jpg; multiple pages come back as a ZIP (e.g. mydoc-images.zip) with each page named mydoc-p01.jpg, p02, and so on.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What resolution do I get?',
+        a: 'It depends on the render scale. A page is rendered at scale × its native size, so a standard A4 page at 2x is roughly 1240×1754 px, and 4x doubles that again. Pick higher scale for printing, lower for web.',
+      },
+      {
+        q: 'JPG or PNG — which should I choose?',
+        a: 'JPG is smaller and ideal for pages with photos or scans (use ~85% quality). PNG is lossless and better for pages of crisp text, line art or screenshots where you want no compression artifacts.',
+      },
+      {
+        q: 'Can I convert just specific pages?',
+        a: 'Yes. Switch to "specify pages" and enter a list/range like 1, 3, 5-7. Only those pages are rendered, which is faster than converting a whole large document.',
+      },
+    ],
+  },
+
+  'pdf-from-jpg': {
+    metaTitle: 'JPG to PDF — Combine Images into One PDF Online',
+    metaDescription:
+      'Merge multiple JPG or PNG images into a single PDF. Reorder pages, choose A4/Letter/Legal or fit-to-image, set margins, and download. Free, in-browser, no signup.',
+    intro:
+      'This JPG-to-PDF tool combines several images into one PDF, one image per page. Drop in your JPGs or PNGs, drag them into the right order, pick a page size (A4, Letter, Legal, or fit-to-image) with optional margins, and download a single .pdf. It runs entirely in your browser with pdf-lib.',
+    features: [
+      'Combine many JPG/PNG images into one multi-page PDF.',
+      'Reorder images before export so the pages come out in the order you want.',
+      'Page-size choices: A4, Letter, Legal, or "fit to image" that sizes each page to its picture.',
+      'Portrait/landscape orientation and four margin presets (none → large).',
+      'Processed locally with pdf-lib — images are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Add your images',
+        body: 'Drop in multiple JPG or PNG files at once. Each becomes one page. A thumbnail grid shows them numbered 1, 2, 3 in their current order.',
+      },
+      {
+        title: 'Order and configure',
+        body: 'Use the up/down arrows to reorder, remove any you do not want, then pick a page size — A4 portrait with small margins is a common choice, or "fit to image" to avoid borders entirely.',
+      },
+      {
+        title: 'Build the PDF',
+        body: 'Click "convert to PDF". A 3-image set becomes a 3-page document; download it as images.pdf (or the single file’s name if you added just one).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are the images compressed or downscaled?',
+        a: 'No. JPGs are embedded as-is and PNGs are embedded losslessly, so quality is preserved. The image is scaled to fit the page within the margins but the embedded data is not re-compressed.',
+      },
+      {
+        q: 'Can I control the page order?',
+        a: 'Yes. The thumbnail grid is numbered and each tile has up/down controls. Arrange them before converting and the PDF pages follow that exact order.',
+      },
+      {
+        q: 'What if my images are different sizes?',
+        a: 'With A4/Letter/Legal, every image is centered and scaled to fit a uniform page. Choose "fit to image" instead if you want each page to match its own picture’s dimensions exactly.',
+      },
+    ],
+  },
+
+  'pdf-to-word': {
+    metaTitle: 'PDF to Word — Extract PDF Text to an Editable .doc',
+    metaDescription:
+      'Extract the text from a PDF into a Word-compatible .doc you can edit in Word, Google Docs or LibreOffice. Text-only — layout and images are not kept. Free, no signup.',
+    intro:
+      'This PDF-to-Word tool pulls the selectable text out of a PDF and saves it as a Word-readable .doc file. It is built for text-heavy documents: paste-ready paragraphs and headings open straight in Word, Google Docs, Hancom or LibreOffice. It does not reproduce the original page layout, columns or images.',
+    features: [
+      'Extracts the PDF’s real text into an editable Word document (.doc).',
+      'Opens in Microsoft Word, Google Docs, Hancom Office and LibreOffice.',
+      'Preserves heading structure and paragraphs so the text stays readable.',
+      'Warns you when a PDF has no extractable text (e.g. a scan) instead of producing an empty file.',
+      'Runs entirely in your browser (PDF.js) — the PDF is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload the PDF',
+        body: 'Drop in a text-based PDF (up to 100MB) — for example a report or contract exported from Word or a web page.',
+      },
+      {
+        title: 'Convert to Word',
+        body: 'Click "convert to Word". The tool extracts the text, converts it to a Word-compatible HTML .doc, and shows a download for report.doc (matching your file name).',
+      },
+      {
+        title: 'Open and edit',
+        body: 'Open the .doc in Word or Google Docs. The text is fully editable. If you uploaded a scanned image PDF, run an OCR tool first — there is no text to extract otherwise.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it preserve the original layout, fonts and images?',
+        a: 'No — this is a text-extraction tool. It produces a clean, editable .doc with paragraphs and headings, but multi-column layouts, exact positioning, embedded images and fancy formatting are NOT reproduced. Use it when you need the words, not a pixel-perfect copy.',
+      },
+      {
+        q: 'Is the output a real .docx file?',
+        a: 'It is an HTML-based Word document saved with a .doc extension, which Word, Google Docs, Hancom and LibreOffice all open and let you re-save as .docx. It is not the binary Office Open XML .docx format.',
+      },
+      {
+        q: 'Why is my converted file empty?',
+        a: 'The PDF probably has no selectable text — it is a scan or an image-only export. The tool detects this and tells you to run OCR first to turn the page images into text, then convert.',
+      },
+    ],
+  },
+
+  'csv-json': {
+    metaTitle: 'CSV to JSON & JSON to CSV Converter — Free Online',
+    metaDescription:
+      'Convert CSV to JSON and JSON back to CSV. Choose comma, semicolon or tab delimiters, treat the first row as headers, and get typed values. Free, in-browser, no signup.',
+    intro:
+      'This CSV/JSON converter goes both ways. Paste CSV like name,age,city / Alice,30,Seoul and get a JSON array of objects; paste a JSON array and get CSV back. Pick the delimiter (comma, semicolon or tab), choose whether the first row is a header, and copy or download the result. Parsing uses PapaParse, all in your browser.',
+    features: [
+      'Two-way: CSV → JSON array and JSON array → CSV.',
+      'Delimiter choice — comma, semicolon or tab — for both reading and writing.',
+      '"First row as header" toggle so rows become objects keyed by column name.',
+      'Auto-typing turns "30" into the number 30 and "true" into a boolean in the JSON output.',
+      'Copy or download the result; powered by PapaParse for robust quoting and large files.',
+    ],
+    steps: [
+      {
+        title: 'Pick a direction',
+        body: 'Choose CSV → JSON or JSON → CSV. For CSV → JSON, paste rows such as name,age,city on the first line then your data lines below.',
+      },
+      {
+        title: 'Set delimiter and header',
+        body: 'Select the delimiter (comma by default; switch to tab for TSV) and keep "first row as header" on so name,age,city becomes the object keys. Toggle "pretty JSON" for indented output.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The output updates live — Alice,30,Seoul becomes {"name":"Alice","age":30,"city":"Seoul"}. Copy it or download converted.json (or converted.csv when going the other way).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is the header row handled?',
+        a: 'With "first row as header" on, the first CSV line supplies the object keys, so name,age,city + Alice,30,Seoul becomes {"name":"Alice","age":30,"city":"Seoul"}. Turn it off and each row becomes a plain array of values instead.',
+      },
+      {
+        q: 'Can I use semicolons or tabs instead of commas?',
+        a: 'Yes. The delimiter selector supports comma, semicolon and tab, which covers European CSVs (semicolon) and TSV files (tab). The same delimiter is used when writing CSV back out.',
+      },
+      {
+        q: 'What does JSON → CSV need as input?',
+        a: 'A JSON array of objects, e.g. [{"name":"Alice","age":30}, …]. The keys of the first objects become the column headers. A single object or a non-array value is rejected with an error.',
+      },
+    ],
+  },
+
+  'yaml-json': {
+    metaTitle: 'YAML to JSON & JSON to YAML Converter — Free Online',
+    metaDescription:
+      'Convert YAML to JSON and JSON to YAML both ways. Paste a config, anchors and nested keys included, and copy or download the result. In-browser, free, no signup.',
+    intro:
+      'This YAML/JSON converter translates configuration between the two formats in either direction. Paste a YAML file — nested keys, lists and all — to get clean JSON, or paste JSON to get readable 2-space YAML. It uses js-yaml in your browser, so even private CI configs and secrets never leave the page.',
+    features: [
+      'Two-way conversion: YAML → JSON and JSON → YAML.',
+      'Handles nested maps, sequences and scalars — full YAML 1.1 via js-yaml.',
+      'Pretty-print toggle for JSON (2-space indentation) and tidy YAML output.',
+      'One-click swap to flip the direction using the current output as the new input.',
+      'Copy or download converted.json / converted.yaml; runs entirely in-browser.',
+    ],
+    steps: [
+      {
+        title: 'Choose the direction',
+        body: 'Pick YAML → JSON or JSON → YAML. For YAML → JSON, paste something like name: web-toolkit with an indented features: block underneath.',
+      },
+      {
+        title: 'Convert and review',
+        body: 'The output updates as you type. A YAML list under authors: becomes a JSON array ["alice","bob"]; nested keys become nested objects. Errors (bad indentation, tabs) are shown inline.',
+      },
+      {
+        title: 'Copy, download or swap',
+        body: 'Copy the result, download it as converted.json / converted.yaml, or hit swap to send the output back as input and convert the other way.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it keep YAML comments?',
+        a: 'No. YAML is parsed into a data structure (maps, lists, scalars) before being re-serialized, and comments are not part of that structure, so they are dropped. Values, keys and nesting are preserved exactly.',
+      },
+      {
+        q: 'What happens to YAML anchors and aliases?',
+        a: 'They are resolved on read — an alias is expanded into the value it references. When writing YAML back out, the tool emits plain values without re-introducing anchors (noRefs), so the output is self-contained.',
+      },
+      {
+        q: 'Why does my YAML fail to parse?',
+        a: 'Almost always indentation: YAML requires spaces, not tabs, and consistent nesting. The error message points to the line. JSON → YAML, by contrast, rarely fails since JSON is stricter to begin with.',
+      },
+    ],
+  },
+
+  'text-case': {
+    metaTitle: 'Text Case Converter — camelCase, snake_case & More',
+    metaDescription:
+      'Convert text between 12 cases at once: UPPER, lower, Title, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE and more. helloWorld → hello_world. Free, no signup.',
+    intro:
+      'This text case converter transforms one input into a dozen case styles simultaneously. Type "hello world" and instantly see HELLO WORLD, Title Case, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE and dot.case. It intelligently splits words, so helloWorld becomes hello_world or hello-world with one click.',
+    features: [
+      'About 12 cases at once: UPPER, lower, Title, Sentence, camelCase, PascalCase, snake_case, kebab-case, CONSTANT_CASE, dot.case, capitalize and invert.',
+      'Smart word splitting handles camelCase, snake_case and hyphenated input — helloWorld is recognised as two words.',
+      'Live conversion as you type, with a sample shown under each result.',
+      'Copy any single case (just the snake_case row, say) with one tap.',
+      'Runs entirely in your browser; works with non-Latin text too.',
+    ],
+    steps: [
+      {
+        title: 'Type or paste your text',
+        body: 'Enter the source text — for example helloWorld or "My New Post". The converter detects word boundaries from spaces, camelCase humps and separators.',
+      },
+      {
+        title: 'Scan all the case styles',
+        body: 'Every card updates instantly: helloWorld becomes hello_world (snake_case), hello-world (kebab-case), HELLO_WORLD (CONSTANT_CASE) and HelloWorld (PascalCase), among others.',
+      },
+      {
+        title: 'Copy the one you need',
+        body: 'Click the copy icon on the case you want — e.g. grab the camelCase value for a variable name or the kebab-case value for a CSS class or URL slug.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between camelCase and PascalCase?',
+        a: 'Both join words with no spaces and capitalize each word — but camelCase keeps the first word lowercase (helloWorld) while PascalCase capitalizes it too (HelloWorld). camelCase is common for variables, PascalCase for class names.',
+      },
+      {
+        q: 'How does snake_case differ from CONSTANT_CASE?',
+        a: 'Both use underscores between words. snake_case is all lowercase (hello_world); CONSTANT_CASE is all uppercase (HELLO_WORLD) and is typically used for constants and environment variables.',
+      },
+      {
+        q: 'Does it correctly split camelCase and acronyms?',
+        a: 'Yes. It inserts boundaries at case transitions, so XMLHttpRequest splits into XML, Http, Request, giving xml_http_request. Existing separators (spaces, _, -, . , /) are treated as word breaks too.',
+      },
+    ],
+  },
+
+  'lorem-ipsum': {
+    metaTitle: 'Lorem Ipsum Generator — Dummy Placeholder Text',
+    metaDescription:
+      'Generate Lorem Ipsum placeholder text by paragraphs, sentences or words. Pick a count, start with the classic "Lorem ipsum dolor…", then copy. Free, in-browser, no signup.',
+    intro:
+      'This Lorem Ipsum generator produces filler text for mockups and designs. Choose paragraphs, sentences or words, set how many you need, and optionally begin with the classic "Lorem ipsum dolor sit amet…". Generate 3 paragraphs for a layout test, copy, and paste — no signup, all in your browser.',
+    features: [
+      'Generate by unit: paragraphs, sentences or individual words.',
+      'Set the count — e.g. 3 paragraphs, 10 sentences, or 50 words.',
+      'Optionally start with the canonical "Lorem ipsum dolor sit amet, consectetur adipiscing elit."',
+      'Randomized sentence lengths for natural-looking placeholder copy.',
+      '"Regenerate" for a fresh block and one-click copy of the whole output.',
+    ],
+    steps: [
+      {
+        title: 'Choose unit and count',
+        body: 'Pick paragraphs, sentences or words, then enter a number — for instance 3 paragraphs for a typical content block, or 5 words to fill a short label.',
+      },
+      {
+        title: 'Toggle the classic opener',
+        body: 'Leave "start with Lorem ipsum…" on to begin with the familiar phrase, or turn it off for fully random Latin-like text. The output refreshes as you change options.',
+      },
+      {
+        title: 'Copy your placeholder text',
+        body: 'Hit "regenerate" for a different sample, then "copy" to grab it. Paste it into your design, CMS or HTML to see how real content will flow.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why use Lorem Ipsum instead of real text?',
+        a: 'It lets you preview layout and typography without being distracted by meaning. Because it has a normal-looking word distribution, it shows how real copy will wrap and flow far better than repeating "text text text".',
+      },
+      {
+        q: 'Can I generate just a few words or many paragraphs?',
+        a: 'Yes. Switch the unit to words for short bursts (e.g. 5–20 for buttons or titles) or paragraphs for long blocks. Sentence lengths are randomized so each paragraph looks natural.',
+      },
+      {
+        q: 'Is the text always the same?',
+        a: 'No. Only the optional opening phrase is fixed; the rest is randomly assembled from a Latin word list each time you generate, so clicking "regenerate" gives you a fresh sample.',
+      },
+    ],
+  },
+
+  'image-crop': {
+    metaTitle: 'Image Crop Tool — Drag to Crop with Aspect Ratios',
+    metaDescription:
+      'Crop an image by dragging a box, with presets like 1:1, 16:9, 4:3 and 9:16. Export as JPG, PNG, WebP or AVIF with adjustable quality. Free, in-browser, no signup.',
+    intro:
+      'This image crop tool lets you drag a selection box over your photo and export just that region. Snap to aspect-ratio presets — 1:1 for avatars, 16:9 for thumbnails, 9:16 for stories — or crop freely. Output to JPG, PNG, WebP or AVIF with a quality slider, all processed locally on a canvas.',
+    features: [
+      'Drag-to-position crop box with a corner handle to resize.',
+      'Aspect-ratio presets: free, 1:1, 4:3, 16:9, 3:4 and 9:16.',
+      'Live readout of the original and selected pixel dimensions.',
+      'Export as JPG, PNG, WebP or AVIF with an adjustable quality slider.',
+      'Canvas-based and fully in-browser — your image is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload and frame your crop',
+        body: 'Drop in an image. A box appears at the centre 80%. Drag it to reposition and pull the bottom-right handle to resize; the header shows e.g. "selection 960×540".',
+      },
+      {
+        title: 'Lock an aspect ratio (optional)',
+        body: 'Pick a preset like 1:1 for a square profile picture or 16:9 for a video thumbnail. The box snaps to that ratio and keeps it while you resize. Choose "free" to crop any shape.',
+      },
+      {
+        title: 'Choose format and export',
+        body: 'Select JPG, PNG, WebP or AVIF, tweak quality if needed, then run the crop. Download the result (e.g. photo-cropped.jpg) — only the selected region is saved.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does cropping reduce image quality?',
+        a: 'Cropping itself just keeps the selected pixels at full resolution — no quality loss. Quality only changes if you export to a lossy format (JPG/WebP/AVIF) at a low quality setting; choose PNG for a lossless result.',
+      },
+      {
+        q: 'How do the aspect-ratio presets help?',
+        a: 'They keep the crop a fixed shape: 1:1 for square avatars, 16:9 for YouTube thumbnails, 9:16 for Instagram/TikTok stories, 4:3 for classic photos. The box won’t drift off-ratio as you resize.',
+      },
+      {
+        q: 'Can I crop to an exact pixel size?',
+        a: 'You position and size the box visually, and the live readout shows the exact selected dimensions (e.g. 1080×1080). For a precise final size you can crop, then run the result through a resize tool.',
+      },
+    ],
+  },
+
+  'image-rotate': {
+    metaTitle: 'Rotate & Flip Image — 90/180/270° + Mirror Online',
+    metaDescription:
+      'Rotate an image 90, 180 or 270 degrees and flip it horizontally or vertically. Export JPG, PNG, WebP or AVIF, or batch a whole folder. Free, in-browser, no signup.',
+    intro:
+      'This tool rotates and flips images. Turn a sideways phone photo upright with a 90° or 270° rotation, mirror a selfie with a horizontal flip, or do both at once. Export to JPG, PNG, WebP or AVIF, and apply the same transform to an entire folder of images in one batch — all on a canvas in your browser.',
+    features: [
+      'Rotate 0°, 90°, 180° or 270° clockwise.',
+      'Flip horizontally (mirror) and/or vertically, combinable with rotation.',
+      'Batch mode: apply the same rotate/flip to a whole folder and download a ZIP.',
+      'Export as JPG, PNG, WebP or AVIF with a quality slider.',
+      'Canvas-based, fully in-browser — images never leave your device.',
+    ],
+    steps: [
+      {
+        title: 'Add an image or a folder',
+        body: 'Drop in a single image, or switch to folder mode to process many at once. A landscape photo shot in portrait is the classic case for a 90° fix.',
+      },
+      {
+        title: 'Pick rotation and flips',
+        body: 'Choose the angle — 90° rotates a sideways photo upright — and toggle horizontal or vertical flip. The two combine, so you can rotate 180° and mirror in one pass.',
+      },
+      {
+        title: 'Export the result',
+        body: 'Select an output format and run it. A single image downloads as photo-rotated.jpg; in folder mode every file is transformed and bundled into a ZIP.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between rotate and flip?',
+        a: 'Rotate turns the image around its center (90° makes a landscape photo portrait). Flip mirrors it — horizontal flip swaps left and right (like a mirror selfie), vertical flip swaps top and bottom. They can be combined.',
+      },
+      {
+        q: 'Does 90° rotation change the dimensions?',
+        a: 'Yes. A 90° or 270° rotation swaps width and height — a 1920×1080 image becomes 1080×1920. A 180° rotation keeps the same dimensions, just upside down.',
+      },
+      {
+        q: 'Can I fix many photos at once?',
+        a: 'Yes. Use folder mode to apply the same rotation and flip to every image in a folder, then download them all as a single ZIP — handy for a batch of sideways phone shots.',
+      },
+    ],
+  },
+
+  'image-watermark': {
+    metaTitle: 'Add Watermark to Image — Text or Logo, Online',
+    metaDescription:
+      'Stamp a text or logo watermark onto images. Set position, opacity, size and rotation, then batch a whole folder. © your name on every photo. Free, in-browser, no signup.',
+    intro:
+      'This watermark tool overlays text or a logo image onto your photos. Add "© Your Name" in a corner, drop a transparent-PNG logo at adjustable size, and control position, opacity, rotation, font size and color. Apply it to one image or a whole folder at once — all rendered on a canvas in your browser.',
+    features: [
+      'Text watermark (any text, including non-Latin) or image/logo watermark.',
+      'Position presets (corners or center), plus opacity, rotation, font size and color controls.',
+      'Logo size is set as a percentage of the base image, so it scales sensibly across photos.',
+      'Batch mode applies the same watermark to a whole folder and returns a ZIP.',
+      'Canvas-based and fully in-browser — photos are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload the image(s)',
+        body: 'Add a single photo, or switch to folder mode to watermark many at once. Then choose a text watermark or an image/logo watermark.',
+      },
+      {
+        title: 'Design the watermark',
+        body: 'For text, type "© SAMPLE", set font size and color; for a logo, drop a transparent PNG and set its size. Then choose a corner (bottom-right is typical), opacity (~70%) and rotation.',
+      },
+      {
+        title: 'Apply and download',
+        body: 'Run it to get photo-watermarked.jpg with the mark baked in. In folder mode, every image gets the same stamp and you download them as one ZIP.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Should I use a text or a logo watermark?',
+        a: 'Use text for a quick copyright line like © Your Name 2026 — fast and crisp at any size. Use an image watermark to place a brand logo; a transparent-background PNG works best so only the logo shows, not a box.',
+      },
+      {
+        q: 'Can I make the watermark semi-transparent?',
+        a: 'Yes. The opacity slider goes from 10% to 100%. Around 60–70% is a good balance: visible enough to deter copying but not so heavy that it ruins the photo. You can also rotate it diagonally.',
+      },
+      {
+        q: 'Can it be removed by someone else?',
+        a: 'The watermark is flattened into the pixels, so it can’t be toggled off — but a determined editor could still crop or paint it out. A larger, centered, semi-transparent mark across the image is harder to remove than a small corner stamp.',
+      },
+    ],
+  },
+
+  'sql-format': {
+    metaTitle: 'SQL Formatter — Beautify & Indent SQL (10 Dialects)',
+    metaDescription:
+      'Format and indent messy SQL with keyword casing and 2/4-space indent. Supports MySQL, PostgreSQL, SQLite, T-SQL, BigQuery and more. Also minify to one line. Free, no signup.',
+    intro:
+      'This SQL formatter takes a cramped one-line query and lays it out with clean indentation and consistent keyword casing. Paste a SELECT … JOIN … GROUP BY chain, choose your dialect (MySQL, PostgreSQL, T-SQL, BigQuery and 6 more), set 2- or 4-space indent and UPPER/lower keywords, and get readable SQL back — or minify it to a single line.',
+    features: [
+      'Beautifies SQL with proper indentation and line breaks per clause.',
+      '10 dialects: Standard SQL, MySQL, PostgreSQL, SQLite, MariaDB, T-SQL, BigQuery, Redshift, Spark and more.',
+      'Keyword case control — uppercase, lowercase or preserve the original.',
+      'Indent width of 2 or 4 spaces (or a tab); also a "minify to one line" mode.',
+      'Powered by sql-formatter, running entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste your SQL',
+        body: 'Drop in a query — even a dense one-liner like select u.id,u.name,count(o.id) from users u left join orders o on u.id=o.user_id group by u.id.',
+      },
+      {
+        title: 'Choose dialect and style',
+        body: 'Pick the dialect (e.g. PostgreSQL), indent width (2 spaces is common) and keyword case (UPPERCASE is the usual convention for readability).',
+      },
+      {
+        title: 'Format or minify',
+        body: 'Click "format" for a clean, indented version with SELECT, FROM, JOIN and WHERE on their own lines — then copy or download formatted.sql. Or click "minify" to collapse it back to one line.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why pick a specific SQL dialect?',
+        a: 'Dialects differ in keywords, functions and quoting. Choosing PostgreSQL vs MySQL vs T-SQL lets the formatter recognise dialect-specific keywords and lay them out correctly, rather than treating them as plain identifiers.',
+      },
+      {
+        q: 'Does formatting change what my query does?',
+        a: 'No. It only adds whitespace, line breaks and adjusts keyword casing — the SQL logic is untouched. Comments and string literals are preserved. (Minify removes comments to collapse to one line.)',
+      },
+      {
+        q: 'Should keywords be uppercase or lowercase?',
+        a: 'It is purely style. Uppercase keywords (SELECT, FROM, WHERE) are the traditional convention and make structure easy to scan; lowercase is popular in some modern codebases. "Preserve" keeps whatever you typed.',
+      },
+    ],
+  },
+
+  'html-entities': {
+    metaTitle: 'HTML Entity Encoder & Decoder — Escape Special Chars',
+    metaDescription:
+      'Encode special characters to HTML entities and decode them back. < becomes &lt;, © becomes &#169;. Handles named, decimal and hex entities. Free, in-browser, no signup.',
+    intro:
+      'This HTML entity tool encodes special characters into safe HTML entities and decodes entities back to text. Turn <div class="x"> into &lt;div class=&quot;x&quot;&gt; so it displays as code, or decode &amp;copy; and &#169; back to ©. It handles named, decimal and hex entities and runs entirely in your browser.',
+    features: [
+      'Encode text to entities and decode entities back to text — switch with one button.',
+      'Encodes the reserved characters & < > " ’ so markup shows literally instead of rendering.',
+      'Optional "encode all non-ASCII" mode turns © into &#169; and any accented or CJK character into a numeric entity.',
+      'Decoding understands named (&copy;), decimal (&#169;) and hex (&#xa9;) entities.',
+      'Live conversion with one-click copy; nothing is uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Pick encode or decode',
+        body: 'Choose "encode" to make text safe for HTML, or "decode" to turn entities back into characters. Use the swap button to reverse direction with the current output.',
+      },
+      {
+        title: 'Enter your text',
+        body: 'Paste your content — for example <div class="hello">. Encoding produces &lt;div class=&quot;hello&quot;&gt;, which a browser will display as the literal tag instead of rendering it.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Grab the output with the copy button. Turn on "encode all non-ASCII" to also convert characters like © to &#169; and é to &#233; for maximum portability.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which characters must be encoded in HTML?',
+        a: 'The five reserved ones: & (&amp;), < (&lt;), > (&gt;), " (&quot;) and ’ (&#39;). Encoding < and > stops the browser from treating your text as tags, and & avoids accidental entity parsing.',
+      },
+      {
+        q: 'What is the difference between named, decimal and hex entities?',
+        a: 'They are three ways to write the same character. © can be &copy; (named), &#169; (decimal) or &#xa9; (hex). Named entities are readable; numeric ones (decimal/hex) work even when no name exists. The decoder accepts all three.',
+      },
+      {
+        q: 'Why would I encode every non-ASCII character?',
+        a: 'For maximum compatibility with systems or emails that may not handle UTF-8 reliably. Turning on "encode all non-ASCII" converts ©, é, 한 and emoji into numeric entities so they survive ASCII-only transport. For normal UTF-8 pages it is unnecessary.',
+      },
+    ],
+  },
+
+  'file-hash': {
+    metaTitle: 'File Hash Calculator — MD5, SHA-1, SHA-256, SHA-512',
+    metaDescription:
+      'Calculate MD5, SHA-1, SHA-256, SHA-384 and SHA-512 checksums of a file or text in your browser. Verify downloads — SHA-256 is 64 hex chars. Free, no upload, no signup.',
+    intro:
+      'This file hash calculator computes the MD5, SHA-1, SHA-256, SHA-384 and SHA-512 checksums of any file or text. Drop in a downloaded ISO to verify it matches the publisher’s SHA-256 (a 64-character hex string), or hash a piece of text. SHA hashes use the Web Crypto API; everything stays in your browser.',
+    features: [
+      'Computes MD5, SHA-1, SHA-256, SHA-384 and SHA-512 in one pass.',
+      'Hash a file (any type) or a snippet of text.',
+      'SHA family runs on the native Web Crypto API; MD5 uses a built-in pure-JS implementation.',
+      'Copy any individual digest to compare against a published checksum.',
+      'Fully in-browser — files are never uploaded, even large ones.',
+    ],
+    steps: [
+      {
+        title: 'Choose file or text',
+        body: 'Switch to "file hash" and drop in a file (e.g. an installer or ISO you just downloaded), or "text hash" and type a string to fingerprint.',
+      },
+      {
+        title: 'Read the digests',
+        body: 'All five hashes appear at once. SHA-256 is the usual one for download verification — it is a 64-character hex string like e3b0c44298fc1c14….',
+      },
+      {
+        title: 'Compare or copy',
+        body: 'Copy the SHA-256 row and compare it character-for-character with the checksum on the download page. If they match exactly, the file is intact and untampered.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How long is each hash?',
+        a: 'Hash length is fixed by the algorithm: MD5 is 32 hex characters, SHA-1 is 40, SHA-256 is 64, SHA-384 is 96 and SHA-512 is 128. The same input always yields the same length.',
+      },
+      {
+        q: 'Is MD5 (or SHA-1) safe to use?',
+        a: 'For verifying accidental corruption of a download, MD5 and SHA-1 are fine. For security (signatures, password storage, tamper protection) they are broken — use SHA-256 or stronger, since collisions can be deliberately crafted for MD5 and SHA-1.',
+      },
+      {
+        q: 'Is my file uploaded to hash it?',
+        a: 'No. The SHA algorithms run via the browser’s Web Crypto API and MD5 in local JavaScript, so the file is read in memory and never sent anywhere — safe for private or large files.',
+      },
+    ],
+  },
+
+  'totp': {
+    metaTitle: 'TOTP Generator — Google Authenticator 2FA Codes',
+    metaDescription:
+      'Generate time-based one-time passwords (TOTP) from a Base32 secret, compatible with Google Authenticator and Authy. RFC 6238, default SHA-1/6-digit/30s. Free, no signup.',
+    intro:
+      'This TOTP generator turns a Base32 secret into the same 6-digit codes as Google Authenticator, Authy or 1Password. Paste the secret from a 2FA setup QR (the secret= value), and it shows the current code, a countdown, and the next code. It follows RFC 6238, and the secret is processed only in your browser.',
+    features: [
+      'Generates Google Authenticator-compatible TOTP codes from a Base32 secret.',
+      'Live countdown and a preview of the next code so you never miss the window.',
+      'Configurable digits (6/7/8), period (15/30/60s) and algorithm (SHA-1/256/512).',
+      'RFC 6238 standard, computed with the Web Crypto API HMAC.',
+      'The secret never leaves your browser — nothing is uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Enter your Base32 secret',
+        body: 'Paste the secret from your 2FA setup — the secret= value in an otpauth:// URI, e.g. JBSWY3DPEHPK3PXP. Use the eye button to reveal or hide it.',
+      },
+      {
+        title: 'Match the parameters',
+        body: 'Most services use the defaults: SHA-1, 6 digits, 30 seconds. Only change digits, period or algorithm if your provider specifies something else.',
+      },
+      {
+        title: 'Read the current code',
+        body: 'The 6-digit code shows with a "seconds remaining" countdown and the next code beneath it. Copy it and enter it where the login asks for your authenticator code.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Where is my secret stored?',
+        a: 'Nowhere on a server. The secret is held only in the page’s memory while you have it open and is never transmitted. Refreshing or closing the tab discards it — so re-paste it next time, or keep it in a real authenticator app.',
+      },
+      {
+        q: 'What if the generated code is rejected?',
+        a: 'Usually a clock issue: TOTP depends on the current time, so if your device clock is off by more than ~30 seconds the code won’t match. Sync your system clock. Also confirm the digits/period/algorithm match the service (default is SHA-1, 6 digits, 30s).',
+      },
+      {
+        q: 'Is this a safe replacement for an authenticator app?',
+        a: 'It is handy for testing or recovering a code, but because the secret isn’t stored, you must paste it each time. For everyday 2FA, a dedicated app (or hardware key) that stores secrets securely is the better choice.',
+      },
+    ],
+  },
+
+  'slugify': {
+    metaTitle: 'Slugify — Convert a Title to a URL Slug Online',
+    metaDescription:
+      'Turn any title into a clean URL slug. Spaces become hyphens, accents are stripped (café → cafe) and non-Latin text is transliterated (한글 → hangeul). Free, in-browser, no signup.',
+    intro:
+      'This slugify tool converts a title into a URL-friendly slug. "My New Post!" becomes my-new-post; accented letters are flattened (café → cafe) and non-Latin scripts are transliterated, so Korean like 안녕하세요 becomes annyeonghaseyo. Choose a hyphen or underscore separator and lowercase output, all live in your browser.',
+    features: [
+      'Converts titles to clean slugs — lowercases, trims and replaces spaces.',
+      'Strips diacritics: café → cafe, naïve → naive.',
+      'Transliterates Korean Hangul to romanized Latin (한글 → hangeul) instead of dropping it.',
+      'Choose hyphen (-) or underscore (_) as the word separator.',
+      'Collapses repeated separators and trims them from the ends; live and in-browser.',
+    ],
+    steps: [
+      {
+        title: 'Type or paste a title',
+        body: 'Enter the heading you want to turn into a URL — for example "안녕하세요 Hello World" or "My New Post!".',
+      },
+      {
+        title: 'Pick separator and case',
+        body: 'Choose hyphen (the SEO-standard) or underscore, and keep "lowercase" on. The slug updates live: "안녕하세요 Hello World" becomes annyeonghaseyo-hello-world.',
+      },
+      {
+        title: 'Copy the slug',
+        body: 'Click copy and paste the slug into your CMS, blog URL or file name. Special characters and punctuation are already removed, so it is safe to use directly.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What happens to non-English characters?',
+        a: 'Korean Hangul is transliterated to Latin (한글 → hangeul) so the slug stays meaningful and ASCII-safe. Accented Latin letters are reduced to their base form (é → e). Other unsupported symbols are replaced by the separator.',
+      },
+      {
+        q: 'Should I use hyphens or underscores in a URL slug?',
+        a: 'Hyphens. Search engines treat hyphens as word separators, so my-new-post reads as three words, while my_new_post can be read as one token. Underscores are still offered for file names or systems that require them.',
+      },
+      {
+        q: 'Why are some characters removed entirely?',
+        a: 'Anything that isn’t a letter or number — punctuation, emoji, brackets — is converted to the separator, and runs of separators are collapsed to one. So "Hello!! World??" becomes hello-world with no trailing or doubled dashes.',
+      },
+    ],
+  },
+
+  'markdown-toc': {
+    metaTitle: 'Markdown Table of Contents Generator — Auto TOC',
+    metaDescription:
+      'Generate a Markdown table of contents from your headings, with GitHub-style anchor links. Choose depth, numbered or bulleted, and insert it inline. Free, in-browser, no signup.',
+    intro:
+      'This Markdown TOC generator scans your document’s ## headings and builds a linked table of contents automatically. It produces GitHub-style anchor links (## Getting Started → #getting-started), respects a chosen depth, can number or bullet the list, and even inject the TOC between <!-- TOC --> markers in your file. Fenced code blocks are ignored.',
+    features: [
+      'Auto-extracts headings (H1–H6) and builds a nested table of contents.',
+      'GitHub-style slug anchors so links jump correctly on GitHub/GitLab.',
+      'Depth control: choose the starting level and maximum depth (e.g. H2–H4 only).',
+      'Bulleted or numbered output, with or without clickable links.',
+      'Optional inline insertion between <!-- TOC --> markers; ignores headings inside ``` code fences.',
+    ],
+    steps: [
+      {
+        title: 'Paste your Markdown',
+        body: 'Drop your document in the editor. The tool counts the headings live — a file with ## 1. Getting Started, ### Install, ## 2. Usage shows "5 headings" and so on.',
+      },
+      {
+        title: 'Set depth and style',
+        body: 'Choose the start level and max depth (e.g. H1 to H4), then toggle numbered vs bulleted and whether to include links. Deeper headings are indented automatically.',
+      },
+      {
+        title: 'Copy or insert the TOC',
+        body: 'Copy the generated list — like - [Getting Started](#getting-started) — into the top of your README, or turn on "insert inline" to drop it between <!-- TOC --> markers and download document-with-toc.md.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are the anchor links generated?',
+        a: 'It uses GitHub-style slugs: the heading is lowercased, spaces become hyphens and punctuation is removed, so "## Getting Started" links to #getting-started. Duplicate headings get a numeric suffix (-2, -3) to stay unique, matching GitHub’s behavior.',
+      },
+      {
+        q: 'Can I limit which heading levels appear?',
+        a: 'Yes. Set a start level and a max depth — for example H2 to H3 — to skip the H1 title and ignore very deep H4+ headings, keeping the TOC focused.',
+      },
+      {
+        q: 'Does it pick up # symbols inside code blocks?',
+        a: 'No. Lines inside fenced code blocks (``` … ```) are skipped, so a comment like # this is code in a shell snippet won’t be mistaken for a heading.',
+      },
+    ],
+  },
+
+  'video-to-gif': {
+    metaTitle: 'Video to GIF Converter — Clip a Segment to GIF',
+    metaDescription:
+      'Convert a segment of a video into a high-quality GIF in your browser. Set start/end, FPS and width, add reverse or ping-pong. MP4, WebM, MOV supported. Free, no upload.',
+    intro:
+      'This video-to-GIF converter turns a chosen segment of a video into an animated GIF. Pick a start and end (say 0–3s), set the frame rate and width, and optionally reverse or ping-pong the clip. It uses FFmpeg.wasm with a 2-pass palette for clean color — and runs entirely in your browser, so the video is never uploaded.',
+    features: [
+      'Clip any segment by start/end time instead of converting the whole video.',
+      'Control frame rate (5–30 FPS) and output width to balance smoothness and file size.',
+      'High-quality 2-pass palette encoding for accurate GIF colors.',
+      'Effects: normal, reverse, or ping-pong (play forward then backward).',
+      'FFmpeg.wasm runs locally; supports MP4, WebM, MOV, AVI and MKV with no upload.',
+    ],
+    steps: [
+      {
+        title: 'Upload a video',
+        body: 'Drop in an MP4, WebM or MOV. The first run downloads FFmpeg.wasm (~30MB, then cached). Use the built-in player to find the moment you want.',
+      },
+      {
+        title: 'Set the segment and quality',
+        body: 'Enter a start and end — e.g. 00:00 to 00:03 for a 3-second clip — then tune FPS (12 is a good default) and width (320–480 px keeps the file reasonable). Add a reverse or ping-pong effect if you like.',
+      },
+      {
+        title: 'Convert and download',
+        body: 'Click "convert to GIF". A preview appears with its file size; download it as a .gif. A short, narrow, lower-FPS clip stays small; long or wide clips grow quickly.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is my GIF file so large?',
+        a: 'GIF is an old, inefficient format — every frame is stored almost in full. File size scales with duration × FPS × width. To shrink it, keep clips to a few seconds, drop FPS to 10–15, and reduce the width to 320–480 px. For long clips, a video format like MP4 is far smaller.',
+      },
+      {
+        q: 'How long a clip can I convert?',
+        a: 'Technically any length, but GIFs balloon fast. The sweet spot is 2–6 seconds. The tool lets you pick exact start/end times so you can grab just the moment you need rather than the whole video.',
+      },
+      {
+        q: 'What does the ping-pong effect do?',
+        a: 'Ping-pong plays the clip forward, then backward, so it loops seamlessly without a jump. Reverse simply plays it backward once. Both are great for short reaction-style loops.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {

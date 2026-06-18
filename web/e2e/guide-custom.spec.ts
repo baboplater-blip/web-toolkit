@@ -19,7 +19,7 @@ import { test, expect } from '@playwright/test';
  *   awk '/export const CUSTOM_GUIDES:/,/^};/' src/lib/guide-content.ts | grep -E "^  ['\"]?[a-z0-9-]+['\"]?: \{"
  */
 
-// 4개국어 각 30종 맞춤 가이드(2026-06-17 기준) — 키는 도구 id.
+// 4개국어 각 50종 맞춤 가이드(2026-06-17 기준) — 키는 도구 id.
 const CUSTOM_GUIDE_IDS: string[] = [
   // 라운드1 (12)
   'css-units', 'chmod-calc', 'http-status', 'json-to-go', 'color-name', 'code-case',
@@ -28,6 +28,11 @@ const CUSTOM_GUIDE_IDS: string[] = [
   'qr-code', 'base64', 'json-format', 'password-gen', 'uuid-gen', 'jwt-decoder',
   'url-encoder', 'regex-tester', 'text-diff', 'text-count', 'pdf-merge', 'pdf-split',
   'image-resize', 'image-convert', 'image-heic-to-jpg', 'unit-converter', 'percentage', 'compress',
+  // 라운드3 다음 티어 (20)
+  'color-converter', 'timestamp-converter', 'cron-explainer', 'pdf-to-jpg', 'pdf-from-jpg',
+  'pdf-to-word', 'csv-json', 'yaml-json', 'text-case', 'lorem-ipsum', 'image-crop',
+  'image-rotate', 'image-watermark', 'sql-format', 'html-entities', 'file-hash', 'totp',
+  'slugify', 'markdown-toc', 'video-to-gif',
 ];
 
 // 자동생성 intro 의 마지막 문장(빌더 템플릿). override.intro 가 적용되면 사라진다.
@@ -38,10 +43,12 @@ const LOCALES = [
   { id: 'zh', prefix: '/zh', genericTail: '绝不会向服务器上传任何内容' },
 ];
 
-// 속도를 위해 KO 는 30종 전수, 타 언어는 카테고리 대표 10종으로 메커니즘만 확인.
+// 속도를 위해 KO 는 50종 전수, 타 언어는 카테고리 대표 13종으로 메커니즘만 확인.
 const SUBSET_FOR_NON_KO = new Set([
   'css-units', 'chmod-calc', 'qr-code', 'base64', 'json-format',
   'jwt-decoder', 'pdf-merge', 'image-convert', 'unit-converter', 'compress',
+  // 라운드3 대표
+  'cron-explainer', 'pdf-to-word', 'csv-json',
 ]);
 
 test.describe('맞춤 가이드 — override 적용(자동생성 폴백 아님)', () => {
@@ -87,6 +94,10 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/ja/guide/image-convert', phrase: 'AVIF', note: 'JA AVIF vs WebP' },
     { path: '/zh/guide/jwt-decoder', phrase: '验签', note: 'ZH 解码≠验签' },
     { path: '/zh/guide/compress', phrase: '画质', note: 'ZH 압축 화질 FAQ' },
+    // 라운드3
+    { path: '/guide/cron-explainer', phrase: '5분마다', note: 'KO cron */5 풀이' },
+    { path: '/en/guide/totp', phrase: 'Google Authenticator', note: 'EN TOTP 호환' },
+    { path: '/zh/guide/color-converter', phrase: 'OKLCH', note: 'ZH OKLCH 변환' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {
