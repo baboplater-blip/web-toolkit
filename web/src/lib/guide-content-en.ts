@@ -4004,6 +4004,1468 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'meta-tags': {
+    metaTitle: 'Meta Tags Generator (Open Graph, Twitter) — Free',
+    metaDescription:
+      'Generate SEO and social meta tags from a few fields. Enter a title, description, URL and image to get <title>, og:title, og:image and twitter:card markup. Free, no signup.',
+    intro:
+      'This meta tags generator builds the full <head> block from a handful of fields. Type a title and description, paste your canonical URL and an image URL, and it emits a ready-to-paste set of tags: <title>, <meta name="description">, the Open Graph og:title/og:description/og:url/og:image/og:site_name, and Twitter twitter:card/title/description/image. Every value is HTML-escaped so the markup never breaks.',
+    features: [
+      'Fills <title>, meta description, the full Open Graph block and the Twitter Card block from one form.',
+      'og:type select (website, article, product, profile, video.movie) and twitter:card select (summary_large_image or summary) to match your content.',
+      'All attribute values are HTML-escaped (& " < > become entities) so a stray quote in your title can’t break the page markup.',
+      'Output updates live in a read-only textarea; empty fields are skipped instead of emitting blank tags.',
+      'Runs entirely in your browser — the tags are assembled from your inputs locally and nothing is uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Fill in the page info',
+        body: 'Type the page Title and Description, then paste the canonical URL, an image URL for og:image (ideally 1200×630), and your site name.',
+      },
+      {
+        title: 'Pick the OG and Twitter type',
+        body: 'Choose og:type (defaults to website) and twitter:card (defaults to summary_large_image) from the two dropdowns to match how the page should appear when shared.',
+      },
+      {
+        title: 'Copy the generated tags',
+        body: 'Read the generated <meta> block in the result box and press Copy, then paste it inside your page’s <head>.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between summary and summary_large_image?',
+        a: 'summary shows a small square thumbnail beside the text; summary_large_image shows a large banner image above it. This tool defaults to summary_large_image and emits the matching twitter:card value.',
+      },
+      {
+        q: 'Do I still need a <title> tag if I add og:title?',
+        a: 'Yes. The tool outputs both because search engines read <title> while social platforms read og:title. Both are generated from the same Title field, so they stay in sync.',
+      },
+      {
+        q: 'Why is my image URL turned into og:image but not shown?',
+        a: 'The tool only generates the tag; it does not fetch or preview the image. Use an absolute https URL, since social crawlers can’t resolve relative paths.',
+      },
+    ],
+  },
+
+  'robots-txt': {
+    metaTitle: 'robots.txt Generator — Free Online, No Signup',
+    metaDescription:
+      'Build a robots.txt from crawler rule groups and sitemaps. Set User-agent *, Disallow /admin/, Crawl-delay 10, add sitemaps, then copy or download. Free, in-browser.',
+    intro:
+      'This robots.txt generator turns one or more crawler rule groups into a valid file. A group with User-agent *, Disallow /admin/ and Crawl-delay 10 produces the matching User-agent, Disallow and Crawl-delay lines, and any sitemap URLs you add are appended as Sitemap: lines at the end. Add separate groups to give different bots different rules.',
+    features: [
+      'Multiple rule groups, each with its own User-agent (defaults to *), Allow paths, Disallow paths (one per line) and an optional Crawl-delay in seconds.',
+      'Add or remove groups with the buttons; at least one group is always kept so the output stays valid.',
+      'Crawl-delay is only written when you enter a number, and blank or whitespace-only path lines are trimmed and dropped.',
+      'A separate Sitemap field (one URL per line) appends Sitemap: lines after the rule blocks.',
+      'Copy and Download (saves robots.txt) — everything is built locally in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Define a crawler group',
+        body: 'Set the User-agent (e.g. * for all bots) and list Disallow paths one per line, such as /admin/; add Allow paths to carve out exceptions.',
+      },
+      {
+        title: 'Add a delay and sitemaps',
+        body: 'Optionally set a Crawl-delay in seconds, then paste your sitemap URLs one per line in the Sitemap box.',
+      },
+      {
+        title: 'Export the file',
+        body: 'Use Copy to grab the text or Download to save robots.txt, then upload it to your site root at /robots.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Where do I put the robots.txt file?',
+        a: 'At your domain root, e.g. https://example.com/robots.txt. This tool generates the contents; you upload it to the root yourself — crawlers won’t find it anywhere else.',
+      },
+      {
+        q: 'Does every search engine respect Crawl-delay?',
+        a: 'No. Some crawlers honor Crawl-delay (e.g. Bing) but Google ignores it. The tool only emits the line when you enter a numeric value, so leave it blank if you don’t need it.',
+      },
+      {
+        q: 'Can I block all bots from one folder but allow a single bot?',
+        a: 'Yes. Create separate rule groups with different User-agent values; each group outputs its own block, so you can disallow /private/ for * and allow it for one named bot.',
+      },
+    ],
+  },
+
+  'css-clamp': {
+    metaTitle: 'CSS clamp() Generator — Fluid Responsive Sizes',
+    metaDescription:
+      'Generate a fluid CSS clamp() from a viewport and size range. 320px–1280px with 16px–24px text gives clamp(1rem, ... + ...vw, 1.5rem). Free, runs in your browser.',
+    intro:
+      'This clamp() generator computes a fluid responsive value by linearly interpolating between a small and large viewport. Enter a 320px–1280px range with a size of 16px–24px and it builds clamp(1rem, <intercept>rem + <slope>vw, 1.5rem) — text that scales smoothly from 16px on phones to 24px on wide screens, clamped at both ends. Adjust the root font-size and every rem bound recalculates.',
+    features: [
+      'Inputs for min/max viewport width (px), min/max size (px) and root font-size (px, default 16).',
+      'Linear interpolation: slope = (maxSize − minSize) / (maxViewport − minViewport); the fluid middle term becomes intercept(rem) + slope(vw).',
+      'Shows the breakdown — slope (vw), intercept (rem), min (rem) and max (rem); when the intercept is 0 the middle term is just <n>vw.',
+      'Validates input and reports an error if a field is blank, the root is ≤ 0, or the two viewports are equal (the slope would divide by zero).',
+      'Live result with a Copy button; the whole computation runs client-side.',
+    ],
+    steps: [
+      {
+        title: 'Set the viewport range',
+        body: 'Enter the smallest and largest viewport widths in px, for example 320 and 1280 — the bounds where your size should stop changing.',
+      },
+      {
+        title: 'Set the size range',
+        body: 'Enter the size at the small viewport and at the large viewport in px, e.g. 16 and 24; change the root font-size if your site isn’t the default 16. See the [CSS unit converter](guide:css-units) if you need to translate px to rem.',
+      },
+      {
+        title: 'Copy the clamp()',
+        body: 'Copy the generated clamp(min, preferred, max) and paste it into font-size, padding, margin or any length property.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the result in rem and vw instead of px?',
+        a: 'The tool converts the px bounds to rem (using your root font-size) and expresses the fluid middle term as an rem intercept plus a vw slope, which scales correctly with viewport width and respects user zoom.',
+      },
+      {
+        q: 'Why do I get an error when min and max viewport are the same?',
+        a: 'Equal viewports make the slope divide by zero, so a fluid value can’t be computed. Use two different widths — the gap between them is what produces the smooth scaling.',
+      },
+      {
+        q: 'What root font-size should I use?',
+        a: 'Use 16 unless your CSS overrides html { font-size }. The rem conversion depends on this value, so match it to your project to keep the bounds accurate.',
+      },
+    ],
+  },
+
+  'json-schema': {
+    metaTitle: 'JSON Schema Generator (draft-07) — Free Online',
+    metaDescription:
+      'Infer a JSON Schema from a sample JSON document. Paste {"name":"...","age":30} and get a draft-07 schema with typed properties and a required array. Free, in-browser.',
+    intro:
+      'This JSON Schema generator infers a draft-07 schema from a representative sample. Paste {"name":"Ada","age":30,"tags":["x"]} and it produces a schema with type object and properties name (string), age (integer) and tags (array of string), listing every key in required. Types are detected recursively, so nested objects and arrays get their own sub-schemas.',
+    features: [
+      'Adds $schema: http://json-schema.org/draft-07/schema# and recursively infers null, boolean, string, integer vs number, array and object types.',
+      'For objects, every key becomes a property and is listed in required (all keys are treated as required by default).',
+      'For arrays it merges element schemas: identical elements collapse to one items schema, differing ones become items.anyOf.',
+      'integer vs number is distinguished with Number.isInteger, so 30 becomes integer while 30.5 becomes number.',
+      'Shows parse errors inline for invalid JSON; Copy and Download (schema.json) buttons, pretty-printed with 2-space indent — all in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste a sample',
+        body: 'Paste a representative JSON example — an object, array or value — into the input. The more complete the sample, the more accurate the schema.',
+      },
+      {
+        title: 'Review the inferred schema',
+        body: 'The output pane shows the draft-07 schema with types, properties and the required array generated live as you edit.',
+      },
+      {
+        title: 'Save or copy',
+        body: 'Press Copy or Download to save schema.json, then plug it into your validator or API tooling.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which JSON Schema draft does it output?',
+        a: 'draft-07 — the output always sets $schema to the draft-07 URI. It is the most widely supported draft across validators.',
+      },
+      {
+        q: 'How does it handle arrays with mixed types?',
+        a: 'It merges the element schemas. If the elements differ it produces items: { anyOf: [...] }; if they’re all the same it emits a single items schema.',
+      },
+      {
+        q: 'Why are all my object fields marked required?',
+        a: 'The inference assumes every key present in your sample is required. If some fields are optional, remove them from the generated required array by hand.',
+      },
+    ],
+  },
+
+  'string-escape': {
+    metaTitle: 'String Escape / Unescape (JSON, HTML, URL) — Free',
+    metaDescription:
+      'Escape or unescape strings for JSON, JavaScript, HTML, SQL or URL. HTML mode turns < into &lt;; URL mode runs encodeURIComponent. Free online, in-browser.',
+    intro:
+      'This string escape tool escapes or unescapes text for five contexts. In HTML mode escaping turns < into &lt; so it renders as text; in URL mode it runs encodeURIComponent so a space becomes %20; in SQL mode it doubles single quotes (’’). Flip the direction to decode \\uXXXX sequences, HTML entities or percent-encoding back to plain text.',
+    features: [
+      'Five formats: JSON, JavaScript (\\n \\t \\uXXXX), HTML (& < > " ’ entities), SQL (doubles the single quote) and URL (encodeURIComponent/decodeURIComponent).',
+      'A direction toggle switches between Escape and Unescape, applied live as you type.',
+      'JS/JSON unescape decodes \\uXXXX, \\xXX and standard escapes; HTML unescape decodes named, decimal (&#NN;) and hex (&#xNN;) entities.',
+      'SQL escaping follows the SQL standard (double the single quote) and leaves backslashes untouched.',
+      'Shows a clear error for invalid input (e.g. a malformed percent sequence on decode); Copy button; fully client-side.',
+    ],
+    steps: [
+      {
+        title: 'Choose format and direction',
+        body: 'Pick a format (JSON, JavaScript, HTML, SQL or URL) and select Escape or Unescape.',
+      },
+      {
+        title: 'Enter your text',
+        body: 'Type or paste the string on the left; the converted result appears on the right instantly.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Press Copy to grab the escaped or unescaped output for your code.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does SQL escaping work here?',
+        a: 'It doubles single quotes (’’), the SQL-standard way to embed a quote inside a string literal. Backslashes are left as-is, since standard SQL doesn’t treat them as escapes.',
+      },
+      {
+        q: 'Does URL mode encode spaces as + or %20?',
+        a: 'It uses encodeURIComponent, so spaces become %20 (not +) and reserved characters are percent-encoded — the correct form for path and query-value components.',
+      },
+      {
+        q: 'Why did unescape fail on my URL string?',
+        a: 'decodeURIComponent throws on a malformed percent sequence (for example a lone % not followed by two hex digits), so the tool shows a conversion-failed message. Fix or remove the stray % and try again.',
+      },
+    ],
+  },
+
+  'unicode-lookup': {
+    metaTitle: 'Unicode Character Lookup — Code Point & UTF-8',
+    metaDescription:
+      'Inspect any text character by character: code point, name, UTF-8 bytes and HTML entity. “A” shows U+0041, UTF-8 41, &#65;. Free, runs in your browser.',
+    intro:
+      'This Unicode lookup breaks text into individual characters and shows each one’s details. Type "A" and you get U+0041, LATIN CAPITAL LETTER A, UTF-8 byte 41 and the HTML entity &#65;. It iterates by code point, so an emoji like 🎉 counts as a single character rather than two surrogate halves.',
+    features: [
+      'Iterates by code point (surrogate-pair aware) so emoji and astral characters are counted as one character each.',
+      'Per-character columns: the glyph, the U+XXXX code point, a name, the UTF-8 byte sequence in hex, and the decimal HTML entity (&#NNN;).',
+      'Name heuristics cover C0/C1 controls, space, digits, Latin letters, Hangul, CJK, Hiragana, Katakana, emoji and punctuation ranges.',
+      'UTF-8 bytes are computed with TextEncoder, and whitespace glyphs are shown with a visible placeholder so they don’t disappear in the table.',
+      'Shows the total character count and a "Copy table" button that exports the rows as TSV — all client-side.',
+    ],
+    steps: [
+      {
+        title: 'Type or paste text',
+        body: 'Enter the text you want to inspect, such as a mix like "한 A 🎉" to see how scripts and emoji are broken down.',
+      },
+      {
+        title: 'Read the per-character table',
+        body: 'Each row lists the character, its U+ code point, name, UTF-8 hex bytes and HTML entity.',
+      },
+      {
+        title: 'Export the table',
+        body: 'Press "Copy table" to copy a tab-separated table you can paste straight into a spreadsheet.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why does an emoji show as a single character?',
+        a: 'The tool iterates by Unicode code point, so an emoji that JavaScript stores as a surrogate pair is still counted and displayed as one character.',
+      },
+      {
+        q: 'Are the character names the official Unicode names?',
+        a: 'No — they are range-based heuristics like "CJK UNIFIED IDEOGRAPH" or "HANGUL SYLLABLE". For uncommon characters it falls back to the U+ code point.',
+      },
+      {
+        q: 'What does the UTF-8 column show?',
+        a: 'The 1–4 hex bytes that encode the character in UTF-8, computed locally with TextEncoder — useful for debugging encoding issues.',
+      },
+    ],
+  },
+
+  'crontab-builder': {
+    metaTitle: 'Crontab Builder — Cron Expression & Next Runs',
+    metaDescription:
+      'Build a 5-field cron expression and preview upcoming run times. Fields 0 9 * * 1 give "0 9 * * 1" running every Monday at 09:00. Free, in-browser.',
+    intro:
+      'This crontab builder assembles a five-field cron expression and shows when it will next fire. Enter 0 9 * * 1 and it produces "0 9 * * 1" and lists the upcoming Monday 09:00 runs. Each field accepts steps, ranges and lists, so */15 in the minute field means every quarter hour.',
+    features: [
+      'Five inputs — minute (0–59), hour (0–23), day of month (1–31), month (1–12) and day of week (0–6, Sun=0); blanks default to *.',
+      'Supports *, steps (*/n), ranges (a-b) and comma lists in every field, with a plain-language description of the schedule.',
+      'Computes up to 5 next run times by scanning minute-by-minute for about a year, applying the cron day rule.',
+      'Shows the expression in a code line with a Copy button; the next-run preview is computed after mount so it stays hydration-safe.',
+      'Warns if no run occurs within a year (an impossible combination); all calculation happens in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Fill the five fields',
+        body: 'Enter values for minute, hour, day-of-month, month and day-of-week; leave a field as * for "every".',
+      },
+      {
+        title: 'Use steps, ranges and lists',
+        body: 'Type */15 for every 15 units, 1-5 for a range, or 1,3,5 for a list in any field to build more specific schedules.',
+      },
+      {
+        title: 'Check next runs and copy',
+        body: 'Review the next-run list to confirm the timing, then Copy the cron expression into your scheduler. To read an existing expression, try the [cron explainer](guide:cron-explainer).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are day-of-month and day-of-week combined?',
+        a: 'By cron convention: if both are restricted, the job fires when EITHER matches (a logical OR). If only one is restricted, only that one applies.',
+      },
+      {
+        q: 'What does */5 mean in the minute field?',
+        a: 'Every 5 minutes, starting from the field’s minimum. The tool also parses ranges (a-b) and comma lists, so you can mix them as needed.',
+      },
+      {
+        q: 'Why does it say no run within a year?',
+        a: 'The preview scans about 366 days; an impossible combination such as Feb 30 never matches, so adjust the fields until a valid date appears.',
+      },
+    ],
+  },
+
+  'tailwind-shades': {
+    metaTitle: 'Tailwind Color Shades Generator (50–950) — Free',
+    metaDescription:
+      'Generate a Tailwind-style 50–950 shade scale from one HEX color. #3b82f6 produces 11 shades that keep the hue while stepping the lightness. Free, in-browser.',
+    intro:
+      'This tool turns a single HEX color into a full Tailwind-style 50–950 shade scale. Enter #3b82f6 and it builds 11 swatches (50, 100, … 900, 950) by holding the hue and saturation while stepping the lightness from very light (50) to very dark (950). The step closest to your color’s lightness is marked as the base and keeps your exact HEX.',
+    features: [
+      '11 steps (50, 100, 200 … 900, 950), each rebuilt at a target lightness from 0.97 (50) down to 0.16 (950).',
+      'Parses #RGB and #RRGGBB, converts to HSL, holds the hue and saturation, and recomputes each step at its target lightness.',
+      'Auto-marks the step nearest your input lightness as the base and keeps your exact HEX there.',
+      'Slightly reduces saturation at the very lightest and darkest ends so the extremes look natural rather than muddy.',
+      'HEX field plus a native color picker; click any swatch to copy its HEX, or "Copy all" to copy the full step:hex list.',
+    ],
+    steps: [
+      {
+        title: 'Enter a base color',
+        body: 'Type a HEX value such as #3b82f6 or pick one with the color picker.',
+      },
+      {
+        title: 'Read the scale',
+        body: 'The tool lists 11 swatches from 50 (lightest) to 950 (darkest) and tags the step closest to your color as the base.',
+      },
+      {
+        title: 'Copy the shades',
+        body: 'Click a single swatch to copy its HEX, or use "Copy all" to copy every step and value for your tailwind.config.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which step will my exact color land on?',
+        a: 'The tool finds the step whose target lightness is nearest your color’s lightness, keeps your exact HEX there, and labels it the base — so your brand color stays untouched.',
+      },
+      {
+        q: 'Why don’t the shades exactly match Tailwind’s official palette?',
+        a: 'It uses a fixed target-lightness curve and preserves your hue and saturation, so it produces a close, perceptually similar approximation rather than Tailwind’s hand-tuned values.',
+      },
+      {
+        q: 'Does it accept 3-digit hex like #39f?',
+        a: 'Yes. Both #RGB shorthand and full #RRGGBB are parsed; invalid input shows an inline error.',
+      },
+    ],
+  },
+
+  'readability-score': {
+    metaTitle: 'Readability Score (Flesch & Grade Level) — Free',
+    metaDescription:
+      'Measure English readability with Flesch Reading Ease and Flesch-Kincaid Grade Level. A passage scoring 70 reads at about a 7th-grade level. Free, in-browser.',
+    intro:
+      'This readability checker scores English text with the Flesch Reading Ease and Flesch-Kincaid Grade Level formulas. A passage that scores around 70 is rated fairly easy — roughly a 7th-grade reading level. It counts words, sentences and estimated syllables, then reports both scores with a plain difficulty label.',
+    features: [
+      'Flesch Reading Ease = 206.835 − 1.015×(words/sentences) − 84.6×(syllables/word), shown to one decimal.',
+      'Flesch-Kincaid Grade = 0.39×(words/sentences) + 11.8×(syllables/word) − 15.59, mapping the text to a US school grade.',
+      'Counts words with a letter-token regex (apostrophes and hyphens allowed) and sentences by . ! ? (at least 1).',
+      'Estimates syllables with a vowel-group heuristic that drops a trailing silent "e" and guarantees at least one per word.',
+      'Outputs word, sentence and syllable counts, a difficulty label, and a "Copy result" summary — English-only, in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste English text',
+        body: 'Enter the English passage you want to evaluate into the text box.',
+      },
+      {
+        title: 'Read the score',
+        body: 'See the Flesch Reading Ease number with its difficulty label, plus the Flesch-Kincaid grade level.',
+      },
+      {
+        title: 'Copy the report',
+        body: 'Use "Copy result" to copy the Flesch score, grade, and word/sentence/syllable counts.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is a good Flesch Reading Ease score?',
+        a: 'Higher is easier: 90+ is very easy, 60–70 is plain or standard, 30–50 is difficult and below 30 is very hard. Web content often aims for 60+.',
+      },
+      {
+        q: 'What’s the difference between Reading Ease and Grade Level?',
+        a: 'Reading Ease is a 0–100+ score where higher means easier; Flesch-Kincaid Grade Level maps the same text onto a US school grade number, which is often easier to act on.',
+      },
+      {
+        q: 'Does it work for non-English text?',
+        a: 'No. It only counts Latin-letter words and uses an English vowel-group syllable heuristic, so non-English text gives no meaningful score.',
+      },
+    ],
+  },
+
+  'sort-numbers': {
+    metaTitle: 'Number Sorter with Stats — Free Online',
+    metaDescription:
+      'Sort numbers separated by lines, commas or spaces and get stats. "3, 1, 2" ascending gives 1/2/3 with sum 6, average 2, min 1, max 3. Free, in-browser.',
+    intro:
+      'This number sorter takes a messy list and returns it cleanly ordered with summary stats. Paste "3, 1, 2" and choose ascending to get 1, 2, 3 along with a count of 3, sum 6, average 2, min 1 and max 3. It splits on spaces, commas and line breaks, and sorts numerically rather than as text so 10 lands after 9.',
+    features: [
+      'Tokenizes on whitespace and commas; accepts signed, decimal and exponent notation, and reports how many non-numeric tokens were skipped.',
+      'Ascending/Descending toggle that sorts numerically (a−b / b−a), not lexically.',
+      'Summary stats: count, sum, average, min and max, formatted to up to 6 decimals with thousands separators.',
+      'Result shown one number per line in a read-only box with a "Copy result" button.',
+      'Entirely client-side, so even large lists are processed locally.',
+    ],
+    steps: [
+      {
+        title: 'Paste your numbers',
+        body: 'Enter numbers separated by new lines, commas or spaces in the input box.',
+      },
+      {
+        title: 'Choose the order',
+        body: 'Toggle Ascending or Descending depending on which way you want them sorted.',
+      },
+      {
+        title: 'Copy the output',
+        body: 'Read the stats (sum, average, min, max) and Copy the sorted list.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What happens to non-numeric items in my list?',
+        a: 'They are ignored, and the tool shows a notice with the count of skipped items. Only valid numbers are sorted and included in the stats.',
+      },
+      {
+        q: 'Can it handle decimals and negatives?',
+        a: 'Yes. It parses signed, decimal and scientific-notation numbers and sorts them numerically, so −2.5 correctly sorts below 0.',
+      },
+      {
+        q: 'Why are some values rounded?',
+        a: 'The stats are formatted to a maximum of 6 decimal places to reduce floating-point noise in the display; the sort itself uses the full values.',
+      },
+    ],
+  },
+
+  'list-shuffle': {
+    metaTitle: 'List Shuffle (Random Order) — Free Online',
+    metaDescription:
+      'Randomly shuffle a line-by-line list for draws and orderings. Uses crypto-secure Fisher-Yates so every order is equally likely. Free, runs in your browser.',
+    intro:
+      'This list shuffler reorders a line-by-line list into a fair random order — perfect for draws, picking turns or randomizing a playlist. Put one item per line and press Shuffle; each press produces a fresh order using a cryptographically secure Fisher-Yates shuffle, so no arrangement is favored over another.',
+    features: [
+      'Cryptographically secure shuffle: Fisher-Yates using crypto.getRandomValues with rejection sampling to avoid modulo bias.',
+      'Splits the input by line and ignores blank or whitespace-only lines.',
+      'Shuffling only runs when you click the button, so the result stays deterministic until you act and re-shuffles each press.',
+      'The Shuffle button is disabled until there is at least one non-empty line.',
+      'Result shown in a read-only box with a Copy button; all randomization is local in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your list',
+        body: 'Put one item per line — for example the names entered in a draw.',
+      },
+      {
+        title: 'Shuffle',
+        body: 'Press the Shuffle button; press it again for a brand-new random order.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Use "Copy result" to copy the shuffled order.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is the shuffle truly random?',
+        a: 'It uses crypto.getRandomValues with a Fisher-Yates algorithm and rejection sampling to remove modulo bias, so every possible ordering is equally likely.',
+      },
+      {
+        q: 'Why doesn’t it shuffle automatically as I type?',
+        a: 'Shuffling only on click keeps the server and client renders identical (hydration-safe) and lets you decide exactly when a new draw happens.',
+      },
+      {
+        q: 'Are blank lines included in the draw?',
+        a: 'No. Empty or whitespace-only lines are filtered out before shuffling, so they never appear in the result.',
+      },
+    ],
+  },
+
+  'syllable-counter': {
+    metaTitle: 'Syllable Counter & Haiku Checker — Free Online',
+    metaDescription:
+      'Count syllables and words in English text, with an optional 5-7-5 haiku check. Validates a three-line poem against the haiku pattern. Free, in-browser.',
+    intro:
+      'This syllable counter estimates the syllables and words in English text and can validate a haiku. Paste a short poem and turn on haiku mode to check its three lines against the 5-7-5 pattern, with the actual count shown beside each target. Multi-line input also gets a per-line breakdown.',
+    features: [
+      'Estimates syllables with a vowel-group heuristic — consecutive vowels count as one, a trailing silent "e" is dropped, minimum one per word.',
+      'Reports total words and total syllables, with a per-line table when there are multiple non-empty lines.',
+      'Haiku (5-7-5) mode checks the three non-empty lines against [5,7,5] and shows each line’s count versus the target.',
+      'Word tokenization allows apostrophes and hyphens inside words, so "don’t" and "well-known" count correctly.',
+      '"Copy result" exports the word and syllable totals; English-only estimate, fully in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Paste English words, or a short poem with one line per verse.',
+      },
+      {
+        title: 'Optionally enable haiku mode',
+        body: 'Tick "Haiku (5-7-5) check" to validate three lines against the classic 5-7-5 structure.',
+      },
+      {
+        title: 'Read the counts',
+        body: 'View the total words and syllables and the per-line table, then Copy the result.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How accurate is the syllable count?',
+        a: 'It is a heuristic based on vowel groups and a silent-e rule, so it is a close estimate. Unusual spellings or proper names may be off by one.',
+      },
+      {
+        q: 'How does the haiku check work?',
+        a: 'It looks at exactly the non-empty lines and confirms they have 5, 7 and 5 syllables, showing the actual count beside each target so you can adjust.',
+      },
+      {
+        q: 'Does it count syllables in non-English words?',
+        a: 'Only Latin-letter words are tokenized and scored, and the vowel heuristic is tuned for English, so other languages won’t be accurate.',
+      },
+    ],
+  },
+
+  'strikethrough-text': {
+    metaTitle: 'Strikethrough Text Generator (Unicode) — Free',
+    metaDescription:
+      'Make s̶t̶r̶i̶k̶e̶t̶h̶r̶o̶u̶g̶h̶, underline or overline text with Unicode marks that survive plain-text fields. Free, in-browser.',
+    intro:
+      'This generator adds strikethrough, underline or overline to text using Unicode combining marks, so the effect travels into bios, usernames and chat boxes that strip normal formatting. Type "hello" and get h̶e̶l̶l̶o̶ to paste anywhere — the styling lives in the characters themselves, not in rich text.',
+    features: [
+      'Three modes — Strikethrough (U+0336), Underline (U+0332) and Overline (U+0305) — picked with toggle buttons.',
+      'Appends the chosen combining mark after each character, in a code-point-aware way that protects surrogate pairs.',
+      'Preserves line breaks without adding marks to them, so multi-line text keeps its structure.',
+      'Live preview in a large read-only box; the effect works in apps that strip formatting because it’s in the characters themselves.',
+      'Copy button; everything runs client-side.',
+    ],
+    steps: [
+      {
+        title: 'Pick a style',
+        body: 'Choose Strikethrough, Underline or Overline.',
+      },
+      {
+        title: 'Type your text',
+        body: 'Enter text and the decorated version appears in the result box.',
+      },
+      {
+        title: 'Copy and paste',
+        body: 'Copy the output and paste it into a social bio, username or message.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why does the strikethrough work where formatting buttons aren’t available?',
+        a: 'It uses Unicode combining marks attached to each letter rather than rich-text styling, so the effect stays attached when the text is pasted into a plain-text field.',
+      },
+      {
+        q: 'Will it display correctly everywhere?',
+        a: 'Most modern apps render combining marks fine, but a few fonts or platforms may misalign or drop them, so results can vary by device.',
+      },
+      {
+        q: 'Does it affect line breaks?',
+        a: 'No. Newline characters are left unmarked, so multi-line text keeps its layout.',
+      },
+    ],
+  },
+
+  'superscript-text': {
+    metaTitle: 'Superscript & Subscript Text (Unicode) — Free',
+    metaDescription:
+      'Convert characters to Unicode superscript or subscript. "x2" becomes x² and "H2O" becomes H₂O, ready for plain-text fields. Free, runs in your browser.',
+    intro:
+      'This tool converts characters into real Unicode superscript or subscript glyphs, so they survive plain-text fields with no formatting. Type "x2" in superscript mode to get x², or "H2O" in subscript mode to get H₂O. Characters without a mapping are left as-is, so mixed text is partially converted.',
+    features: [
+      'Two modes: Superscript (x²) and Subscript (H₂O), switched with a toggle.',
+      'Superscript maps digits 0–9, + − = ( ), and most lowercase plus many uppercase letters to their Unicode superscript glyphs.',
+      'Subscript maps digits 0–9, + − = ( ), and the subset of letters that have subscript forms (a, e, h, i, j, k, l, m, n, o, p, r, s, t, u, v, x).',
+      'Characters without a mapping pass through unchanged, so you can convert just the part that needs it.',
+      'Live preview and a Copy button; runs locally in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Choose super or sub',
+        body: 'Select Superscript or Subscript mode.',
+      },
+      {
+        title: 'Enter your text',
+        body: 'Type the characters to convert; mappable characters change while the rest stay the same.',
+      },
+      {
+        title: 'Copy the output',
+        body: 'Press Copy to grab the converted Unicode text.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why didn’t all my letters convert to subscript?',
+        a: 'Unicode only defines subscript forms for a limited set of letters, so unsupported characters are left as-is. Superscript covers more of the alphabet than subscript.',
+      },
+      {
+        q: 'Is this real superscript or just smaller text?',
+        a: 'It substitutes dedicated Unicode superscript/subscript characters, so the effect persists in plain-text fields without any styling.',
+      },
+      {
+        q: 'Can I write chemical formulas like H₂O?',
+        a: 'Yes — use subscript mode for formulas like H2O, and superscript mode for exponents like x2.',
+      },
+    ],
+  },
+
+  'world-clock': {
+    metaTitle: 'World Clock — Multiple Time Zones at Once',
+    metaDescription:
+      'See the current time in many cities on one screen. Starts with Seoul, New York, London and Tokyo and updates every second. Free, runs in your browser.',
+    intro:
+      'This world clock shows the live time across as many cities as you like, side by side. It opens with Seoul, New York, London and Tokyo and ticks every second; add any IANA time zone from the dropdown to track teammates, markets or family abroad. Daylight saving is handled automatically by your browser’s time-zone database.',
+    features: [
+      'Uses the browser’s full IANA time-zone list, with a fallback list of major cities if the API is unavailable.',
+      'Default zones are Asia/Seoul, America/New_York, Europe/London and Asia/Tokyo; add any zone from the dropdown and remove it with the X.',
+      'Times are formatted as 24-hour HH:mm:ss with the weekday and date, and refresh every second.',
+      'Hydration-safe: the times render only after mount to avoid a server/client mismatch.',
+      '"Copy all" exports every city’s date and time as text; fully client-side with no server calls.',
+    ],
+    steps: [
+      {
+        title: 'Review the default cities',
+        body: 'Seoul, New York, London and Tokyo appear by default with live clocks.',
+      },
+      {
+        title: 'Add a zone',
+        body: 'Pick a time zone from the dropdown and press Add to include another city.',
+      },
+      {
+        title: 'Manage and copy',
+        body: 'Remove cities with the X, and use "Copy all" to copy every city’s current date and time.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it handle daylight saving time?',
+        a: 'Yes. It relies on the browser’s Intl time-zone database, so DST offsets are applied automatically per zone — no manual adjustment needed.',
+      },
+      {
+        q: 'Why do the clocks blank out briefly on load?',
+        a: 'To stay hydration-safe, the current time is injected only after the component mounts, so a placeholder shows for a fraction of a second.',
+      },
+      {
+        q: 'How many cities can I track?',
+        a: 'As many as you like — add zones from the dropdown and each shows its own live time and can be removed individually.',
+      },
+    ],
+  },
+
+  'countdown': {
+    metaTitle: 'Countdown Timer to a Date — Free Online',
+    metaDescription:
+      'Count down to any date and time in days, hours, minutes and seconds. Set a New Year target and watch it tick live. Free, runs in your browser.',
+    intro:
+      'This countdown timer counts down to a target date and time, showing the remaining days, hours, minutes and seconds. Pick a New Year datetime and it ticks live every second; once the moment arrives it switches to a "time has passed" state. The target is read in your device’s local time zone.',
+    features: [
+      'A single datetime-local input; the target is interpreted in your browser’s local time zone.',
+      'Computes remaining days, hours, minutes and seconds from the millisecond difference, with a passed state when the target is in the past.',
+      'Updates every second and stays hydration-safe by injecting the current time only after mount.',
+      'Validates the entered datetime and warns if it is invalid.',
+      '"Copy" exports the remaining-time text; all calculation is local.',
+    ],
+    steps: [
+      {
+        title: 'Pick the target',
+        body: 'Choose a target date and time with the datetime picker.',
+      },
+      {
+        title: 'Watch the countdown',
+        body: 'The four-cell display (days / hours / minutes / seconds) ticks down every second.',
+      },
+      {
+        title: 'Copy if needed',
+        body: 'Use Copy to grab the current remaining-time string.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which time zone is the target in?',
+        a: 'The datetime-local value is read in your browser’s local time zone, so the countdown matches your device’s clock rather than a fixed server time.',
+      },
+      {
+        q: 'What happens when the target time arrives?',
+        a: 'The display switches to a "target time has passed" message and the remaining difference is clamped at zero.',
+      },
+      {
+        q: 'Does the timer keep running if I close the tab?',
+        a: 'No. It runs only while the page is open, recomputing from the current time each second — reopen the page and it picks up the right remaining time again.',
+      },
+    ],
+  },
+
+  'magic-8-ball': {
+    metaTitle: 'Magic 8-Ball — Random Yes/No Answer',
+    metaDescription:
+      'Ask a yes/no question and get one of the classic 20 Magic 8-Ball answers. 10 positive, 5 non-committal, 5 negative. Free, just for fun, in your browser.',
+    intro:
+      'This Magic 8-Ball gives a random answer to any yes/no question from the classic 20-reply set — 10 positive, 5 non-committal and 5 negative. Type a question (or none at all), shake the ball, and one answer appears. It’s purely for fun, but the pick uses cryptographically secure randomness so each reply is equally likely.',
+    features: [
+      'A 20-answer pool split 10 positive, 5 non-committal and 5 negative, just like the real toy.',
+      'The random pick uses crypto.getRandomValues with rejection sampling to avoid modulo bias.',
+      'An optional question field; press Enter or "Shake the ball" to reveal an answer.',
+      'The answer is generated only on click (hydration-safe), not on the initial render.',
+      'Copy button for the answer; purely for entertainment and runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Ask a question',
+        body: 'Type a yes/no question in the field (this is optional).',
+      },
+      {
+        title: 'Shake',
+        body: 'Press "Shake the ball" (or Enter) to reveal a random answer.',
+      },
+      {
+        title: 'Copy',
+        body: 'Use Copy to copy the answer text.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How many possible answers are there?',
+        a: 'Twenty — the standard Magic 8-Ball set, with 10 affirmative, 5 non-committal and 5 negative responses.',
+      },
+      {
+        q: 'Is the answer actually random?',
+        a: 'Yes, it uses cryptographically secure randomness (crypto.getRandomValues) with bias removal — though it’s meant purely for fun, not real decisions.',
+      },
+      {
+        q: 'Do I have to type a question?',
+        a: 'No. The question field is optional; you can shake for an answer without entering anything.',
+      },
+    ],
+  },
+
+  'decision-wheel': {
+    metaTitle: 'Decision Wheel — Random Picker with Spin',
+    metaDescription:
+      'Enter options one per line and let the wheel spin to pick one fairly. Each non-empty line is a choice; the winner uses crypto-secure randomness. Free, in-browser.',
+    intro:
+      'This decision wheel picks one option from your list with a fun spinning animation. Enter your choices one per line — say pizza, ramen and fried rice — and press Spin; the wheel flickers for about 1.6 seconds before landing on one. The winner is actually chosen up front with secure randomness, so the spin is just for show and stays perfectly fair.',
+    features: [
+      'Options entered one per line; blank lines are ignored and a live count is shown.',
+      'The winner is chosen up front with crypto.getRandomValues plus rejection sampling, so the outcome is fair regardless of the visual spin.',
+      'The spin animation cycles previews every 80ms for about 1.6 seconds before revealing the result.',
+      'Timers are cleaned up on unmount and reset to avoid leaks; Spin is disabled while spinning or with no options.',
+      'Copy button for the result; entirely client-side.',
+    ],
+    steps: [
+      {
+        title: 'List your options',
+        body: 'Type one choice per line in the options box.',
+      },
+      {
+        title: 'Spin',
+        body: 'Press Spin; the wheel flickers through options and then stops on one.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Use Copy to copy the chosen option.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is the spinning animation fixing the outcome?',
+        a: 'No. The winner is decided immediately with secure randomness; the spin is only a visual effect and doesn’t influence the result.',
+      },
+      {
+        q: 'How many options can I add?',
+        a: 'Any number — each non-empty line becomes an option and the live counter shows how many you have.',
+      },
+      {
+        q: 'Is each option equally likely?',
+        a: 'Yes. Rejection sampling removes modulo bias, so every option has an exactly equal chance of winning.',
+      },
+    ],
+  },
+
+  'bill-split': {
+    metaTitle: 'Bill Split Calculator (with Tax & Tip) — Free',
+    metaDescription:
+      'Split a bill with optional tax and tip across people. ₩60,000 with 10% tax, 5% tip among 4 shows the per-person and total amounts. Free, in-browser.',
+    intro:
+      'This bill split calculator divides a total across a group, optionally adding tax and tip. Enter ₩60,000 with 10% tax, 5% tip and 4 people and it shows the grand total and the amount each person owes. The tip is calculated on the pre-tax amount, and the breakdown card spells out tax, tip and total.',
+    features: [
+      'Inputs for total amount (₩), tax rate %, tip rate % (both optional, default 0) and number of people (at least 1).',
+      'Tax = base × tax%, tip = base × tip% (tip is computed on the pre-tax amount); grand total = base + tax + tip.',
+      'Per-person amount = grand total / people, rounded and formatted in won with thousands separators.',
+      'A breakdown card shows tax, tip and grand total next to the per-person figure.',
+      'Live calculation with a Copy button; everything stays local.',
+    ],
+    steps: [
+      {
+        title: 'Enter the total',
+        body: 'Type the pre-tax bill amount in won.',
+      },
+      {
+        title: 'Add tax, tip and people',
+        body: 'Optionally enter the tax % and tip %, then the number of people to split among.',
+      },
+      {
+        title: 'Read and copy',
+        body: 'See the per-person and total amounts and Copy the summary line.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is the tip calculated before or after tax?',
+        a: 'Before tax — the tip is a percentage of the base (pre-tax) amount, then added together with the tax to form the grand total.',
+      },
+      {
+        q: 'What currency does it use?',
+        a: 'Korean won (₩); amounts are rounded to whole won and shown with thousands separators.',
+      },
+      {
+        q: 'Can I leave tax and tip empty?',
+        a: 'Yes. Both default to 0% if left blank; only a valid amount and a people count of at least 1 are required to calculate.',
+      },
+    ],
+  },
+
+  'ideal-weight': {
+    metaTitle: 'Ideal Weight Calculator (Devine, BMI-22) — Free',
+    metaDescription:
+      'Estimate ideal body weight from height and sex with Devine, Robinson and BMI-22 formulas, plus a healthy BMI range. Free, in-browser estimate.',
+    intro:
+      'This ideal weight calculator estimates a healthy target weight from your height and sex using several established formulas. For a 170cm male it shows the Devine, Robinson and BMI-22 weights side by side, plus the healthy 18.5–24.9 BMI band. Comparing the formulas gives you a sensible range rather than a single "correct" number.',
+    features: [
+      'Devine (1974): base 50kg (male) / 45.5kg (female) plus 2.3kg per inch over 60in (152.4cm).',
+      'Robinson (1983): base 52kg (male) / 49kg (female) plus 1.9kg (male) / 1.7kg (female) per inch over 60in.',
+      'BMI-22 reference (sex-independent): weight = 22 × height(m)².',
+      'Healthy BMI range from 18.5×m² to 24.9×m², with all results shown in kg to one decimal.',
+      'Height is guarded to 100–250cm with a male/female toggle; Copy button; estimate-only and in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your height',
+        body: 'Type your height in cm (must be between 100 and 250).',
+      },
+      {
+        title: 'Select sex',
+        body: 'Tap Male or Female to set the Devine and Robinson base weights.',
+      },
+      {
+        title: 'Compare the results',
+        body: 'Review the Devine, Robinson and BMI-22 weights plus the healthy BMI range, then Copy. For your current BMI, use the [BMI calculator](guide:bmi-calc).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which formula is most reliable?',
+        a: 'All are estimates. Devine is widely used clinically (for example in drug dosing), Robinson is a tuned variant, and BMI-22 reflects the healthy-BMI midpoint. Comparing them gives a range, not one exact weight.',
+      },
+      {
+        q: 'Why do men and women get different numbers?',
+        a: 'The Devine and Robinson formulas use sex-specific base weights and per-inch increments. Only the BMI-22 figure is the same for both sexes.',
+      },
+      {
+        q: 'Is the result a health recommendation?',
+        a: 'No. It’s a reference estimate; the tool labels it as such and shows the normal BMI (18.5–24.9) band for context. Talk to a professional for personal advice.',
+      },
+    ],
+  },
+
+  'zodiac': {
+    metaTitle: 'Zodiac Sign Finder by Birth Date — Free',
+    metaDescription:
+      'Find your Western zodiac sign from your birth date using exact date boundaries. April 5 returns Aries (3/21–4/19). Free, runs in your browser.',
+    intro:
+      'This zodiac sign finder maps any birth date to its Western star sign using precise date boundaries. Enter April 5 and it returns Aries (3/21–4/19) with the sign’s symbol and a short trait note. It validates real calendar dates and handles Capricorn correctly across the New Year boundary.',
+    features: [
+      '12 signs with exact start dates (Aries from 3/21, Taurus from 4/20, and so on), with Capricorn (12/22–1/19) handled across the year boundary.',
+      'A date input that parses YYYY-MM-DD and validates real calendar dates, rejecting impossible ones like Feb 30.',
+      'Returns the sign symbol, name and a short trait note.',
+      'Warns on invalid dates; the Copy button copies the symbol, name and trait together.',
+      'Deterministic and fully client-side.',
+    ],
+    steps: [
+      {
+        title: 'Enter your birth date',
+        body: 'Pick your date of birth in the date field.',
+      },
+      {
+        title: 'View your sign',
+        body: 'The matching zodiac symbol, name and trait note appear instantly.',
+      },
+      {
+        title: 'Copy',
+        body: 'Use Copy to copy the sign and its description.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What sign is someone born on a cusp date like April 20?',
+        a: 'The tool uses fixed start-date boundaries (Taurus starts 4/20), so April 20 is Taurus. Each sign runs from its start date to the day before the next sign begins.',
+      },
+      {
+        q: 'How is Capricorn handled since it crosses New Year?',
+        a: 'It’s treated specially: both 12/22–12/31 and 1/1–1/19 map to Capricorn.',
+      },
+      {
+        q: 'Does the year affect the result?',
+        a: 'No — only the month and day determine the Western sign. The year is only used to confirm the date actually exists.',
+      },
+    ],
+  },
+
+  'numerology': {
+    metaTitle: 'Numerology Calculator (Life Path) — Free Online',
+    metaDescription:
+      'Compute your Life Path number from your birth date and an optional Expression number from your name. Master numbers 11/22/33 are preserved. Free, for fun.',
+    intro:
+      'This numerology calculator reduces your birth date to a Life Path number and, optionally, your name to an Expression number. A birthday is reduced to a single digit (or a preserved master number 11, 22 or 33) with a short personality note. It’s for entertainment, but the reductions follow the standard Pythagorean method.',
+    features: [
+      'Life Path: reduces the month, day and year separately, sums them and reduces again, keeping master numbers 11/22/33 instead of reducing them.',
+      'Expression (name) number: a Pythagorean A=1 … I=9 mapping over A–Z letters, summed and reduced.',
+      'The date input is validated as a real YYYY-MM-DD calendar date; the name input is optional and uses English letters.',
+      'Each number comes with a one-line personality meaning, and master numbers are labelled as such.',
+      'A Copy button exports both numbers with their meanings; for fun and fully in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your birth date',
+        body: 'Pick your date of birth to compute the Life Path number.',
+      },
+      {
+        title: 'Optionally add a name',
+        body: 'Type an English name to also get the Expression number.',
+      },
+      {
+        title: 'Read and copy',
+        body: 'View each number with its meaning and Copy the results.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What are master numbers and why aren’t they reduced?',
+        a: 'In numerology 11, 22 and 33 are considered "master numbers" and are kept as-is rather than reduced to a single digit.',
+      },
+      {
+        q: 'How is the name (Expression) number calculated?',
+        a: 'Each A–Z letter maps to 1–9 Pythagorean-style (A=1 … I=9, J=1, and so on); the values are summed and reduced, and non-letters are ignored.',
+      },
+      {
+        q: 'Is this scientifically meaningful?',
+        a: 'No. The tool states it’s for fun — numerology has no scientific basis.',
+      },
+    ],
+  },
+
+  'hash-identifier': {
+    metaTitle: 'Hash Identifier — Detect MD5, SHA, bcrypt',
+    metaDescription:
+      'Identify likely hash types from length, charset and prefix. A 32-char hex string is flagged as MD5, a $2b$ prefix as bcrypt. Free, runs in your browser.',
+    intro:
+      'This hash identifier guesses which algorithm produced a hash from its length, character set and any prefix. A 32-character hex string is flagged as MD5 (high confidence) along with MD4, NTLM and others (medium), while a $2b$ prefix is identified as bcrypt with certainty. The analysis runs entirely in your browser and nothing is uploaded.',
+    features: [
+      'Prefix signatures identify modular-crypt hashes outright: bcrypt ($2a/$2b/$2y$), md5crypt ($1$), sha256crypt ($5$), sha512crypt ($6$), Argon2, scrypt, PBKDF2 and LDAP {SSHA}.',
+      'A hex-length map suggests algorithms: 32 = MD5/MD4/NTLM, 40 = SHA-1/RIPEMD-160, 64 = SHA-256/SHA3-256/BLAKE2s, 128 = SHA-512/SHA3-512/Whirlpool, and more.',
+      'The primary algorithm for each length is marked high confidence (e.g. MD5 at 32, SHA-256 at 64); the rest are medium.',
+      'Base64 inputs are decoded by byte length to suggest MD5/SHA-1/SHA-224/256/384/512 in Base64 at medium confidence.',
+      'Shows a confidence level and the reason for each candidate; everything runs locally with nothing uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Paste the hash',
+        body: 'Paste the hash string into the input field.',
+      },
+      {
+        title: 'Review the candidates',
+        body: 'See the listed algorithms with confidence badges and the reasoning (length, charset or prefix).',
+      },
+      {
+        title: 'Narrow it down',
+        body: 'Use the prefix or context to choose among same-length candidates the tool can’t tell apart by length alone.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can it tell MD5 and NTLM apart?',
+        a: 'No. MD5, NTLM and MD4 are all 32-character hex, so the tool lists them together (MD5 marked highest). Length alone cannot disambiguate them — you need to know the source.',
+      },
+      {
+        q: 'How does it identify bcrypt with certainty?',
+        a: 'By prefix: it matches the $2a$/$2b$/$2y$ pattern with a 22-character salt and 31-character hash, which uniquely signals bcrypt.',
+      },
+      {
+        q: 'Does it crack or reverse the hash?',
+        a: 'No. It only identifies the likely algorithm from the format — it never attempts to recover the original input, and good hashes are one-way by design.',
+      },
+    ],
+  },
+
+  'iban-validator': {
+    metaTitle: 'IBAN Validator (mod-97 Checksum) — Free Online',
+    metaDescription:
+      'Validate an IBAN’s format, country length and mod-97 checksum, then decode the bank and account. DE89 3704 0044 0532 0130 00 validates. Free, in-browser.',
+    intro:
+      'This IBAN validator checks an account number’s structure, its country-specific length and its ISO 7064 mod-97 checksum, then breaks out the country, bank and account fields. Paste DE89 3704 0044 0532 0130 00 and it confirms the German IBAN is valid and decodes the bank code and account number. Everything runs in your browser.',
+    features: [
+      'Normalizes the input (strips spaces and hyphens, uppercases) and re-formats it in tidy 4-character groups.',
+      'Checks the structure (2-letter country + 2 check digits + alphanumeric BBAN) and country-specific length for roughly 19 European countries (DE=22, FR=27, GB=22, and so on).',
+      'Runs the ISO 7064 MOD-97-10 checksum: it moves the first 4 characters to the end, converts A–Z to 10–35, and requires the remainder to equal 1.',
+      'Decodes the bank code and account number using per-country BBAN offset rules where available.',
+      'Explains the exact failure (format, length or checksum) and shows the computed remainder; runs in-browser with nothing uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Enter the IBAN',
+        body: 'Paste the IBAN with or without spaces; case and separators are normalized for you.',
+      },
+      {
+        title: 'Read the verdict',
+        body: 'See valid or invalid with the reason, plus the normalized grouped form.',
+      },
+      {
+        title: 'Inspect the breakdown',
+        body: 'View the country, length versus expected, check digits and — where known — the bank code and account number.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does a valid IBAN mean the account exists?',
+        a: 'No. The mod-97 check only catches typos and transposed digits; it cannot confirm a real, open account at the bank.',
+      },
+      {
+        q: 'How does the mod-97 check work?',
+        a: 'The first four characters move to the end, letters convert to two-digit numbers (A=10 … Z=35), and the resulting big number mod 97 must equal 1 for the IBAN to be valid.',
+      },
+      {
+        q: 'What if my country isn’t recognized?',
+        a: 'It still runs the format and mod-97 checks, but skips the country-specific length check and bank/account decoding because that country’s length spec isn’t in the table.',
+      },
+    ],
+  },
+
+  'luhn-generator': {
+    metaTitle: 'Luhn Number Generator (Test Card Numbers) — Free',
+    metaDescription:
+      'Generate random numbers that pass the Luhn checksum, for testing only. 16 digits with prefix 4 yields Visa-format test numbers. Free, in-browser.',
+    intro:
+      'This Luhn generator creates random numbers whose final digit is a valid Luhn check digit — ideal for testing card-validation logic. Choose 16 digits with prefix 4 to get Visa-format test numbers that pass the checksum but are not real cards. The big warning bears repeating: these are format-valid only and must never be used as real payment details.',
+    features: [
+      'Length 8–24 digits, count 1–50, and an optional numeric prefix (truncated to length − 1 digits).',
+      'Random digits come from crypto.getRandomValues with rejection sampling (bytes ≥ 250 discarded) to avoid modulo bias.',
+      'Computes the final Luhn check digit: from the right, double every second digit (subtract 9 if over 9), sum, then take (10 − sum%10)%10.',
+      'Regenerate, copy-one and "Copy all" buttons; generation happens after mount so it’s hydration-safe.',
+      'A prominent warning that outputs are format-valid only, not real cards — for testing only, and all local.',
+    ],
+    steps: [
+      {
+        title: 'Set length and count',
+        body: 'Choose the digit length (8–24) and how many numbers to generate (1–50).',
+      },
+      {
+        title: 'Add an optional prefix',
+        body: 'Enter a numeric prefix (e.g. 4 for Visa-style) to fix the leading digits.',
+      },
+      {
+        title: 'Generate and copy',
+        body: 'Press Regenerate, then copy a single number or "Copy all".',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are these real, usable card numbers?',
+        a: 'No. They only satisfy the Luhn checksum format — they are not issued by any bank and must be used solely for testing validation logic.',
+      },
+      {
+        q: 'What is the Luhn algorithm?',
+        a: 'A checksum that doubles every second digit from the right (subtracting 9 when over 9), sums all digits, and requires the total to be a multiple of 10. The tool appends the digit that makes that true.',
+      },
+      {
+        q: 'How does the prefix work?',
+        a: 'Your numeric prefix fills the leading digits (up to length − 1); the rest of the body is random and the final digit is the computed Luhn check digit.',
+      },
+    ],
+  },
+
+  'random-pin': {
+    metaTitle: 'Random PIN Generator (Secure) — Free Online',
+    metaDescription:
+      'Generate secure random numeric PINs. Pick 6 digits and a count of 5 to get five unbiased PINs like 482917. Uses crypto.getRandomValues. Free, in-browser.',
+    intro:
+      'This PIN generator creates secure random numeric PINs in batches. Choose 6 digits and a count of 5 to get five unbiased PINs such as 482917. Every digit is drawn from crypto.getRandomValues with rejection sampling, so all ten digits are equally likely with no modulo bias.',
+    features: [
+      'Digit length 4–12 and count 1–100, generated in one batch.',
+      'Each digit comes from crypto.getRandomValues with rejection sampling (bytes ≥ 250 discarded) to eliminate modulo bias.',
+      'Generation runs after mount and on any option change (hydration-safe), with a Regenerate button.',
+      'Copy-one per PIN and "Copy all" (newline-separated) buttons; PINs are shown in spaced monospace for readability.',
+      'PINs are generated locally and never sent to a server.',
+    ],
+    steps: [
+      {
+        title: 'Choose digits and count',
+        body: 'Set the PIN length (4–12) and how many PINs to create (1–100).',
+      },
+      {
+        title: 'Generate',
+        body: 'Press Regenerate to produce a fresh batch.',
+      },
+      {
+        title: 'Copy',
+        body: 'Copy an individual PIN or use "Copy all".',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are these PINs cryptographically secure?',
+        a: 'Yes. They use crypto.getRandomValues with rejection sampling, so every digit 0–9 is equally likely with no modulo bias.',
+      },
+      {
+        q: 'Can the same PIN appear twice in one batch?',
+        a: 'Possibly. Each PIN is generated independently, so duplicates aren’t prevented — especially for short lengths like 4 digits.',
+      },
+      {
+        q: 'Is anything stored or transmitted?',
+        a: 'No. All generation happens in your browser and nothing is uploaded; you should still store the PINs you keep somewhere secure.',
+      },
+    ],
+  },
+
+  'image-sepia': {
+    metaTitle: 'Sepia Tone Photo Effect (Adjustable) — Free',
+    metaDescription:
+      'Apply an adjustable sepia tone to a photo with a 0–100% strength slider. 100% is full sepia, 0% the original. Canvas-based, runs in your browser.',
+    intro:
+      'This sepia tool gives any photo a warm vintage tone using the standard sepia color matrix, blended to taste. At 100% strength the full sepia matrix is applied; at 0% you see the original, and 50% is a half-strength tint. Everything is rendered on a canvas in your browser, so the image never leaves your device.',
+    features: [
+      'The standard sepia matrix (R′ = 0.393R + 0.769G + 0.189B, and so on) is linearly blended with the original by the strength slider.',
+      'A strength slider from 0–100% (default 100); alpha is preserved and values are clamped to 255.',
+      'Drag-and-drop an image up to 50MB, rendered to a canvas with getImageData/putImageData.',
+      'A 200ms debounce on slider changes keeps it responsive, with a busy indicator while processing.',
+      'Exports as PNG via Download; entirely browser-side with no upload.',
+    ],
+    steps: [
+      {
+        title: 'Add an image',
+        body: 'Drop or click to upload one image (up to 50MB).',
+      },
+      {
+        title: 'Adjust the strength',
+        body: 'Slide the sepia strength from 0% (original) to 100% (full sepia).',
+      },
+      {
+        title: 'Download',
+        body: 'Save the result with "PNG download".',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does the strength slider actually do?',
+        a: 'It linearly interpolates between the original pixel and the full sepia-matrix pixel, so 50% is a half-strength tone and 100% is full sepia.',
+      },
+      {
+        q: 'Will it keep transparency?',
+        a: 'Yes. Only the RGB channels are recolored; the alpha channel is preserved, so transparent areas stay transparent.',
+      },
+      {
+        q: 'Does it change the original image dimensions?',
+        a: 'No. Only the colors are altered; the output keeps the same width and height as the source.',
+      },
+    ],
+  },
+
+  'image-vignette': {
+    metaTitle: 'Vignette Photo Effect (Darken Edges) — Free',
+    metaDescription:
+      'Add a radial vignette that darkens the edges of a photo to focus the center. Strength 60% with radius 70% leaves a wide bright center. Free, in-browser.',
+    intro:
+      'This vignette tool darkens the edges of a photo with a soft radial gradient, drawing the eye to the center. With strength 60% and radius 70% you get a wide bright middle and a gentle dark border. Strength controls how dark the corners go and radius controls how far out the darkening begins — both tuned with live sliders on a local canvas.',
+    features: [
+      'A radial gradient from a transparent center to rgba(0,0,0,strength) at the corners, drawn over the image.',
+      'A strength slider 0–100% (default 60) sets the maximum edge darkness.',
+      'A radius slider 0–95% (default 70) sets where the darkening begins — higher keeps a larger bright center.',
+      'Drag-and-drop up to 50MB, with a 200ms debounce and a busy indicator.',
+      'PNG download; canvas-based and fully in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Upload an image',
+        body: 'Drop or select one image (up to 50MB).',
+      },
+      {
+        title: 'Tune strength and radius',
+        body: 'Set how dark the edges get (strength) and how big the bright center stays (radius).',
+      },
+      {
+        title: 'Download',
+        body: 'Export the vignetted image as PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What’s the difference between strength and radius?',
+        a: 'Strength controls how dark the outer edges become (the maximum black alpha); radius controls how far out the darkening starts, so a higher radius leaves a wider bright center.',
+      },
+      {
+        q: 'Why does a high radius make the effect weaker?',
+        a: 'Radius pushes the gradient’s transparent inner stop outward, so the dark band starts closer to the corners and covers less of the image.',
+      },
+      {
+        q: 'Can I make a white or colored vignette instead of black?',
+        a: 'This tool darkens with black only. For a color cast over the whole image, use the [image tint](guide:image-tint) tool instead.',
+      },
+    ],
+  },
+
+  'image-tint': {
+    metaTitle: 'Image Tint (Solid Color Overlay) — Free Online',
+    metaDescription:
+      'Overlay a single solid color on a photo to shift its mood. A #1e90ff overlay at 40% opacity gives a cool blue cast. Canvas-based, runs in your browser.',
+    intro:
+      'This image tint tool washes a photo with a single solid color to change its mood. A #1e90ff overlay at 40% opacity gives a cool blue cast over the visible pixels, while a warm orange at low opacity feels like golden hour. The tint only colors existing pixels, so transparent areas stay clear.',
+    features: [
+      'A color picker (default #1e90ff) plus an opacity slider 0–100% (default 40).',
+      'The overlay is composited with globalCompositeOperation "source-atop", so the tint only colors existing (non-transparent) pixels.',
+      'The composite state is reset to defaults after drawing so it doesn’t affect the final encoding.',
+      'Drag-and-drop up to 50MB, with a 200ms debounce and a busy indicator.',
+      'PNG download; canvas-based and runs entirely in the browser.',
+    ],
+    steps: [
+      {
+        title: 'Upload an image',
+        body: 'Drop or click to add an image (up to 50MB).',
+      },
+      {
+        title: 'Pick color and opacity',
+        body: 'Choose the tint color and set how strong it is with the opacity slider.',
+      },
+      {
+        title: 'Download',
+        body: 'Save the tinted result as PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why doesn’t the tint fill transparent areas?',
+        a: 'It uses "source-atop" compositing, which only paints where the image already has pixels, so transparent regions stay clear instead of being filled with color.',
+      },
+      {
+        q: 'How strong should the opacity be?',
+        a: 'Lower opacity (around 20–40%) gives a subtle color cast; higher values move toward a flat color wash. Adjust to taste.',
+      },
+      {
+        q: 'How is this different from a sepia tone?',
+        a: 'Tint applies any single color you pick at an opacity, while [sepia](guide:image-sepia) applies a fixed brown matrix that also remaps brightness for a vintage look.',
+      },
+    ],
+  },
+
+  'screenshot-shadow': {
+    metaTitle: 'Screenshot Beautifier (Shadow & Background) — Free',
+    metaDescription:
+      'Add padding, rounded corners, a drop shadow and a gradient background to a screenshot. 80px padding, 16px radius, indigo-to-pink gradient. Free, in-browser.',
+    intro:
+      'This screenshot beautifier wraps a plain screenshot in a polished frame for social posts and docs. Apply 80px of padding, 16px rounded corners and a 40px drop shadow on an indigo-to-pink gradient and your screenshot instantly looks like a product shot. Everything is composited on a local canvas and exported as PNG.',
+    features: [
+      'Sliders for padding (0–300px, default 80), corner radius (0–80px, default 16) and shadow blur (0–120px, default 40, with offset = blur/2).',
+      'A background mode toggle: a gradient (start #6366f1 to end #ec4899) or a solid color, both set with color pickers.',
+      'The canvas is sized to the image plus padding on both sides; a rounded rectangle is filled with the shadow, then the image is clipped to the same rounded shape.',
+      'A 200ms debounce on option changes, with a busy indicator while rendering.',
+      'PNG download (screenshot-shadow.png); fully in-browser with no upload.',
+    ],
+    steps: [
+      {
+        title: 'Upload a screenshot',
+        body: 'Drop or select one image (up to 50MB).',
+      },
+      {
+        title: 'Style it',
+        body: 'Set the padding, corner roundness and shadow, then choose a gradient or solid background and its colors.',
+      },
+      {
+        title: 'Download',
+        body: 'Export the framed screenshot as PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I use a solid background instead of a gradient?',
+        a: 'Yes. Switch the background mode to Solid and pick one color; the start-color picker becomes the background color.',
+      },
+      {
+        q: 'Why are the screenshot corners rounded in the output?',
+        a: 'The image is drawn inside a rounded-rectangle clip path, so the corner-radius slider rounds the screenshot itself, not just the surrounding frame.',
+      },
+      {
+        q: 'What size is the exported image?',
+        a: 'It’s the original screenshot plus the padding you set on all four sides, so a larger padding produces a larger PNG.',
+      },
+    ],
+  },
+
+  'csv-to-html': {
+    metaTitle: 'CSV to HTML Table Converter — Free Online',
+    metaDescription:
+      'Convert CSV text into clean <table> markup. name,age,city rows become a <thead>/<tbody> table, with an optional class. Free, runs in your browser.',
+    intro:
+      'This converter turns CSV text into well-formed HTML table markup. Paste rows like name,age,city and it builds a <table> with a <thead> header and <tbody> body, optionally adding a class for styling. Every cell value is HTML-escaped, so a stray < or & in your data can’t break the table.',
+    features: [
+      'Parses with PapaParse; the delimiter can be comma, semicolon or TAB, and empty lines are skipped.',
+      'A "first row as header" checkbox renders row 1 in <thead> with <th> cells; the remaining rows go in <tbody>.',
+      'An optional class attribute is added to <table>, and all cell values are HTML-escaped (& < > ").',
+      'The output is indented, well-formed <table> markup shown in a read-only box.',
+      'Copy and Download (table.html) buttons; parse errors are surfaced inline — all in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste your CSV',
+        body: 'Enter or paste CSV data; a sample (name / age / city) is preloaded to start.',
+      },
+      {
+        title: 'Set the options',
+        body: 'Pick the delimiter, toggle the header row, and optionally type a table class.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Grab the HTML with Copy or save it as table.html.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it handle semicolon or tab-separated files?',
+        a: 'Yes. Choose the delimiter (comma, semicolon or TAB) and PapaParse splits the columns accordingly — handy for European CSVs that use semicolons.',
+      },
+      {
+        q: 'Are special characters escaped in the output?',
+        a: 'Yes. &, <, > and " in cell values are converted to HTML entities so the table renders safely instead of breaking the markup.',
+      },
+      {
+        q: 'Can I make the first row a header?',
+        a: 'Yes. Enable "first row as header" to wrap row 1 in <thead> with <th> cells; otherwise every row is a normal body row.',
+      },
+    ],
+  },
+
+  'markdown-table-gen': {
+    metaTitle: 'Markdown Table Generator (GFM) — Free Online',
+    metaDescription:
+      'Convert tab- or comma-separated data into a GitHub-flavored Markdown table with column alignment. Pipes inside cells are escaped. Free, in-browser.',
+    intro:
+      'This Markdown table generator turns pasted spreadsheet data into a GitHub-flavored Markdown table. Paste tab-separated rows like name, age, city and it produces a | header | row plus an alignment divider, ready to drop into a README or issue. You choose left, center or right alignment, and any pipe characters in your data are escaped automatically.',
+    features: [
+      'Delimiter of TAB or comma; blank lines are dropped and short rows are padded to the widest row’s column count.',
+      'The first row becomes the header, and a divider row is generated with the chosen alignment per column.',
+      'Column alignment of left (:---), center (:---:) or right (---:) applied to all columns.',
+      'Pipes (|) inside cells are escaped (\\|) so the Markdown table stays valid.',
+      'An optional rendered preview table; Copy button; runs locally in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your data',
+        body: 'Paste rows separated by tabs or commas; the first row is treated as the header.',
+      },
+      {
+        title: 'Choose delimiter and alignment',
+        body: 'Pick TAB or comma and set left, center or right column alignment.',
+      },
+      {
+        title: 'Copy',
+        body: 'Optionally enable the preview, then Copy the Markdown table.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I right-align a column in Markdown?',
+        a: 'Set alignment to right; the tool writes ---: in the divider row, which GitHub renders as right-aligned. Center uses :---: and left uses :---.',
+      },
+      {
+        q: 'What if rows have different numbers of cells?',
+        a: 'Shorter rows are padded with empty cells up to the widest row, so the table stays rectangular and valid.',
+      },
+      {
+        q: 'Does it handle pipe characters in my data?',
+        a: 'Yes. A literal | in a cell is escaped as \\| so it doesn’t break the table’s column structure.',
+      },
+    ],
+  },
+
+  'pdf-delete-pages': {
+    metaTitle: 'Delete Pages from PDF — Free Online',
+    metaDescription:
+      'Remove specific pages from a PDF and save the rest. The spec "1, 3, 5-7" deletes those pages and keeps the remainder in order. Free, runs in your browser.',
+    intro:
+      'This tool removes selected pages from a PDF and saves what’s left as a new file. Type a spec like "1, 3, 5-7" and it deletes those pages while keeping the rest in their original order, previewing how many pages will be removed and kept. The whole operation runs in your browser, so the PDF is never uploaded.',
+    features: [
+      'Drag-and-drop a PDF up to 100MB; encrypted PDFs raise a clear error through the shared loader.',
+      'The page spec accepts comma-separated pages and hyphen ranges (e.g. 1, 3, 5-7), parsed live to show the delete and keep counts.',
+      'Uses pdf-lib to copy all the non-deleted pages into a new document in their original order.',
+      'It blocks deleting every page (at least one must remain) and shows errors for invalid specs.',
+      'Outputs <name>-deleted.pdf for download; entirely client-side with nothing uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload the PDF',
+        body: 'Drop or select a PDF (up to 100MB); the page count is shown.',
+      },
+      {
+        title: 'Specify pages to delete',
+        body: 'Type pages and ranges like "1, 3, 5-7"; the tool previews how many pages will be deleted and kept.',
+      },
+      {
+        title: 'Process and download',
+        body: 'Press "Delete pages" and download the new <name>-deleted.pdf.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I delete a range of pages?',
+        a: 'Use a hyphen, such as 5-7, and combine ranges with single pages using commas like "1, 3, 5-7" to remove them all at once.',
+      },
+      {
+        q: 'Can I delete every page?',
+        a: 'No. At least one page must remain, so the tool blocks any spec that would remove all pages.',
+      },
+      {
+        q: 'Does it work on password-protected PDFs?',
+        a: 'Encrypted PDFs are rejected with an error from the loader, so remove the protection first. All processing is local in your browser.',
+      },
+    ],
+  },
+
+  'metronome': {
+    metaTitle: 'Online Metronome (BPM, Tap Tempo) — Free',
+    metaDescription:
+      'A precise Web Audio metronome with adjustable BPM, time signature and tap tempo. 120 BPM in 4/4 plays an accented downbeat and three regular beats. Free, in-browser.',
+    intro:
+      'This online metronome keeps steady time using the Web Audio clock for sample-accurate beats. At 120 BPM in 4/4 it plays an accented downbeat at 1500Hz followed by three regular beats at 1000Hz, so you can hear where each bar starts. Set the tempo with the slider, +/- buttons, or by tapping the tempo button in rhythm.',
+    features: [
+      'BPM from 40–240 via a slider and +/- buttons, with time signatures 2/4, 3/4, 4/4 and 6/8.',
+      'Web Audio scheduling with a 0.1s lookahead and a 25ms scheduler loop for sample-accurate timing on the audio clock.',
+      'An accented downbeat (beat 0) at 1500Hz with higher gain; the other beats play at 1000Hz, each with a short exponential decay.',
+      'Tap tempo averages your last few tap intervals (resetting after a 2-second gap) to estimate the BPM.',
+      'Visual beat indicators sync to the scheduled beats; the AudioContext is created only on a user gesture and closed on unmount.',
+    ],
+    steps: [
+      {
+        title: 'Set tempo and meter',
+        body: 'Drag the BPM slider (or use +/-) and pick a time signature such as 4/4.',
+      },
+      {
+        title: 'Start',
+        body: 'Press Start; the AudioContext begins and beats play with an accented downbeat.',
+      },
+      {
+        title: 'Tap the tempo',
+        body: 'Optionally tap the "Tap tempo" button in rhythm to set the BPM from your tapping.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the timing accurate even though browsers throttle timers?',
+        a: 'It schedules beats ahead on the Web Audio clock (a 0.1s lookahead with a 25ms polling loop) rather than relying on setTimeout for the actual sound, so timer throttling doesn’t affect the beat.',
+      },
+      {
+        q: 'Why is the first beat louder and higher?',
+        a: 'Beat 0, the downbeat, is accented at 1500Hz with higher gain while the other beats play at 1000Hz, so you can clearly hear where each bar begins.',
+      },
+      {
+        q: 'Why doesn’t sound play until I press Start?',
+        a: 'Browser autoplay policy requires a user gesture, so the AudioContext is created and resumed only when you press Start.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {

@@ -120,6 +120,14 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/guide/aspect-ratio', phrase: '1080', note: 'KO 16:9 1920→1080' },
     { path: '/en/guide/cubic-bezier', phrase: '0.42', note: 'EN ease-in-out 값' },
     { path: '/en/guide/discount', phrase: '24,000', note: 'EN 20% off 30k' },
+    // 라운드6 — 신규 34종 맞춤 가이드(4개국어)
+    { path: '/guide/meta-tags', phrase: 'Open Graph', note: 'KO OG 메타태그' },
+    { path: '/guide/iban-validator', phrase: '97', note: 'KO IBAN mod-97' },
+    { path: '/guide/readability-score', phrase: 'Flesch', note: 'KO 가독성 Flesch' },
+    { path: '/en/guide/tailwind-shades', phrase: '950', note: 'EN Tailwind 50-950' },
+    { path: '/en/guide/luhn-generator', phrase: 'Luhn', note: 'EN Luhn 체크섬' },
+    { path: '/ja/guide/meta-tags', phrase: 'OG', note: 'JA OG 메타태그' },
+    { path: '/zh/guide/ideal-weight', phrase: 'BMI', note: 'ZH 이상체중 BMI' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {
