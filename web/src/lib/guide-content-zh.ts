@@ -271,7 +271,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '找到的色名和我的颜色不完全一样怎么办?',
-        a: '当输入不是 140 个标准色之一时,工具按 RGB 距离返回最接近的色名,并标注「最接近的颜色」而非「精确匹配」。如果需要原样精度,请继续用 HEX/RGB 值,色名仅供近似参考或取名。',
+        a: '当输入不是 140 个标准色之一时,工具按 RGB 距离返回最接近的色名,并标注「最接近的颜色」而非「精确匹配」。如果需要原样精度,请用[颜色转换](guide:color-converter)处理 HEX/RGB 值,色名仅供近似参考或取名。',
       },
       {
         q: '匹配是按什么算法找最近颜色的?',
@@ -528,7 +528,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '它和大小写转换、去空格是一回事吗?',
-        a: '不是。本工具只处理变音符号,不改变大小写、不删空格标点。café 转成 cafe 但 CAFÉ 转成 CAFE(大小写保留)。如需同时小写化或生成 slug,请配合大小写转换或 slug 工具一起用。',
+        a: '不是。本工具只处理变音符号,不改变大小写、不删空格标点。café 转成 cafe 但 CAFÉ 转成 CAFE(大小写保留)。如需同时小写化或生成 slug,请配合[Slug 生成器](guide:slugify)一起用。',
       },
     ],
   },
@@ -1034,7 +1034,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '合并的文件数量或大小有限制吗?',
-        a: '没有固定上限,但因为全部在浏览器内存中处理,合并很多或很大的 PDF(总计上百 MB)可能变慢或受内存限制。遇到卡顿可分批合并,或先压缩各文件再合并。',
+        a: '没有固定上限,但因为全部在浏览器内存中处理,合并很多或很大的 PDF(总计上百 MB)可能变慢或受内存限制。遇到卡顿可分批合并,或先[压缩 PDF](guide:compress)再合并。',
       },
     ],
   },
@@ -1110,7 +1110,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
     faqs: [
       {
         q: '放大图片会变清晰吗?',
-        a: '不会。把小图放大只是插值补像素,无法还原原本不存在的细节,结果通常会发糊或出现锯齿。缩小不会损失观感,放大则越大越糊。需要真正提升分辨率请用专门的 AI 超分辨率工具,而非简单拉伸。',
+        a: '不会。把小图放大只是插值补像素,无法还原原本不存在的细节,结果通常会发糊或出现锯齿。缩小不会损失观感,放大则越大越糊。需要真正提升分辨率请用专门的 [AI 图片放大](guide:image-upscale),而非简单拉伸。',
       },
       {
         q: '「目标体积」是怎么压到指定 KB 的?',
@@ -1535,7 +1535,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
     faqs: [
       {
         q: '支持哪些图片格式?',
-        a: '支持 JPG 和 PNG。这是 PDF 内嵌图片的标准格式,能保证兼容性。WebP、HEIC 等请先用本站的图片转换工具转成 JPG/PNG 再合并。',
+        a: '支持 JPG 和 PNG。这是 PDF 内嵌图片的标准格式,能保证兼容性。WebP、HEIC 等请先用[图片格式转换](guide:image-convert)转成 JPG/PNG 再合并。',
       },
       {
         q: '「适应图片」和 A4 有什么区别?',
@@ -1585,7 +1585,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '转出来是空的或乱码怎么办?',
-        a: '如果 PDF 是扫描件或图片(没有文字图层),就提取不到文本,工具会提示「可能是扫描件」。这种情况请先用本站 OCR 工具把图片识别成文字,再来转换。',
+        a: '如果 PDF 是扫描件或图片(没有文字图层),就提取不到文本,工具会提示「可能是扫描件」。这种情况请先用本站 [OCR 文字识别](guide:ocr)把图片识别成文字,再来转换。',
       },
     ],
   },
@@ -1797,7 +1797,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '能裁成精确的像素尺寸吗?',
-        a: '本工具按拖拽的选区裁剪,输出尺寸等于选框对应的原图像素。若你需要严格的目标尺寸(如恰好 800×600),建议先裁好大致比例,再用本站的图片尺寸调整工具设定精确像素。',
+        a: '本工具按拖拽的选区裁剪,输出尺寸等于选框对应的原图像素。若你需要严格的目标尺寸(如恰好 800×600),建议先裁好大致比例,再用[图片尺寸调整](guide:image-resize)设定精确像素。',
       },
     ],
   },
@@ -2170,7 +2170,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
     faqs: [
       {
         q: '为什么转出来的 GIF 文件这么大?',
-        a: 'GIF 是逐帧位图格式、压缩效率低,体积随时长、帧率、尺寸、画面复杂度迅速增长——几秒的高清片段就可能上 MB。想减小:缩短时长、降低帧率(如 10~15fps)、调小输出宽度。需要长视频或更高画质,用 MP4/WebM 才合适。',
+        a: 'GIF 是逐帧位图格式、压缩效率低,体积随时长、帧率、尺寸、画面复杂度迅速增长——几秒的高清片段就可能上 MB。想减小:缩短时长、降低帧率(如 10~15fps)、调小输出宽度。需要长视频或更高画质,改用[视频格式转换](guide:video-convert)输出 MP4/WebM 才合适。',
       },
       {
         q: '帧率(fps)设多少合适?',
@@ -2446,7 +2446,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         title: '裁剪并下载',
-        body: '点裁剪,完成后下载这段音频。做铃声可再用音频转换转成对应格式。',
+        body: '点裁剪,完成后下载这段音频。做铃声可再用[音频格式转换](guide:audio-convert)转成对应格式。',
       },
     ],
     faqs: [
@@ -2498,7 +2498,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '能用视频生成 GIF 吗?',
-        a: '这个工具是把多张静态图片合成 GIF。如果你想把一段视频转成 GIF,请用「视频转 GIF」工具,它能直接从视频按起点、时长、帧率截取。',
+        a: '这个工具是把多张静态图片合成 GIF。如果你想把一段视频转成 GIF,请用[视频转 GIF](guide:video-to-gif),它能直接从视频按起点、时长、帧率截取。',
       },
     ],
   },
@@ -2990,7 +2990,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: '凯撒密码安全吗?',
-        a: '完全不安全,只适合趣味和教学。它最多 25 种位移,逐一试就能破解,字母频率分析更是秒破。切勿用它保护真正的敏感信息——那需要 AES 等现代加密算法。',
+        a: '完全不安全,只适合趣味和教学。它最多 25 种位移,逐一试就能破解,字母频率分析更是秒破。切勿用它保护真正的敏感信息——那需要 [AES 文本加密](guide:text-encrypt)等现代加密算法。',
       },
       {
         q: '为什么数字和符号没被加密?',
@@ -3036,7 +3036,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
       },
       {
         q: 'script 里的 JS 也会被压缩吗?',
-        a: '不会。script、style 内部被整段保留,不做 JS/CSS 压缩。若需要压缩脚本本身,请配合专门的 JS/CSS minifier。',
+        a: '不会。script、style 内部被整段保留,不做 JS/CSS 压缩。若需要压缩样式本身,请配合专门的 [CSS 压缩](guide:css-minify)。',
       },
     ],
   },
@@ -3826,7 +3826,7 @@ export const CUSTOM_GUIDES_ZH: Record<string, GuideOverrideZh> = {
     faqs: [
       {
         q: '扫描版 PDF 提取不出文字怎么办?',
-        a: '扫描件本质是图片,没有文字层,本工具无法提取——它会提示「无可提取文本(可能是扫描件),请先用 OCR」。需要先用 OCR(光学字符识别)工具把图片转成文字层,再来提取。本工具不含 OCR 功能。',
+        a: '扫描件本质是图片,没有文字层,本工具无法提取——它会提示「无可提取文本(可能是扫描件),请先用 OCR」。需要先用 [OCR(光学字符识别)](guide:ocr)把图片转成文字层,再来提取。本工具不含 OCR 功能。',
       },
       {
         q: '提取出的文本能保留原排版吗?',

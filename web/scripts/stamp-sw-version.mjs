@@ -44,16 +44,21 @@ function buildVersion() {
 }
 
 const sw = readFileSync(SW_PATH, 'utf8');
-const newVersion = buildVersion();
-const updated = sw.replace(
-  /const SW_VERSION = '[^']+';/,
-  `const SW_VERSION = '${newVersion}';`,
-);
+const SW_VERSION_RE = /const SW_VERSION = '[^']+';/;
 
-if (updated === sw) {
+// 상수 자체가 없으면 진짜 오류(빌드 중단). 단, 이미 같은 버전이라 치환이
+// no-op 인 경우는 정상(같은 커밋 재빌드) — 결정적 빌드라 오히려 기대 동작이다.
+if (!SW_VERSION_RE.test(sw)) {
   console.error('[stamp-sw-version] SW_VERSION 상수를 찾지 못했습니다.');
   process.exit(1);
 }
 
-writeFileSync(SW_PATH, updated);
-console.log(`[stamp-sw-version] SW_VERSION → ${newVersion}`);
+const newVersion = buildVersion();
+const updated = sw.replace(SW_VERSION_RE, `const SW_VERSION = '${newVersion}';`);
+
+if (updated === sw) {
+  console.log(`[stamp-sw-version] SW_VERSION 이미 최신(${newVersion}) — 갱신 생략`);
+} else {
+  writeFileSync(SW_PATH, updated);
+  console.log(`[stamp-sw-version] SW_VERSION → ${newVersion}`);
+}

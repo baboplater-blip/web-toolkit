@@ -7,6 +7,7 @@ import { hasEnCopy } from '@/lib/en-tools';
 import { hasZhCopy } from '@/lib/zh-tools';
 import { buildGuideJa } from '@/lib/guide-content-ja';
 import { getRelatedTools } from '@/lib/guide-related';
+import { renderInlineGuide, stripInlineGuide } from '@/lib/guide-inline';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
@@ -132,7 +133,7 @@ export default async function JapaneseGuidePage({ params }: PageProps) {
     mainEntity: guide.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a },
+      acceptedAnswer: { '@type': 'Answer', text: stripInlineGuide(f.a) },
     })),
   };
 
@@ -245,7 +246,7 @@ export default async function JapaneseGuidePage({ params }: PageProps) {
                   <h4 className="font-semibold text-base">{s.title}</h4>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed pl-9">
-                  {s.body}
+                  {renderInlineGuide(s.body, '/ja')}
                 </p>
               </li>
             ))}
@@ -266,7 +267,7 @@ export default async function JapaneseGuidePage({ params }: PageProps) {
                     ▾
                   </span>
                 </summary>
-                <p className="text-sm text-muted-foreground leading-relaxed mt-2">{f.a}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mt-2">{renderInlineGuide(f.a, '/ja')}</p>
               </details>
             ))}
           </div>

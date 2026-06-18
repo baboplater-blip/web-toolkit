@@ -8,6 +8,7 @@ import {
 } from '@/lib/tools/registry';
 import { buildGuide } from '@/lib/guide-content';
 import { getRelatedTools } from '@/lib/guide-related';
+import { renderInlineGuide, stripInlineGuide } from '@/lib/guide-inline';
 import { hasEnCopy } from '@/lib/en-tools';
 import { hasJaCopy } from '@/lib/ja-tools';
 import { hasZhCopy } from '@/lib/zh-tools';
@@ -155,7 +156,7 @@ export default async function GuidePage({ params }: PageProps) {
     mainEntity: guide.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a },
+      acceptedAnswer: { '@type': 'Answer', text: stripInlineGuide(f.a) },
     })),
   };
 
@@ -273,7 +274,7 @@ export default async function GuidePage({ params }: PageProps) {
                   <h4 className="font-semibold text-base">{s.title}</h4>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed pl-9">
-                  {s.body}
+                  {renderInlineGuide(s.body, '')}
                 </p>
               </li>
             ))}
@@ -295,7 +296,7 @@ export default async function GuidePage({ params }: PageProps) {
                   </span>
                 </summary>
                 <p className="text-sm text-muted-foreground leading-relaxed mt-2">
-                  {f.a}
+                  {renderInlineGuide(f.a, '')}
                 </p>
               </details>
             ))}

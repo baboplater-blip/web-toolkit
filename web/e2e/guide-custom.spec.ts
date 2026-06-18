@@ -158,3 +158,34 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     });
   }
 });
+
+test.describe('맞춤 가이드 — 인-프로즈 본문 링크', () => {
+  // 본문(steps/faqs)의 [라벨](guide:id) 구문이 ① 가시 영역에 <a> 로 렌더되고
+  // ② FAQ JSON-LD 구조화 데이터에는 원문 구문이 새지 않는지(stripInlineGuide) 검증.
+  const INLINE = [
+    { path: '/guide/barcode', prefix: '', linkTo: 'qr-code' },
+    { path: '/guide/pdf-to-word', prefix: '', linkTo: 'ocr' },
+    { path: '/en/guide/image-resize', prefix: '/en', linkTo: 'compress' },
+  ];
+
+  for (const { path, prefix, linkTo } of INLINE) {
+    test(`${path} — 본문에 인라인 링크 <a href=.../guide/${linkTo}>`, async ({ page }) => {
+      await page.goto(path, { waitUntil: 'load' });
+      const html = await page.content();
+      // 가시 영역에 실제 앵커로 렌더
+      expect(
+        html.includes(`href="${prefix}/guide/${linkTo}"`),
+        `${path} 에 인라인 링크 ${prefix}/guide/${linkTo} 누락`,
+      ).toBe(true);
+    });
+  }
+
+  test('JSON-LD·정적 HTML 에 원문 [..](guide:..) 구문이 새지 않음', async ({ page }) => {
+    // 어떤 맞춤 가이드든 본문 링크 원문 구문이 렌더 결과(스크립트 포함)에 남으면 안 됨.
+    for (const path of ['/guide/barcode', '/guide/pdf-to-word', '/en/guide/image-resize']) {
+      await page.goto(path, { waitUntil: 'load' });
+      const html = await page.content();
+      expect(html.includes('](guide:'), `${path} 에 미렌더 인라인 구문 누출`).toBe(false);
+    }
+  });
+});

@@ -541,7 +541,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Copy the result',
-        body: 'Click "Copy" to grab the cleaned text — ready to use as a URL slug, a filename, or a value for accent-insensitive matching.',
+        body: 'Click "Copy" to grab the cleaned text — ready to use as a [URL slug](guide:slugify), a filename, or a value for accent-insensitive matching.',
       },
     ],
     faqs: [
@@ -641,7 +641,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Which error-correction level should I use?',
-        a: 'L (~7%) holds the most data with the fewest dots and suits clean on-screen codes. M (~15%) is the common default. Use Q (~25%) or H (~30%) when the code may get smudged, printed small, or partly covered by a logo — they can still scan with damage.',
+        a: 'L (~7%) holds the most data with the fewest dots and suits clean on-screen codes. M (~15%) is the common default. Use Q (~25%) or H (~30%) when the code may get smudged, printed small, or [partly covered by a logo](guide:qr-logo) — they can still scan with damage.',
       },
       {
         q: 'Why won’t my uploaded image decode?',
@@ -778,7 +778,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'What does the entropy "bits" number mean?',
-        a: 'Entropy estimates how hard the password is to guess: each extra bit doubles the number of possibilities. Under ~50 bits is weak, 70+ is strong, and 90+ is very strong. Adding length or more character types raises the bits.',
+        a: 'Entropy estimates how hard the password is to guess: each extra bit doubles the number of possibilities. Under ~50 bits is weak, 70+ is strong, and 90+ is very strong. Adding length or more character types raises the bits — you can also paste any password into the [password strength checker](guide:password-strength) to see its entropy and estimated crack time.',
       },
       {
         q: 'Are the passwords stored or logged?',
@@ -872,7 +872,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Why is the payload readable without a key?',
-        a: 'A JWT payload is only Base64URL-encoded, not encrypted, so anyone can read it. The signature does not hide the data — it only proves the token has not been tampered with. Never put secrets in a JWT payload.',
+        a: 'A JWT payload is only [Base64URL-encoded](guide:base64), not encrypted, so anyone can read it. The signature does not hide the data — it only proves the token has not been tampered with. Never put secrets in a JWT payload.',
       },
     ],
   },
@@ -1034,7 +1034,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Check the breakdowns',
-        body: 'Below the stats, see how many Korean, English and digit characters there are, and a top-10 word frequency chart to spot repetition.',
+        body: 'Below the stats, see how many Korean, English and digit characters there are, and a top-10 [word frequency](guide:word-frequency) chart to spot repetition.',
       },
     ],
     faqs: [
@@ -1095,7 +1095,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Is there a limit on file count or size?',
-        a: 'There’s no hard file-count limit, but everything is processed in your browser’s memory, so very large or numerous PDFs (hundreds of MB total) can get slow or run out of memory. For big jobs, merge in smaller batches.',
+        a: 'There’s no hard file-count limit, but everything is processed in your browser’s memory, so very large or numerous PDFs (hundreds of MB total) can get slow or run out of memory. For big jobs, merge in smaller batches, or [compress the PDFs](guide:compress) first to shrink them.',
       },
     ],
   },
@@ -1173,7 +1173,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'What is the difference between resizing and compressing?',
-        a: 'Resizing changes the pixel dimensions (e.g. 4000×3000 → 1920×1080), which usually shrinks the file too. Compressing keeps the dimensions but lowers quality to reduce bytes. The "target KB" mode here combines both — it lowers quality first, then dimensions, to hit your size.',
+        a: 'Resizing changes the pixel dimensions (e.g. 4000×3000 → 1920×1080), which usually shrinks the file too. [Compressing](guide:compress) keeps the dimensions but lowers quality to reduce bytes. The "target KB" mode here combines both — it lowers quality first, then dimensions, to hit your size.',
       },
       {
         q: 'Will resizing make my image blurry?',
@@ -1275,7 +1275,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Why is the JPG larger than the original HEIC?',
-        a: 'HEIC compresses more efficiently than JPEG — it’s roughly half the size for similar quality. So a converted JPG (and especially a PNG) is often bigger than the HEIC it came from. That’s the trade-off for universal compatibility.',
+        a: 'HEIC compresses more efficiently than JPEG — it’s roughly half the size for similar quality. So a converted JPG (and especially a PNG) is often bigger than the HEIC it came from. That’s the trade-off for universal compatibility — [compress the JPG](guide:compress) afterward if file size matters.',
       },
       {
         q: 'Are my photos uploaded to convert them?',
@@ -1357,7 +1357,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'How do I calculate a discount?',
-        a: 'Use the add/subtract mode: enter the original price and the discount percent. It shows both the −X% result (the sale price) and the +X% result. For example, 50,000 with 20% gives 40,000 as the discounted price.',
+        a: 'Use the add/subtract mode: enter the original price and the discount percent. It shows both the −X% result (the sale price) and the +X% result. For example, 50,000 with 20% gives 40,000 as the discounted price — or use the dedicated [discount calculator](guide:discount) to also see the amount saved.',
       },
       {
         q: 'How is percent change calculated?',
@@ -1400,7 +1400,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'Will compressing hurt quality?',
-        a: 'It can, depending on how hard you push it. Images use lossy quality, so lower settings introduce visible artifacts — 70–80% is usually a good balance. For PDFs, "smart" mode keeps text and vectors perfectly crisp and only re-compresses images, so it’s the safest choice; "rasterize" affects everything for the biggest reduction.',
+        a: 'It can, depending on how hard you push it. Images use lossy quality, so lower settings introduce visible artifacts — 70–80% is usually a good balance, and you can [resize the image](guide:image-resize) smaller first for an even bigger cut. For PDFs, "smart" mode keeps text and vectors perfectly crisp and only re-compresses images, so it’s the safest choice; "rasterize" affects everything for the biggest reduction.',
       },
       {
         q: 'Which PDF mode should I use?',
@@ -1447,7 +1447,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'What is OKLCH and why use it?',
-        a: 'OKLCH is a modern CSS color space (Lightness, Chroma, Hue) built on OKLab. It is perceptually uniform, so changing Lightness or Hue looks even to the eye — unlike HSL, where the same lightness value can look very different across hues. It is great for generating accessible palettes.',
+        a: 'OKLCH is a modern CSS color space (Lightness, Chroma, Hue) built on OKLab. It is perceptually uniform, so changing Lightness or Hue looks even to the eye — unlike HSL, where the same lightness value can look very different across hues. It is great for generating accessible palettes — pair it with the [contrast checker](guide:color-contrast) to confirm text stays readable.',
       },
       {
         q: 'Does it support transparency (alpha)?',
@@ -1660,7 +1660,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Open and edit',
-        body: 'Open the .doc in Word or Google Docs. The text is fully editable. If you uploaded a scanned image PDF, run an OCR tool first — there is no text to extract otherwise.',
+        body: 'Open the .doc in Word or Google Docs. The text is fully editable. If you uploaded a scanned image PDF, run [OCR](guide:ocr) first — there is no text to extract otherwise.',
       },
     ],
     faqs: [
@@ -1674,7 +1674,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Why is my converted file empty?',
-        a: 'The PDF probably has no selectable text — it is a scan or an image-only export. The tool detects this and tells you to run OCR first to turn the page images into text, then convert.',
+        a: 'The PDF probably has no selectable text — it is a scan or an image-only export. The tool detects this and tells you to run [OCR](guide:ocr) first to turn the page images into text, then convert.',
       },
     ],
   },
@@ -1789,7 +1789,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Copy the one you need',
-        body: 'Click the copy icon on the case you want — e.g. grab the camelCase value for a variable name or the kebab-case value for a CSS class or URL slug.',
+        body: 'Click the copy icon on the case you want — e.g. grab the camelCase value for a variable name or the kebab-case value for a CSS class or [URL slug](guide:slugify).',
       },
     ],
     faqs: [
@@ -1889,7 +1889,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Can I crop to an exact pixel size?',
-        a: 'You position and size the box visually, and the live readout shows the exact selected dimensions (e.g. 1080×1080). For a precise final size you can crop, then run the result through a resize tool.',
+        a: 'You position and size the box visually, and the live readout shows the exact selected dimensions (e.g. 1080×1080). For a precise final size you can crop, then run the result through the [resize tool](guide:image-resize).',
       },
     ],
   },
@@ -2125,7 +2125,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     steps: [
       {
         title: 'Enter your Base32 secret',
-        body: 'Paste the secret from your 2FA setup — the secret= value in an otpauth:// URI, e.g. JBSWY3DPEHPK3PXP. Use the eye button to reveal or hide it.',
+        body: 'Paste the secret from your 2FA setup — the secret= value in an otpauth:// URI, e.g. JBSWY3DPEHPK3PXP. If you only have the setup QR image, decode it first with the [QR reader](guide:qr-code) to reveal the otpauth:// URI. Use the eye button to reveal or hide it.',
       },
       {
         title: 'Match the parameters',
@@ -2182,7 +2182,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'What happens to non-English characters?',
-        a: 'Korean Hangul is transliterated to Latin (한글 → hangeul) so the slug stays meaningful and ASCII-safe. Accented Latin letters are reduced to their base form (é → e). Other unsupported symbols are replaced by the separator.',
+        a: 'Korean Hangul is transliterated to Latin (한글 → hangeul) so the slug stays meaningful and ASCII-safe. Accented Latin letters are [reduced to their base form](guide:remove-accents) (é → e). Other unsupported symbols are replaced by the separator.',
       },
       {
         q: 'Should I use hyphens or underscores in a URL slug?',
@@ -2268,7 +2268,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'Why is my GIF file so large?',
-        a: 'GIF is an old, inefficient format — every frame is stored almost in full. File size scales with duration × FPS × width. To shrink it, keep clips to a few seconds, drop FPS to 10–15, and reduce the width to 320–480 px. For long clips, a video format like MP4 is far smaller.',
+        a: 'GIF is an old, inefficient format — every frame is stored almost in full. File size scales with duration × FPS × width. To shrink it, keep clips to a few seconds, drop FPS to 10–15, and reduce the width to 320–480 px, then run the result through the [GIF optimizer](guide:gif-optimize). For long clips, a video format like MP4 is far smaller.',
       },
       {
         q: 'How long a clip can I convert?',
@@ -2366,7 +2366,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Is there a file-size limit?',
-        a: 'There is no hard cap, but everything runs in browser memory, so very large files (over ~1GB) may run out of memory or crash the tab. For big videos, trim or compress first, or use a desktop tool.',
+        a: 'There is no hard cap, but everything runs in browser memory, so very large files (over ~1GB) may run out of memory or crash the tab. For big videos, [compress](guide:video-compress) or trim them first, or use a desktop tool.',
       },
     ],
   },
@@ -2391,7 +2391,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Pick a preset',
-        body: 'Choose Balanced (720p, CRF 26) for a good size-to-quality trade-off, or Small (480p, CRF 30) when you need the smallest file — for example to fit an email attachment limit.',
+        body: 'Choose Balanced (720p, CRF 26) for a good size-to-quality trade-off, or Small (480p, CRF 30) when you need the smallest file — for example to fit an email attachment limit. If it is still too big, [trim the clip](guide:video-trim) shorter as well.',
       },
       {
         title: 'Compress and compare',
@@ -2577,7 +2577,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Can I make a ringtone with this?',
-        a: 'Yes — set the range to the section you want (typically under 30-40 seconds) and export. You can then convert it to the format your phone needs with the audio converter.',
+        a: 'Yes — set the range to the section you want (typically under 30-40 seconds) and export. You can then convert it to the format your phone needs with the [audio converter](guide:audio-convert).',
       },
       {
         q: 'Why might the cut start slightly off?',
@@ -2616,11 +2616,11 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'Can I make a GIF from a video here?',
-        a: 'This tool builds a GIF from still images. To convert a video clip into a GIF, use the dedicated Video to GIF tool instead — it lets you pick a time range from the video.',
+        a: 'This tool builds a GIF from still images. To convert a video clip into a GIF, use the dedicated [Video to GIF](guide:video-to-gif) tool instead — it lets you pick a time range from the video.',
       },
       {
         q: 'Why is the GIF file so large?',
-        a: 'GIF stores each frame almost in full and supports only 256 colors per frame, so size grows with frame count × width. To shrink it, use fewer frames, a smaller width (320-480px), or a longer per-frame delay. Optimizing afterward helps too.',
+        a: 'GIF stores each frame almost in full and supports only 256 colors per frame, so size grows with frame count × width. To shrink it, use fewer frames, a smaller width (320-480px), or a longer per-frame delay. [Optimizing afterward](guide:gif-optimize) helps too.',
       },
       {
         q: 'How do I control the speed?',
@@ -2710,7 +2710,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Should my source image be square?',
-        a: 'Yes. Use a square image (512x512 or larger) so it scales cleanly to every size. A non-square image will be fit into a square, which can leave padding or look off at small sizes.',
+        a: 'Yes. Use a square image (512x512 or larger) so it scales cleanly to every size. A non-square image will be fit into a square, which can leave padding or look off at small sizes — [crop it square](guide:image-crop) first for the cleanest result.',
       },
     ],
   },
@@ -2821,7 +2821,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Set the stops and angle',
-        body: 'Add color stops — for example #ff0000 at 0% and #0000ff at 100% — and, for linear, set the angle (90deg goes left to right, 180deg top to bottom).',
+        body: 'Add color stops — for example #ff0000 at 0% and #0000ff at 100% — and, for linear, set the angle (90deg goes left to right, 180deg top to bottom). Need a HEX value in another format? Run it through the [color converter](guide:color-converter).',
       },
       {
         title: 'Copy the CSS',
@@ -2860,7 +2860,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     steps: [
       {
         title: 'Enter the two colors',
-        body: 'Set the foreground (text) color and the background — for example #767676 text on a #ffffff background.',
+        body: 'Set the foreground (text) color and the background — for example #767676 text on a #ffffff background. If you only have an RGB or HSL value, the [color converter](guide:color-converter) turns it into HEX first.',
       },
       {
         title: 'Read the ratio',
@@ -2907,7 +2907,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Pick a color and inset',
-        body: 'Choose a shadow color (often black at low opacity, like rgba(0,0,0,0.2)). Toggle inset if you want the shadow inside the element instead of behind it.',
+        body: 'Choose a shadow color (often black at low opacity, like rgba(0,0,0,0.2)) — the [color converter](guide:color-converter) helps if you need the rgba form of a HEX value. Toggle inset if you want the shadow inside the element instead of behind it.',
       },
       {
         title: 'Copy the CSS',
@@ -2964,7 +2964,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'What is 255 in hex and binary?',
-        a: '255 in decimal is FF in hexadecimal (often written 0xFF) and 11111111 in binary (0b11111111). It is the largest value that fits in a single byte (8 bits), which is why it shows up so often in colors and bytes.',
+        a: '255 in decimal is FF in hexadecimal (often written 0xFF) and 11111111 in binary (0b11111111). It is the largest value that fits in a single byte (8 bits), which is why it shows up so often in [colors](guide:color-converter) and bytes.',
       },
       {
         q: 'Why are some characters rejected?',
@@ -3261,7 +3261,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'Is this a line-by-line text diff?',
-        a: 'No. It parses both sides as JSON and compares the structure, so reformatting or reordering keys produces zero differences. Only actual value, key and array changes are reported.',
+        a: 'No. It parses both sides as JSON and compares the structure, so reformatting or reordering keys produces zero differences. Only actual value, key and array changes are reported. For a plain line-by-line comparison of any text, use the [text diff](guide:text-diff) tool instead.',
       },
       {
         q: 'How are array changes shown?',
@@ -3333,7 +3333,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     steps: [
       {
         title: 'Choose your fields',
-        body: 'Tick the columns you need — for example name, email and phone. Add UUID if you want a unique id per row.',
+        body: 'Tick the columns you need — for example name, email and phone. Add [UUID](guide:uuid-gen) if you want a unique id per row.',
       },
       {
         title: 'Set the row count and format',
@@ -3519,7 +3519,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'How do I calculate a percentage discount?',
-        a: 'Multiply the price by the percent as a decimal to get the saving, then subtract. For 20% off 30,000: 30,000 × 0.20 = 6,000 saved, so the sale price is 24,000.',
+        a: 'Multiply the price by the percent as a decimal to get the saving, then subtract. For 20% off 30,000: 30,000 × 0.20 = 6,000 saved, so the sale price is 24,000. The [percentage calculator](guide:percentage) handles the same math in its add/subtract mode.',
       },
       {
         q: 'How do I find what percent off two prices represent?',
@@ -3652,7 +3652,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'How do I keep an image from stretching when resizing?',
-        a: 'Resize both sides by the same ratio. Enter your target width here at the original ratio to get the correct height (or vice versa), then use those exact dimensions.',
+        a: 'Resize both sides by the same ratio. Enter your target width here at the original ratio to get the correct height (or vice versa), then plug those exact dimensions into the [image resizer](guide:image-resize).',
       },
       {
         q: 'Can I use a custom ratio like 2.39:1?',
@@ -3685,7 +3685,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Strengthen if needed',
-        body: 'Add length and more character types to raise entropy. A few extra random characters help far more than swapping a letter for a lookalike symbol.',
+        body: 'Add length and more character types to raise entropy. A few extra random characters help far more than swapping a letter for a lookalike symbol — or let the [password generator](guide:password-gen) build a strong one for you.',
       },
     ],
     faqs: [
@@ -3785,7 +3785,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Can this make QR codes?',
-        a: 'No — these are 1D (linear) barcodes. For 2D QR codes use a dedicated QR generator; this tool focuses on retail and logistics barcode symbologies.',
+        a: 'No — these are 1D (linear) barcodes. For 2D QR codes use the dedicated [QR generator](guide:qr-code); this tool focuses on retail and logistics barcode symbologies.',
       },
     ],
   },
@@ -3820,7 +3820,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'Does it give HEX and RGB?',
-        a: 'Yes. Each pick shows both the HEX code (e.g. #3A7BD5) and the RGB triplet (58, 123, 213), so you can paste whichever your CSS or design tool expects.',
+        a: 'Yes. Each pick shows both the HEX code (e.g. #3A7BD5) and the RGB triplet (58, 123, 213), so you can paste whichever your CSS or design tool expects. For HSL or OKLCH, run the HEX through the [color converter](guide:color-converter).',
       },
       {
         q: 'Is the color exact or averaged?',
@@ -3867,7 +3867,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         q: 'Can I choose which part of the photo is shown?',
-        a: 'The crop is taken from the center of the image at the largest square that fits. To feature a specific area, crop or position your photo so the subject is centered before uploading.',
+        a: 'The crop is taken from the center of the image at the largest square that fits. To feature a specific area, [crop](guide:image-crop) or position your photo so the subject is centered before uploading.',
       },
       {
         q: 'What size should my avatar be?',
@@ -3943,7 +3943,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
       {
         title: 'Preview, then copy or download',
-        body: 'Watch the live preview render, then copy the HTML (e.g. <h1>Hello</h1>) or download the result.',
+        body: 'Watch the live preview render, then copy the HTML (e.g. <h1>Hello</h1>) or download the result. Run it through the [HTML formatter](guide:html-format) if you want it neatly indented.',
       },
     ],
     faqs: [
@@ -3992,7 +3992,7 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
     faqs: [
       {
         q: 'Does it work on scanned PDFs?',
-        a: 'No. A scanned PDF is just images of pages with no text layer, so there is nothing to extract — you will get an empty result. Run an OCR tool on it first to turn the images into selectable text, then extract.',
+        a: 'No. A scanned PDF is just images of pages with no text layer, so there is nothing to extract — you will get an empty result. Run [OCR](guide:ocr) on it first to turn the images into selectable text, then extract.',
       },
       {
         q: 'Will it keep the original layout, tables and columns?',
