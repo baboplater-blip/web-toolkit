@@ -50,8 +50,9 @@ function joinerSymbol(joiner: ShortcutRow['joiner']): string {
   return '';
 }
 
-export function ShortcutsOverlay() {
-  const [open, setOpen] = useState(false);
+export function ShortcutsOverlay({ defaultOpen = false }: { defaultOpen?: boolean } = {}) {
+  // defaultOpen: 지연 로드 런처가 첫 '?' 트리거 직후 마운트하며 즉시 열기 위해 사용.
+  const [open, setOpen] = useState(defaultOpen);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {

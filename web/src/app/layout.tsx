@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { AdSlot } from '@/components/AdSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { CommandPaletteLauncher } from '@/components/CommandPaletteLauncher';
-import { CategoryDrawer } from '@/components/CategoryDrawer';
-import { ShortcutsOverlay } from '@/components/ShortcutsOverlay';
+import { CategoryDrawerLauncher } from '@/components/CategoryDrawerLauncher';
+import { ShortcutsOverlayLauncher } from '@/components/ShortcutsOverlayLauncher';
 import { OnboardingHint } from '@/components/OnboardingHint';
 import { NoticeBanner } from '@/components/NoticeBanner';
 import { InstallPrompt } from '@/components/InstallPrompt';
@@ -305,8 +305,8 @@ export default function RootLayout({
         </div>
         <BottomNav />
         <CommandPaletteLauncher />
-        <CategoryDrawer />
-        <ShortcutsOverlay />
+        <CategoryDrawerLauncher />
+        <ShortcutsOverlayLauncher />
         <OnboardingHint />
         <InstallPrompt />
         <ToastHost />
