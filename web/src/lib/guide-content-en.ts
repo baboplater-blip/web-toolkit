@@ -2280,6 +2280,870 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'docx-to-pdf': {
+    metaTitle: 'Word to PDF Converter (.docx to PDF) — Free, No Upload',
+    metaDescription:
+      'Convert a Word .docx to PDF in your browser. Renders the document to A4 pages and exports a PDF — no Microsoft Office, no signup, files never uploaded.',
+    intro:
+      'This tool converts a Word .docx into a PDF entirely in your browser. It reads the document with mammoth, lays the content out on A4-width pages, and exports a PDF you can download. It is built for text-heavy documents like reports, letters and resumes rather than pixel-perfect designed layouts.',
+    features: [
+      'Reads .docx directly — no Microsoft Word or Office install needed.',
+      'Outputs standard A4 portrait pages, paginated automatically for multi-page documents.',
+      'Keeps headings, paragraphs, lists, bold/italic and inline images from the source.',
+      'Sanitizes the document HTML (DOMPurify) before rendering, so a malicious .docx can not run scripts.',
+      'Converts in your browser — the .docx is never uploaded to a server.',
+    ],
+    steps: [
+      {
+        title: 'Drop in your .docx file',
+        body: 'Select or drag a Word file such as report.docx. Only the modern .docx format is supported — older .doc files should be re-saved as .docx in Word first.',
+      },
+      {
+        title: 'Let it render the pages',
+        body: 'The document is converted to HTML and laid out on 595pt-wide A4 pages. A long report simply flows onto additional pages automatically.',
+      },
+      {
+        title: 'Download the PDF',
+        body: 'Click download to save report.pdf. Open it in any viewer to confirm the page breaks look right before sharing or printing.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is the original formatting kept?',
+        a: 'Common formatting is preserved — headings, paragraphs, bullet/numbered lists, bold, italic and inline images. Because the page is rendered and rasterized into the PDF, exact fonts, precise column layouts, headers/footers and complex tables may shift or simplify. For text-heavy documents the result is faithful.',
+      },
+      {
+        q: 'Are tables and images included?',
+        a: 'Yes. Inline images embedded in the .docx and simple tables come through. Very wide tables can be clipped to the A4 width, so check the output if your document has large grids.',
+      },
+      {
+        q: 'Is the text selectable in the PDF?',
+        a: 'The page is captured as an image per page, so text in the PDF is not selectable or searchable. If you need selectable text, that is a limitation of this in-browser approach.',
+      },
+      {
+        q: 'Why is only .docx supported, not .doc?',
+        a: '.docx is an open XML format that can be parsed in the browser; the old binary .doc format can not. Open a .doc in Word or Google Docs and "Save as" .docx, then convert.',
+      },
+    ],
+  },
+
+  'video-convert': {
+    metaTitle: 'Video Converter (MP4, WebM, MOV, AVI, MKV) — In Browser',
+    metaDescription:
+      'Convert video between MP4, WebM, MOV, AVI and MKV in your browser with FFmpeg. Turn a .mov into .mp4 (H.264) or .webm (VP9) — no upload, no install.',
+    intro:
+      'This video converter changes a clip between MP4, WebM, MOV, AVI and MKV using FFmpeg compiled to WebAssembly, all inside your browser. Pick MP4 and it re-encodes to H.264; pick WebM and it uses VP9. Nothing is uploaded — the whole file is processed on your own machine.',
+    features: [
+      'Converts to MP4 (H.264/AAC), WebM (VP9), MOV, AVI and MKV.',
+      'Quality slider (CRF) so you can trade file size against visual quality.',
+      'Runs FFmpeg.wasm locally — your video never leaves the browser.',
+      'Pre-fills the target format from a /convert/* deep link (e.g. mov-to-mp4).',
+      'Shows duration and resolution so you know what you are converting.',
+    ],
+    steps: [
+      {
+        title: 'Load your video',
+        body: 'Drop in a file such as clip.mov. The tool reads its duration and resolution; large files (hundreds of MB) take more time and memory, so a short test clip is a good first try.',
+      },
+      {
+        title: 'Choose the target format and quality',
+        body: 'Pick MP4 to get a universally compatible H.264 file, or WebM for a smaller VP9 file. Adjust the CRF/quality if you want a smaller or sharper result.',
+      },
+      {
+        title: 'Convert and download',
+        body: 'Start the conversion and watch the progress bar. When it finishes, download clip.mp4. Re-encoding a minute of HD video can take a while in the browser — this is normal.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the conversion slow?',
+        a: 'It re-encodes the whole video using FFmpeg compiled to WebAssembly, running on your CPU inside the browser tab — there is no fast server or GPU doing the work. A few minutes of HD footage can take several minutes. The trade-off is that your file is never uploaded.',
+      },
+      {
+        q: 'MP4 vs WebM — which should I pick?',
+        a: 'MP4 (H.264) plays virtually everywhere — phones, editors, social platforms. WebM (VP9) is more efficient for the same quality and ideal for the web, but support is slightly narrower. Choose MP4 for maximum compatibility, WebM for smaller web files.',
+      },
+      {
+        q: 'Is there a file-size limit?',
+        a: 'There is no hard cap, but everything runs in browser memory, so very large files (over ~1GB) may run out of memory or crash the tab. For big videos, trim or compress first, or use a desktop tool.',
+      },
+    ],
+  },
+
+  'video-compress': {
+    metaTitle: 'Compress Video Online (Reduce MP4 Size) — No Upload',
+    metaDescription:
+      'Shrink a video file in your browser with FFmpeg. Use 720p/CRF 26 for a balanced size or 480p/CRF 30 for tiny files — H.264, no upload, no signup.',
+    intro:
+      'This tool reduces video file size in your browser by re-encoding with H.264 at a higher CRF and optionally scaling down the resolution. The Balanced preset (720p, CRF 26) typically cuts size dramatically with little visible loss, while Small (480p, CRF 30) goes much smaller. All processing happens locally with FFmpeg.wasm.',
+    features: [
+      'Three presets — High (1080p, CRF 20), Balanced (720p, CRF 26), Small (480p, CRF 30).',
+      'Custom mode to set your own CRF and max height.',
+      'Shows the before/after size and the percentage saved.',
+      'Re-encodes to H.264 MP4 for broad compatibility.',
+      'Compresses in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Add the video to compress',
+        body: 'Drop in a file like recording.mp4. The tool reads its resolution and duration so you can judge how much to scale down.',
+      },
+      {
+        title: 'Pick a preset',
+        body: 'Choose Balanced (720p, CRF 26) for a good size-to-quality trade-off, or Small (480p, CRF 30) when you need the smallest file — for example to fit an email attachment limit.',
+      },
+      {
+        title: 'Compress and compare',
+        body: 'Run it and watch the progress. When done, the result card shows the new size and percent saved (e.g. 80MB to 22MB, -72%). Download if you are happy with it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Will compressing lose quality?',
+        a: 'Yes, some — H.264 with a higher CRF is lossy, and lowering resolution discards detail. But at CRF 26 / 720p the loss is usually hard to notice for everyday footage, while the file shrinks a lot. Use CRF 20 / 1080p if you want to keep more quality.',
+      },
+      {
+        q: 'What does CRF mean?',
+        a: 'CRF (Constant Rate Factor) controls quality versus size — lower is higher quality and bigger, higher is smaller and lower quality. Roughly: 18 is near-lossless, 23 is a good default, and 28+ is noticeably compressed.',
+      },
+      {
+        q: 'Why does it take a while?',
+        a: 'Compression re-encodes every frame using FFmpeg.wasm on your CPU inside the browser, so a long or high-resolution clip can take several minutes. Nothing is uploaded, which is the upside of doing it locally.',
+      },
+    ],
+  },
+
+  'video-trim': {
+    metaTitle: 'Trim Video Online (Cut a Clip) — Fast, No Upload',
+    metaDescription:
+      'Cut a segment out of a video in your browser. Set start/end like 00:10 to 00:25 and keep just that part — fast stream-copy mode or precise re-encode, no upload.',
+    intro:
+      'This tool cuts a chosen segment out of a video right in your browser using FFmpeg. Set a start and end time — say 00:10 to 00:25 — and export just that 15-second clip. A fast "copy" mode trims without re-encoding, while "re-encode" gives frame-accurate cuts.',
+    features: [
+      'Pick exact start/end times to keep only the part you want.',
+      'Fast copy mode (-c copy) trims almost instantly without re-encoding.',
+      'Re-encode mode (H.264) for frame-accurate cuts that start exactly where you set.',
+      'Keeps the original audio track in the trimmed clip.',
+      'Trims in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Load the video and set the range',
+        body: 'Drop in clip.mp4 and enter the start and end, for example 00:10 to 00:25 to keep that 15-second span.',
+      },
+      {
+        title: 'Choose copy or re-encode',
+        body: 'Copy mode is near-instant but cuts on the nearest keyframe, so the start may be slightly off. Re-encode is slower but starts exactly on your chosen frame — pick it when timing matters.',
+      },
+      {
+        title: 'Export the trimmed clip',
+        body: 'Run the trim and download the result. In copy mode a long video is trimmed in seconds because no frames are re-compressed.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between copy and re-encode?',
+        a: 'Copy mode (-c copy) extracts the segment without re-compressing, so it is extremely fast and lossless — but it can only cut on keyframes, so the start may jump to slightly before your mark. Re-encode rebuilds the frames for a frame-accurate cut, at the cost of time and a tiny quality loss.',
+      },
+      {
+        q: 'Why does my cut start a bit early in copy mode?',
+        a: 'Stream copy can only start at a keyframe (often every 1-5 seconds). To start exactly on the time you set, switch to re-encode mode.',
+      },
+      {
+        q: 'Is the audio kept?',
+        a: 'Yes. The audio track within the trimmed range is preserved alongside the video in the exported clip.',
+      },
+    ],
+  },
+
+  'video-to-audio': {
+    metaTitle: 'Extract Audio from Video (Video to MP3) — No Upload',
+    metaDescription:
+      'Pull the audio out of a video in your browser. Convert an MP4 to MP3, WAV, AAC or OGG — grab a song or podcast track from a clip with no upload, no signup.',
+    intro:
+      'This tool extracts the audio track from a video and saves it as MP3, WAV, AAC or OGG, all in your browser with FFmpeg. Drop in an MP4 and get back just the sound — useful for ripping a podcast, lecture or music track out of a video file. Nothing is uploaded.',
+    features: [
+      'Outputs MP3, WAV (lossless PCM), AAC or OGG (Vorbis).',
+      'Extracts the full audio track from MP4, MOV, WebM, MKV and more.',
+      'Warns clearly if the video has no audio track to extract.',
+      'Shows the source duration so you know the audio length.',
+      'Extracts in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Load the video',
+        body: 'Drop in a file like talk.mp4. If the video has no audio track, the tool tells you instead of producing an empty file.',
+      },
+      {
+        title: 'Choose the audio format',
+        body: 'Pick MP3 for a small, universally playable file, or WAV if you need uncompressed audio for editing. AAC and OGG are also available.',
+      },
+      {
+        title: 'Extract and download',
+        body: 'Run it and download talk.mp3. The whole video is decoded to pull out the audio, so a long file takes a little time.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does this re-compress the audio?',
+        a: 'It re-encodes to the format you choose. MP3, AAC and OGG are lossy, so they re-compress; WAV is lossless PCM and keeps full quality but is much larger. For sharing pick MP3; for editing pick WAV.',
+      },
+      {
+        q: 'What if the video has no sound?',
+        a: 'The tool detects a missing audio track and shows a message rather than exporting a silent or empty file, so you know the source itself has no audio.',
+      },
+      {
+        q: 'Can I keep the original audio quality?',
+        a: 'Choose WAV to avoid re-compression entirely (lossless), or pick MP3/AAC at a high bitrate for a much smaller file with minimal audible loss.',
+      },
+    ],
+  },
+
+  'audio-convert': {
+    metaTitle: 'Audio Converter (MP3, WAV, OGG, AAC, M4A, FLAC)',
+    metaDescription:
+      'Convert audio between MP3, WAV, OGG, AAC, M4A and FLAC in your browser. Turn a WAV into MP3 or a FLAC into WAV with FFmpeg — no upload, no signup.',
+    intro:
+      'This audio converter changes a sound file between MP3, WAV, OGG, AAC, M4A and FLAC using FFmpeg in your browser. Convert a bulky WAV to a small MP3, or a FLAC to WAV for editing. The conversion runs locally, so your audio is never uploaded.',
+    features: [
+      'Converts MP3, WAV, OGG, AAC, M4A and FLAC in any direction.',
+      'Handles lossless (WAV, FLAC) and lossy (MP3, AAC, OGG) targets.',
+      'Pre-fills the target format from a /convert/* deep link (e.g. wav-to-mp3).',
+      'Accepts common inputs including .opus and .wma.',
+      'Converts in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Add your audio file',
+        body: 'Drop in a file such as song.wav. Inputs like MP3, WAV, OGG, AAC, M4A, FLAC, Opus and WMA are accepted.',
+      },
+      {
+        title: 'Pick the output format',
+        body: 'Choose MP3 to shrink a WAV for sharing, or WAV/FLAC if you need a lossless file for editing. The tool marks which targets are lossy.',
+      },
+      {
+        title: 'Convert and download',
+        body: 'Run the conversion and download song.mp3. A typical song converts in a few seconds in the browser.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does converting to MP3 lose quality?',
+        a: 'Yes — MP3, AAC and OGG are lossy, so re-encoding to them discards some audio data. Converting between lossless formats (WAV to FLAC) keeps full quality. Going from MP3 back to WAV does not restore the quality already lost.',
+      },
+      {
+        q: 'Which format should I use?',
+        a: 'MP3 for maximum compatibility and small size; WAV for uncompressed editing; FLAC for lossless archiving at smaller size than WAV; AAC/M4A for Apple devices; OGG for open-web use.',
+      },
+      {
+        q: 'Can it convert FLAC to MP3?',
+        a: 'Yes. Load the FLAC, pick MP3, and convert. This is a common way to make a lossless library portable, at the cost of MP3 being lossy.',
+      },
+    ],
+  },
+
+  'audio-trim': {
+    metaTitle: 'Trim Audio Online (Cut MP3 / WAV) — Fast, No Upload',
+    metaDescription:
+      'Cut a section out of an audio file in your browser. Set start/end like 00:05 to 00:35 to make a ringtone or sample — fast lossless copy, no upload, no signup.',
+    intro:
+      'This tool cuts a segment out of an audio file in your browser using FFmpeg. Set a start and end — for example 00:05 to 00:35 — to grab a 30-second sample, ringtone or clean intro. It trims with stream copy, so the cut is fast and lossless.',
+    features: [
+      'Set exact start/end times to keep just the part you want.',
+      'Lossless stream copy (-c copy) — no re-encoding, no quality loss.',
+      'Works with MP3, WAV, OGG, AAC, M4A and FLAC.',
+      'Defaults the end to a short clip so you can quickly grab a sample.',
+      'Trims in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Load the audio and set the range',
+        body: 'Drop in song.mp3 and enter the start and end, for example 00:05 to 00:35 for a 30-second cut.',
+      },
+      {
+        title: 'Check the segment',
+        body: 'Confirm the times capture exactly the part you want — a chorus, a sample, or a clean section without the intro.',
+      },
+      {
+        title: 'Export the clip',
+        body: 'Run the trim and download the result. Because it uses stream copy, even a long track is cut in a moment with no quality change.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does trimming reduce audio quality?',
+        a: 'No. It uses stream copy (-c copy), which extracts the segment without re-encoding, so the trimmed clip is bit-for-bit identical in quality to the original within that range.',
+      },
+      {
+        q: 'Can I make a ringtone with this?',
+        a: 'Yes — set the range to the section you want (typically under 30-40 seconds) and export. You can then convert it to the format your phone needs with the audio converter.',
+      },
+      {
+        q: 'Why might the cut start slightly off?',
+        a: 'Stream copy cuts on the nearest frame boundary for some compressed formats, so the start can be a fraction of a second off. For most music and voice clips this is imperceptible.',
+      },
+    ],
+  },
+
+  'gif-maker': {
+    metaTitle: 'GIF Maker — Turn Images into an Animated GIF (Free)',
+    metaDescription:
+      'Combine PNG/JPEG images into an animated GIF in your browser. Set frame delay (e.g. 200ms) and width (e.g. 480px), loop it, and export — no upload, no signup.',
+    intro:
+      'This GIF maker stitches a set of PNG or JPEG images into an animated GIF, right in your browser with FFmpeg. Add your frames in order, set the per-frame delay (e.g. 200ms) and output width (e.g. 480px), and export a looping GIF. Everything is processed locally.',
+    features: [
+      'Builds an animated GIF from multiple PNG/JPEG frames.',
+      'Adjustable frame delay (e.g. 200ms ≈ 5 fps) controls playback speed.',
+      'Set output width (e.g. 480px) — height scales automatically with Lanczos.',
+      'Optional infinite loop, with a quality palette (palettegen) for clean colors.',
+      'Builds the GIF in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Add your frames',
+        body: 'Drop in your images (frame1.png, frame2.png, …). They are sequenced in order, so name or arrange them the way you want them to play.',
+      },
+      {
+        title: 'Set delay, width and loop',
+        body: 'Choose a frame delay — 200ms gives ~5 frames per second — and a width like 480px. Enable looping for a GIF that repeats forever.',
+      },
+      {
+        title: 'Generate and download',
+        body: 'Create the GIF and download out.gif. If it looks too big, reduce the width or use fewer frames and re-export.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I make a GIF from a video here?',
+        a: 'This tool builds a GIF from still images. To convert a video clip into a GIF, use the dedicated Video to GIF tool instead — it lets you pick a time range from the video.',
+      },
+      {
+        q: 'Why is the GIF file so large?',
+        a: 'GIF stores each frame almost in full and supports only 256 colors per frame, so size grows with frame count × width. To shrink it, use fewer frames, a smaller width (320-480px), or a longer per-frame delay. Optimizing afterward helps too.',
+      },
+      {
+        q: 'How do I control the speed?',
+        a: 'Speed comes from the frame delay: 100ms is ~10 fps (faster), 200ms is ~5 fps, 500ms is slow. Lower the delay for snappier animation, raise it for a slideshow feel.',
+      },
+    ],
+  },
+
+  'gif-optimize': {
+    metaTitle: 'GIF Optimizer — Reduce GIF File Size Online (Free)',
+    metaDescription:
+      'Shrink an animated GIF in your browser. Cut colors (256 to 64), scale down, and drop frame rate to make a GIF much smaller — FFmpeg, no upload, no signup.',
+    intro:
+      'This tool reduces the file size of an animated GIF in your browser using FFmpeg. It works by lowering the color palette (e.g. 256 to 128 or 64 colors), scaling the dimensions down, and optionally dropping the frame rate. A Medium preset typically cuts size sharply with little visible change.',
+    features: [
+      'Three presets — Light (256 colors), Medium (128 colors, 80%), Strong (64 colors, 60%, 10fps).',
+      'Reduce the color palette and scale percentage to control size vs quality.',
+      'Optional frame-rate cap to drop redundant frames.',
+      'Shows before/after size and the percentage saved.',
+      'Optimizes in your browser with FFmpeg.wasm — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Add the GIF to optimize',
+        body: 'Drop in animation.gif. The tool reads its size so you can see how much you save after optimizing.',
+      },
+      {
+        title: 'Pick a preset or tune it',
+        body: 'Try Medium (128 colors, 80% scale) first. If you need it smaller, go to Strong (64 colors, 60%, 10fps) or lower the colors and scale manually.',
+      },
+      {
+        title: 'Optimize and compare',
+        body: 'Run it and check the result card — for example 4MB down to 1.2MB (-70%). Download if the quality still looks good.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does reducing colors shrink the file?',
+        a: 'A GIF stores a color palette of up to 256 colors. Cutting it to 128 or 64 means fewer bits per pixel and a smaller palette, which can dramatically reduce size. Dithering keeps the result looking smooth despite fewer colors.',
+      },
+      {
+        q: 'Will optimizing hurt quality?',
+        a: 'Some — fewer colors and smaller dimensions are visible if you push them hard. Medium settings usually look almost identical to the original. For photographic GIFs, color banding can appear at very low color counts.',
+      },
+      {
+        q: 'Should I use a GIF at all for long clips?',
+        a: 'For anything longer than a few seconds, an MP4 or WebM video is far smaller and sharper than even an optimized GIF. Use GIF for short, silent, autoplay-everywhere loops.',
+      },
+    ],
+  },
+
+  'favicon-gen': {
+    metaTitle: 'Favicon Generator — 16/32/180px PNG + ICO (Free)',
+    metaDescription:
+      'Generate a full favicon set from one image in your browser. Get 16, 32, 48, 64, 180, 192, 512px PNGs plus a multi-size favicon.ico in a ZIP — no upload.',
+    intro:
+      'This favicon generator turns a single image into a complete favicon set in your browser. From one source it produces 16, 32, 48, 64, 180, 192 and 512px PNGs plus a multi-size favicon.ico (16/32/48), packaged as a ZIP. It covers browser tabs, the iOS home-screen icon and Android/PWA icons at once.',
+    features: [
+      'One image in, a full set out: 16, 32, 48, 64, 180, 192 and 512px PNGs.',
+      'Packs a real multi-size favicon.ico (16/32/48) — not just a renamed PNG.',
+      'Includes the 180px apple-touch-icon and 192/512px PWA icons.',
+      'Downloads everything as a single favicon.zip, or grab just favicon.ico.',
+      'Generates in your browser with the Canvas API — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Upload your source image',
+        body: 'Use a square image, ideally 512x512px or larger (e.g. logo.png), so the smallest 16px icon stays crisp after downscaling.',
+      },
+      {
+        title: 'Generate the set',
+        body: 'The tool renders every size with high-quality smoothing and packs the ICO. You will see 16, 32, 48, 64, 180, 192 and 512px outputs plus favicon.ico.',
+      },
+      {
+        title: 'Download and install',
+        body: 'Grab favicon.zip, drop the files in your site root, and reference them: <link rel="icon" href="/favicon.ico"> and <link rel="apple-touch-icon" href="/favicon-180x180.png">.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which favicon sizes do I actually need?',
+        a: 'The essentials are 16x16 and 32x32 for browser tabs (bundled into favicon.ico), 180x180 for the iOS apple-touch-icon, and 192/512 for Android and PWA manifests. This tool produces all of them so you are covered.',
+      },
+      {
+        q: 'What is the favicon.ico for?',
+        a: 'favicon.ico is the classic browser-tab icon, and it can hold several sizes (here 16/32/48) in one file so the browser picks the sharpest. This generator builds a true multi-size ICO, not just a renamed PNG.',
+      },
+      {
+        q: 'Should my source image be square?',
+        a: 'Yes. Use a square image (512x512 or larger) so it scales cleanly to every size. A non-square image will be fit into a square, which can leave padding or look off at small sizes.',
+      },
+    ],
+  },
+
+  'meme-gen': {
+    metaTitle: 'Meme Generator — Impact Top/Bottom Text (Free)',
+    metaDescription:
+      'Make a classic meme in your browser. Add bold white Impact captions with a black outline at the top and bottom of any image, then download — no upload, no signup.',
+    intro:
+      'This meme generator adds the classic top and bottom captions to any image, right in your browser. It uses bold uppercase Impact text with a black outline — the iconic meme look — sized automatically to the image, and exports a ready-to-share PNG. Nothing is uploaded.',
+    features: [
+      'Top and bottom captions in bold Impact with a black stroke — the classic meme style.',
+      'Font size scales to the image (about 10% of the short side) so text fits any photo.',
+      'Renders on a Canvas and exports a shareable image.',
+      'Works with your own photos, screenshots or reaction images.',
+      'Generates in your browser with the Canvas API — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Upload your image',
+        body: 'Drop in the picture you want to caption — a reaction shot, screenshot or photo such as cat.jpg.',
+      },
+      {
+        title: 'Type the top and bottom text',
+        body: 'Enter your caption, for example "ONE DOES NOT SIMPLY" on top and "WALK INTO MORDOR" on the bottom. It is rendered in white Impact with a black outline.',
+      },
+      {
+        title: 'Download the meme',
+        body: 'Export the result as an image and share it. Re-edit the text and re-export as many times as you like.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the font Impact?',
+        a: 'Impact (bold, white, black-outlined, uppercase) is the font that defined the classic image-macro meme in the 2000s, so it instantly reads as "meme". This tool falls back to Arial Black / Anton if Impact is unavailable on your system.',
+      },
+      {
+        q: 'Can I add only a bottom caption?',
+        a: 'Yes. Leave the top text empty and fill in just the bottom (or vice versa). Empty captions are simply not drawn.',
+      },
+      {
+        q: 'Can I use my own photo?',
+        a: 'Absolutely — upload any image you have. Since everything stays in your browser, even private screenshots and personal photos never leave your device.',
+      },
+    ],
+  },
+
+  'json-to-ts': {
+    metaTitle: 'JSON to TypeScript — Generate Interfaces from JSON',
+    metaDescription:
+      'Paste JSON and get TypeScript interfaces instantly. Infers types from values, marks nullable fields, and names a Root interface — all in your browser, no signup.',
+    intro:
+      'This tool turns a JSON sample into TypeScript interfaces in your browser. Paste an API response and it infers the type of every field, names nested objects, and produces a typed Root interface you can drop straight into your code. A null value becomes a `| null` union automatically.',
+    features: [
+      'Infers TypeScript types from your JSON values (string, number, boolean, arrays, nested objects).',
+      'Generates named interfaces for nested objects, not one giant inline type.',
+      'Handles null by widening the field to a nullable type.',
+      'Custom root name — call the top interface Root, User, ApiResponse, anything.',
+      'Generates in your browser — your JSON is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Paste your JSON',
+        body: 'Drop in a sample such as {"id":1,"name":"Ada","profile":{"age":30,"city":null}}. A real API response works great.',
+      },
+      {
+        title: 'Name the root interface',
+        body: 'Set the root name — for example User. Nested objects get their own interfaces named after their keys (e.g. Profile).',
+      },
+      {
+        title: 'Copy the generated types',
+        body: 'The output appears instantly: interface User with id: number, name: string, and profile: Profile where city is string | null. Copy it into your .ts file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are types inferred?',
+        a: 'Each value is inspected: numbers become number, strings become string, true/false become boolean, arrays become T[] based on their elements, and objects become their own named interface. It is sample-based, so the more representative your JSON, the better the types.',
+      },
+      {
+        q: 'What happens with null values?',
+        a: 'A null value can not reveal its real type, so the field is widened — typically to a nullable union like string | null. Provide a non-null example if you want a precise type.',
+      },
+      {
+        q: 'Does it handle nested objects and arrays?',
+        a: 'Yes. Nested objects get their own interfaces (e.g. profile: Profile), and arrays are typed from their items (e.g. number[] or User[]). Deeply nested JSON produces a clean set of linked interfaces.',
+      },
+    ],
+  },
+
+  'css-gradient': {
+    metaTitle: 'CSS Gradient Generator (Linear & Radial) — Free',
+    metaDescription:
+      'Build CSS gradients visually and copy the code. Create linear-gradient(90deg, ...) or radial-gradient(circle, ...) with custom color stops — free, no signup.',
+    intro:
+      'This CSS gradient generator lets you build a linear or radial gradient visually and copy the exact CSS. Add color stops, set the angle for linear gradients, and watch a live preview update. The output is ready-to-paste code like `linear-gradient(90deg, #ff0000, #0000ff)`.',
+    features: [
+      'Linear and radial gradient types.',
+      'Add and edit multiple color stops for multi-color gradients.',
+      'Angle control for linear gradients (e.g. 90deg = left to right).',
+      'Live preview and one-click copy of the generated CSS.',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Choose linear or radial',
+        body: 'Pick Linear for a directional fade or Radial for a circular fade from the center outward.',
+      },
+      {
+        title: 'Set the stops and angle',
+        body: 'Add color stops — for example #ff0000 at 0% and #0000ff at 100% — and, for linear, set the angle (90deg goes left to right, 180deg top to bottom).',
+      },
+      {
+        title: 'Copy the CSS',
+        body: 'Copy the generated value, e.g. background: linear-gradient(90deg, #ff0000, #0000ff);, and paste it into your stylesheet.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does the angle mean in a linear gradient?',
+        a: 'The angle sets the direction the colors flow. 0deg goes bottom to top, 90deg left to right, 180deg top to bottom, and 45deg diagonally. So linear-gradient(90deg, ...) fades from the left edge to the right.',
+      },
+      {
+        q: 'How do I add more than two colors?',
+        a: 'Add more color stops. Each stop is a color and an optional position, so linear-gradient(90deg, red 0%, yellow 50%, green 100%) gives a three-color gradient. This tool lets you add as many stops as you need.',
+      },
+      {
+        q: 'What is the difference between linear and radial?',
+        a: 'A linear gradient fades along a straight line in the direction of the angle. A radial gradient fades outward in a circle (or ellipse) from a center point — good for spotlight or glow effects.',
+      },
+    ],
+  },
+
+  'color-contrast': {
+    metaTitle: 'WCAG Color Contrast Checker (AA / AAA) — Free',
+    metaDescription:
+      'Check WCAG contrast ratio between two colors. See if text passes AA (4.5:1 body, 3:1 large) and AAA (7:1) — e.g. #767676 on white passes AA. Free, no signup.',
+    intro:
+      'This tool calculates the WCAG contrast ratio between a foreground and background color and tells you which accessibility levels it passes. Enter a text color and a background — say #767676 on #ffffff — and see the ratio (4.54:1) along with AA/AAA pass or fail for normal and large text.',
+    features: [
+      'Computes the exact WCAG contrast ratio (1:1 to 21:1) using relative luminance.',
+      'Shows AA and AAA pass/fail for both normal and large text.',
+      'Clear thresholds: AA needs 4.5:1 body / 3:1 large, AAA needs 7:1 body / 4.5:1 large.',
+      'Test any foreground/background pair before shipping a design.',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Enter the two colors',
+        body: 'Set the foreground (text) color and the background — for example #767676 text on a #ffffff background.',
+      },
+      {
+        title: 'Read the ratio',
+        body: 'The contrast ratio appears instantly, e.g. 4.54:1. Higher is more readable; pure black on white is the maximum 21:1.',
+      },
+      {
+        title: 'Check the AA/AAA badges',
+        body: 'See which levels pass. 4.54:1 passes AA for normal body text (needs 4.5:1) but fails AAA (needs 7:1). Adjust a color until it passes the level you target.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between AA and AAA?',
+        a: 'They are WCAG conformance levels. AA (the common legal/practical target) requires 4.5:1 for normal text and 3:1 for large text. AAA is stricter — 7:1 for normal and 4.5:1 for large. Aim for AA at minimum; AAA where you can.',
+      },
+      {
+        q: 'What counts as "large text"?',
+        a: 'WCAG defines large text as 18pt (24px) or 14pt (18.66px) bold and above. Large text has a lower required ratio (3:1 for AA, 4.5:1 for AAA) because bigger glyphs are easier to read at lower contrast.',
+      },
+      {
+        q: 'How is the ratio calculated?',
+        a: 'It uses the relative luminance of each color (a weighted, gamma-corrected mix of R, G, B) and computes (lighter + 0.05) / (darker + 0.05). The result ranges from 1:1 (identical) to 21:1 (black on white).',
+      },
+    ],
+  },
+
+  'box-shadow': {
+    metaTitle: 'CSS Box-Shadow Generator (inset, multiple) — Free',
+    metaDescription:
+      'Generate CSS box-shadow visually and copy the code. Set offset, blur, spread and color, toggle inset, and stack multiple shadows — free, no signup.',
+    intro:
+      'This box-shadow generator builds CSS box-shadow values visually and copies the code. Set the horizontal/vertical offset, blur radius, spread and color, toggle inset for inner shadows, and stack several shadows for layered depth. The live preview shows exactly what your element will look like.',
+    features: [
+      'Control offset-x, offset-y, blur and spread with live preview.',
+      'Inset toggle for inner shadows instead of outer.',
+      'Stack multiple shadows in one box-shadow for layered effects.',
+      'Adjustable shadow color (and opacity) for soft, realistic shadows.',
+      'Runs entirely in your browser with one-click copy.',
+    ],
+    steps: [
+      {
+        title: 'Set the offset and blur',
+        body: 'Adjust offset-x, offset-y, blur and spread — for example 0 8px 16px 0 gives a soft shadow dropping straight down.',
+      },
+      {
+        title: 'Pick a color and inset',
+        body: 'Choose a shadow color (often black at low opacity, like rgba(0,0,0,0.2)). Toggle inset if you want the shadow inside the element instead of behind it.',
+      },
+      {
+        title: 'Copy the CSS',
+        body: 'Copy the value, e.g. box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);. Add more shadows for a stacked, layered look.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What do the four numbers mean?',
+        a: 'They are offset-x, offset-y, blur-radius and spread-radius. offset-x/y move the shadow horizontally/vertically, blur softens its edge, and spread grows or shrinks the shadow before blurring. So 0 8px 16px 0 means no horizontal offset, 8px down, 16px blur, no spread.',
+      },
+      {
+        q: 'What does inset do?',
+        a: 'inset draws the shadow inside the element, creating an inner/pressed look (like an inset input field), instead of the default drop shadow behind it.',
+      },
+      {
+        q: 'Can I use multiple shadows on one element?',
+        a: 'Yes. box-shadow accepts a comma-separated list, so you can layer several — for example a tight dark shadow plus a soft wide one — to build realistic depth. This tool lets you stack and copy them together.',
+      },
+    ],
+  },
+
+  'base-converter': {
+    metaTitle: 'Base Converter (Binary, Octal, Decimal, Hex) — BigInt',
+    metaDescription:
+      'Convert numbers between base 2, 8, 10 and 16 in your browser. See 255 = 0xFF = 0b11111111 at once, with BigInt support for huge values — free, no signup.',
+    intro:
+      'This base converter translates a number between binary (2), octal (8), decimal (10) and hexadecimal (16) all at once. Enter 255 in decimal and instantly see 0xFF in hex and 0b11111111 in binary. It uses BigInt, so even numbers far beyond 2^53 convert exactly without rounding.',
+    features: [
+      'Converts between base 2, 8, 10 and 16 simultaneously — one input, all bases.',
+      'BigInt-based, so very large integers convert exactly with no precision loss.',
+      'Validates input per base (e.g. only 0-9 and a-f allowed for hex).',
+      'Handy for color codes, bitmasks, permissions and low-level debugging.',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Choose the input base',
+        body: 'Pick the base of the number you are entering — for example Decimal (10) to type 255.',
+      },
+      {
+        title: 'Type the number',
+        body: 'Enter the value, e.g. 255. The tool checks it is valid for the chosen base (hex accepts 0-9 and a-f, binary only 0 and 1).',
+      },
+      {
+        title: 'Read every base',
+        body: 'All bases update at once: 255 = 0xFF (hex) = 0o377 (octal) = 0b11111111 (binary). Copy whichever representation you need.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it handle very large numbers?',
+        a: 'Yes. It uses JavaScript BigInt, so integers well beyond 2^53 (the safe limit for normal numbers) convert exactly with no rounding errors — useful for 64-bit values, hashes and large bitmasks.',
+      },
+      {
+        q: 'What is 255 in hex and binary?',
+        a: '255 in decimal is FF in hexadecimal (often written 0xFF) and 11111111 in binary (0b11111111). It is the largest value that fits in a single byte (8 bits), which is why it shows up so often in colors and bytes.',
+      },
+      {
+        q: 'Why are some characters rejected?',
+        a: 'Each base only allows certain digits: binary uses 0-1, octal 0-7, decimal 0-9, and hex 0-9 plus a-f. Typing a digit outside the chosen base (like 9 in binary, or g in hex) is flagged as invalid.',
+      },
+    ],
+  },
+
+  'number-to-words': {
+    metaTitle: 'Number to Words Converter (English & Korean) — Free',
+    metaDescription:
+      'Spell out a number in words — English or Korean. Turn 1234 into "one thousand two hundred thirty-four" for cheques and forms — free, in-browser, no signup.',
+    intro:
+      'This tool spells out a number in words in English or Korean. Enter 1234 and get "one thousand two hundred thirty-four", or switch to Korean for 천이백삼십사. It is handy for writing amounts on cheques, contracts and invoices where the figure must appear in words.',
+    features: [
+      'English (short scale: thousand, million, billion) and Korean (만, 억, 조) output.',
+      'Handles large numbers using grouped units in each language.',
+      'Useful for cheques, legal documents and accessibility.',
+      'Spells the integer part clearly so amounts are unambiguous.',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Enter the number',
+        body: 'Type the figure you want spelled out, for example 1234.',
+      },
+      {
+        title: 'Pick the language',
+        body: 'Choose English to get "one thousand two hundred thirty-four", or Korean for 천이백삼십사 (note Korean groups by 만 = 10,000).',
+      },
+      {
+        title: 'Copy the words',
+        body: 'The spelled-out form appears instantly. Copy it onto your cheque, invoice or form where words are required.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it support both English and Korean?',
+        a: 'Yes. English uses the short scale (thousand, million, billion, …) and Korean uses 10,000-based units (만, 억, 조, …), so 12345 is "twelve thousand three hundred forty-five" in English and 일만 이천삼백사십오 in Korean.',
+      },
+      {
+        q: 'Why would I need numbers in words?',
+        a: 'Cheques, contracts and invoices often require the amount in words to prevent tampering — it is much harder to alter "one thousand" than the digits 1000. It is also used for accessibility and formal documents.',
+      },
+      {
+        q: 'How big a number can it spell?',
+        a: 'It handles large values using each language\'s unit names (up to trillion-scale and beyond). Extremely large numbers still spell out, just with longer unit chains.',
+      },
+    ],
+  },
+
+  'roman-numeral': {
+    metaTitle: 'Roman Numeral Converter (Arabic ↔ Roman) — Free',
+    metaDescription:
+      'Convert between Roman numerals and Arabic numbers. 2024 = MMXXIV, 4 = IV, 49 = XLIX. Validates standard form, range 1-3999 — free, in-browser, no signup.',
+    intro:
+      'This tool converts both ways between Arabic numbers and Roman numerals. Enter 2024 to get MMXXIV, or type XLIX to get 49. It follows standard subtractive notation (4 = IV, 9 = IX, 40 = XL) and validates Roman input, covering the classic range 1 to 3999.',
+    features: [
+      'Converts Arabic → Roman and Roman → Arabic.',
+      'Uses standard subtractive form: 4 = IV, 9 = IX, 40 = XL, 90 = XC.',
+      'Validates Roman input against the correct pattern (rejects IIII, VV, etc.).',
+      'Covers the standard range 1-3999.',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Choose the direction',
+        body: 'Pick Arabic → Roman to convert a number, or Roman → Arabic to decode numerals.',
+      },
+      {
+        title: 'Enter the value',
+        body: 'Type a number like 2024, or Roman numerals like MMXXIV. For Roman input, only valid standard forms are accepted.',
+      },
+      {
+        title: 'Read the result',
+        body: 'See the conversion instantly: 2024 = MMXXIV, 1994 = MCMXCIV, 49 = XLIX. Copy whichever you need.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the maximum 3999?',
+        a: 'Standard Roman numerals only go up to 3999 (MMMCMXCIX) because there is no single symbol for 5000 or 10000 in the common system — M (1000) is the largest, and you do not write more than three in a row (MMM = 3000). Numbers above 3999 require overlines, which are not part of standard notation.',
+      },
+      {
+        q: 'How do subtractive numerals work?',
+        a: 'A smaller symbol before a larger one subtracts: IV = 5-1 = 4, IX = 10-1 = 9, XL = 50-10 = 40, CM = 1000-100 = 900. This is why 4 is IV (not IIII) and 2024 is MMXXIV.',
+      },
+      {
+        q: 'What does 2024 look like in Roman numerals?',
+        a: '2024 is MMXXIV — MM (2000) + XX (20) + IV (4). For comparison, 2023 is MMXXIII and 2025 is MMXXV.',
+      },
+    ],
+  },
+
+  'morse-code': {
+    metaTitle: 'Morse Code Translator (Text ↔ Morse) with Beep',
+    metaDescription:
+      'Translate text to Morse code and back, then play it as audible beeps. SOS = ... --- ..., A = .-, plus numbers and punctuation — free, in-browser, no signup.',
+    intro:
+      'This Morse code translator converts text to Morse and Morse back to text, and can play the result as audible beeps. Type SOS to get ... --- ..., or paste dots and dashes to decode them. It covers A-Z, 0-9 and common punctuation, with a built-in oscillator for playback.',
+    features: [
+      'Encodes text → Morse and decodes Morse → text.',
+      'Audible beep playback of the Morse using the Web Audio API (no file needed).',
+      'Supports letters, digits and punctuation (. , ? ! / @ and more).',
+      'Classic examples just work: SOS = ... --- ..., HELLO = .... . .-.. .-.. ---.',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Type text or Morse',
+        body: 'Enter plain text like SOS to encode, or paste Morse like ... --- ... to decode it back to letters.',
+      },
+      {
+        title: 'Read the translation',
+        body: 'The converted output appears instantly — SOS becomes ... --- ..., where letters are separated by spaces and words by a slash.',
+      },
+      {
+        title: 'Play the beeps',
+        body: 'Press play to hear the Morse as oscillator tones — short beeps for dots, long for dashes — so you can learn the rhythm by ear.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is SOS in Morse code?',
+        a: 'SOS is ... --- ... — three dots, three dashes, three dots. It is the international distress signal, chosen because the pattern is simple and unmistakable, not because the letters stand for anything.',
+      },
+      {
+        q: 'How are letters and words separated?',
+        a: 'Within a letter, dots and dashes are tight; letters are separated by a space; and words are separated by a slash (/) or longer gap. So "HI THERE" encodes as .... .. / - .... . .-. ..',
+      },
+      {
+        q: 'Can I hear what the Morse sounds like?',
+        a: 'Yes. The built-in playback uses the Web Audio API to beep the code — short tones for dots and longer tones for dashes — which is the easiest way to learn Morse rhythm.',
+      },
+    ],
+  },
+
+  'caesar-cipher': {
+    metaTitle: 'Caesar Cipher & ROT13 Encoder/Decoder — Free',
+    metaDescription:
+      'Encrypt and decrypt text with a Caesar cipher or ROT13 in your browser. Shift letters by any amount — ROT13 = shift 13, decodes itself — free, no signup.',
+    intro:
+      'This tool encrypts and decrypts text with a Caesar cipher — shifting each letter by a fixed amount — and includes a one-click ROT13 (shift 13). Set the shift to 3 and "HELLO" becomes "KHOOR"; click ROT13 and the same operation both encodes and decodes. Only letters move; numbers, spaces and punctuation pass through unchanged.',
+    features: [
+      'Caesar cipher with any shift amount (positive or negative).',
+      'One-click ROT13 button (shift 13) — the classic self-reversing cipher.',
+      'Preserves letter case and leaves digits, spaces and symbols untouched.',
+      'Decrypt by entering the negative shift (or ROT13 again).',
+      'Runs entirely in your browser with no signup.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Type or paste the message, for example HELLO.',
+      },
+      {
+        title: 'Set the shift',
+        body: 'Choose a shift amount — 3 turns HELLO into KHOOR. Or click the ROT13 button to apply a shift of 13.',
+      },
+      {
+        title: 'Read or reverse it',
+        body: 'The result updates live. To decode, enter the negative shift (-3) — or for ROT13, just apply ROT13 again, since it reverses itself.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is ROT13?',
+        a: 'ROT13 is a Caesar cipher with a shift of 13. Because the alphabet has 26 letters, shifting twice returns the original — so the same ROT13 operation both encodes and decodes. It is commonly used to hide spoilers or punchlines, not for real security.',
+      },
+      {
+        q: 'Is a Caesar cipher secure?',
+        a: 'No. With only 25 possible shifts it can be broken in seconds by trying them all (or by letter-frequency analysis). Treat it as a fun puzzle or obfuscation, never as real encryption.',
+      },
+      {
+        q: 'How do I decrypt a Caesar message?',
+        a: 'Apply the opposite shift. If it was encrypted with shift 3, decrypt with shift -3 (or shift 23). For ROT13, simply run ROT13 again because it is its own inverse.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {

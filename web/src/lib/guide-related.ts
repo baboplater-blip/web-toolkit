@@ -83,6 +83,36 @@ export const RELATED_TOOLS: Record<string, string[]> = {
 
   // ── 비디오/GIF ──
   'video-to-gif': ['gif-maker', 'video-trim', 'video-compress', 'gif-optimize'],
+  'video-convert': ['video-compress', 'video-trim', 'video-to-audio', 'video-to-gif'],
+  'video-compress': ['video-convert', 'video-trim', 'compress', 'video-to-gif'],
+  'video-trim': ['video-compress', 'video-convert', 'video-to-audio', 'video-to-gif'],
+  'video-to-audio': ['audio-convert', 'audio-trim', 'video-trim', 'video-convert'],
+  'gif-maker': ['video-to-gif', 'gif-optimize', 'gif-resize', 'image-convert'],
+  'gif-optimize': ['gif-maker', 'video-to-gif', 'gif-resize', 'compress'],
+
+  // ── 오디오 ──
+  'audio-convert': ['audio-trim', 'video-to-audio', 'audio-compress', 'audio-merge'],
+  'audio-trim': ['audio-convert', 'audio-fade', 'video-to-audio', 'audio-merge'],
+
+  // ── 문서 변환 ──
+  'docx-to-pdf': ['pdf-merge', 'docx-to-md', 'pdf-to-word', 'compress'],
+
+  // ── 이미지 생성/편집 ──
+  'favicon-gen': ['image-convert', 'image-resize', 'qr-logo', 'image-crop'],
+  'meme-gen': ['image-watermark', 'image-crop', 'image-resize', 'fancy-text'],
+
+  // ── 개발: CSS/색상/타입 ──
+  'json-to-ts': ['json-to-go', 'json-to-python', 'json-format', 'mock-data'],
+  'css-gradient': ['box-shadow', 'color-converter', 'color-name', 'css-units'],
+  'color-contrast': ['color-converter', 'color-name', 'css-gradient', 'css-units'],
+  'box-shadow': ['css-gradient', 'css-units', 'color-converter', 'cubic-bezier'],
+  'base-converter': ['color-converter', 'chmod-calc', 'subnet-calc', 'json-format'],
+
+  // ── 유틸/텍스트(변환·재미) ──
+  'number-to-words': ['roman-numeral', 'unit-converter', 'percentage', 'base-converter'],
+  'roman-numeral': ['number-to-words', 'base-converter', 'unit-converter', 'date-diff'],
+  'morse-code': ['caesar-cipher', 'binary-text', 'nato-phonetic', 'fancy-text'],
+  'caesar-cipher': ['morse-code', 'base64', 'binary-text', 'text-case'],
 };
 
 /**

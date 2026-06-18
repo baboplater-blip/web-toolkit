@@ -19,7 +19,7 @@ import { test, expect } from '@playwright/test';
  *   awk '/export const CUSTOM_GUIDES:/,/^};/' src/lib/guide-content.ts | grep -E "^  ['\"]?[a-z0-9-]+['\"]?: \{"
  */
 
-// 4개국어 각 50종 맞춤 가이드(2026-06-17 기준) — 키는 도구 id.
+// 4개국어 각 70종 맞춤 가이드(2026-06-17 기준) — 키는 도구 id.
 const CUSTOM_GUIDE_IDS: string[] = [
   // 라운드1 (12)
   'css-units', 'chmod-calc', 'http-status', 'json-to-go', 'color-name', 'code-case',
@@ -33,6 +33,11 @@ const CUSTOM_GUIDE_IDS: string[] = [
   'pdf-to-word', 'csv-json', 'yaml-json', 'text-case', 'lorem-ipsum', 'image-crop',
   'image-rotate', 'image-watermark', 'sql-format', 'html-entities', 'file-hash', 'totp',
   'slugify', 'markdown-toc', 'video-to-gif',
+  // 라운드4 미디어·개발 (20)
+  'docx-to-pdf', 'video-convert', 'video-compress', 'video-trim', 'video-to-audio',
+  'audio-convert', 'audio-trim', 'gif-maker', 'gif-optimize', 'favicon-gen', 'meme-gen',
+  'json-to-ts', 'css-gradient', 'color-contrast', 'box-shadow', 'base-converter',
+  'number-to-words', 'roman-numeral', 'morse-code', 'caesar-cipher',
 ];
 
 // 자동생성 intro 의 마지막 문장(빌더 템플릿). override.intro 가 적용되면 사라진다.
@@ -43,12 +48,14 @@ const LOCALES = [
   { id: 'zh', prefix: '/zh', genericTail: '绝不会向服务器上传任何内容' },
 ];
 
-// 속도를 위해 KO 는 50종 전수, 타 언어는 카테고리 대표 13종으로 메커니즘만 확인.
+// 속도를 위해 KO 는 70종 전수, 타 언어는 카테고리 대표 16종으로 메커니즘만 확인.
 const SUBSET_FOR_NON_KO = new Set([
   'css-units', 'chmod-calc', 'qr-code', 'base64', 'json-format',
   'jwt-decoder', 'pdf-merge', 'image-convert', 'unit-converter', 'compress',
   // 라운드3 대표
   'cron-explainer', 'pdf-to-word', 'csv-json',
+  // 라운드4 대표
+  'video-convert', 'color-contrast', 'base-converter',
 ]);
 
 test.describe('맞춤 가이드 — override 적용(자동생성 폴백 아님)', () => {
@@ -98,6 +105,10 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/guide/cron-explainer', phrase: '5분마다', note: 'KO cron */5 풀이' },
     { path: '/en/guide/totp', phrase: 'Google Authenticator', note: 'EN TOTP 호환' },
     { path: '/zh/guide/color-converter', phrase: 'OKLCH', note: 'ZH OKLCH 변환' },
+    // 라운드4
+    { path: '/guide/roman-numeral', phrase: 'MMXXIV', note: 'KO 2024=MMXXIV' },
+    { path: '/en/guide/color-contrast', phrase: '4.5:1', note: 'EN WCAG AA 기준' },
+    { path: '/en/guide/caesar-cipher', phrase: 'ROT13', note: 'EN ROT13' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {
@@ -117,6 +128,8 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     { guide: 'base64', prefix: '', expectLinks: ['url-encoder', 'html-entities', 'file-hash', 'json-format'] },
     { guide: 'image-resize', prefix: '', expectLinks: ['image-convert', 'compress', 'image-crop'] },
     { guide: 'qr-code', prefix: '/en', expectLinks: ['wifi-qr', 'barcode', 'vcard-qr', 'qr-logo'] },
+    { guide: 'video-convert', prefix: '', expectLinks: ['video-compress', 'video-trim', 'video-to-audio'] },
+    { guide: 'morse-code', prefix: '', expectLinks: ['caesar-cipher', 'binary-text', 'nato-phonetic'] },
   ];
 
   for (const { guide, prefix, expectLinks } of CLUSTERS) {
