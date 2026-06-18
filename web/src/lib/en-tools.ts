@@ -2206,6 +2206,244 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Reverse the frame order of an animated GIF to create a backwards-playing loop. Processed entirely in your browser.',
     keywords: ['reverse gif', 'reverse animated gif', 'play gif backwards', 'gif reverser', 'backwards gif'],
   },
+  'meta-tags': {
+    name: 'Meta Tag Generator',
+    tagline: 'Generate Open Graph and Twitter card meta tags.',
+    description:
+      'Generate SEO, Open Graph and Twitter card meta tags for your page.',
+    keywords: ['meta tags', 'open graph', 'twitter card', 'seo'],
+  },
+  'robots-txt': {
+    name: 'robots.txt Generator',
+    tagline: 'Build a robots.txt with crawl rules.',
+    description:
+      'Generate a robots.txt file with allow/disallow rules and sitemap.',
+    keywords: ['robots.txt', 'crawler', 'seo', 'disallow'],
+  },
+  'css-clamp': {
+    name: 'CSS clamp() Generator',
+    tagline: 'Compute fluid clamp() values for responsive sizing.',
+    description:
+      'Generate responsive CSS clamp() values for fluid font sizes and spacing.',
+    keywords: ['css clamp', 'fluid typography', 'responsive'],
+  },
+  'json-schema': {
+    name: 'JSON Schema Generator',
+    tagline: 'Infer a JSON Schema from a JSON sample.',
+    description:
+      'Generate a JSON Schema from an example JSON document.',
+    keywords: ['json schema', 'validation', 'json'],
+  },
+  'string-escape': {
+    name: 'String Escaper',
+    tagline: 'Escape and unescape strings for JSON, JS, HTML, SQL.',
+    description:
+      'Escape or unescape a string for JSON, JavaScript, HTML or SQL.',
+    keywords: ['escape', 'unescape', 'json', 'html'],
+  },
+  'unicode-lookup': {
+    name: 'Unicode Inspector',
+    tagline: 'Inspect code points, names and UTF-8 bytes.',
+    description:
+      'Look up Unicode code points, names and UTF-8 encoding for any text.',
+    keywords: ['unicode', 'code point', 'utf-8'],
+  },
+  'crontab-builder': {
+    name: 'Crontab Builder',
+    tagline: 'Build cron expressions visually.',
+    description:
+      'Build a cron expression from simple options and preview next runs.',
+    keywords: ['cron', 'crontab', 'schedule'],
+  },
+  'tailwind-shades': {
+    name: 'Tailwind Shade Generator',
+    tagline: 'Generate a 50–950 shade scale from a base color.',
+    description:
+      'Generate a Tailwind-style 50–950 color shade scale from a base color.',
+    keywords: ['tailwind', 'color shades', 'palette'],
+  },
+  'readability-score': {
+    name: 'Readability Score',
+    tagline: 'Flesch reading ease and grade level.',
+    description:
+      'Calculate Flesch reading ease and grade level for your text.',
+    keywords: ['readability', 'flesch', 'grade level'],
+  },
+  'sort-numbers': {
+    name: 'Number Sorter',
+    tagline: 'Sort numbers and see sum and average.',
+    description:
+      'Sort a list of numbers ascending or descending with sum and average.',
+    keywords: ['sort numbers', 'ascending', 'sum', 'average'],
+  },
+  'list-shuffle': {
+    name: 'List Shuffler',
+    tagline: 'Randomly shuffle a list of lines.',
+    description:
+      'Shuffle a list of lines into random order for draws or ordering.',
+    keywords: ['shuffle list', 'random order', 'draw'],
+  },
+  'syllable-counter': {
+    name: 'Syllable Counter',
+    tagline: 'Count syllables and words in English text.',
+    description:
+      'Count syllables and words in English text (for poems, haiku).',
+    keywords: ['syllable counter', 'words', 'haiku'],
+  },
+  'strikethrough-text': {
+    name: 'Strikethrough Text',
+    tagline: 'Make Unicode strikethrough and underline text.',
+    description:
+      'Convert text into Unicode strikethrough or underline for social posts.',
+    keywords: ['strikethrough text', 'underline', 'unicode'],
+  },
+  'superscript-text': {
+    name: 'Superscript & Subscript',
+    tagline: 'Make Unicode superscript and subscript text.',
+    description:
+      'Convert text into Unicode superscript or subscript characters.',
+    keywords: ['superscript', 'subscript', 'unicode'],
+  },
+  'world-clock': {
+    name: 'World Clock',
+    tagline: 'See current time across cities at once.',
+    description:
+      'View the current time in multiple cities and time zones at once.',
+    keywords: ['world clock', 'time zones', 'current time'],
+  },
+  'countdown': {
+    name: 'Countdown Timer',
+    tagline: 'Count down to a target date in real time.',
+    description:
+      'Count down the time remaining until a target date and time.',
+    keywords: ['countdown', 'd-day', 'event timer'],
+  },
+  'magic-8-ball': {
+    name: 'Magic 8-Ball',
+    tagline: 'Get a random yes/no answer to any question.',
+    description:
+      'Ask a yes/no question and get a random Magic 8-Ball answer.',
+    keywords: ['magic 8 ball', 'yes no', 'decision'],
+  },
+  'decision-wheel': {
+    name: 'Decision Wheel',
+    tagline: 'Spin a wheel to pick one option.',
+    description:
+      'Enter options and spin a wheel to randomly pick one.',
+    keywords: ['decision wheel', 'spinner', 'random pick'],
+  },
+  'bill-split': {
+    name: 'Bill Splitter',
+    tagline: 'Split a bill with tax and tip among people.',
+    description:
+      'Split a bill including tax and tip evenly among any number of people.',
+    keywords: ['bill split', 'split the check', 'tip'],
+  },
+  'ideal-weight': {
+    name: 'Ideal Weight Calculator',
+    tagline: 'Estimate ideal body weight from height.',
+    description:
+      'Estimate ideal body weight range from height and sex.',
+    keywords: ['ideal weight', 'healthy weight', 'bmi'],
+  },
+  'zodiac': {
+    name: 'Zodiac Sign Finder',
+    tagline: 'Find your zodiac sign from your birthday.',
+    description:
+      'Find your astrological zodiac sign from your date of birth.',
+    keywords: ['zodiac sign', 'astrology', 'horoscope'],
+  },
+  'numerology': {
+    name: 'Numerology Calculator',
+    tagline: 'Compute your life path number.',
+    description:
+      'Compute numerology life path and name numbers from a date and name.',
+    keywords: ['numerology', 'life path number'],
+  },
+  'hash-identifier': {
+    name: 'Hash Identifier',
+    tagline: 'Guess a hash type from its length and format.',
+    description:
+      'Identify the likely hash algorithm (MD5, SHA-1/256, bcrypt) from a hash.',
+    keywords: ['hash identifier', 'md5', 'sha', 'detect'],
+  },
+  'random-pin': {
+    name: 'PIN Generator',
+    tagline: 'Generate secure random numeric PINs.',
+    description:
+      'Generate secure random numeric PIN codes of any length.',
+    keywords: ['pin generator', 'random pin', 'numeric'],
+  },
+  'iban-validator': {
+    name: 'IBAN Validator',
+    tagline: 'Validate IBAN checksum and format.',
+    description:
+      'Validate an IBAN bank account number\'s checksum and format.',
+    keywords: ['iban validator', 'checksum', 'bank'],
+  },
+  'luhn-generator': {
+    name: 'Luhn Number Generator',
+    tagline: 'Generate Luhn-valid test numbers.',
+    description:
+      'Generate numbers that pass the Luhn checksum (for testing).',
+    keywords: ['luhn generator', 'test card number', 'checksum'],
+  },
+  'image-sepia': {
+    name: 'Sepia Image',
+    tagline: 'Apply a sepia tone to an image.',
+    description:
+      'Apply a warm sepia tone to your image in the browser.',
+    keywords: ['sepia', 'vintage', 'filter'],
+  },
+  'image-vignette': {
+    name: 'Vignette Image',
+    tagline: 'Add a darkened-edge vignette effect.',
+    description:
+      'Add a vignette that darkens the edges of your image.',
+    keywords: ['vignette', 'dark edges', 'filter'],
+  },
+  'image-tint': {
+    name: 'Tint Image',
+    tagline: 'Overlay a solid color tint on an image.',
+    description:
+      'Apply a solid color tint overlay to your image.',
+    keywords: ['tint', 'color overlay', 'filter'],
+  },
+  'screenshot-shadow': {
+    name: 'Screenshot Beautifier',
+    tagline: 'Add background, padding and shadow to screenshots.',
+    description:
+      'Make screenshots look polished with a gradient background, padding and shadow.',
+    keywords: ['screenshot beautifier', 'shadow', 'background'],
+  },
+  'markdown-table-gen': {
+    name: 'Markdown Table Generator',
+    tagline: 'Build a Markdown table from rows and columns.',
+    description:
+      'Create a GitHub-flavored Markdown table from your rows and columns.',
+    keywords: ['markdown table', 'github', 'generator'],
+  },
+  'csv-to-html': {
+    name: 'CSV to HTML Table',
+    tagline: 'Convert CSV into an HTML table.',
+    description:
+      'Convert CSV data into HTML table markup.',
+    keywords: ['csv to html', 'table', 'convert'],
+  },
+  'pdf-delete-pages': {
+    name: 'Delete PDF Pages',
+    tagline: 'Remove specific pages from a PDF.',
+    description:
+      'Delete selected pages from a PDF file in your browser.',
+    keywords: ['delete pdf pages', 'remove pages'],
+  },
+  'metronome': {
+    name: 'Metronome',
+    tagline: 'A click-track metronome by BPM and beat.',
+    description:
+      'A browser metronome that clicks in time at your chosen BPM and meter.',
+    keywords: ['metronome', 'bpm', 'beat', 'tempo'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */

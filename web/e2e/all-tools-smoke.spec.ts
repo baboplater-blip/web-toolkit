@@ -347,6 +347,41 @@ const TOOL_ROUTES: string[] = [
   '/tools/video/trim',
   '/tools/video/watermark',
   '/tools/video/webcam',
+  // 팩4 (2026-06-18, 34종)
+  '/tools/dev/meta-tags',
+  '/tools/dev/robots-txt',
+  '/tools/dev/css-clamp',
+  '/tools/dev/json-schema',
+  '/tools/dev/string-escape',
+  '/tools/dev/unicode-lookup',
+  '/tools/dev/crontab-builder',
+  '/tools/dev/tailwind-shades',
+  '/tools/text/readability',
+  '/tools/text/sort-numbers',
+  '/tools/text/list-shuffle',
+  '/tools/text/syllable',
+  '/tools/text/strikethrough',
+  '/tools/text/superscript',
+  '/tools/util/world-clock',
+  '/tools/util/countdown',
+  '/tools/util/magic-8-ball',
+  '/tools/util/decision-wheel',
+  '/tools/util/bill-split',
+  '/tools/util/ideal-weight',
+  '/tools/util/zodiac',
+  '/tools/util/numerology',
+  '/tools/security/hash-identifier',
+  '/tools/security/random-pin',
+  '/tools/security/iban-validator',
+  '/tools/security/luhn-generator',
+  '/tools/image/sepia',
+  '/tools/image/vignette',
+  '/tools/image/tint',
+  '/tools/image/screenshot-shadow',
+  '/tools/docs/markdown-table',
+  '/tools/docs/csv-to-html',
+  '/tools/pdf/delete-pages',
+  '/tools/audio/metronome',
 ];
 
 /** 마운트 시 무관한 외부 노이즈(확장프로그램·SW 등)는 회귀로 보지 않는다. */
@@ -401,7 +436,7 @@ test.describe('허브 라우트 스모크', () => {
   }
 });
 
-test.describe('전 도구 마운트 스모크 (320)', () => {
+test.describe('전 도구 마운트 스모크 (354)', () => {
   for (const route of TOOL_ROUTES) {
     test(route, async ({ page }) => {
       await smoke(page, route);
