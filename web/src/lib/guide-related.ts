@@ -113,6 +113,34 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'roman-numeral': ['number-to-words', 'base-converter', 'unit-converter', 'date-diff'],
   'morse-code': ['caesar-cipher', 'binary-text', 'nato-phonetic', 'fancy-text'],
   'caesar-cipher': ['morse-code', 'base64', 'binary-text', 'text-case'],
+
+  // ── 라운드5: 개발 도구 ──
+  'html-format': ['css-minify', 'json-format', 'sql-format', 'svg-optimize'],
+  'svg-optimize': ['image-svg-to-png', 'css-minify', 'html-format', 'image-convert'],
+  'json-diff': ['json-format', 'text-diff', 'json-flatten', 'json-to-go'],
+  'cubic-bezier': ['css-gradient', 'box-shadow', 'css-units', 'color-converter'],
+  'mock-data': ['json-to-ts', 'uuid-gen', 'lorem-ipsum', 'json-format'],
+  'json-xml': ['json-format', 'yaml-json', 'csv-json', 'xml-format'],
+
+  // ── 라운드5: 계산/유틸 ──
+  'bmi-calc': ['tdee', 'loan-calc', 'unit-converter', 'percentage'],
+  'loan-calc': ['compound-interest', 'percentage', 'discount', 'bmi-calc'],
+  discount: ['percentage', 'tip-calc', 'vat-calc', 'loan-calc'],
+  timezone: ['timestamp-converter', 'date-diff', 'unit-converter', 'cron-explainer'],
+  'date-diff': ['timezone', 'timestamp-converter', 'age-calc', 'dday'],
+  'aspect-ratio': ['image-resize', 'unit-converter', 'image-crop', 'percentage'],
+
+  // ── 라운드5: 보안 ──
+  'password-strength': ['password-gen', 'diceware', 'bcrypt', 'text-hash'],
+  'rsa-keypair': ['bcrypt', 'jwt-decoder', 'hmac-gen', 'password-gen'],
+
+  // ── 라운드5: 유틸/이미지/텍스트/문서/PDF ──
+  barcode: ['qr-code', 'wifi-qr', 'qr-logo', 'vcard-qr'],
+  'image-color-picker': ['color-converter', 'color-name', 'image-crop', 'color-contrast'],
+  'avatar-crop': ['image-crop', 'image-resize', 'image-round-corners', 'image-convert'],
+  'word-frequency': ['text-count', 'count-occurrences', 'text-diff', 'remove-accents'],
+  'md-html': ['markdown-toc', 'markdown-stats', 'html-format', 'docx-to-md'],
+  'pdf-to-txt': ['pdf-to-word', 'pdf-to-md', 'pdf-to-html', 'pdf-to-jpg'],
 };
 
 /**

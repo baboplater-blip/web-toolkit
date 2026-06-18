@@ -22,7 +22,7 @@
  */
 /* eslint-disable */
 
-const SW_VERSION = 'webtoolkit-sw-75af5bb';
+const SW_VERSION = 'webtoolkit-sw-68284d9';
 const STATIC_CACHE = `${SW_VERSION}-static`;
 // RUNTIME 은 의도적으로 버전 비의존 — 배포 간 오프라인 페이지 보존.
 const RUNTIME_CACHE = 'webtoolkit-runtime';

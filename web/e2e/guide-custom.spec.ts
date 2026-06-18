@@ -19,7 +19,7 @@ import { test, expect } from '@playwright/test';
  *   awk '/export const CUSTOM_GUIDES:/,/^};/' src/lib/guide-content.ts | grep -E "^  ['\"]?[a-z0-9-]+['\"]?: \{"
  */
 
-// 4개국어 각 70종 맞춤 가이드(2026-06-17 기준) — 키는 도구 id.
+// 4개국어 각 90종 맞춤 가이드(2026-06-17 기준) — 키는 도구 id.
 const CUSTOM_GUIDE_IDS: string[] = [
   // 라운드1 (12)
   'css-units', 'chmod-calc', 'http-status', 'json-to-go', 'color-name', 'code-case',
@@ -38,6 +38,11 @@ const CUSTOM_GUIDE_IDS: string[] = [
   'audio-convert', 'audio-trim', 'gif-maker', 'gif-optimize', 'favicon-gen', 'meme-gen',
   'json-to-ts', 'css-gradient', 'color-contrast', 'box-shadow', 'base-converter',
   'number-to-words', 'roman-numeral', 'morse-code', 'caesar-cipher',
+  // 라운드5 개발·계산·기타 (20)
+  'html-format', 'svg-optimize', 'json-diff', 'cubic-bezier', 'mock-data', 'json-xml',
+  'bmi-calc', 'loan-calc', 'discount', 'timezone', 'date-diff', 'aspect-ratio',
+  'password-strength', 'rsa-keypair', 'barcode', 'image-color-picker', 'avatar-crop',
+  'word-frequency', 'md-html', 'pdf-to-txt',
 ];
 
 // 자동생성 intro 의 마지막 문장(빌더 템플릿). override.intro 가 적용되면 사라진다.
@@ -56,6 +61,8 @@ const SUBSET_FOR_NON_KO = new Set([
   'cron-explainer', 'pdf-to-word', 'csv-json',
   // 라운드4 대표
   'video-convert', 'color-contrast', 'base-converter',
+  // 라운드5 대표
+  'bmi-calc', 'rsa-keypair', 'md-html',
 ]);
 
 test.describe('맞춤 가이드 — override 적용(자동생성 폴백 아님)', () => {
@@ -109,6 +116,10 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/guide/roman-numeral', phrase: 'MMXXIV', note: 'KO 2024=MMXXIV' },
     { path: '/en/guide/color-contrast', phrase: '4.5:1', note: 'EN WCAG AA 기준' },
     { path: '/en/guide/caesar-cipher', phrase: 'ROT13', note: 'EN ROT13' },
+    // 라운드5
+    { path: '/guide/aspect-ratio', phrase: '1080', note: 'KO 16:9 1920→1080' },
+    { path: '/en/guide/cubic-bezier', phrase: '0.42', note: 'EN ease-in-out 값' },
+    { path: '/en/guide/discount', phrase: '24,000', note: 'EN 20% off 30k' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {
@@ -130,6 +141,8 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     { guide: 'qr-code', prefix: '/en', expectLinks: ['wifi-qr', 'barcode', 'vcard-qr', 'qr-logo'] },
     { guide: 'video-convert', prefix: '', expectLinks: ['video-compress', 'video-trim', 'video-to-audio'] },
     { guide: 'morse-code', prefix: '', expectLinks: ['caesar-cipher', 'binary-text', 'nato-phonetic'] },
+    { guide: 'bmi-calc', prefix: '', expectLinks: ['tdee', 'loan-calc', 'unit-converter'] },
+    { guide: 'pdf-to-txt', prefix: '', expectLinks: ['pdf-to-word', 'pdf-to-md', 'pdf-to-html'] },
   ];
 
   for (const { guide, prefix, expectLinks } of CLUSTERS) {

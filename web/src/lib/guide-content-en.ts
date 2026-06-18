@@ -3144,6 +3144,866 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'html-format': {
+    metaTitle: 'HTML Formatter — Beautify & Minify HTML Online',
+    metaDescription:
+      'Beautify messy HTML with clean indentation, or minify it to one line. Paste <section><h2>Title</h2></section> and get readable nested markup. Free, no signup.',
+    intro:
+      'This HTML formatter has two modes: Beautify re-indents tangled markup into clean nested lines, and Minify collapses it to a single line to shrink the file. Paste a one-line <section class="card"><h2>Title</h2><p>Body</p></section> and Beautify turns it into properly indented tags; switch to Minify to strip the whitespace back out. The contents of pre, script, style and textarea are left exactly as written.',
+    features: [
+      'Beautify mode re-indents nested tags so the structure is readable at a glance.',
+      'Minify mode collapses markup to one line, removing the whitespace between tags.',
+      'Preserves the inside of pre, script, style and textarea byte-for-byte (no broken code).',
+      'Copy the result or download it as a .html file in one click.',
+      'Runs entirely in your browser — large files are formatted without freezing the page.',
+    ],
+    steps: [
+      {
+        title: 'Paste your HTML',
+        body: 'Drop your markup into the input box — for example the one-liner <section class="card"><h2>Title</h2><p>Body</p></section>.',
+      },
+      {
+        title: 'Pick Beautify or Minify',
+        body: 'Choose Beautify to expand it into indented, readable lines, or Minify to compress everything onto a single line for a smaller file.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The result updates instantly. Click Copy to grab it, or Download to save formatted.html (or minified.html).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does minifying change how my page renders?',
+        a: 'No. Minify only removes whitespace between tags; the rendered output is identical. The inside of pre, script, style and textarea — where whitespace is significant — is left untouched.',
+      },
+      {
+        q: 'How much smaller does minifying make my HTML?',
+        a: 'It depends on indentation, but heavily indented markup commonly shrinks 10–30%. For real bandwidth savings, gzip/Brotli compression on your server matters more, but minifying still helps.',
+      },
+      {
+        q: 'Will it fix broken or invalid HTML?',
+        a: 'It re-indents what you give it but does not repair structural errors. If a tag is unclosed, the beautified output will reflect that — use a validator to catch real mistakes.',
+      },
+    ],
+  },
+
+  'svg-optimize': {
+    metaTitle: 'SVG Optimizer — Shrink SVG File Size Online',
+    metaDescription:
+      'Reduce SVG file size by stripping editor metadata, comments and extra whitespace, and rounding decimals. A 12 KB Illustrator export often drops below 4 KB. Free, no signup.',
+    intro:
+      'This SVG optimizer cuts file size by removing the bloat editors leave behind — comments, metadata blocks, redundant whitespace — and rounding long coordinate decimals to a precision you choose. Paste an SVG exported from Illustrator or Figma and a 12 KB file commonly drops well below 4 KB. Because SVG is vector math, this is lossless: the image still scales perfectly with no quality loss.',
+    features: [
+      'Strips comments and editor metadata (Illustrator/Inkscape junk) that browsers never need.',
+      'Collapses redundant whitespace between elements and attributes.',
+      'Rounds path coordinates to a chosen precision (e.g. 2 decimals) to trim long numbers.',
+      'Shows before/after byte size and the exact percentage saved.',
+      'Lossless — SVG is vector, so optimizing does not degrade the image; runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste your SVG code',
+        body: 'Paste the full markup, starting with <svg xmlns="http://www.w3.org/2000/svg" ...>. Open the .svg in a text editor and copy it, or copy from your design tool.',
+      },
+      {
+        title: 'Adjust the options',
+        body: 'Toggle remove comments, remove metadata and collapse whitespace, and set the decimal precision — 2 is a safe default that keeps curves smooth while trimming numbers like 12.4839271 to 12.48.',
+      },
+      {
+        title: 'Check the savings and copy',
+        body: 'The before/after panel shows, e.g., 12.40 KB → 3.80 KB (−69.4%). Copy the optimized SVG or download optimized.svg.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Will optimizing reduce the image quality?',
+        a: 'No. SVG is vector, so the shapes are described by math, not pixels. Removing metadata and whitespace changes nothing visible, and at a sensible precision (2+ decimals) the curves are indistinguishable from the original.',
+      },
+      {
+        q: 'Can I lower the precision too far?',
+        a: 'Yes — if you round to 0 decimals, complex paths can visibly distort. 1–2 decimals is usually safe; preview the result and bump precision up if you see jagged edges.',
+      },
+      {
+        q: 'Does it remove things my SVG actually needs?',
+        a: 'It only removes comments, editor metadata and whitespace by default — never paths, IDs or styles. If your CSS or JS targets the SVG by ID, those IDs are preserved.',
+      },
+    ],
+  },
+
+  'json-diff': {
+    metaTitle: 'JSON Diff — Compare Two JSON Objects Structurally',
+    metaDescription:
+      'Compare two JSON objects and see exactly what was added, removed or changed, by path. Spot that user.age changed from 30 to 31 or items[2] was removed. Free, no signup.',
+    intro:
+      'This JSON diff compares two JSON documents structurally — not line by line — and lists every difference by its path. It tells you that user.profile.name changed, settings.darkMode was added, or items[2] was removed, regardless of key order or formatting. Each change shows the old and new value, so a deep nested edit like user.age: 30 → 31 is easy to spot.',
+    features: [
+      'Structural comparison: key order and whitespace differences are ignored, only real changes show.',
+      'Each difference is labelled added, removed or changed with its full path (e.g. user.profile.name).',
+      'Changed entries show both the old value and the new value side by side.',
+      'Array elements are addressed by index, e.g. items[0], so reorderings are visible.',
+      'Runs entirely in your browser — paste both objects and compare instantly.',
+    ],
+    steps: [
+      {
+        title: 'Paste the original JSON',
+        body: 'Put your baseline object in the left box — for example {"user":{"name":"Ada","age":30}}.',
+      },
+      {
+        title: 'Paste the JSON to compare',
+        body: 'Put the updated object on the right — e.g. {"user":{"name":"Ada","age":31}}. Order of keys does not matter.',
+      },
+      {
+        title: 'Read the differences',
+        body: 'The diff lists each change by path: user.age changed 30 → 31. Added and removed keys are flagged separately so nothing is missed.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is this a line-by-line text diff?',
+        a: 'No. It parses both sides as JSON and compares the structure, so reformatting or reordering keys produces zero differences. Only actual value, key and array changes are reported.',
+      },
+      {
+        q: 'How are array changes shown?',
+        a: 'Arrays are compared by index — items[2] removed, items[3] changed. Because it is index-based, inserting an element near the start can show several entries as changed; that reflects the real shift in positions.',
+      },
+      {
+        q: 'What happens if one side is invalid JSON?',
+        a: 'You will get a parse error pointing at the malformed side. Fix the syntax (a trailing comma or unquoted key is the usual culprit) and the comparison runs.',
+      },
+    ],
+  },
+
+  'cubic-bezier': {
+    metaTitle: 'Cubic Bezier Generator — CSS Easing Curve Editor',
+    metaDescription:
+      'Drag the handles to design a CSS cubic-bezier() easing curve and copy the value. ease-in-out is (0.42, 0, 0.58, 1); preview the motion live. Free, no signup.',
+    intro:
+      'This cubic-bezier editor lets you design a CSS easing curve by dragging two control handles and copy the exact cubic-bezier() value. Start from presets like ease-in-out, which is cubic-bezier(0.42, 0, 0.58, 1), or pull a handle past the top edge for a springy overshoot. A live animation plays the curve so you can feel the timing before pasting it into transition or animation.',
+    features: [
+      'Drag two handles on the curve to shape the easing; the cubic-bezier() value updates live.',
+      'Built-in presets: ease, linear, ease-in (0.42,0,1,1), ease-out (0,0,0.58,1), ease-in-out (0.42,0,0.58,1).',
+      'Handles can go above 1 or below 0 for overshoot/anticipation (bounce-like) curves.',
+      'A replayable animation previews the real motion the curve produces.',
+      'Copy the ready-to-paste cubic-bezier(...) value with one click; runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Start from a preset or drag the handles',
+        body: 'Pick a preset such as ease-in-out, or drag the two control points. The X axis (0–1) is time and the Y axis is progress; pulling Y above 1 creates an overshoot.',
+      },
+      {
+        title: 'Preview the motion',
+        body: 'Watch the playback animation to judge the feel. Replay it after each tweak — a curve like (0.68, -0.55, 0.27, 1.55) gives a back-and-forth bounce.',
+      },
+      {
+        title: 'Copy the value',
+        body: 'Click Copy to grab the value, e.g. cubic-bezier(0.42, 0, 0.58, 1), and paste it into transition: all 0.3s cubic-bezier(...).',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What are the cubic-bezier values for the built-in CSS keywords?',
+        a: 'ease = (0.25, 0.1, 0.25, 1), linear = (0, 0, 1, 1), ease-in = (0.42, 0, 1, 1), ease-out = (0, 0, 0.58, 1), and ease-in-out = (0.42, 0, 0.58, 1). This editor seeds those as presets.',
+      },
+      {
+        q: 'Why can the Y values go above 1 or below 0?',
+        a: 'The X values (control point times) are clamped to 0–1 by the CSS spec, but Y is unbounded. Values outside 0–1 make the animation overshoot or anticipate — the basis for bounce and elastic effects.',
+      },
+      {
+        q: 'How do I use the value in CSS?',
+        a: 'Drop it into a transition or animation timing function: transition: transform 0.3s cubic-bezier(0.42, 0, 0.58, 1); or animation-timing-function: cubic-bezier(...).',
+      },
+    ],
+  },
+
+  'mock-data': {
+    metaTitle: 'Mock Data Generator — Fake JSON & CSV Test Data',
+    metaDescription:
+      'Generate dummy rows with names, emails, phones, addresses, dates, UUIDs and numbers as JSON or CSV. Make 100 fake users in one click. Free, no signup.',
+    intro:
+      'This mock data generator builds rows of realistic-looking dummy data for testing and demos. Pick the fields you want — name, email, phone, address, date, UUID, number — choose how many rows (up to 1000), and export as JSON or CSV. Generate 50 fake users with name, email and phone in one click to seed a database or fill out a UI mock-up.',
+    features: [
+      'Field types: name, email, phone, address, date, UUID and number — mix and match.',
+      'Generate up to 1000 rows at once; duplicate field types get auto-numbered keys (email, email2).',
+      'Export as pretty-printed JSON or as CSV for spreadsheets and bulk import.',
+      'Re-generate to get a fresh random set whenever you need different sample values.',
+      'Runs entirely in your browser — the fake data never touches a server.',
+    ],
+    steps: [
+      {
+        title: 'Choose your fields',
+        body: 'Tick the columns you need — for example name, email and phone. Add UUID if you want a unique id per row.',
+      },
+      {
+        title: 'Set the row count and format',
+        body: 'Enter how many rows to make (e.g. 100, max 1000) and pick JSON or CSV output.',
+      },
+      {
+        title: 'Generate, then copy or download',
+        body: 'Click Generate to build the dataset, then copy the JSON or download the CSV to import into your tool or database.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How many rows can I generate?',
+        a: 'Up to 1000 rows per run. If you need more, generate several batches — everything runs locally so there is no rate limit.',
+      },
+      {
+        q: 'Is the fake data realistic enough to test with?',
+        a: 'Yes. Emails, phones, names and addresses follow plausible formats, and UUIDs are valid v4 IDs — good for filling tables, testing layouts and demoing UIs. It is random sample data, not real people.',
+      },
+      {
+        q: 'JSON or CSV — which should I pick?',
+        a: 'Use JSON to seed APIs, databases or frontend mocks, and CSV to open in Excel/Sheets or bulk-import. The same fields are produced either way.',
+      },
+    ],
+  },
+
+  'json-xml': {
+    metaTitle: 'JSON to XML Converter — JSON ↔ XML Online',
+    metaDescription:
+      'Convert JSON to XML and XML back to JSON, both directions. Turn {"book":{"title":"..."}} into <root><book>...</book></root> with a custom root name. Free, no signup.',
+    intro:
+      'This converter translates between JSON and XML in both directions. Going JSON → XML, an object like {"book":{"title":"Moby Dick","year":1851}} becomes nested <book><title>Moby Dick</title><year>1851</year></book> wrapped in a root element you can name. Going XML → JSON, it parses the tags back into a JSON object. Pretty-printing is on by default for readable output.',
+    features: [
+      'Two-way conversion: JSON → XML and XML → JSON.',
+      'Custom root element name (defaults to "root") so the XML wrapper matches your schema.',
+      'Pretty-print toggle for indented, readable output — or compact on one line.',
+      'Arrays become repeated elements; nested objects become nested tags.',
+      'Copy or download the result; everything runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Pick a direction',
+        body: 'Choose JSON → XML or XML → JSON depending on what you are pasting.',
+      },
+      {
+        title: 'Paste your input',
+        body: 'For JSON → XML, paste an object like {"book":{"title":"Moby Dick","year":1851}} and set the root name (e.g. root or catalog).',
+      },
+      {
+        title: 'Convert and copy',
+        body: 'Click Convert. The output appears formatted — e.g. <root><book><title>Moby Dick</title></book></root>. Copy it or download the file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are JSON arrays represented in XML?',
+        a: 'Each array item becomes a repeated child element. So {"tags":["a","b"]} produces <tags>a</tags><tags>b</tags> — the standard way to express a list in XML.',
+      },
+      {
+        q: 'Why do I need a root element name?',
+        a: 'XML requires exactly one top-level element, while JSON can start with an object directly. The root name (default "root") wraps everything so the output is valid XML.',
+      },
+      {
+        q: 'Is the round-trip lossless?',
+        a: 'Mostly. JSON → XML → JSON preserves structure and values, but XML has no native distinction between a number and a string, so types may come back as strings. Attributes and JSON-only types like null can also differ.',
+      },
+    ],
+  },
+
+  'bmi-calc': {
+    metaTitle: 'BMI Calculator — Body Mass Index (Metric & Imperial)',
+    metaDescription:
+      'Calculate your BMI from height and weight in metric or imperial units and see your WHO category. 170 cm / 65 kg = 22.5 (normal 18.5–24.9). Free, no signup.',
+    intro:
+      'This BMI calculator works out your Body Mass Index from height and weight, in metric (cm/kg) or imperial (in/lb), and places you on the WHO scale. For example 170 cm and 65 kg gives a BMI of 22.5 — within the normal range of 18.5–24.9. A coloured bar shows where you sit across underweight, normal, overweight and obese.',
+    features: [
+      'Metric (cm / kg) and imperial (in / lb) input with automatic conversion.',
+      'WHO categories: underweight (<18.5), normal (18.5–24.9), overweight (25–29.9), obese (≥30).',
+      'A visual bar marks your exact BMI across the 15–40 range.',
+      'Instant recalculation as you adjust height or weight.',
+      'Runs entirely in your browser — your measurements are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Choose your units',
+        body: 'Pick metric (cm and kg) or imperial (inches and pounds).',
+      },
+      {
+        title: 'Enter height and weight',
+        body: 'Type your numbers — for example height 170 and weight 65 in metric.',
+      },
+      {
+        title: 'Read your BMI and category',
+        body: 'The result shows instantly: 170 cm / 65 kg = 22.5, in the normal range. The coloured bar shows how close you are to the next band.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is a normal BMI range?',
+        a: 'By the WHO scale: under 18.5 is underweight, 18.5–24.9 is normal, 25–29.9 is overweight, and 30 or above is obese. A BMI of 22.5 sits comfortably in the normal range.',
+      },
+      {
+        q: 'How is BMI calculated?',
+        a: 'BMI = weight in kilograms divided by height in metres squared. For 65 kg at 1.70 m: 65 ÷ (1.70 × 1.70) = 22.5. Imperial inputs are converted to metric first.',
+      },
+      {
+        q: 'Is BMI accurate for everyone?',
+        a: 'It is a quick screening number, not a diagnosis. It does not distinguish muscle from fat, so very muscular people can read high while the measure still works well for the general population. Consult a clinician for personal advice.',
+      },
+    ],
+  },
+
+  'loan-calc': {
+    metaTitle: 'Loan Calculator — Monthly Payment & Total Interest',
+    metaDescription:
+      'Calculate the monthly payment, total interest and total cost of a loan. A 30M at 5% over 5 years is about 566K/month. Free amortization calculator, no signup.',
+    intro:
+      'This loan calculator works out your fixed monthly payment using the equal-payment (amortizing) method, then shows the total you will pay and how much of that is interest. Enter a principal of 30,000,000 at 5% annual interest over 5 years and it returns roughly 566,000 per month, with the total interest broken out. Change the term in years or months to compare scenarios.',
+    features: [
+      'Equal-payment (amortizing) method: the same fixed amount every month.',
+      'Returns monthly payment, total amount repaid and total interest paid.',
+      'Term entered in years or months; annual interest rate as a percent.',
+      'Handles a 0% rate as a simple principal split across the months.',
+      'Runs entirely in your browser — your figures are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Enter the loan amount',
+        body: 'Type the principal you are borrowing — for example 30,000,000.',
+      },
+      {
+        title: 'Enter the rate and term',
+        body: 'Add the annual interest rate (e.g. 5) and the term, choosing years or months — e.g. 5 years.',
+      },
+      {
+        title: 'Read the breakdown',
+        body: 'The result shows the monthly payment (about 566,000 for this example), total repaid and total interest. Adjust any field to compare.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between equal-payment and equal-principal?',
+        a: 'Equal-payment (used here) keeps every monthly payment the same — early payments are mostly interest, later ones mostly principal. Equal-principal repays a fixed slice of principal each month, so payments start higher and shrink over time, and you pay slightly less total interest.',
+      },
+      {
+        q: 'How is the monthly payment calculated?',
+        a: 'With the amortization formula: payment = P × r ÷ (1 − (1 + r)^−n), where P is the principal, r is the monthly rate (annual ÷ 12 ÷ 100) and n is the number of months. At 0% it is simply principal ÷ months.',
+      },
+      {
+        q: 'Does this include fees, taxes or insurance?',
+        a: 'No. It calculates principal and interest only. Real-world loans may add origination fees, insurance or taxes, so check your lender’s figures for the full cost.',
+      },
+    ],
+  },
+
+  'discount': {
+    metaTitle: 'Discount Calculator — Sale Price & Percent Off',
+    metaDescription:
+      'Calculate a discounted price or find the percent off. 20% off 30,000 = 24,000 (save 6,000); or 30,000 → 24,000 = 20% off. Free, no signup.',
+    intro:
+      'This discount calculator works both ways. Forward: enter a price and a percent off to get the sale price and the amount saved — 20% off 30,000 gives 24,000, saving 6,000. Reverse: enter the original and the sale price to find the discount percentage — 30,000 down to 24,000 is 20% off. Handy for shopping, repricing and checking deals.',
+    features: [
+      'Forward mode: price + percent off → sale price and amount saved.',
+      'Reverse mode: original price + sale price → the discount percentage.',
+      'Shows both the final price and the money saved, not just one number.',
+      'Validates inputs (e.g. rejects discounts over 100% or a sale price above the original).',
+      'Runs entirely in your browser; copy the result with one tap.',
+    ],
+    steps: [
+      {
+        title: 'Pick a mode',
+        body: 'Choose forward (you know the percent off) or reverse (you know the sale price and want the percentage).',
+      },
+      {
+        title: 'Enter the numbers',
+        body: 'Forward: enter 30,000 and 20%. Reverse: enter original 30,000 and sale 24,000.',
+      },
+      {
+        title: 'Read the result',
+        body: 'Forward shows sale price 24,000 and savings 6,000. Reverse shows 20% off. Copy it if you need to share or note it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I calculate a percentage discount?',
+        a: 'Multiply the price by the percent as a decimal to get the saving, then subtract. For 20% off 30,000: 30,000 × 0.20 = 6,000 saved, so the sale price is 24,000.',
+      },
+      {
+        q: 'How do I find what percent off two prices represent?',
+        a: 'Use reverse mode: (original − sale) ÷ original × 100. From 30,000 to 24,000 that is 6,000 ÷ 30,000 × 100 = 20% off.',
+      },
+      {
+        q: 'Does it handle tax?',
+        a: 'No — it calculates the discount only. Apply or remove sales tax/VAT separately depending on whether your listed price already includes it.',
+      },
+    ],
+  },
+
+  'timezone': {
+    metaTitle: 'Time Zone Converter — Convert Time Between Zones',
+    metaDescription:
+      'Convert a time from one time zone to another, e.g. 3 PM Asia/Seoul to America/New_York. Uses your browser’s IANA zone database with correct DST. Free, no signup.',
+    intro:
+      'This time zone converter takes a time in one zone and shows what it is in another, handling daylight saving time automatically. Convert 3:00 PM in Asia/Seoul and instantly see it as 2:00 AM in America/New_York, or compare your local time against London and Sydney. It uses the browser’s built-in IANA time zone database, so the offsets and DST rules are always current.',
+    features: [
+      'Convert any time between IANA zones like Asia/Seoul, Europe/London, America/New_York.',
+      'Daylight saving time is applied automatically from the browser’s zone data.',
+      'Defaults to your detected local time zone as a starting point.',
+      'Searchable list of every time zone your browser supports.',
+      'Runs entirely in your browser — no server lookups for the conversion.',
+    ],
+    steps: [
+      {
+        title: 'Set the source time and zone',
+        body: 'Enter the time and choose the from zone — for example 3:00 PM in Asia/Seoul.',
+      },
+      {
+        title: 'Pick the target zone',
+        body: 'Choose the zone to convert to, such as America/New_York or Europe/London.',
+      },
+      {
+        title: 'Read the converted time',
+        body: 'The result shows the equivalent moment in the target zone — 3 PM Seoul becomes 2 AM New York — with DST already accounted for.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it handle daylight saving time?',
+        a: 'Yes. It uses the IANA time zone database built into your browser, which knows each zone’s DST rules and switch dates, so converted times stay correct across spring/fall transitions.',
+      },
+      {
+        q: 'Why use IANA zone names like Asia/Seoul instead of GMT+9?',
+        a: 'A fixed offset like GMT+9 cannot express daylight saving, which changes the offset part of the year. Named zones (Asia/Seoul, America/New_York) carry the full rules so the conversion is correct year-round.',
+      },
+      {
+        q: 'What if my time zone is not listed?',
+        a: 'The list comes from your browser’s supported zones, which covers all standard IANA names. On older browsers a built-in fallback list of major cities is used instead.',
+      },
+    ],
+  },
+
+  'date-diff': {
+    metaTitle: 'Date Difference Calculator — Days Between Dates & D-Day',
+    metaDescription:
+      'Count the days between two dates or add days to find a D-day. From 2026-01-01 to 2026-04-11 is 100 days; +100 days from today gives your D-100. Free, no signup.',
+    intro:
+      'This date calculator has two modes. Difference counts the time between two dates as a total number of days plus a years/months/days breakdown — 2026-01-01 to 2026-04-11 is 100 days. Add takes a base date and a number of days to find a target date, perfect for working out a D-100 or a deadline 90 days out. Calculations use UTC midnight so time zones never shift the count.',
+    features: [
+      'Difference mode: total days plus an exact years / months / days breakdown.',
+      'Add mode: base date ± N days → the resulting date with its weekday.',
+      'Validates real calendar dates (rejects impossible ones like 2026-02-30).',
+      'Leap years and varying month lengths are handled correctly.',
+      'Runs entirely in your browser; copy any result with one tap.',
+    ],
+    steps: [
+      {
+        title: 'Choose Difference or Add',
+        body: 'Pick Difference to count days between two dates, or Add to project a date forward or backward.',
+      },
+      {
+        title: 'Enter the dates',
+        body: 'Difference: enter a start (e.g. 2026-01-01) and end (2026-04-11). Add: enter a base date and a day count like 100.',
+      },
+      {
+        title: 'Read the answer',
+        body: 'Difference shows 100 days (and 0 years, 3 months, 10 days). Add shows the target date — for a D-100 countdown, add 100 days to today.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I calculate a D-day or D-100?',
+        a: 'Use Add mode: pick your base date and add the number of days. Adding 100 days to today gives the date that is your D-100. To count down to a known event, use Difference mode between today and that date.',
+      },
+      {
+        q: 'Are the start and end dates both counted?',
+        a: 'The difference is the number of full days between the two dates. From 2026-01-01 to 2026-04-11 that is 100 days. If you need an inclusive count (counting both endpoints), add one.',
+      },
+      {
+        q: 'Do time zones affect the result?',
+        a: 'No. Dates are parsed at UTC midnight, so the day count is the same no matter where you are. That avoids off-by-one errors caused by local time offsets.',
+      },
+    ],
+  },
+
+  'aspect-ratio': {
+    metaTitle: 'Aspect Ratio Calculator — 16:9, 4:3 Dimensions',
+    metaDescription:
+      'Calculate the missing width or height for an aspect ratio. At 16:9, a 1920px width gives 1080px height; type a height to get the width. Free, no signup.',
+    intro:
+      'This aspect ratio calculator finds the missing dimension for a given ratio. Set 16:9 and a width of 1920px, and it returns a height of 1080px; type a height instead and it gives you the matching width. Use the presets (16:9, 4:3, 21:9, 1:1, 3:2, 9:16) or enter any custom ratio for resizing video, images and layouts without distortion.',
+    features: [
+      'Enter either width or height — the other side is calculated to keep the ratio.',
+      'Presets for 16:9, 4:3, 21:9, 1:1, 3:2 and 9:16, plus any custom ratio.',
+      'Keeps proportions exact so images and video never stretch or squash.',
+      'Decimal results are rounded cleanly (e.g. 1080, not 1080.00).',
+      'Runs entirely in your browser — copy the dimensions in one tap.',
+    ],
+    steps: [
+      {
+        title: 'Set the ratio',
+        body: 'Pick a preset like 16:9, or type a custom ratio such as 21:9 into the two ratio fields.',
+      },
+      {
+        title: 'Enter one dimension',
+        body: 'Type a width (e.g. 1920) and leave height blank, or do the reverse — the field you fill becomes the source.',
+      },
+      {
+        title: 'Read the matching dimension',
+        body: 'At 16:9, a 1920px width gives 1080px height. Change the ratio or value and the other side recalculates instantly.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What height is 16:9 at 1920px wide?',
+        a: 'It is 1080px. The math is width × (ratio height ÷ ratio width) = 1920 × (9 ÷ 16) = 1080. That is why 1920×1080 is called Full HD or "16:9".',
+      },
+      {
+        q: 'How do I keep an image from stretching when resizing?',
+        a: 'Resize both sides by the same ratio. Enter your target width here at the original ratio to get the correct height (or vice versa), then use those exact dimensions.',
+      },
+      {
+        q: 'Can I use a custom ratio like 2.39:1?',
+        a: 'Yes. Type the two numbers into the ratio fields — for example 2.39 and 1 — and the calculator will work out dimensions for that cinematic ratio just like the presets.',
+      },
+    ],
+  },
+
+  'password-strength': {
+    metaTitle: 'Password Strength Checker — Entropy & Crack Time',
+    metaDescription:
+      'Check password strength by entropy in bits and estimated crack time. A 12-char mixed password reaches ~78 bits. Tested locally — nothing is sent anywhere. Free, no signup.',
+    intro:
+      'This password strength checker estimates how hard a password is to guess by calculating its entropy in bits and an approximate crack time. It counts the character types you use — lowercase, uppercase, digits, symbols — to size the search space, then scores it from weak to very strong. A 12-character password mixing all four types reaches around 78 bits, well into strong territory. Your password is analysed entirely in your browser and never sent anywhere.',
+    features: [
+      'Entropy in bits = length × log2(character-set size), the standard strength measure.',
+      'Detects which character classes you use: lowercase (26), uppercase (26), digits (10), symbols (~33).',
+      'Estimates crack time against a fast offline attacker (~10 billion guesses/second).',
+      'Four-level rating (weak / medium / strong / very strong) with a coloured bar.',
+      'Analysed locally in your browser — the password is never transmitted.',
+    ],
+    steps: [
+      {
+        title: 'Type or paste a password',
+        body: 'Enter the password to test — for example a passphrase or a 12-character mix like Tr0ub4dor&3.',
+      },
+      {
+        title: 'Read the entropy and rating',
+        body: 'See the bits of entropy and the level. Under 40 bits is weak; around 60 is medium; 78+ with mixed characters lands in strong/very strong.',
+      },
+      {
+        title: 'Strengthen if needed',
+        body: 'Add length and more character types to raise entropy. A few extra random characters help far more than swapping a letter for a lookalike symbol.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is password entropy?',
+        a: 'Entropy is a measure, in bits, of how unpredictable a password is. It is length × log2(size of the character set). Each extra bit doubles the number of guesses needed, so 60 bits is twice as hard as 59. Aim for 70+ bits for important accounts.',
+      },
+      {
+        q: 'How many bits is "strong"?',
+        a: 'As a rough guide: under 40 bits is weak, 40–60 medium, 60–80 strong, and 80+ very strong. A 12-character password using upper, lower, digits and symbols reaches roughly 78 bits.',
+      },
+      {
+        q: 'Does length or complexity matter more?',
+        a: 'Length usually wins. Adding characters multiplies the search space exponentially, while adding one new character type only widens the base. A long random passphrase beats a short password full of symbols.',
+      },
+    ],
+  },
+
+  'rsa-keypair': {
+    metaTitle: 'RSA Key Pair Generator — 2048/4096-bit PEM Keys',
+    metaDescription:
+      'Generate an RSA public/private key pair (2048, 3072 or 4096-bit) for signing or encryption, as PEM. Created in your browser with WebCrypto. Free, no signup.',
+    intro:
+      'This tool generates an RSA public/private key pair right in your browser using the WebCrypto API, and exports both as PEM text. Choose 2048, 3072 or 4096 bits and whether the keys are for signing (RSA-PSS) or encryption (RSA-OAEP). The keys are created locally and never leave the page — but treat the private key like a password: copy it somewhere safe and never share it.',
+    features: [
+      'Key sizes: 2048, 3072 and 4096 bits (longer = stronger but slower).',
+      'Usage modes: signing (RSA-PSS) or encryption (RSA-OAEP), both with SHA-256.',
+      'Exports standard PEM — SPKI for the public key, PKCS#8 for the private key.',
+      'Generated with the browser’s WebCrypto, not a JS reimplementation.',
+      'Runs entirely in your browser; copy or download each key — keep the private key secret.',
+    ],
+    steps: [
+      {
+        title: 'Choose key size and usage',
+        body: 'Pick a size — 2048 for general use, 4096 for higher security — and select signing or encryption.',
+      },
+      {
+        title: 'Generate the pair',
+        body: 'Click Generate. WebCrypto creates the pair locally; 4096-bit can take a few seconds.',
+      },
+      {
+        title: 'Save your keys safely',
+        body: 'Copy or download both PEM files. Share the public key freely; store the private key securely and never commit it to a repo or send it to anyone.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Should I use 2048 or 4096 bits?',
+        a: '2048-bit is the current baseline and fine for most uses; 4096-bit offers a larger security margin for long-lived or high-value keys, at the cost of slower generation and operations. 3072-bit is a middle ground. For new keys, 2048 or 3072 is a reasonable default.',
+      },
+      {
+        q: 'Is it safe to generate keys in a browser?',
+        a: 'The keys are created with WebCrypto entirely on your device and are never uploaded. That said, generate them on a machine you trust, and immediately move the private key to secure storage — anyone with the private key can impersonate or decrypt for you.',
+      },
+      {
+        q: 'What is the difference between the signing and encryption modes?',
+        a: 'Signing uses RSA-PSS (you sign data with the private key; others verify with the public key). Encryption uses RSA-OAEP (others encrypt to your public key; you decrypt with the private key). Pick the one that matches your use case, or generate a separate pair for each.',
+      },
+    ],
+  },
+
+  'barcode': {
+    metaTitle: 'Barcode Generator — EAN, UPC, Code 128 (SVG/PNG)',
+    metaDescription:
+      'Generate barcodes in Code 128, Code 39, EAN-13, EAN-8, UPC and more. EAN-13 needs 13 digits; download as SVG or PNG. Free barcode maker, no signup.',
+    intro:
+      'This barcode generator creates 1D barcodes in common retail and logistics formats — Code 128, Code 39, EAN-13, EAN-8, UPC, ITF-14 and others — and downloads them as crisp SVG or PNG. Type your data, pick a format (EAN-13 expects exactly 13 digits, UPC 12), and adjust the bar width, height and colours. Great for product labels, inventory tags and shipping codes.',
+    features: [
+      'Formats: Code 128, Code 39, EAN-13, EAN-8, UPC, ITF-14, MSI, pharmacode and codabar.',
+      'Validates digit counts per format (EAN-13 = 13, EAN-8 = 8, UPC = 12, ITF-14 = 14).',
+      'Customise bar width, height, font size, and foreground/background colours.',
+      'Download as scalable SVG (best for print) or rasterised PNG.',
+      'Runs entirely in your browser — your codes are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Enter the data',
+        body: 'Type the value to encode — for a product barcode, e.g. 12 digits for UPC or 13 for EAN-13.',
+      },
+      {
+        title: 'Pick the format and style',
+        body: 'Choose a format like Code 128 (handles text and numbers) or EAN-13, then tweak height, bar width and colours.',
+      },
+      {
+        title: 'Download SVG or PNG',
+        body: 'The barcode renders live. Download SVG for sharp printing at any size, or PNG for quick placement in documents.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which barcode format should I use?',
+        a: 'Use EAN-13 or UPC for retail products (they need a valid 13- or 12-digit number), Code 128 for general text/numeric data like internal SKUs, Code 39 for simple alphanumerics, and ITF-14 for shipping cartons.',
+      },
+      {
+        q: 'Why does my EAN-13 or UPC show an error?',
+        a: 'Those formats require a specific digit count — EAN-13 needs exactly 13 digits, UPC 12, EAN-8 8, ITF-14 14 — and only digits. If you enter the wrong length or non-numeric characters, the format rejects it. Switch to Code 128 if you need to encode free text.',
+      },
+      {
+        q: 'Can this make QR codes?',
+        a: 'No — these are 1D (linear) barcodes. For 2D QR codes use a dedicated QR generator; this tool focuses on retail and logistics barcode symbologies.',
+      },
+    ],
+  },
+
+  'image-color-picker': {
+    metaTitle: 'Image Color Picker — Get HEX & RGB From a Photo',
+    metaDescription:
+      'Upload an image and click any pixel to grab its exact HEX and RGB color, e.g. #3A7BD5 / rgb(58,123,213). Keeps a recent-colors list. Free, no signup.',
+    intro:
+      'This image color picker lets you pull the exact color of any pixel from a photo or screenshot. Upload an image, click a spot, and it reads that pixel’s value as HEX and RGB — for example #3A7BD5 / rgb(58, 123, 213). Every color you pick is saved to a recent list (up to 12) so you can build a quick palette from a reference image.',
+    features: [
+      'Click any pixel to read its exact color as HEX and RGB.',
+      'Reads from the image at full resolution for pixel-accurate values.',
+      'Keeps a recent-colors list (up to 12) to assemble a palette.',
+      'Copy any HEX or RGB value with one tap.',
+      'Runs entirely in your browser — the image is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload an image',
+        body: 'Drop in a photo, screenshot or design — any common image format works (PNG, JPG, WebP).',
+      },
+      {
+        title: 'Click a pixel',
+        body: 'Click the exact spot whose color you want. The picked color shows as HEX (e.g. #3A7BD5) and RGB (58, 123, 213).',
+      },
+      {
+        title: 'Copy or collect colors',
+        body: 'Copy the value you need, or keep clicking to fill the recent-colors list and build a palette from the image.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it give HEX and RGB?',
+        a: 'Yes. Each pick shows both the HEX code (e.g. #3A7BD5) and the RGB triplet (58, 123, 213), so you can paste whichever your CSS or design tool expects.',
+      },
+      {
+        q: 'Is the color exact or averaged?',
+        a: 'It reads the single pixel you click at the image’s native resolution — no averaging or smoothing. For a flat area any pixel works; for gradients, click precisely where you want the sample.',
+      },
+      {
+        q: 'Can I pick several colors to make a palette?',
+        a: 'Yes. Each click is added to the recent-colors list (up to 12), so you can sample the key tones of an image and copy them out as a palette.',
+      },
+    ],
+  },
+
+  'avatar-crop': {
+    metaTitle: 'Circular Avatar Crop — Round Profile Picture Maker',
+    metaDescription:
+      'Crop any photo into a circular avatar with a transparent background. Center-crops to a square and exports a round 256px (or up to 1024px) PNG. Free, no signup.',
+    intro:
+      'This tool turns any photo into a round profile picture. It center-crops your image to a square, masks it into a circle, and exports a transparent PNG ready for forums, chat apps and social profiles. Choose an output size — 128, 256, 512 or 1024 px — and download a clean circular avatar with no square corners.',
+    features: [
+      'Center-crops to a square automatically, then masks into a perfect circle.',
+      'Transparent PNG output — the corners are see-through, not white.',
+      'Output sizes: 128, 256, 512 and 1024 px to suit any profile.',
+      'Live preview so you see the round result before downloading.',
+      'Runs entirely in your browser — your photo is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload your photo',
+        body: 'Drop in any image — a portrait or square photo works best since it crops from the center.',
+      },
+      {
+        title: 'Pick an output size',
+        body: 'Choose the size you need — 256px is a common avatar size; pick 512 or 1024 for high-DPI displays.',
+      },
+      {
+        title: 'Download the round PNG',
+        body: 'Check the circular preview and download the transparent PNG, named like photo-avatar-256.png.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the output a PNG?',
+        a: 'A circular crop needs transparent corners, and only PNG (or WebP) supports transparency. A JPG would fill the corners with a solid colour, breaking the round shape against coloured backgrounds.',
+      },
+      {
+        q: 'Can I choose which part of the photo is shown?',
+        a: 'The crop is taken from the center of the image at the largest square that fits. To feature a specific area, crop or position your photo so the subject is centered before uploading.',
+      },
+      {
+        q: 'What size should my avatar be?',
+        a: '256px suits most sites, but pick 512 or 1024px for retina/high-DPI screens so it stays sharp. The image is downscaled, so starting from a larger source photo gives the best quality.',
+      },
+    ],
+  },
+
+  'word-frequency': {
+    metaTitle: 'Word Frequency Counter — Count Word Occurrences',
+    metaDescription:
+      'Paste text and rank how often each word appears, with optional stopword removal and a min-length filter. See the top 20 words and export CSV. Free, no signup.',
+    intro:
+      'This word frequency counter analyses any text and ranks every word by how often it appears. Paste an article or transcript and instantly see the most common words — useful for keyword research, content analysis and writing checks. Options let you ignore case, set a minimum word length, and drop common stopwords (English and Korean) so meaningful terms rise to the top.',
+    features: [
+      'Ranks every word by count, with the top N (e.g. 20) shown by default.',
+      'Optional stopword removal for English and Korean (the, and, 그리고, 등…).',
+      'Ignore-case toggle and a minimum word-length filter to cut noise.',
+      'Handles mixed-language text and Unicode words correctly.',
+      'Export the full ranking as CSV; runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste your text',
+        body: 'Drop in the article, transcript or document you want to analyse.',
+      },
+      {
+        title: 'Tune the filters',
+        body: 'Toggle ignore-case, set a minimum length (e.g. 3 to skip "a"/"it"), and enable stopword removal to hide filler words.',
+      },
+      {
+        title: 'Read the ranking or export',
+        body: 'See the top words with their counts. Adjust the top-N value, or export the whole list as a word,count CSV.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What are stopwords and should I remove them?',
+        a: 'Stopwords are extremely common words (the, and, of, 그리고, 등) that carry little meaning. Removing them is useful for keyword analysis so content-bearing terms surface. Leave them in if you are doing literal counting.',
+      },
+      {
+        q: 'Is the count case-sensitive?',
+        a: 'By default it is case-insensitive, so "Apple" and "apple" are counted together. Turn off ignore-case if you need to distinguish them — handy for code identifiers or proper nouns.',
+      },
+      {
+        q: 'Can I analyse Korean or mixed-language text?',
+        a: 'Yes. Words are matched by Unicode letters and numbers, so Korean, English and mixed text all work, and the stopword list covers both English and Korean filler words.',
+      },
+    ],
+  },
+
+  'md-html': {
+    metaTitle: 'Markdown to HTML Converter — Markdown ↔ HTML',
+    metaDescription:
+      'Convert Markdown to HTML and HTML back to Markdown, with a live preview. # Hello becomes <h1>Hello</h1>; GFM tables and fenced code are supported. Free, no signup.',
+    intro:
+      'This converter turns Markdown into HTML and HTML back into Markdown, with a live rendered preview. Markdown like # Hello and **bold** becomes <h1>Hello</h1> and <strong>bold</strong>; paste HTML the other way and it is converted back to clean Markdown. GitHub Flavored Markdown — tables, fenced code blocks, task lists — is supported, so READMEs and docs convert faithfully.',
+    features: [
+      'Two-way conversion: Markdown → HTML and HTML → Markdown.',
+      'GitHub Flavored Markdown (GFM): tables, fenced code blocks and more.',
+      'Live preview of the rendered HTML, sanitised for safe display.',
+      'Copy the output or download it as a file.',
+      'Runs entirely in your browser — your content is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Choose a direction',
+        body: 'Pick Markdown → HTML or HTML → Markdown depending on what you have.',
+      },
+      {
+        title: 'Paste your content',
+        body: 'For Markdown → HTML, paste something like # Hello followed by **Bold** and a ```js code block.',
+      },
+      {
+        title: 'Preview, then copy or download',
+        body: 'Watch the live preview render, then copy the HTML (e.g. <h1>Hello</h1>) or download the result.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is GitHub Flavored Markdown (GFM) supported?',
+        a: 'Yes. The converter handles GFM features like tables, fenced code blocks (```), and task lists, so Markdown written for GitHub or most docs sites converts correctly.',
+      },
+      {
+        q: 'Is the HTML output safe to use?',
+        a: 'The live preview is sanitised to block script injection, so pasting untrusted HTML won’t run code in the preview. The copyable output is the raw conversion result — review it before embedding HTML from sources you don’t control.',
+      },
+      {
+        q: 'How good is HTML → Markdown conversion?',
+        a: 'It maps standard tags well — headings, lists, links, bold/italic, code and tables. Very complex or deeply nested HTML, inline styles and custom elements may not have a clean Markdown equivalent and can be simplified.',
+      },
+    ],
+  },
+
+  'pdf-to-txt': {
+    metaTitle: 'PDF to Text — Extract Text From PDF to .txt',
+    metaDescription:
+      'Extract the text layer from a PDF and save it as a .txt file, with options to rejoin hyphenated words and mark page breaks. Note: scanned PDFs need OCR. Free, no signup.',
+    intro:
+      'This tool pulls the text out of a PDF and gives you a plain .txt file. It reads the PDF’s embedded text layer page by page, with options to rejoin words split across line breaks with a hyphen and to insert page-break markers. It works on PDFs created from real documents (Word exports, web pages, reports); scanned or image-only PDFs have no text layer, so those need OCR first.',
+    features: [
+      'Extracts the embedded text from every page into one .txt file.',
+      'Optionally rejoins hyphenated words broken across line ends.',
+      'Optional page-break markers so you can tell where each page ends.',
+      'Shows progress and can be cancelled on large documents.',
+      'Runs entirely in your browser — your PDF is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Upload your PDF',
+        body: 'Drop in a text-based PDF — for example a report or article exported from Word or a browser.',
+      },
+      {
+        title: 'Set the options',
+        body: 'Turn on join hyphenated words for cleaner paragraphs, and enable page breaks if you want to keep page boundaries.',
+      },
+      {
+        title: 'Extract and download',
+        body: 'Run the extraction (a progress bar shows large files), then copy the text or download the .txt file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it work on scanned PDFs?',
+        a: 'No. A scanned PDF is just images of pages with no text layer, so there is nothing to extract — you will get an empty result. Run an OCR tool on it first to turn the images into selectable text, then extract.',
+      },
+      {
+        q: 'Will it keep the original layout, tables and columns?',
+        a: 'It extracts the readable text, not the visual layout. Reading order is generally preserved, but multi-column pages and tables may not line up exactly, since a .txt file has no concept of columns.',
+      },
+      {
+        q: 'What does "join hyphenated words" do?',
+        a: 'When a word is split across two lines with a hyphen (e.g. "inter-" then "national"), this option stitches it back into "international" so the text reads naturally instead of keeping the line-break hyphen.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {
