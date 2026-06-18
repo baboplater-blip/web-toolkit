@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/list-shuffle',
+      'ja': '/ja/tools/list-shuffle',
+      'zh': '/zh/tools/list-shuffle',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/world-clock',
+      'ja': '/ja/tools/world-clock',
+      'zh': '/zh/tools/world-clock',
       'x-default': URL_PATH,
     },
   },

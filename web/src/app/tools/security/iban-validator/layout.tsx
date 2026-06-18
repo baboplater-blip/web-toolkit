@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/iban-validator',
+      'ja': '/ja/tools/iban-validator',
+      'zh': '/zh/tools/iban-validator',
       'x-default': URL_PATH,
     },
   },

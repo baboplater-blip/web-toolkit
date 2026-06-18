@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/strikethrough-text',
+      'ja': '/ja/tools/strikethrough-text',
+      'zh': '/zh/tools/strikethrough-text',
       'x-default': URL_PATH,
     },
   },

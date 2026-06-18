@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/decision-wheel',
+      'ja': '/ja/tools/decision-wheel',
+      'zh': '/zh/tools/decision-wheel',
       'x-default': URL_PATH,
     },
   },

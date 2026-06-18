@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/numerology',
+      'ja': '/ja/tools/numerology',
+      'zh': '/zh/tools/numerology',
       'x-default': URL_PATH,
     },
   },

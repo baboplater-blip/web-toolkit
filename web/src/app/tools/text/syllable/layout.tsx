@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/syllable-counter',
+      'ja': '/ja/tools/syllable-counter',
+      'zh': '/zh/tools/syllable-counter',
       'x-default': URL_PATH,
     },
   },

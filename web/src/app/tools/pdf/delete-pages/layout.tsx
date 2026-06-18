@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pdf-delete-pages',
+      'ja': '/ja/tools/pdf-delete-pages',
+      'zh': '/zh/tools/pdf-delete-pages',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/bill-split',
+      'ja': '/ja/tools/bill-split',
+      'zh': '/zh/tools/bill-split',
       'x-default': URL_PATH,
     },
   },

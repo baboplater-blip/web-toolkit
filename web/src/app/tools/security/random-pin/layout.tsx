@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/random-pin',
+      'ja': '/ja/tools/random-pin',
+      'zh': '/zh/tools/random-pin',
       'x-default': URL_PATH,
     },
   },

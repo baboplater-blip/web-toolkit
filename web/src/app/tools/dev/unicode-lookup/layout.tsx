@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/unicode-lookup',
+      'ja': '/ja/tools/unicode-lookup',
+      'zh': '/zh/tools/unicode-lookup',
       'x-default': URL_PATH,
     },
   },

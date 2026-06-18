@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/countdown',
+      'ja': '/ja/tools/countdown',
+      'zh': '/zh/tools/countdown',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-tint',
+      'ja': '/ja/tools/image-tint',
+      'zh': '/zh/tools/image-tint',
       'x-default': URL_PATH,
     },
   },

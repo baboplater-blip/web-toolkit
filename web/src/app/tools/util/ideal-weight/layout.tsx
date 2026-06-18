@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ideal-weight',
+      'ja': '/ja/tools/ideal-weight',
+      'zh': '/zh/tools/ideal-weight',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/markdown-table-gen',
+      'ja': '/ja/tools/markdown-table-gen',
+      'zh': '/zh/tools/markdown-table-gen',
       'x-default': URL_PATH,
     },
   },

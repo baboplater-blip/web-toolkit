@@ -2201,6 +2201,244 @@ export const JA_TOOLS: Record<string, JaToolCopy> = {
       '単語を分断せずに指定文字幅で長い行を折り返します。メールやコメント、プレーンテキストに便利で、ブラウザ内で完結します。',
     keywords: ['テキスト 折り返し', 'ワードラップ', '折り返し', '行幅 揃え', 'wrap text'],
   },
+  'bill-split': {
+    name: '割り勘計算機',
+    tagline: '税・チップを含めて人数で割り勘。',
+    description:
+      '税金やチップを含めた合計金額を、好きな人数で均等に割り勘できます。すべてブラウザ内で計算します。',
+    keywords: ['割り勘', '割り勘 計算', 'チップ', 'bill split', 'split the check'],
+  },
+  countdown: {
+    name: 'カウントダウンタイマー',
+    tagline: '目標の日時までをリアルタイムで秒読み。',
+    description:
+      '指定した目標の日時までの残り時間をリアルタイムでカウントダウンします。ブラウザ内で完結します。',
+    keywords: ['カウントダウン', 'タイマー', 'd-day', 'イベント 残り時間', 'countdown'],
+  },
+  'crontab-builder': {
+    name: 'crontabビルダー',
+    tagline: 'cron式を視覚的に組み立てる。',
+    description:
+      'かんたんな選択肢からcron式を組み立て、次回以降の実行タイミングをプレビューできます。ブラウザ内で動作します。',
+    keywords: ['cron', 'crontab', 'スケジュール', 'cron 式', 'schedule'],
+  },
+  'css-clamp': {
+    name: 'CSS clamp()ジェネレーター',
+    tagline: 'レスポンシブな可変サイズ用のclamp()値を算出。',
+    description:
+      'フォントサイズや余白を画面幅に応じて滑らかに変化させる、レスポンシブなCSS clamp()値を生成します。ブラウザ内で完結します。',
+    keywords: ['css clamp', '可変 フォント', 'レスポンシブ', 'fluid typography', 'clamp'],
+  },
+  'csv-to-html': {
+    name: 'CSV→HTMLテーブル変換',
+    tagline: 'CSVをHTMLの表に変換。',
+    description:
+      'CSVデータをHTMLのテーブルマークアップに変換します。アップロード不要で、すべてブラウザ内で処理します。',
+    keywords: ['csv html', 'csv 表 変換', 'テーブル', 'csv to html', 'table'],
+  },
+  'decision-wheel': {
+    name: '抽選ルーレット',
+    tagline: 'ルーレットを回して候補を1つ選ぶ。',
+    description:
+      '選択肢を入力してルーレットを回し、ランダムに1つを選びます。決めかねたときの抽選に便利で、ブラウザ内で完結します。',
+    keywords: ['ルーレット', '抽選', 'ランダム 選択', 'decision wheel', 'spinner'],
+  },
+  'hash-identifier': {
+    name: 'ハッシュ判定ツール',
+    tagline: '長さと形式からハッシュの種類を推測。',
+    description:
+      'ハッシュ値の長さや形式から、MD5・SHA-1/256・bcryptなど、考えられるハッシュアルゴリズムを推定します。ブラウザ内で完結します。',
+    keywords: ['ハッシュ 判定', 'md5', 'sha', 'ハッシュ 種類', 'hash identifier'],
+  },
+  'iban-validator': {
+    name: 'IBANバリデーター',
+    tagline: 'IBANのチェックサムと形式を検証。',
+    description:
+      'IBAN（国際銀行口座番号）のチェックサムと形式が正しいかを検証します。すべてブラウザ内で処理します。',
+    keywords: ['iban 検証', 'iban チェック', '銀行 口座', 'checksum', 'iban validator'],
+  },
+  'ideal-weight': {
+    name: '理想体重計算機',
+    tagline: '身長から理想体重を算出。',
+    description:
+      '身長と性別から、目安となる理想体重の範囲を算出します。ブラウザ内で計算が完結します。',
+    keywords: ['理想体重', '適正 体重', 'bmi', 'ideal weight', 'healthy weight'],
+  },
+  'image-sepia': {
+    name: 'セピア加工',
+    tagline: '画像にセピア調を適用。',
+    description:
+      '画像に温かみのあるセピア調を加えます。アップロード不要で、すべてブラウザ内で処理します。',
+    keywords: ['セピア', 'ヴィンテージ', 'フィルター', 'sepia', 'vintage'],
+  },
+  'image-tint': {
+    name: '色味オーバーレイ',
+    tagline: '画像に単色の色味を重ねる。',
+    description:
+      '画像に単色のカラーオーバーレイを重ねて、全体の色味を調整します。すべてブラウザ内で処理します。',
+    keywords: ['色味', 'カラーオーバーレイ', 'フィルター', 'tint', 'color overlay'],
+  },
+  'image-vignette': {
+    name: 'ビネット加工',
+    tagline: '画像の四隅を暗くする効果を追加。',
+    description:
+      '画像の四隅を暗く落とすビネット効果を加え、被写体を引き立てます。すべてブラウザ内で処理します。',
+    keywords: ['ビネット', '四隅 暗く', 'フィルター', 'vignette', 'dark edges'],
+  },
+  'json-schema': {
+    name: 'JSONスキーマ生成',
+    tagline: 'JSONサンプルからJSON Schemaを推論。',
+    description:
+      'サンプルのJSONドキュメントから、対応するJSON Schemaを生成します。ブラウザ内で完結します。',
+    keywords: ['json schema', 'json スキーマ', 'バリデーション', 'json', 'schema'],
+  },
+  'list-shuffle': {
+    name: 'リストシャッフル',
+    tagline: '行のリストをランダムに並べ替える。',
+    description:
+      '行ごとのリストをランダムな順番にシャッフルします。抽選や順番決めに便利で、すべてブラウザ内で処理します。',
+    keywords: ['シャッフル', 'ランダム 並べ替え', '順番 決め', 'shuffle list', 'random order'],
+  },
+  'luhn-generator': {
+    name: 'Luhn番号ジェネレーター',
+    tagline: 'Luhnチェックに通るテスト番号を生成。',
+    description:
+      'Luhnチェックサムを通過するテスト用の番号を生成します。開発・検証用途向けで、ブラウザ内で完結します。',
+    keywords: ['luhn', 'テスト カード番号', 'checksum', 'luhn generator', 'チェックサム'],
+  },
+  'magic-8-ball': {
+    name: 'マジック8ボール',
+    tagline: 'どんな質問にもランダムでイエス/ノー。',
+    description:
+      'イエス/ノーで答えられる質問を投げかけると、マジック8ボールがランダムな答えを返します。ブラウザ内で完結します。',
+    keywords: ['マジック8ボール', 'イエス ノー', '占い', 'magic 8 ball', 'yes no'],
+  },
+  'markdown-table-gen': {
+    name: 'Markdownテーブル生成',
+    tagline: '行と列からMarkdownの表を作成。',
+    description:
+      '入力した行と列から、GitHub Flavored Markdown形式の表をすばやく作成します。ブラウザ内で完結します。',
+    keywords: ['markdown 表', 'markdown テーブル', 'github', 'markdown table', 'generator'],
+  },
+  'meta-tags': {
+    name: 'metaタグジェネレーター',
+    tagline: 'OGP・Twitterカードのmetaタグを生成。',
+    description:
+      'ページ向けのSEO・Open Graph・Twitterカードのmetaタグを生成します。ブラウザ内で完結します。',
+    keywords: ['meta タグ', 'ogp', 'twitter カード', 'seo', 'open graph'],
+  },
+  metronome: {
+    name: 'メトロノーム',
+    tagline: 'BPMと拍子で刻むクリック音メトロノーム。',
+    description:
+      '指定したBPMと拍子に合わせてクリック音を鳴らす、ブラウザ完結のメトロノームです。',
+    keywords: ['メトロノーム', 'bpm', 'テンポ', '拍子', 'metronome'],
+  },
+  numerology: {
+    name: '数秘術計算機',
+    tagline: 'あなたのライフパスナンバーを算出。',
+    description:
+      '生年月日と氏名から、数秘術のライフパスナンバーや姓名の数を計算します。ブラウザ内で完結します。',
+    keywords: ['数秘術', 'ライフパスナンバー', '運命数', 'numerology', 'life path'],
+  },
+  'pdf-delete-pages': {
+    name: 'PDFページ削除',
+    tagline: 'PDFから特定のページを削除。',
+    description:
+      'PDFファイルから指定したページを削除します。アップロード不要で、すべてブラウザ内で処理します。',
+    keywords: ['pdf ページ 削除', 'ページ 除去', 'pdf 編集', 'delete pdf pages', 'remove pages'],
+  },
+  'random-pin': {
+    name: 'PINジェネレーター',
+    tagline: '安全な数字のPINをランダム生成。',
+    description:
+      '任意の桁数で、安全なランダム数字のPINコードを生成します。ブラウザ内で完結します。',
+    keywords: ['pin 生成', 'ランダム pin', '暗証番号', 'pin generator', 'numeric'],
+  },
+  'readability-score': {
+    name: '可読性スコア',
+    tagline: 'Fleschの読みやすさと学年レベルを算出。',
+    description:
+      '英文テキストのFleschリーディングイース（読みやすさ）と学年レベルを計算します。ブラウザ内で完結します。',
+    keywords: ['可読性', '読みやすさ', 'flesch', 'readability', 'grade level'],
+  },
+  'robots-txt': {
+    name: 'robots.txtジェネレーター',
+    tagline: 'クロールルール付きのrobots.txtを作成。',
+    description:
+      'allow/disallowルールとサイトマップを含むrobots.txtファイルを生成します。ブラウザ内で完結します。',
+    keywords: ['robots.txt', 'クローラー', 'seo', 'disallow', 'crawler'],
+  },
+  'screenshot-shadow': {
+    name: 'スクリーンショット装飾',
+    tagline: '背景・余白・影でスクショを美しく。',
+    description:
+      'グラデーション背景・余白・影を加えて、スクリーンショットを洗練された見た目に仕上げます。すべてブラウザ内で処理します。',
+    keywords: ['スクリーンショット 装飾', '影', '背景', 'screenshot beautifier', 'shadow'],
+  },
+  'sort-numbers': {
+    name: '数値ソート',
+    tagline: '数値を並べ替えて合計と平均も表示。',
+    description:
+      '数値のリストを昇順・降順に並べ替え、あわせて合計と平均も表示します。ブラウザ内で完結します。',
+    keywords: ['数値 ソート', '昇順 降順', '合計 平均', 'sort numbers', 'sum'],
+  },
+  'strikethrough-text': {
+    name: '取り消し線テキスト',
+    tagline: 'Unicodeの取り消し線・下線テキストを作成。',
+    description:
+      'テキストをUnicodeの取り消し線や下線付き文字に変換します。SNS投稿に使えて、すべてブラウザ内で処理します。',
+    keywords: ['取り消し線 テキスト', '下線 文字', 'unicode', 'strikethrough', 'underline'],
+  },
+  'string-escape': {
+    name: '文字列エスケープ',
+    tagline: 'JSON・JS・HTML・SQL向けにエスケープ/解除。',
+    description:
+      '文字列をJSON・JavaScript・HTML・SQL向けにエスケープしたり、エスケープを解除したりします。ブラウザ内で完結します。',
+    keywords: ['エスケープ', 'アンエスケープ', 'json', 'html', 'escape'],
+  },
+  'superscript-text': {
+    name: '上付き・下付き文字',
+    tagline: 'Unicodeの上付き・下付き文字を作成。',
+    description:
+      'テキストをUnicodeの上付き文字や下付き文字に変換します。すべてブラウザ内で処理します。',
+    keywords: ['上付き 文字', '下付き 文字', 'unicode', 'superscript', 'subscript'],
+  },
+  'syllable-counter': {
+    name: '音節カウンター',
+    tagline: '英文の音節数と単語数をカウント。',
+    description:
+      '英文テキストの音節数と単語数を数えます。詩や俳句づくりに便利で、ブラウザ内で完結します。',
+    keywords: ['音節 カウント', '単語数', '俳句', 'syllable counter', 'haiku'],
+  },
+  'tailwind-shades': {
+    name: 'Tailwindシェード生成',
+    tagline: 'ベースカラーから50〜950のシェードを生成。',
+    description:
+      'ベースカラーから、Tailwind風の50〜950のカラーシェードスケールを生成します。ブラウザ内で完結します。',
+    keywords: ['tailwind', 'カラー シェード', 'パレット', 'tailwind shades', 'palette'],
+  },
+  'unicode-lookup': {
+    name: 'Unicodeインスペクター',
+    tagline: 'コードポイント・名称・UTF-8バイトを調査。',
+    description:
+      '任意のテキストについて、Unicodeのコードポイント・文字名・UTF-8エンコーディングを調べられます。ブラウザ内で完結します。',
+    keywords: ['unicode', 'コードポイント', 'utf-8', 'unicode lookup', 'code point'],
+  },
+  'world-clock': {
+    name: '世界時計',
+    tagline: '各都市の現在時刻を一度に表示。',
+    description:
+      '複数の都市やタイムゾーンの現在時刻を一度にまとめて確認できます。ブラウザ内で完結します。',
+    keywords: ['世界時計', 'タイムゾーン', '現在時刻', 'world clock', 'time zones'],
+  },
+  zodiac: {
+    name: '星座判定',
+    tagline: '誕生日からあなたの星座を診断。',
+    description:
+      '生年月日から、あなたの12星座（占星術上の星座）を判定します。ブラウザ内で完結します。',
+    keywords: ['星座', '占星術', '誕生日 星座', 'zodiac sign', 'horoscope'],
+  },
 };
 
 /** IDs that have curated Japanese copy, in insertion order. */

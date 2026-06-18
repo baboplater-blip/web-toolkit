@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/metronome',
+      'ja': '/ja/tools/metronome',
+      'zh': '/zh/tools/metronome',
       'x-default': URL_PATH,
     },
   },

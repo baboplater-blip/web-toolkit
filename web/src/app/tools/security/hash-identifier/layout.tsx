@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/hash-identifier',
+      'ja': '/ja/tools/hash-identifier',
+      'zh': '/zh/tools/hash-identifier',
       'x-default': URL_PATH,
     },
   },

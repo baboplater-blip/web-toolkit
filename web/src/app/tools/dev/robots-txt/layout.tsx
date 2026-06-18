@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/robots-txt',
+      'ja': '/ja/tools/robots-txt',
+      'zh': '/zh/tools/robots-txt',
       'x-default': URL_PATH,
     },
   },

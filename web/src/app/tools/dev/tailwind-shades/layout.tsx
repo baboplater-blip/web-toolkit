@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/tailwind-shades',
+      'ja': '/ja/tools/tailwind-shades',
+      'zh': '/zh/tools/tailwind-shades',
       'x-default': URL_PATH,
     },
   },

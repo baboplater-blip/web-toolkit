@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/crontab-builder',
+      'ja': '/ja/tools/crontab-builder',
+      'zh': '/zh/tools/crontab-builder',
       'x-default': URL_PATH,
     },
   },

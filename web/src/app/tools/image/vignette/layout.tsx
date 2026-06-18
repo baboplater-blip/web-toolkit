@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-vignette',
+      'ja': '/ja/tools/image-vignette',
+      'zh': '/zh/tools/image-vignette',
       'x-default': URL_PATH,
     },
   },

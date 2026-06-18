@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-clamp',
+      'ja': '/ja/tools/css-clamp',
+      'zh': '/zh/tools/css-clamp',
       'x-default': URL_PATH,
     },
   },

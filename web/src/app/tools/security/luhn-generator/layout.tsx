@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/luhn-generator',
+      'ja': '/ja/tools/luhn-generator',
+      'zh': '/zh/tools/luhn-generator',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/superscript-text',
+      'ja': '/ja/tools/superscript-text',
+      'zh': '/zh/tools/superscript-text',
       'x-default': URL_PATH,
     },
   },

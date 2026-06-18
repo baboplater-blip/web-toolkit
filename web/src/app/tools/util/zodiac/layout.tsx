@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/zodiac',
+      'ja': '/ja/tools/zodiac',
+      'zh': '/zh/tools/zodiac',
       'x-default': URL_PATH,
     },
   },

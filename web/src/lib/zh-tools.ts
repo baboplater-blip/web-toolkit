@@ -2179,6 +2179,244 @@ export const ZH_TOOLS: Record<string, ZhToolCopy> = {
       '在设定的字符宽度处对长行硬换行且不拆断单词，适用于邮件、注释和纯文本，全程在浏览器本地完成。',
     keywords: ['文本换行', 'wrap text', '自动换行', '硬换行', '列宽换行', 'word wrap'],
   },
+  'bill-split': {
+    name: '账单分摊计算器',
+    tagline: '将含税和小费的账单在多人之间平均分摊。',
+    description:
+      '在浏览器本地把含税费和小费的账单在任意人数之间平均分摊，算清每人应付金额。',
+    keywords: ['账单分摊', 'bill split', 'AA制', '平摊费用', '小费', 'split the check'],
+  },
+  countdown: {
+    name: '倒计时器',
+    tagline: '实时倒数到目标日期。',
+    description:
+      '在浏览器本地实时倒数到指定的目标日期和时间，显示剩余天数、时分秒。',
+    keywords: ['倒计时', 'countdown', '倒数日', 'd-day', '活动计时', 'event timer'],
+  },
+  'crontab-builder': {
+    name: 'Crontab 生成器',
+    tagline: '可视化构建 cron 表达式。',
+    description:
+      '通过简单选项可视化生成 cron 表达式，并预览接下来的执行时间，全程在浏览器本地完成。',
+    keywords: ['cron', 'crontab', '定时任务', '计划任务', 'cron表达式', 'schedule'],
+  },
+  'css-clamp': {
+    name: 'CSS clamp() 生成器',
+    tagline: '计算用于响应式尺寸的流式 clamp() 值。',
+    description:
+      '在浏览器本地生成响应式 CSS clamp() 值，实现字号和间距随视口流畅缩放。',
+    keywords: ['css clamp', 'clamp函数', '流式排版', '响应式字号', 'fluid typography', 'responsive'],
+  },
+  'csv-to-html': {
+    name: 'CSV 转 HTML 表格',
+    tagline: '将 CSV 转换为 HTML 表格。',
+    description:
+      '在浏览器本地将 CSV 数据转换为 HTML 表格代码，方便直接嵌入网页。',
+    keywords: ['CSV转HTML', 'csv to html', 'HTML表格', '表格生成', '数据转换', 'convert table'],
+  },
+  'decision-wheel': {
+    name: '决策转盘',
+    tagline: '转动转盘随机选出一个选项。',
+    description:
+      '输入多个选项，转动转盘随机抽取一个结果，帮你轻松做决定，全程在浏览器本地完成。',
+    keywords: ['决策转盘', 'decision wheel', '随机转盘', '随机选择', '抽签', 'random pick'],
+  },
+  'hash-identifier': {
+    name: '哈希类型识别',
+    tagline: '根据长度和格式推测哈希类型。',
+    description:
+      '在浏览器本地根据哈希值的长度和格式，识别可能的算法（MD5、SHA-1/256、bcrypt 等）。',
+    keywords: ['哈希识别', 'hash identifier', 'md5', 'sha', '哈希类型', 'detect hash'],
+  },
+  'iban-validator': {
+    name: 'IBAN 校验器',
+    tagline: '校验 IBAN 的校验位和格式。',
+    description:
+      '在浏览器本地校验 IBAN 国际银行账号的校验位和格式是否正确。',
+    keywords: ['IBAN校验', 'iban validator', '银行账号', '校验位', 'checksum', 'bank'],
+  },
+  'ideal-weight': {
+    name: '理想体重计算器',
+    tagline: '根据身高估算理想体重。',
+    description:
+      '在浏览器本地根据身高和性别估算理想体重范围，作为健康参考。',
+    keywords: ['理想体重', 'ideal weight', '标准体重', '健康体重', 'bmi', 'healthy weight'],
+  },
+  'image-sepia': {
+    name: '怀旧棕褐色',
+    tagline: '为图片添加棕褐色调。',
+    description:
+      '在浏览器本地为图片叠加温暖的棕褐色调，营造复古怀旧效果，图片不上传。',
+    keywords: ['棕褐色', 'sepia', '怀旧滤镜', '复古', 'vintage', 'filter'],
+  },
+  'image-tint': {
+    name: '图片色调叠加',
+    tagline: '为图片叠加纯色色调。',
+    description:
+      '在浏览器本地为图片叠加一层纯色色调，统一画面氛围，图片不上传服务器。',
+    keywords: ['色调叠加', 'tint', '颜色叠加', '滤镜', 'color overlay', 'filter'],
+  },
+  'image-vignette': {
+    name: '图片暗角效果',
+    tagline: '为图片添加四周变暗的暗角效果。',
+    description:
+      '在浏览器本地为图片添加暗角，使四周边缘变暗、突出中心主体，图片不上传。',
+    keywords: ['暗角', 'vignette', '边缘变暗', '滤镜', 'dark edges', 'filter'],
+  },
+  'json-schema': {
+    name: 'JSON Schema 生成器',
+    tagline: '从 JSON 样本推断出 JSON Schema。',
+    description:
+      '在浏览器本地根据示例 JSON 文档推断并生成对应的 JSON Schema，用于校验。',
+    keywords: ['JSON Schema', 'json schema', 'JSON校验', '模式生成', 'validation', 'json'],
+  },
+  'list-shuffle': {
+    name: '列表随机打乱',
+    tagline: '将一列文本行随机打乱顺序。',
+    description:
+      '在浏览器本地将多行文本随机打乱顺序，适用于抽签或随机排序，全程不上传。',
+    keywords: ['随机打乱', 'shuffle list', '随机排序', '抽签', '乱序', 'random order'],
+  },
+  'luhn-generator': {
+    name: 'Luhn 校验号码生成器',
+    tagline: '生成符合 Luhn 校验的测试号码。',
+    description:
+      '在浏览器本地生成可通过 Luhn 校验算法的号码，仅供测试使用。',
+    keywords: ['Luhn生成', 'luhn generator', '测试卡号', '校验位', 'checksum', 'test card number'],
+  },
+  'magic-8-ball': {
+    name: '神奇八号球',
+    tagline: '为任何问题随机给出是或否的答案。',
+    description:
+      '在浏览器本地提出一个是非问题，神奇八号球会随机给出一个有趣的答案。',
+    keywords: ['神奇八号球', 'magic 8 ball', '是否', '随机答案', 'yes no', 'decision'],
+  },
+  'markdown-table-gen': {
+    name: 'Markdown 表格生成器',
+    tagline: '按行列构建 Markdown 表格。',
+    description:
+      '在浏览器本地根据你的行列数据生成 GitHub 风格的 Markdown 表格代码。',
+    keywords: ['Markdown表格', 'markdown table', '表格生成', 'github', '生成器', 'generator'],
+  },
+  'meta-tags': {
+    name: 'Meta 标签生成器',
+    tagline: '生成 Open Graph 和 Twitter 卡片 meta 标签。',
+    description:
+      '在浏览器本地为你的网页生成 SEO、Open Graph 和 Twitter 卡片所需的 meta 标签。',
+    keywords: ['meta标签', 'meta tags', 'open graph', 'twitter card', 'seo', '元标签'],
+  },
+  metronome: {
+    name: '节拍器',
+    tagline: '按 BPM 和拍号发出节拍点击声。',
+    description:
+      '在浏览器本地按你设定的 BPM 和拍号准确打拍，适合练习乐器，无需安装。',
+    keywords: ['节拍器', 'metronome', 'bpm', '节拍', '速度', 'tempo'],
+  },
+  numerology: {
+    name: '生命灵数计算器',
+    tagline: '计算你的生命灵数。',
+    description:
+      '在浏览器本地根据出生日期和姓名计算生命灵数与姓名数字。',
+    keywords: ['生命灵数', 'numerology', '数字命理', '命数', 'life path number', '占数'],
+  },
+  'pdf-delete-pages': {
+    name: '删除 PDF 页面',
+    tagline: '从 PDF 中移除指定页面。',
+    description:
+      '在浏览器本地从 PDF 文件中删除选定的页面，文件全程不离开你的设备。',
+    keywords: ['删除PDF页面', 'delete pdf pages', '移除页面', 'PDF编辑', 'remove pages', 'PDF删页'],
+  },
+  'random-pin': {
+    name: 'PIN 码生成器',
+    tagline: '生成安全的随机数字 PIN 码。',
+    description:
+      '在浏览器本地生成任意长度的安全随机数字 PIN 码，使用加密级随机数。',
+    keywords: ['PIN生成', 'pin generator', '随机PIN', '数字密码', 'numeric', '随机密码'],
+  },
+  'readability-score': {
+    name: '可读性评分',
+    tagline: '计算 Flesch 易读性和年级水平。',
+    description:
+      '在浏览器本地计算英文文本的 Flesch 易读性分数和阅读年级水平。',
+    keywords: ['可读性', 'readability', 'flesch', '易读性', '年级水平', 'grade level'],
+  },
+  'robots-txt': {
+    name: 'robots.txt 生成器',
+    tagline: '构建带抓取规则的 robots.txt。',
+    description:
+      '在浏览器本地生成带 allow/disallow 规则和 sitemap 的 robots.txt 文件。',
+    keywords: ['robots.txt', '爬虫规则', 'crawler', 'seo', 'disallow', '抓取规则'],
+  },
+  'screenshot-shadow': {
+    name: '截图美化',
+    tagline: '为截图添加背景、内边距和阴影。',
+    description:
+      '在浏览器本地为截图加上渐变背景、内边距和阴影，让画面更精致，图片不上传。',
+    keywords: ['截图美化', 'screenshot beautifier', '阴影', '背景', 'shadow', 'background'],
+  },
+  'sort-numbers': {
+    name: '数字排序',
+    tagline: '排序数字并查看总和与平均值。',
+    description:
+      '在浏览器本地将一组数字升序或降序排序，并显示总和与平均值。',
+    keywords: ['数字排序', 'sort numbers', '升序', '降序', '求和', 'average'],
+  },
+  'strikethrough-text': {
+    name: '删除线文本',
+    tagline: '生成 Unicode 删除线和下划线文本。',
+    description:
+      '在浏览器本地将文本转换为 Unicode 删除线或下划线样式，可用于社交平台发帖。',
+    keywords: ['删除线', 'strikethrough text', '下划线', 'unicode', '划线文字', 'underline'],
+  },
+  'string-escape': {
+    name: '字符串转义工具',
+    tagline: '为 JSON、JS、HTML、SQL 转义和反转义字符串。',
+    description:
+      '在浏览器本地为 JSON、JavaScript、HTML 或 SQL 转义或反转义字符串。',
+    keywords: ['字符串转义', 'escape', '反转义', 'unescape', 'json', 'html'],
+  },
+  'superscript-text': {
+    name: '上标与下标',
+    tagline: '生成 Unicode 上标和下标文本。',
+    description:
+      '在浏览器本地将文本转换为 Unicode 上标或下标字符，便于在纯文本中使用。',
+    keywords: ['上标', 'superscript', '下标', 'subscript', 'unicode', '角标'],
+  },
+  'syllable-counter': {
+    name: '音节计数器',
+    tagline: '统计英文文本的音节和单词数。',
+    description:
+      '在浏览器本地统计英文文本的音节和单词数量，适用于写诗或俳句。',
+    keywords: ['音节计数', 'syllable counter', '单词数', '俳句', 'haiku', 'words'],
+  },
+  'tailwind-shades': {
+    name: 'Tailwind 色阶生成器',
+    tagline: '从基础色生成 50-950 的色阶。',
+    description:
+      '在浏览器本地从一个基础色生成 Tailwind 风格的 50-950 色阶配色。',
+    keywords: ['tailwind', '色阶', 'color shades', '调色板', 'palette', '配色'],
+  },
+  'unicode-lookup': {
+    name: 'Unicode 字符检查器',
+    tagline: '查看码位、名称和 UTF-8 字节。',
+    description:
+      '在浏览器本地查询任意文本的 Unicode 码位、字符名称和 UTF-8 编码。',
+    keywords: ['unicode', '码位', 'code point', 'utf-8', '字符编码', '字符查询'],
+  },
+  'world-clock': {
+    name: '世界时钟',
+    tagline: '同时查看各城市的当前时间。',
+    description:
+      '在浏览器本地同时查看多个城市和时区的当前时间，方便跨时区协作。',
+    keywords: ['世界时钟', 'world clock', '时区', 'time zones', '当前时间', 'current time'],
+  },
+  zodiac: {
+    name: '星座查询',
+    tagline: '根据生日查出你的星座。',
+    description:
+      '在浏览器本地根据出生日期查出你的占星星座，全程无需上传任何信息。',
+    keywords: ['星座查询', 'zodiac sign', '星座', '占星', 'astrology', 'horoscope'],
+  },
 };
 
 export const ZH_TOOL_IDS: string[] = Object.keys(ZH_TOOLS);

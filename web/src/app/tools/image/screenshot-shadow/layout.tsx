@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/screenshot-shadow',
+      'ja': '/ja/tools/screenshot-shadow',
+      'zh': '/zh/tools/screenshot-shadow',
       'x-default': URL_PATH,
     },
   },

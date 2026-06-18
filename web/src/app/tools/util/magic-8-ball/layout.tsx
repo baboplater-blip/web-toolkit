@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/magic-8-ball',
+      'ja': '/ja/tools/magic-8-ball',
+      'zh': '/zh/tools/magic-8-ball',
       'x-default': URL_PATH,
     },
   },

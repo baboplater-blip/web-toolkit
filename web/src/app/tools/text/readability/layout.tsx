@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/readability-score',
+      'ja': '/ja/tools/readability-score',
+      'zh': '/zh/tools/readability-score',
       'x-default': URL_PATH,
     },
   },
