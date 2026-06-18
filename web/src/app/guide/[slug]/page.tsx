@@ -7,6 +7,7 @@ import {
   type ToolMeta,
 } from '@/lib/tools/registry';
 import { buildGuide } from '@/lib/guide-content';
+import { getRelatedTools } from '@/lib/guide-related';
 import { hasEnCopy } from '@/lib/en-tools';
 import { hasJaCopy } from '@/lib/ja-tools';
 import { hasZhCopy } from '@/lib/zh-tools';
@@ -97,12 +98,8 @@ export default async function GuidePage({ params }: PageProps) {
   const guide = buildGuide(tool);
   const categoryLabel = CATEGORY_LABELS[tool.category];
 
-  // 관련 도구 추천 (같은 카테고리 3개)
-  const related = TOOLS.filter(
-    (t) => t.status === 'ready' && t.category === tool.category && t.id !== tool.id,
-  )
-    .sort((a, b) => a.phase - b.phase)
-    .slice(0, 4);
+  // 관련 도구 — 큐레이션 워크플로 클러스터 우선 + 같은 카테고리 폴백
+  const related = getRelatedTools(tool, TOOLS);
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
@@ -307,7 +304,7 @@ export default async function GuidePage({ params }: PageProps) {
 
         {related.length > 0 && (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">관련 도구</h3>
+            <h3 className="text-lg font-bold">함께 쓰면 좋은 도구</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {related.map((t) => (
                 <a

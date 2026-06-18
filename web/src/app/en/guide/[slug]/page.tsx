@@ -6,6 +6,7 @@ import { EN_TOOLS, EN_TOOL_IDS, getEnCopy } from '@/lib/en-tools';
 import { hasJaCopy } from '@/lib/ja-tools';
 import { hasZhCopy } from '@/lib/zh-tools';
 import { buildGuideEn } from '@/lib/guide-content-en';
+import { getRelatedTools } from '@/lib/guide-related';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
@@ -95,17 +96,9 @@ export default async function EnglishGuidePage({ params }: PageProps) {
   const guide = buildGuideEn(tool, en);
   const categoryLabel = CATEGORY_LABELS_EN[tool.category];
 
-  // Related = other curated English tools in the same category (fall back to
-  // the category guide link below if none).
-  const related = TOOLS.filter(
-    (t) =>
-      t.status === 'ready' &&
-      t.category === tool.category &&
-      t.id !== tool.id &&
-      EN_TOOLS[t.id],
-  )
-    .sort((a, b) => a.phase - b.phase)
-    .slice(0, 4);
+  // Related = curated workflow cluster first, then same-category fill —
+  // limited to tools that have English copy.
+  const related = getRelatedTools(tool, TOOLS, { has: (id) => !!EN_TOOLS[id] });
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
@@ -291,7 +284,7 @@ export default async function EnglishGuidePage({ params }: PageProps) {
 
         {related.length > 0 ? (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">Related guides</h3>
+            <h3 className="text-lg font-bold">Tools that pair well</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {related.map((t) => {
                 const rc = EN_TOOLS[t.id]!;

@@ -6,6 +6,7 @@ import { ZH_TOOLS, ZH_TOOL_IDS, getZhCopy } from '@/lib/zh-tools';
 import { hasEnCopy } from '@/lib/en-tools';
 import { hasJaCopy } from '@/lib/ja-tools';
 import { buildGuideZh } from '@/lib/guide-content-zh';
+import { getRelatedTools } from '@/lib/guide-related';
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
@@ -95,16 +96,9 @@ export default async function ChineseGuidePage({ params }: PageProps) {
   const guide = buildGuideZh(tool, zh);
   const categoryLabel = CATEGORY_LABELS_ZH[tool.category];
 
-  // Related = other curated Chinese tools in the same category.
-  const related = TOOLS.filter(
-    (t) =>
-      t.status === 'ready' &&
-      t.category === tool.category &&
-      t.id !== tool.id &&
-      ZH_TOOLS[t.id],
-  )
-    .sort((a, b) => a.phase - b.phase)
-    .slice(0, 4);
+  // Related = curated workflow cluster first, then same-category fill —
+  // limited to tools that have Chinese copy.
+  const related = getRelatedTools(tool, TOOLS, { has: (id) => !!ZH_TOOLS[id] });
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
@@ -280,7 +274,7 @@ export default async function ChineseGuidePage({ params }: PageProps) {
 
         {related.length > 0 ? (
           <section className="space-y-3">
-            <h3 className="text-lg font-bold">相关指南</h3>
+            <h3 className="text-lg font-bold">搭配使用的工具</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {related.map((t) => {
                 const rc = ZH_TOOLS[t.id]!;

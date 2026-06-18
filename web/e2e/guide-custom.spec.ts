@@ -108,3 +108,27 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     });
   }
 });
+
+test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () => {
+  // guide-related.ts 의 RELATED_TOOLS 가 같은 카테고리 휴리스틱이 아니라
+  // 의미 기반 클러스터로 렌더되는지 검증(내부링크 동선 회귀 가드).
+  const CLUSTERS: Array<{ guide: string; prefix: string; expectLinks: string[] }> = [
+    { guide: 'pdf-merge', prefix: '', expectLinks: ['pdf-split', 'pdf-organize', 'pdf-to-jpg', 'compress'] },
+    { guide: 'base64', prefix: '', expectLinks: ['url-encoder', 'html-entities', 'file-hash', 'json-format'] },
+    { guide: 'image-resize', prefix: '', expectLinks: ['image-convert', 'compress', 'image-crop'] },
+    { guide: 'qr-code', prefix: '/en', expectLinks: ['wifi-qr', 'barcode', 'vcard-qr', 'qr-logo'] },
+  ];
+
+  for (const { guide, prefix, expectLinks } of CLUSTERS) {
+    test(`${prefix}/guide/${guide} — 큐레이션 관련 도구 링크`, async ({ page }) => {
+      await page.goto(`${prefix}/guide/${guide}`, { waitUntil: 'load' });
+      const html = await page.content();
+      for (const id of expectLinks) {
+        expect(
+          html.includes(`href="${prefix}/guide/${id}"`),
+          `${prefix}/guide/${guide} 에 큐레이션 링크 /guide/${id} 누락`,
+        ).toBe(true);
+      }
+    });
+  }
+});
