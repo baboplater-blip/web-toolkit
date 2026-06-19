@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/mime-type-lookup',
+      'ja': '/ja/tools/mime-type-lookup',
+      'zh': '/zh/tools/mime-type-lookup',
       'x-default': URL_PATH,
     },
   },

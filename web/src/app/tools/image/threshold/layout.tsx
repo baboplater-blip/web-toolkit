@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-threshold',
+      'ja': '/ja/tools/image-threshold',
+      'zh': '/zh/tools/image-threshold',
       'x-default': URL_PATH,
     },
   },

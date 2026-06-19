@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/imei-validate',
+      'ja': '/ja/tools/imei-validate',
+      'zh': '/zh/tools/imei-validate',
       'x-default': URL_PATH,
     },
   },

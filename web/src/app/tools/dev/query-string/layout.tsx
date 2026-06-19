@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/query-string-builder',
+      'ja': '/ja/tools/query-string-builder',
+      'zh': '/zh/tools/query-string-builder',
       'x-default': URL_PATH,
     },
   },

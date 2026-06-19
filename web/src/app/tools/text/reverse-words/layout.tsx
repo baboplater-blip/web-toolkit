@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/reverse-words',
+      'ja': '/ja/tools/reverse-words',
+      'zh': '/zh/tools/reverse-words',
       'x-default': URL_PATH,
     },
   },

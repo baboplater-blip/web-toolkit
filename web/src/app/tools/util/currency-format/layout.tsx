@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/currency-format',
+      'ja': '/ja/tools/currency-format',
+      'zh': '/zh/tools/currency-format',
       'x-default': URL_PATH,
     },
   },

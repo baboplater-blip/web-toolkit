@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/htaccess-redirect',
+      'ja': '/ja/tools/htaccess-redirect',
+      'zh': '/zh/tools/htaccess-redirect',
       'x-default': URL_PATH,
     },
   },

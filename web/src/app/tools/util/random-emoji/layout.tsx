@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/random-emoji',
+      'ja': '/ja/tools/random-emoji',
+      'zh': '/zh/tools/random-emoji',
       'x-default': URL_PATH,
     },
   },

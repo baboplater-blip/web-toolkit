@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/semver-checker',
+      'ja': '/ja/tools/semver-checker',
+      'zh': '/zh/tools/semver-checker',
       'x-default': URL_PATH,
     },
   },

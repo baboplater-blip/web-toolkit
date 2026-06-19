@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/grade-calc',
+      'ja': '/ja/tools/grade-calc',
+      'zh': '/zh/tools/grade-calc',
       'x-default': URL_PATH,
     },
   },

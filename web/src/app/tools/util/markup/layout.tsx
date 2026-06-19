@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/markup-calc',
+      'ja': '/ja/tools/markup-calc',
+      'zh': '/zh/tools/markup-calc',
       'x-default': URL_PATH,
     },
   },

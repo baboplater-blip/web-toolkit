@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ovulation-calc',
+      'ja': '/ja/tools/ovulation-calc',
+      'zh': '/zh/tools/ovulation-calc',
       'x-default': URL_PATH,
     },
   },

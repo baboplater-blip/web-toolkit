@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/git-command-builder',
+      'ja': '/ja/tools/git-command-builder',
+      'zh': '/zh/tools/git-command-builder',
       'x-default': URL_PATH,
     },
   },

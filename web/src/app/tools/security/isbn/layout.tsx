@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/isbn-validate',
+      'ja': '/ja/tools/isbn-validate',
+      'zh': '/zh/tools/isbn-validate',
       'x-default': URL_PATH,
     },
   },

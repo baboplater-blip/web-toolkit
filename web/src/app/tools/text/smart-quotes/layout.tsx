@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/smart-quotes',
+      'ja': '/ja/tools/smart-quotes',
+      'zh': '/zh/tools/smart-quotes',
       'x-default': URL_PATH,
     },
   },

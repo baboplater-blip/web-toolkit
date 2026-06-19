@@ -2439,6 +2439,235 @@ export const JA_TOOLS: Record<string, JaToolCopy> = {
       '生年月日から、あなたの12星座（占星術上の星座）を判定します。ブラウザ内で完結します。',
     keywords: ['星座', '占星術', '誕生日 星座', 'zodiac sign', 'horoscope'],
   },
+
+  // ── オーディオ ─────────────────────────────────────────────────────────────
+  'bpm-tap': {
+    name: 'BPMタップカウンター',
+    tagline: 'ビートに合わせてタップしてBPMを計測。',
+    description:
+      'キーやボタンを曲のビートに合わせてタップするだけで、テンポ（BPM）をリアルタイムの平均でその場に計測します。ブラウザ内で完結。',
+    keywords: ['bpm 計測', 'タップ bpm', 'テンポ カウンター', 'bpm tapper', 'tempo'],
+  },
+
+  // ── 開発者ツール ───────────────────────────────────────────────────────────
+  'color-mix': {
+    name: 'カラーミキサー',
+    tagline: '2色を指定した比率でブレンド。',
+    description:
+      '2つのHEXカラーを任意の比率で混ぜ合わせ、ブレンド後の色をライブプレビューで確認。HEX/RGBをそのままコピーできます。',
+    keywords: ['色 混合', 'カラーミキサー', 'hex ブレンド', 'color mixer', '色 ブレンド'],
+  },
+  'csv-to-sql': {
+    name: 'CSVをSQLに変換',
+    tagline: 'CSVをSQLのINSERT文に変換。',
+    description:
+      'CSVの各行を指定テーブルのINSERT文に変換。ヘッダー行をカラム名にマッピングします。すべてブラウザ内で処理。',
+    keywords: ['csv sql 変換', 'sql insert', 'csv インポート', 'csv to sql', 'insert 文'],
+  },
+  'git-command-builder': {
+    name: 'Gitコマンドビルダー',
+    tagline: 'オプションからよく使うgitコマンドを生成。',
+    description:
+      'コミット・ブランチ・リセット・スタッシュ・取り消しなどの作業を選ぶと、そのままコピーして実行できる正確なgitコマンドを生成します。',
+    keywords: ['git コマンド', 'git ジェネレーター', 'git 早見表', 'git command', 'git cheatsheet'],
+  },
+  'htaccess-redirect': {
+    name: '.htaccessリダイレクト生成',
+    tagline: 'Apacheの.htaccessリダイレクトを生成。',
+    description:
+      '301/302リダイレクトやHTTPS強制、www／非wwwの統一ルールをApacheの.htaccess用に生成。ブラウザ内で完結します。',
+    keywords: ['htaccess 生成', '301 リダイレクト', 'https 強制', 'htaccess generator', 'リダイレクト'],
+  },
+  'mime-type-lookup': {
+    name: 'MIMEタイプ検索',
+    tagline: '拡張子からMIMEタイプを、その逆も検索。',
+    description:
+      '任意のファイル拡張子に対応するMIME（コンテンツ）タイプを調べたり、MIMEタイプから拡張子を逆引きしたりできます。',
+    keywords: ['mime タイプ', 'コンテンツ タイプ', 'ファイル 拡張子', 'mime type', 'content type'],
+  },
+  'query-string-builder': {
+    name: 'クエリ文字列ビルダー',
+    tagline: 'キーと値からURLのクエリ文字列を生成。',
+    description:
+      'キーと値のペアを入力すると、URLに付加できる正しくエンコードされたクエリ文字列を生成します。ブラウザ内で完結。',
+    keywords: ['クエリ文字列', 'url パラメータ', 'querystring', 'query string', 'url エンコード'],
+  },
+  'regex-escape': {
+    name: '正規表現エスケープ',
+    tagline: '正規表現の特殊文字をエスケープ。',
+    description:
+      '任意のテキスト内の正規表現メタ文字をエスケープし、正規表現の中でそのまま文字どおりにマッチするようにします。',
+    keywords: ['正規表現 エスケープ', 'regex エスケープ', 'メタ文字', 'regex escape', 'literal regex'],
+  },
+  'semver-checker': {
+    name: 'Semverチェッカー',
+    tagline: 'セマンティックバージョンを解析・比較。',
+    description:
+      'セマンティックバージョンを解析し、どちらが新しいかを比較。major/minor/patch/プレリリースの各要素も確認できます。',
+    keywords: ['semver', 'セマンティック バージョン', 'バージョン 比較', 'version compare', 'バージョニング'],
+  },
+  'sql-in-clause': {
+    name: 'SQL IN句ビルダー',
+    tagline: 'リストをSQLのIN (...)句に変換。',
+    description:
+      '値のリストを貼り付けると、クエリにそのまま貼れる引用符付き・カンマ区切りのSQL IN (...)句を生成します。ブラウザ内で処理。',
+    keywords: ['sql in 句', 'in 句 生成', 'sql リスト', 'sql in clause', 'in clause'],
+  },
+
+  // ── テキスト ───────────────────────────────────────────────────────────────
+  'markdown-to-text': {
+    name: 'Markdownをプレーンテキストに',
+    tagline: 'Markdown記法を除去してプレーンテキストに。',
+    description:
+      '見出し・太字・リンク・リスト・コードなどのMarkdown記法を除去し、読みやすいプレーンテキストにします。ブラウザ内で完結。',
+    keywords: ['markdown テキスト', 'markdown 除去', 'strip markdown', 'markdown to text', 'プレーンテキスト'],
+  },
+  'pig-latin': {
+    name: 'ピッグラテン翻訳',
+    tagline: '英語テキストをピッグラテンに変換。',
+    description:
+      '英単語を標準の母音／子音ルールでピッグラテンに変換します（例：hello → ellohay）。ブラウザ内で処理します。',
+    keywords: ['pig latin', 'ピッグラテン', '英語 遊び', 'pig latin translator', '言葉遊び'],
+  },
+  'remove-emoji': {
+    name: '絵文字を削除',
+    tagline: 'テキストから絵文字や記号を除去。',
+    description:
+      'テキストからすべての絵文字や絵文字的な記号を取り除き、きれいなプレーンテキストだけを残します。ブラウザ内で完結。',
+    keywords: ['絵文字 削除', '絵文字 除去', 'strip emoji', 'remove emoji', '記号 削除'],
+  },
+  'remove-numbers': {
+    name: '数字を削除',
+    tagline: 'テキストからすべての数字を除去。',
+    description:
+      'テキストからすべての数字（0〜9）をワンクリックで削除。空白を残すか詰めるかも選べます。ブラウザ内で処理します。',
+    keywords: ['数字 削除', '数字 除去', 'remove numbers', 'strip digits', '桁 削除'],
+  },
+  'reverse-words': {
+    name: '単語の並び順を反転',
+    tagline: 'テキスト中の単語の順序を反転。',
+    description:
+      '各行の単語の順序を逆にします。パズルやキャプション、語学の練習などに便利です。すべてブラウザ内で処理します。',
+    keywords: ['単語 反転', '語順 反転', 'reverse words', 'flip words', '並び替え'],
+  },
+  'smart-quotes': {
+    name: 'スマートクォート変換',
+    tagline: 'まっすぐな引用符を曲がった引用符に、その逆も。',
+    description:
+      'まっすぐな引用符（直線型）を組版用の曲がった引用符（カーリー）に変換、または元のまっすぐな引用符に戻します。ブラウザ内で完結。',
+    keywords: ['スマートクォート', 'カーリークォート', '引用符 変換', 'smart quotes', '組版'],
+  },
+
+  // ── ユーティリティ ─────────────────────────────────────────────────────────
+  'currency-format': {
+    name: '通貨フォーマッター',
+    tagline: '数値を桁区切り付きの通貨表記に整形。',
+    description:
+      '任意の数値を桁区切りと通貨記号付きで、さまざまなロケールに合わせて整形します（為替レートの換算はありません）。ブラウザ内で処理。',
+    keywords: ['通貨 フォーマット', '数値 整形', '桁区切り', 'currency formatter', 'number format'],
+  },
+  'date-add': {
+    name: '日付の加算・減算',
+    tagline: '日付に日・週・月・年を足し引き。',
+    description:
+      '起点となる日付を選び、日・週・月・年を加算または減算して、その結果の日付を求めます。ブラウザ内で完結します。',
+    keywords: ['日付 加算', '日付 計算', '日数 加算', 'date add', 'date calculator'],
+  },
+  'grade-calc': {
+    name: '成績計算機',
+    tagline: '加重平均で最終成績を算出。',
+    description:
+      '各項目の点数と配点（重み）を入力すると、加重平均と最終成績を計算します。ブラウザ内で処理します。',
+    keywords: ['成績 計算', '加重平均', '最終 成績', 'grade calculator', 'weighted grade'],
+  },
+  'markup-calc': {
+    name: 'マークアップ・利益率計算機',
+    tagline: '原価と利益率から販売価格を算出。',
+    description:
+      '原価とマークアップまたは利益率（％）を入力すると、販売価格・利益・もう一方の比率を計算します。ブラウザ内で完結。',
+    keywords: ['マークアップ 計算', '利益率 計算', '販売価格', 'markup calculator', 'margin'],
+  },
+  'ovulation-calc': {
+    name: '排卵日計算機',
+    tagline: '妊娠しやすい時期と排卵日を予測。',
+    description:
+      '最終月経の開始日と月経周期の長さから、排卵日と妊娠しやすい時期（排卵期）を予測します。ブラウザ内で完結します。',
+    keywords: ['排卵日 計算', '妊娠しやすい時期', '排卵日 予測', 'ovulation calculator', 'fertile window'],
+  },
+  'paint-calc': {
+    name: 'ペンキ計算機',
+    tagline: '壁の塗装に必要なペンキの量を概算。',
+    description:
+      '壁の寸法・塗り回数・塗布率を入力すると、必要なペンキの量（リットルまたはガロン）を概算します。ブラウザ内で完結。',
+    keywords: ['ペンキ 計算', '塗料 量', '塗装 必要量', 'paint calculator', 'paint coverage'],
+  },
+  'pregnancy-due-date': {
+    name: '出産予定日計算機',
+    tagline: '出産予定日と現在の妊娠週数を予測。',
+    description:
+      '最終月経開始日から、出産予定日と現在の妊娠週数（妊娠の進み具合）を計算します。ブラウザ内で完結します。',
+    keywords: ['出産予定日 計算', '妊娠 計算', '妊娠 週数', 'due date calculator', 'pregnancy'],
+  },
+  'random-emoji': {
+    name: 'ランダム絵文字ジェネレーター',
+    tagline: 'ランダムな絵文字を選んでコピー。',
+    description:
+      'カテゴリ別にランダムな絵文字を1つまたは複数生成し、クリックでコピーできます。ブラウザ内で完結します。',
+    keywords: ['ランダム 絵文字', '絵文字 生成', 'random emoji', 'emoji generator', '絵文字'],
+  },
+  'random-team-generator': {
+    name: 'ランダムチーム分け',
+    tagline: '名前のリストをランダムなチームに分割。',
+    description:
+      '名前を貼り付けてシャッフルし、指定した数のバランスの取れたランダムなチームやグループに振り分けます。ブラウザ内で処理。',
+    keywords: ['チーム 分け', 'グループ 生成', 'チーム 抽選', 'random team generator', 'team picker'],
+  },
+  'time-card-calc': {
+    name: 'タイムカード計算機',
+    tagline: '出退勤時刻から労働時間を集計。',
+    description:
+      '出勤・退勤の時刻と休憩を入力すると、1日および1週間の労働時間と給与を合計します。ブラウザ内で完結します。',
+    keywords: ['タイムカード 計算', '労働時間', '勤務時間 計算', 'time card calculator', 'timesheet'],
+  },
+
+  // ── セキュリティ ───────────────────────────────────────────────────────────
+  'imei-validate': {
+    name: 'IMEIバリデーター',
+    tagline: 'Luhnチェックで端末のIMEIを検証。',
+    description:
+      '15桁のIMEIがLuhnチェックサムを通過し、正しい桁数かどうかを検証します。すべてブラウザ内で処理します。',
+    keywords: ['imei 検証', 'imei チェック', 'imei luhn', 'imei validator', '端末識別番号'],
+  },
+  'isbn-validate': {
+    name: 'ISBNバリデーター',
+    tagline: 'ISBN-10とISBN-13のチェックサムを検証。',
+    description:
+      'ISBN-10またはISBN-13のチェックサムと書式が正しいかを検証し、両者の相互変換も行えます。ブラウザ内で完結。',
+    keywords: ['isbn 検証', 'isbn チェックサム', 'isbn 13', 'isbn validator', '書籍コード'],
+  },
+  'vin-validate': {
+    name: 'VINバリデーター',
+    tagline: '車両VINのチェックディジットを検証。',
+    description:
+      '17文字の車両識別番号（VIN）のチェックディジットと書式（ISO 3779）を検証します。ブラウザ内で完結します。',
+    keywords: ['vin 検証', 'vin チェックディジット', '車台番号', 'vin validator', 'vehicle id'],
+  },
+
+  // ── ドキュメント ───────────────────────────────────────────────────────────
+  'image-noise': {
+    name: '画像にノイズ・グレインを追加',
+    tagline: '写真にフィルムグレインやノイズを追加。',
+    description:
+      '画像に調整可能なフィルムグレインやノイズを加えて、ヴィンテージ風や質感のある仕上がりに。すべてブラウザ内で処理します。',
+    keywords: ['ノイズ 追加', 'フィルムグレイン', '写真 ノイズ', 'add noise', 'film grain'],
+  },
+  'image-threshold': {
+    name: '画像の2値化（しきい値）',
+    tagline: '画像を純粋な白黒に2値化。',
+    description:
+      '明るさのしきい値を調整しながら、画像を純粋な白黒に変換します。スキャンやステンシルに最適。ブラウザ内で完結します。',
+    keywords: ['画像 2値化', '画像 白黒', 'binarize', 'image threshold', 'しきい値'],
+  },
 };
 
 /** IDs that have curated Japanese copy, in insertion order. */

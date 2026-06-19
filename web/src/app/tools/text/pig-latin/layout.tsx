@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pig-latin',
+      'ja': '/ja/tools/pig-latin',
+      'zh': '/zh/tools/pig-latin',
       'x-default': URL_PATH,
     },
   },

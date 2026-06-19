@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/remove-emoji',
+      'ja': '/ja/tools/remove-emoji',
+      'zh': '/zh/tools/remove-emoji',
       'x-default': URL_PATH,
     },
   },

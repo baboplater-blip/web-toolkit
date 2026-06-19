@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/date-add',
+      'ja': '/ja/tools/date-add',
+      'zh': '/zh/tools/date-add',
       'x-default': URL_PATH,
     },
   },

@@ -2417,6 +2417,223 @@ export const ZH_TOOLS: Record<string, ZhToolCopy> = {
       '在浏览器本地根据出生日期查出你的占星星座，全程无需上传任何信息。',
     keywords: ['星座查询', 'zodiac sign', '星座', '占星', 'astrology', 'horoscope'],
   },
+  'bpm-tap': {
+    name: 'BPM 打拍测速',
+    tagline: '跟着节拍敲击，测出歌曲的 BPM。',
+    description:
+      '跟着节奏敲击按键或按钮，在浏览器中实时测算任意歌曲的速度（BPM），自动取多次平均值。',
+    keywords: ['BPM测速', 'bpm tapper', '打拍', 'tap bpm', '节拍速度', 'find bpm'],
+  },
+  'color-mix': {
+    name: '颜色混合器',
+    tagline: '按比例混合两种颜色。',
+    description:
+      '在浏览器中按任意比例混合两种 HEX 颜色，得到混合后的色值，并实时预览、一键复制 HEX/RGB。',
+    keywords: ['颜色混合', 'color mixer', '混色', 'blend colors', '调色', 'mix hex'],
+  },
+  'csv-to-sql': {
+    name: 'CSV 转 SQL',
+    tagline: '将 CSV 转换为 SQL INSERT 语句。',
+    description:
+      '在浏览器本地把 CSV 各行转换为指定表的 INSERT 语句，标题行自动映射为列名，数据不上传。',
+    keywords: ['CSV转SQL', 'csv to sql', 'SQL插入', 'sql insert', '导入数据库', 'csv import sql'],
+  },
+  'currency-format': {
+    name: '货币格式化',
+    tagline: '为数字加上千位分隔符和货币符号。',
+    description:
+      '为任意数字加上千位分隔符和货币符号，支持多种地区格式（不含实时汇率换算），全程在浏览器中完成。',
+    keywords: ['货币格式', 'currency formatter', '数字格式化', 'number format', '千位分隔符', 'thousands separator'],
+  },
+  'date-add': {
+    name: '日期加减计算',
+    tagline: '在某个日期上加减天、周、月或年。',
+    description:
+      '选择一个起始日期，加上或减去若干天、周、月或年，立即得到推算出的目标日期。',
+    keywords: ['日期加减', 'date add', '日期计算', 'date calculator', '加天数', 'add days'],
+  },
+  'git-command-builder': {
+    name: 'Git 命令生成器',
+    tagline: '按选项拼出常用的 git 命令。',
+    description:
+      '选择要做的操作（提交、分支、回退、暂存、撤销），即可生成可直接复制运行的 git 命令。',
+    keywords: ['git命令', 'git command', 'git生成器', 'git generator', 'git速查', 'git cheatsheet'],
+  },
+  'grade-calc': {
+    name: '加权成绩计算器',
+    tagline: '计算加权后的最终成绩。',
+    description:
+      '输入各项的分数和权重，自动算出加权平均分和最终成绩，全程在浏览器本地完成。',
+    keywords: ['成绩计算', 'grade calculator', '加权成绩', 'weighted grade', '总评', 'final grade'],
+  },
+  'htaccess-redirect': {
+    name: '.htaccess 跳转规则生成器',
+    tagline: '生成 Apache .htaccess 重定向规则。',
+    description:
+      '快速生成 301/302 跳转、强制 HTTPS 以及 www/非 www 规则，直接写入 Apache 的 .htaccess 文件。',
+    keywords: ['htaccess生成', 'htaccess generator', '301跳转', '301 redirect', '强制HTTPS', 'force https'],
+  },
+  'image-noise': {
+    name: '图片噪点/颗粒',
+    tagline: '为照片添加胶片颗粒或噪点。',
+    description:
+      '在浏览器本地为图片叠加可调强度的胶片颗粒或噪点，营造复古或质感效果，图片不上传服务器。',
+    keywords: ['图片噪点', 'add noise', '胶片颗粒', 'film grain', '照片颗粒', 'photo noise'],
+  },
+  'image-threshold': {
+    name: '图片二值化',
+    tagline: '把图片转为纯黑白。',
+    description:
+      '按可调的亮度阈值将图片转换为纯黑白，特别适合扫描件和模板抠图，全程在浏览器中处理。',
+    keywords: ['图片二值化', 'image threshold', '黑白转换', 'binarize', '阈值', 'image to bw'],
+  },
+  'imei-validate': {
+    name: 'IMEI 校验器',
+    tagline: '用 Luhn 算法校验手机 IMEI。',
+    description:
+      '在浏览器本地检查 15 位 IMEI 是否通过 Luhn 校验和并具有正确长度，号码不上传。',
+    keywords: ['IMEI校验', 'imei validator', 'IMEI检查', 'imei check', 'Luhn', 'imei luhn'],
+  },
+  'isbn-validate': {
+    name: 'ISBN 校验器',
+    tagline: '校验 ISBN-10 与 ISBN-13 的校验码。',
+    description:
+      '检查 ISBN-10 或 ISBN-13 的校验码和格式是否有效，并支持两者之间相互转换，全程在浏览器本地完成。',
+    keywords: ['ISBN校验', 'isbn validator', '书号', 'isbn checksum', 'isbn 13', '校验码'],
+  },
+  'markdown-to-text': {
+    name: 'Markdown 转纯文本',
+    tagline: '去除 Markdown 格式，得到纯文本。',
+    description:
+      '在浏览器本地移除 Markdown 语法（标题、加粗、链接、列表、代码），得到干净易读的纯文本。',
+    keywords: ['Markdown转文本', 'markdown to text', '去除Markdown', 'strip markdown', '纯文本', 'remove markdown'],
+  },
+  'markup-calc': {
+    name: '加价与利润率计算器',
+    tagline: '根据成本和利润率算出售价。',
+    description:
+      '输入成本以及加价率或利润率，即可算出售价、利润和另一项比率，全程在浏览器中完成。',
+    keywords: ['加价计算', 'markup calculator', '利润率', 'margin calculator', '毛利', 'profit margin'],
+  },
+  'mime-type-lookup': {
+    name: 'MIME 类型查询',
+    tagline: '在扩展名与 MIME 类型之间互查。',
+    description:
+      '查询任意文件扩展名对应的 MIME（内容）类型，也可反查某个 MIME 类型对应的扩展名。',
+    keywords: ['MIME类型', 'mime type', '内容类型', 'content type', '文件扩展名', 'file extension'],
+  },
+  'ovulation-calc': {
+    name: '排卵期计算器',
+    tagline: '推算易孕期和排卵日。',
+    description:
+      '根据末次月经日期和月经周期长度，估算排卵日和易孕窗口期，全程在浏览器本地完成、信息不上传。',
+    keywords: ['排卵期计算', 'ovulation calculator', '易孕期', 'fertile window', '排卵日', 'ovulation day'],
+  },
+  'paint-calc': {
+    name: '油漆用量计算器',
+    tagline: '估算一面墙需要多少油漆。',
+    description:
+      '输入墙面尺寸、涂刷遍数和每升涂布面积，估算所需油漆的升数或加仑数，全程在浏览器中完成。',
+    keywords: ['油漆用量', 'paint calculator', '涂料计算', 'how much paint', '涂布率', 'paint coverage'],
+  },
+  'pig-latin': {
+    name: 'Pig Latin 翻译器',
+    tagline: '把英文文本翻译成 Pig Latin。',
+    description:
+      '按标准的元音/辅音规则把英文单词转换为 Pig Latin（如 hello → ellohay），全程在浏览器本地完成。',
+    keywords: ['Pig Latin', 'pig latin', '儿童黑话', 'pig latin translator', '英文游戏', '字母游戏'],
+  },
+  'pregnancy-due-date': {
+    name: '预产期计算器',
+    tagline: '估算预产期和当前孕周。',
+    description:
+      '根据末次月经日期计算预计的预产期以及目前已怀孕的周数，全程在浏览器本地完成、信息不上传。',
+    keywords: ['预产期计算', 'due date calculator', '孕期计算', 'pregnancy calculator', '孕周', 'weeks pregnant'],
+  },
+  'query-string-builder': {
+    name: '查询字符串生成器',
+    tagline: '用键值对拼出 URL 查询字符串。',
+    description:
+      '输入若干键值对，自动生成正确 URL 编码的查询字符串，可直接附加到任意网址后面。',
+    keywords: ['查询字符串', 'query string builder', 'URL参数', 'url parameters', '拼接URL', 'querystring'],
+  },
+  'random-emoji': {
+    name: '随机表情生成器',
+    tagline: '随机抽取可复制的表情符号。',
+    description:
+      '按分类随机生成一个或多个表情符号，一键复制使用，全程在浏览器本地完成。',
+    keywords: ['随机表情', 'random emoji', '表情生成', 'emoji generator', '颜文字', 'emoji'],
+  },
+  'random-team-generator': {
+    name: '随机分组器',
+    tagline: '把一份名单随机分成多个小队。',
+    description:
+      '粘贴名单后随机打乱，并均匀分成指定数量的小队或小组，全程在浏览器本地完成、不上传。',
+    keywords: ['随机分组', 'random team generator', '分队', 'group generator', '抽签分组', 'team picker'],
+  },
+  'regex-escape': {
+    name: '正则转义工具',
+    tagline: '为正则表达式转义特殊字符。',
+    description:
+      '将任意文本中的正则元字符转义，使其在正则表达式中作为字面量精确匹配，全程在浏览器中完成。',
+    keywords: ['正则转义', 'regex escape', '转义正则', 'escape regex', '元字符', 'literal regex'],
+  },
+  'remove-emoji': {
+    name: '去除表情符号',
+    tagline: '从文本中清除表情和符号。',
+    description:
+      '在浏览器本地移除文本中的所有表情符号和象形符号，留下干净的纯文本。',
+    keywords: ['去除表情', 'remove emoji', '清除emoji', 'strip emoji', '过滤表情', 'emoji remover'],
+  },
+  'remove-numbers': {
+    name: '去除数字',
+    tagline: '从文本中删除所有数字。',
+    description:
+      '一键删除文本中的所有数字（0-9），可选择保留或合并空格，全程在浏览器本地完成。',
+    keywords: ['去除数字', 'remove numbers', '删除数字', 'strip digits', '清除数字', 'remove digits'],
+  },
+  'reverse-words': {
+    name: '词序反转',
+    tagline: '反转文本中单词的顺序。',
+    description:
+      '把每一行中单词的先后顺序倒过来排列，适用于猜谜、字幕和语言练习，全程在浏览器中完成。',
+    keywords: ['词序反转', 'reverse words', '倒序单词', 'reverse word order', '颠倒单词', 'flip words'],
+  },
+  'semver-checker': {
+    name: 'Semver 检查器',
+    tagline: '解析并比较语义化版本号。',
+    description:
+      '解析语义化版本号，比较哪个版本更高，并查看主版本/次版本/补丁/预发布等各部分。',
+    keywords: ['semver', '语义化版本', 'semantic version', '版本比较', 'version compare', '版本号'],
+  },
+  'smart-quotes': {
+    name: '智能引号转换',
+    tagline: '在直引号与弯引号之间相互转换。',
+    description:
+      '将直引号转换为排版用的弯引号（智能引号），也可把弯引号还原为直引号，全程在浏览器中完成。',
+    keywords: ['智能引号', 'smart quotes', '弯引号', 'curly quotes', '排版引号', 'typographic quotes'],
+  },
+  'sql-in-clause': {
+    name: 'SQL IN 子句生成器',
+    tagline: '把一份列表转成 SQL IN (...) 子句。',
+    description:
+      '粘贴一组值，生成带引号、用逗号分隔的 SQL IN (...) 子句，可直接粘进查询语句中使用。',
+    keywords: ['SQL IN子句', 'sql in clause', 'IN子句生成', 'in clause generator', 'SQL列表', 'sql list'],
+  },
+  'time-card-calc': {
+    name: '工时计算器',
+    tagline: '根据上下班时间累计工时。',
+    description:
+      '输入上班、下班时间和休息时长，累计每日和每周的工作时数与工资，全程在浏览器本地完成。',
+    keywords: ['工时计算', 'time card calculator', '上下班', 'work hours', '考勤', 'timesheet calculator'],
+  },
+  'vin-validate': {
+    name: 'VIN 车架号校验',
+    tagline: '校验车辆 VIN 的校验位。',
+    description:
+      '在浏览器本地校验 17 位车辆识别码（VIN）的校验位和格式（ISO 3779），车架号不上传。',
+    keywords: ['VIN校验', 'vin validator', '车架号', 'vin check digit', '车辆识别码', 'vehicle id number'],
+  },
 };
 
 export const ZH_TOOL_IDS: string[] = Object.keys(ZH_TOOLS);

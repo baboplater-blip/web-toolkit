@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/random-team-generator',
+      'ja': '/ja/tools/random-team-generator',
+      'zh': '/zh/tools/random-team-generator',
       'x-default': URL_PATH,
     },
   },

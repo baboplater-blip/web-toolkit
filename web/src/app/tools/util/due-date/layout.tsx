@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/pregnancy-due-date',
+      'ja': '/ja/tools/pregnancy-due-date',
+      'zh': '/zh/tools/pregnancy-due-date',
       'x-default': URL_PATH,
     },
   },

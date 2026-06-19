@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/regex-escape',
+      'ja': '/ja/tools/regex-escape',
+      'zh': '/zh/tools/regex-escape',
       'x-default': URL_PATH,
     },
   },

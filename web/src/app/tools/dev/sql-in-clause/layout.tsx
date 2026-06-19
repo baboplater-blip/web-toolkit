@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/sql-in-clause',
+      'ja': '/ja/tools/sql-in-clause',
+      'zh': '/zh/tools/sql-in-clause',
       'x-default': URL_PATH,
     },
   },

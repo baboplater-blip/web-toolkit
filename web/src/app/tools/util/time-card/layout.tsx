@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/time-card-calc',
+      'ja': '/ja/tools/time-card-calc',
+      'zh': '/zh/tools/time-card-calc',
       'x-default': URL_PATH,
     },
   },

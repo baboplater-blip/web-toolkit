@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/vin-validate',
+      'ja': '/ja/tools/vin-validate',
+      'zh': '/zh/tools/vin-validate',
       'x-default': URL_PATH,
     },
   },

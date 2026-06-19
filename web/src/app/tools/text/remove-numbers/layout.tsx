@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/remove-numbers',
+      'ja': '/ja/tools/remove-numbers',
+      'zh': '/zh/tools/remove-numbers',
       'x-default': URL_PATH,
     },
   },

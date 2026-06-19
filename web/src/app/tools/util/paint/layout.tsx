@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/paint-calc',
+      'ja': '/ja/tools/paint-calc',
+      'zh': '/zh/tools/paint-calc',
       'x-default': URL_PATH,
     },
   },
