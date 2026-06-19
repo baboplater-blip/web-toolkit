@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/letter-frequency',
+      'ja': '/ja/tools/letter-frequency',
+      'zh': '/zh/tools/letter-frequency',
       'x-default': URL_PATH,
     },
   },

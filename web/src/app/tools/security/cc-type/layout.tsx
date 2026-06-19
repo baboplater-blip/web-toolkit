@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/credit-card-type',
+      'ja': '/ja/tools/credit-card-type',
+      'zh': '/zh/tools/credit-card-type',
       'x-default': URL_PATH,
     },
   },

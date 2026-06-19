@@ -2634,6 +2634,216 @@ export const ZH_TOOLS: Record<string, ZhToolCopy> = {
       '在浏览器本地校验 17 位车辆识别码（VIN）的校验位和格式（ISO 3779），车架号不上传。',
     keywords: ['VIN校验', 'vin validator', '车架号', 'vin check digit', '车辆识别码', 'vehicle id number'],
   },
+  'age-difference': {
+    name: '年龄差计算器',
+    tagline: '计算两个人之间的年龄差。',
+    description:
+      '输入两个出生日期，精确计算两人相差的年、月、天，全部在浏览器本地完成。',
+    keywords: ['年龄差计算', 'age difference calculator', '年龄差', 'age gap', '两人年龄差'],
+  },
+  base58: {
+    name: 'Base58 编码 / 解码',
+    tagline: '编码和解码 Base58（比特币字母表）。',
+    description:
+      '使用比特币字母表对文本进行 Base58 编码与解码，去掉了容易混淆的 0、O、I、l 等字符。',
+    keywords: ['Base58编码', 'base58 encode', 'Base58解码', 'base58 decode', '比特币base58', 'bitcoin base58'],
+  },
+  'bmr-calculator': {
+    name: '基础代谢率（BMR）计算器',
+    tagline: '计算你的基础代谢率。',
+    description:
+      '根据身高、体重、年龄和性别，使用 Mifflin-St Jeor 公式估算你的基础代谢率（BMR）。',
+    keywords: ['BMR计算', 'bmr calculator', '基础代谢率', 'basal metabolic rate', 'Mifflin-St Jeor'],
+  },
+  'business-days': {
+    name: '工作日计算器',
+    tagline: '计算两个日期之间的工作日天数。',
+    description:
+      '计算两个日期之间的工作日数量，自动排除周末（也可选择排除节假日），在浏览器本地完成。',
+    keywords: ['工作日计算', 'business days calculator', '工作日', 'working days', '周末排除', 'weekdays'],
+  },
+  'cooking-converter': {
+    name: '烹饪单位换算器',
+    tagline: '换算杯、汤匙、毫升和克。',
+    description:
+      '在常见烹饪食材之间换算杯、汤匙、茶匙、毫升和克，下厨配料量一目了然。',
+    keywords: ['烹饪换算', 'cooking converter', '杯换毫升', 'cups to ml', '汤匙', 'tablespoon'],
+  },
+  'credit-card-type': {
+    name: '信用卡类型识别',
+    tagline: '从卡号识别发卡组织。',
+    description:
+      '根据卡号前缀识别卡组织（Visa、Mastercard、Amex、Discover 等），全程在浏览器本地完成，不上传任何数据。',
+    keywords: ['信用卡类型', 'credit card type', '卡组织识别', 'card brand', '识别卡号', 'identify card'],
+  },
+  'css-grid': {
+    name: 'CSS 网格生成器',
+    tagline: '可视化生成 CSS 网格布局代码。',
+    description:
+      '设置行、列和间距，直接生成可用的 CSS Grid 网格布局代码，并提供实时预览。',
+    keywords: ['CSS网格生成', 'css grid generator', '网格布局', 'grid layout', 'CSS Grid'],
+  },
+  'css-triangle': {
+    name: 'CSS 三角形生成器',
+    tagline: '用 border 技巧生成 CSS 三角形。',
+    description:
+      '选择方向、尺寸和颜色，使用 border 边框技巧生成纯 CSS 三角形代码。',
+    keywords: ['CSS三角形生成', 'css triangle generator', 'CSS三角形', 'css triangle', '边框三角形', 'border triangle'],
+  },
+  'dog-age-calc': {
+    name: '狗狗年龄计算器',
+    tagline: '把狗狗的年龄换算成人类年龄。',
+    description:
+      '使用考虑体型的换算公式估算狗狗相当于人类的年龄，告别老旧的乘以 7 的误区。',
+    keywords: ['狗狗年龄计算', 'dog age calculator', '狗年龄', 'dog years', '狗狗换算'],
+  },
+  'ean-validate': {
+    name: 'EAN / UPC 校验',
+    tagline: '校验 EAN-13、EAN-8 和 UPC-A 的校验位。',
+    description:
+      '在浏览器本地检查 EAN-13、EAN-8 或 UPC-A 条码号的校验位是否有效。',
+    keywords: ['EAN校验', 'ean validator', 'UPC校验', 'upc validator', '条码校验位', 'barcode checksum'],
+  },
+  'email-validator': {
+    name: '邮箱格式校验',
+    tagline: '校验电子邮箱地址的格式。',
+    description:
+      '在浏览器本地检查电子邮箱地址的格式是否有效，可逐个校验，也可一次性批量校验整份列表。',
+    keywords: ['邮箱校验', 'email validator', '验证邮箱', 'validate email', '邮箱格式', 'email format'],
+  },
+  'hashtag-generator': {
+    name: '话题标签生成器',
+    tagline: '把关键词变成社交话题标签。',
+    description:
+      '把关键词或一句话转换成干净的 #话题标签，适用于 Instagram、X 等社交平台发帖。',
+    keywords: ['话题标签生成', 'hashtag generator', '标签生成', 'instagram hashtags', '社交标签'],
+  },
+  'html-to-markdown': {
+    name: 'HTML 转 Markdown',
+    tagline: '把 HTML 转换为 Markdown。',
+    description:
+      '把 HTML（标题、链接、列表、加粗、代码）转换成干净的 Markdown，可直接粘贴到文档或 README 中，转换在浏览器本地完成。',
+    keywords: ['HTML转Markdown', 'html to markdown', 'HTML转MD', 'html to md', '网页转markdown'],
+  },
+  'image-glitch': {
+    name: '故障（Glitch）图像特效',
+    tagline: '添加 RGB 偏移的故障特效。',
+    description:
+      '为图片添加可调节的故障特效（RGB 通道偏移与扫描线），全程在浏览器本地完成，图片不上传。',
+    keywords: ['故障特效', 'glitch effect', '图像故障', 'image glitch', 'RGB偏移', 'rgb shift'],
+  },
+  'image-posterize': {
+    name: '图像色调分离',
+    tagline: '把图像缩减为更少的颜色层级。',
+    description:
+      '通过减少每个通道的颜色层级对照片进行色调分离，打造大胆的海报风格，全程在浏览器本地完成。',
+    keywords: ['色调分离', 'posterize image', '海报效果', 'poster effect', '减少颜色', 'reduce colors'],
+  },
+  leetspeak: {
+    name: 'Leet 火星文转换器',
+    tagline: '把文字转换成 1337 5p34k。',
+    description:
+      '把普通文字转换成 leetspeak（例如 leet 变成 1337）并可还原，替换强度可调，转换在浏览器本地完成。',
+    keywords: ['leet转换', 'leetspeak translator', '火星文', 'leet converter', '1337文字', '1337 text'],
+  },
+  'letter-frequency': {
+    name: '字母频率统计',
+    tagline: '统计每个字母出现的次数。',
+    description:
+      '分析文本中每个字母出现的频率，对密码字谜、解谜游戏和语言学研究很有帮助，全程在浏览器本地完成。',
+    keywords: ['字母频率', 'letter frequency', '字母统计', 'letter counter', '频率分析', 'frequency analysis'],
+  },
+  'love-calculator': {
+    name: '爱情计算器',
+    tagline: '一个有趣的姓名配对分数。',
+    description:
+      '输入两个名字即可得到一个纯娱乐的爱情配对分数，结果固定可复现，仅供消遣而非真实建议。',
+    keywords: ['爱情计算器', 'love calculator', '姓名配对', 'name compatibility', '爱情测试', 'love test'],
+  },
+  'mac-address': {
+    name: 'MAC 地址校验',
+    tagline: '校验并重新格式化 MAC 地址。',
+    description:
+      '在浏览器本地校验 MAC 地址，并在冒号、连字符、点分隔等格式以及大小写之间互相转换。',
+    keywords: ['MAC地址校验', 'mac address validator', 'MAC地址格式', 'mac address format', '物理地址'],
+  },
+  'nanoid-gen': {
+    name: 'NanoID 生成器',
+    tagline: '生成 URL 安全的唯一 ID。',
+    description:
+      '使用 Web Crypto API 在浏览器本地生成任意长度、URL 安全的简短唯一 ID，是 UUID 的紧凑替代方案。',
+    keywords: ['NanoID生成', 'nanoid generator', '唯一ID', 'unique id', '短ID', 'short id'],
+  },
+  'noise-generator': {
+    name: '白噪音生成器',
+    tagline: '播放白噪音、粉红噪音和棕色噪音。',
+    description:
+      '在浏览器本地合成并播放白噪音、粉红噪音或棕色噪音，用于专注、助眠或掩盖环境噪音。',
+    keywords: ['白噪音生成', 'white noise generator', '粉红噪音', 'pink noise', '棕色噪音', 'brown noise'],
+  },
+  'random-letter': {
+    name: '随机字母生成器',
+    tagline: '随机抽取字母表中的字母。',
+    description:
+      '在浏览器本地随机生成字母（A-Z），适合游戏、绘画命题和课堂活动。',
+    keywords: ['随机字母', 'random letter generator', '随机抽字母', 'random letter picker', '字母抽取'],
+  },
+  'random-words': {
+    name: '随机单词生成器',
+    tagline: '生成随机英文单词。',
+    description:
+      '在浏览器本地生成任意数量的随机英文单词，可用于头脑风暴、游戏、写作命题和命名。',
+    keywords: ['随机单词', 'random word generator', '随机英文单词', 'random words', '单词生成'],
+  },
+  'regex-cheatsheet': {
+    name: '正则表达式速查表',
+    tagline: '可搜索的正则表达式参考手册。',
+    description:
+      '一份可搜索的正则表达式速查表，涵盖标记、字符类、量词、锚点和标志，并附带示例。',
+    keywords: ['正则速查表', 'regex cheatsheet', '正则参考', 'regex reference', '正则表达式手册'],
+  },
+  'remove-duplicate-words': {
+    name: '去除重复单词',
+    tagline: '让每个单词只保留一次。',
+    description:
+      '在浏览器本地去除文本中重复的单词，仅保留首次出现的那一个，可选择是否区分大小写。',
+    keywords: ['去除重复单词', 'remove duplicate words', '去重单词', 'unique words', '单词去重'],
+  },
+  'shoe-size-converter': {
+    name: '鞋码换算器',
+    tagline: '换算美码、欧码、英码和厘米。',
+    description:
+      '在浏览器本地换算男款、女款和童款鞋的美码、欧码、英码与厘米尺寸。',
+    keywords: ['鞋码换算', 'shoe size converter', '美码转欧码', 'us to eu shoe size', '鞋码对照表', 'shoe size chart'],
+  },
+  'text-shadow': {
+    name: 'CSS 文字阴影生成器',
+    tagline: '生成带实时预览的 CSS text-shadow。',
+    description:
+      '调整偏移、模糊和颜色即可生成 CSS text-shadow 文字阴影代码，并提供实时预览和一键复制。',
+    keywords: ['文字阴影生成', 'text shadow generator', 'CSS文字阴影', 'css text-shadow', '阴影代码'],
+  },
+  'tsv-to-csv': {
+    name: 'TSV 转 CSV 转换器',
+    tagline: '在 TSV 和 CSV 之间互相转换。',
+    description:
+      '在浏览器本地把制表符分隔（TSV）的数据转换为逗号分隔（CSV），也可反向转换，并正确处理引号。',
+    keywords: ['TSV转CSV', 'tsv to csv', 'CSV转TSV', 'csv to tsv', '制表符转逗号', 'tab to comma'],
+  },
+  'uuid-validate': {
+    name: 'UUID 校验',
+    tagline: '校验 UUID 并识别其版本。',
+    description:
+      '在浏览器本地检查 UUID/GUID 的格式是否有效，并识别其版本（v1-v5）和变体。',
+    keywords: ['UUID校验', 'uuid validator', '验证UUID', 'validate uuid', 'UUID版本', 'uuid version'],
+  },
+  'week-number': {
+    name: '周数计算器',
+    tagline: '查询某个日期所属的 ISO 周数。',
+    description:
+      '在浏览器本地查询任意日期的 ISO-8601 周数，并查看指定周数所覆盖的日期范围。',
+    keywords: ['周数计算', 'week number', 'ISO周数', 'iso week number', '第几周', 'week of year'],
+  },
 };
 
 export const ZH_TOOL_IDS: string[] = Object.keys(ZH_TOOLS);

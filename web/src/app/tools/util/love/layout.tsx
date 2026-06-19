@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/love-calculator',
+      'ja': '/ja/tools/love-calculator',
+      'zh': '/zh/tools/love-calculator',
       'x-default': URL_PATH,
     },
   },

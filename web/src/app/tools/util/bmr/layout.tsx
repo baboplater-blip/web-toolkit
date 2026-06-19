@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/bmr-calculator',
+      'ja': '/ja/tools/bmr-calculator',
+      'zh': '/zh/tools/bmr-calculator',
       'x-default': URL_PATH,
     },
   },

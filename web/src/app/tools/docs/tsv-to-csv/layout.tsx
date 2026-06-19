@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/tsv-to-csv',
+      'ja': '/ja/tools/tsv-to-csv',
+      'zh': '/zh/tools/tsv-to-csv',
       'x-default': URL_PATH,
     },
   },

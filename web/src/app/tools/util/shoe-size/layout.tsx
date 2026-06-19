@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/shoe-size-converter',
+      'ja': '/ja/tools/shoe-size-converter',
+      'zh': '/zh/tools/shoe-size-converter',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ean-validate',
+      'ja': '/ja/tools/ean-validate',
+      'zh': '/zh/tools/ean-validate',
       'x-default': URL_PATH,
     },
   },

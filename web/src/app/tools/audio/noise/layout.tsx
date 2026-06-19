@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/noise-generator',
+      'ja': '/ja/tools/noise-generator',
+      'zh': '/zh/tools/noise-generator',
       'x-default': URL_PATH,
     },
   },

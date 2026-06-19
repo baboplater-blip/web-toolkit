@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/regex-cheatsheet',
+      'ja': '/ja/tools/regex-cheatsheet',
+      'zh': '/zh/tools/regex-cheatsheet',
       'x-default': URL_PATH,
     },
   },

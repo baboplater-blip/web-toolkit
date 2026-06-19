@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-shadow',
+      'ja': '/ja/tools/text-shadow',
+      'zh': '/zh/tools/text-shadow',
       'x-default': URL_PATH,
     },
   },

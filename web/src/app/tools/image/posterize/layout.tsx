@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-posterize',
+      'ja': '/ja/tools/image-posterize',
+      'zh': '/zh/tools/image-posterize',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/remove-duplicate-words',
+      'ja': '/ja/tools/remove-duplicate-words',
+      'zh': '/zh/tools/remove-duplicate-words',
       'x-default': URL_PATH,
     },
   },

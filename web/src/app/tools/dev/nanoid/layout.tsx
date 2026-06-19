@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/nanoid-gen',
+      'ja': '/ja/tools/nanoid-gen',
+      'zh': '/zh/tools/nanoid-gen',
       'x-default': URL_PATH,
     },
   },

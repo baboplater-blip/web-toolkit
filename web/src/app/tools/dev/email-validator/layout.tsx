@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/email-validator',
+      'ja': '/ja/tools/email-validator',
+      'zh': '/zh/tools/email-validator',
       'x-default': URL_PATH,
     },
   },

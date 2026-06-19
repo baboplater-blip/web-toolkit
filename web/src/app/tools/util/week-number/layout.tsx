@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/week-number',
+      'ja': '/ja/tools/week-number',
+      'zh': '/zh/tools/week-number',
       'x-default': URL_PATH,
     },
   },

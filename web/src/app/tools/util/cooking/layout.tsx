@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/cooking-converter',
+      'ja': '/ja/tools/cooking-converter',
+      'zh': '/zh/tools/cooking-converter',
       'x-default': URL_PATH,
     },
   },

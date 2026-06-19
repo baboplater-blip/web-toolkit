@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/hashtag-generator',
+      'ja': '/ja/tools/hashtag-generator',
+      'zh': '/zh/tools/hashtag-generator',
       'x-default': URL_PATH,
     },
   },

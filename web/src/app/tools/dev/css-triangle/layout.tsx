@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-triangle',
+      'ja': '/ja/tools/css-triangle',
+      'zh': '/zh/tools/css-triangle',
       'x-default': URL_PATH,
     },
   },

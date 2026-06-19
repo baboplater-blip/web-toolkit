@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-grid',
+      'ja': '/ja/tools/css-grid',
+      'zh': '/zh/tools/css-grid',
       'x-default': URL_PATH,
     },
   },

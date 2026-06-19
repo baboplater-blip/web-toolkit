@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/mac-address',
+      'ja': '/ja/tools/mac-address',
+      'zh': '/zh/tools/mac-address',
       'x-default': URL_PATH,
     },
   },

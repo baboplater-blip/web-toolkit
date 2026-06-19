@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/age-difference',
+      'ja': '/ja/tools/age-difference',
+      'zh': '/zh/tools/age-difference',
       'x-default': URL_PATH,
     },
   },

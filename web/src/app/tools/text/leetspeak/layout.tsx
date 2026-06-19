@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/leetspeak',
+      'ja': '/ja/tools/leetspeak',
+      'zh': '/zh/tools/leetspeak',
       'x-default': URL_PATH,
     },
   },

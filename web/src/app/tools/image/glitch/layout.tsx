@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-glitch',
+      'ja': '/ja/tools/image-glitch',
+      'zh': '/zh/tools/image-glitch',
       'x-default': URL_PATH,
     },
   },

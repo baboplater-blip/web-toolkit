@@ -2668,6 +2668,218 @@ export const JA_TOOLS: Record<string, JaToolCopy> = {
       '明るさのしきい値を調整しながら、画像を純粋な白黒に変換します。スキャンやステンシルに最適。ブラウザ内で完結します。',
     keywords: ['画像 2値化', '画像 白黒', 'binarize', 'image threshold', 'しきい値'],
   },
+
+  // ── パック6 追加 ─────────────────────────────────────────────────────────
+  'age-difference': {
+    name: '年齢差計算ツール',
+    tagline: '2人の年齢差をすぐに割り出す。',
+    description:
+      '2つの生年月日から、年・月・日まで正確な年齢差を計算します。すべてブラウザ内で完結します。',
+    keywords: ['年齢差 計算', '年の差', 'age difference', '生年月日 差', 'age gap'],
+  },
+  base58: {
+    name: 'Base58 エンコード / デコード',
+    tagline: 'Base58（ビットコイン用アルファベット）を相互変換。',
+    description:
+      'ビットコインのアルファベットを使い、テキストとBase58を相互変換します。紛らわしい0/O/I/lを含みません。ブラウザ内で処理します。',
+    keywords: ['base58 エンコード', 'base58 デコード', 'base58 変換', 'bitcoin base58', 'ビットコイン'],
+  },
+  'bmr-calculator': {
+    name: '基礎代謝量（BMR）計算ツール',
+    tagline: '1日の基礎代謝量を手軽に見積もる。',
+    description:
+      '身長・体重・年齢・性別から、ミフリン-サンジョール式で基礎代謝量（BMR）を推定します。ブラウザ内で完結します。',
+    keywords: ['基礎代謝量 計算', 'bmr 計算', '基礎代謝', 'mifflin st jeor', 'カロリー'],
+  },
+  'business-days': {
+    name: '営業日計算ツール',
+    tagline: '2つの日付の間の営業日数を数える。',
+    description:
+      '2つの日付の間の営業日数を、週末（および任意の祝日）を除いて数えます。ブラウザ内で計算します。',
+    keywords: ['営業日 計算', '稼働日 数える', 'business days', '平日 日数', '週末 除く'],
+  },
+  'cooking-converter': {
+    name: '料理の単位換算ツール',
+    tagline: 'カップ・大さじ・ml・グラムを換算。',
+    description:
+      'よく使う食材について、カップ・大さじ・小さじ・ミリリットル・グラムを相互に換算します。ブラウザ内で完結します。',
+    keywords: ['料理 単位 換算', 'カップ ml', '大さじ グラム', 'cooking converter', 'レシピ 換算'],
+  },
+  'credit-card-type': {
+    name: 'クレジットカード種類判定ツール',
+    tagline: 'カード番号からブランドを判定。',
+    description:
+      'カード番号の先頭から、Visa・Mastercard・Amex・Discoverなどのブランドを判定します。すべてブラウザ内で処理し、どこにも送信しません。',
+    keywords: ['カード ブランド 判定', 'クレジットカード 種類', 'credit card type', 'カード番号', 'card brand'],
+  },
+  'css-grid': {
+    name: 'CSS グリッドジェネレーター',
+    tagline: 'CSS Gridのレイアウトを視覚的に生成。',
+    description:
+      '行・列・間隔を設定するだけで、ライブプレビュー付きですぐ使えるCSS Gridレイアウトのコードを生成します。',
+    keywords: ['css grid ジェネレーター', 'グリッド レイアウト', 'css grid', 'グリッド 生成', 'レイアウト'],
+  },
+  'css-triangle': {
+    name: 'CSS 三角形ジェネレーター',
+    tagline: 'borderテクニックでCSSの三角形を生成。',
+    description:
+      '向き・サイズ・色を選ぶだけで、borderテクニックを使った純粋なCSSの三角形を生成します。',
+    keywords: ['css 三角形 ジェネレーター', 'css triangle', 'border 三角形', 'css 三角', '三角形 生成'],
+  },
+  'dog-age-calc': {
+    name: '犬の年齢計算ツール',
+    tagline: '犬の年齢を人間の年齢に換算。',
+    description:
+      '古い「7倍」の俗説ではなく、体格を考慮した式で犬の年齢を人間の年齢に換算します。ブラウザ内で計算します。',
+    keywords: ['犬 年齢 計算', '犬 人間 換算', 'dog age', '犬の年齢', 'dog years'],
+  },
+  'ean-validate': {
+    name: 'EAN / UPC バリデーター',
+    tagline: 'EAN-13・EAN-8・UPC-Aのチェックデジットを検証。',
+    description:
+      'EAN-13・EAN-8・UPC-Aのバーコード番号が正しいチェックサムを持つかを検証します。ブラウザ内で完結します。',
+    keywords: ['ean 検証', 'upc 検証', 'バーコード チェックサム', 'ean validator', 'jan コード'],
+  },
+  'email-validator': {
+    name: 'メールアドレス形式チェッカー',
+    tagline: 'メールアドレスの形式を検証。',
+    description:
+      'メールアドレスの形式が正しいかを、1件ずつでもリストまとめてでも検証します。すべてブラウザ内で処理します。',
+    keywords: ['メールアドレス 検証', 'メール 形式 チェック', 'email validator', 'メール 確認', 'email format'],
+  },
+  'hashtag-generator': {
+    name: 'ハッシュタグ生成ツール',
+    tagline: 'キーワードをSNS用ハッシュタグに。',
+    description:
+      'キーワードや文章を、InstagramやXなどの投稿に使えるきれいな#ハッシュタグに変換します。ブラウザ内で完結します。',
+    keywords: ['ハッシュタグ 生成', 'インスタ ハッシュタグ', 'hashtag generator', 'sns タグ', 'instagram hashtags'],
+  },
+  'html-to-markdown': {
+    name: 'HTMLをMarkdownに変換',
+    tagline: 'HTMLをMarkdownへ変換。',
+    description:
+      'HTML（見出し・リンク・リスト・太字・コード）を、ドキュメントやREADMEに貼り付けられるきれいなMarkdownに変換します。',
+    keywords: ['html markdown 変換', 'html to markdown', 'html md 変換', 'マークダウン 変換', 'html to md'],
+  },
+  'image-glitch': {
+    name: 'グリッチ画像エフェクト',
+    tagline: 'RGBシフトのグリッチ効果を加える。',
+    description:
+      '画像にRGBチャンネルのずれや走査線といった調整可能なグリッチ効果を適用します。すべてブラウザ内で処理します。',
+    keywords: ['グリッチ 効果', '画像 グリッチ', 'glitch effect', 'rgb シフト', 'image glitch'],
+  },
+  'image-posterize': {
+    name: '画像のポスタリゼーション',
+    tagline: '画像の色数を減らしてポスター風に。',
+    description:
+      'チャンネルごとの色数を減らして写真をポスタリゼーションし、力強いポスター風の仕上がりにします。ブラウザ内で完結します。',
+    keywords: ['ポスタリゼーション', 'ポスター 効果', 'posterize', '色数 削減', 'poster effect'],
+  },
+  leetspeak: {
+    name: 'リートスピーク変換ツール',
+    tagline: 'テキストを 1337 5p34k に変換。',
+    description:
+      '通常のテキストをリートスピーク（例: leet → 1337）に変換したり元に戻したりできます。置換の強さも調整可能。ブラウザ内で完結します。',
+    keywords: ['リートスピーク 変換', 'leetspeak', 'leet 変換', '1337 文字', 'leet converter'],
+  },
+  'letter-frequency': {
+    name: '文字出現頻度カウンター',
+    tagline: '各文字の出現回数を数える。',
+    description:
+      'テキスト内で各文字が出現する頻度を分析します。暗号解読・パズル・言語分析に便利です。ブラウザ内で処理します。',
+    keywords: ['文字 頻度', '文字 カウント', 'letter frequency', '出現頻度 分析', 'frequency analysis'],
+  },
+  'love-calculator': {
+    name: '相性占い（ラブ計算機）',
+    tagline: '名前で相性をはかる遊びツール。',
+    description:
+      '2人の名前を入れると、お遊びの相性スコアを表示します。結果は決まった値で、本気のアドバイスではありません。ブラウザ内で完結します。',
+    keywords: ['相性占い', '名前 相性', 'love calculator', 'ラブ計算機', 'love test'],
+  },
+  'mac-address': {
+    name: 'MACアドレス バリデーター',
+    tagline: 'MACアドレスを検証・整形。',
+    description:
+      'MACアドレスを検証し、コロン・ハイフン・ドット区切りの形式や大文字小文字を相互変換します。ブラウザ内で処理します。',
+    keywords: ['mac アドレス 検証', 'mac アドレス 形式', 'mac address validator', 'macアドレス 整形', 'mac format'],
+  },
+  'nanoid-gen': {
+    name: 'NanoID ジェネレーター',
+    tagline: 'URLセーフな一意IDを生成。',
+    description:
+      'Web Crypto APIを使って、任意の長さの短くURLセーフな一意IDを生成します。UUIDより小さい代替手段です。ブラウザ内で完結します。',
+    keywords: ['nanoid 生成', '一意 id', 'nanoid generator', '短い id', 'short id'],
+  },
+  'noise-generator': {
+    name: 'ホワイトノイズ生成ツール',
+    tagline: 'ホワイト・ピンク・ブラウンノイズを再生。',
+    description:
+      '集中・睡眠・音のマスキングのために、ホワイト・ピンク・ブラウンノイズを生成して再生します。ブラウザ内で合成します。',
+    keywords: ['ホワイトノイズ 生成', 'ピンクノイズ', 'ブラウンノイズ', 'white noise', '作業用 ノイズ'],
+  },
+  'random-letter': {
+    name: 'ランダム文字生成ツール',
+    tagline: 'アルファベットをランダムに選ぶ。',
+    description:
+      'ランダムな文字（A〜Z）を生成します。ゲームやお絵かきのお題、授業のアクティビティに便利です。ブラウザ内で完結します。',
+    keywords: ['ランダム 文字', 'アルファベット ランダム', 'random letter', '文字 抽選', 'random letter picker'],
+  },
+  'random-words': {
+    name: 'ランダム単語生成ツール',
+    tagline: 'ランダムな英単語を生成。',
+    description:
+      'ブレインストーミング・ゲーム・お題・ネーミングのために、任意の数のランダムな英単語を生成します。ブラウザ内で完結します。',
+    keywords: ['ランダム 単語', 'ランダム 英単語', 'random word generator', '単語 生成', 'random words'],
+  },
+  'regex-cheatsheet': {
+    name: '正規表現チートシート',
+    tagline: '検索できる正規表現リファレンス。',
+    description:
+      '正規表現のトークン・文字クラス・量指定子・アンカー・フラグを、例付きで検索できるチートシートです。ブラウザ内で完結します。',
+    keywords: ['正規表現 チートシート', 'regex チートシート', 'regex cheatsheet', '正規表現 一覧', 'regex リファレンス'],
+  },
+  'remove-duplicate-words': {
+    name: '重複単語の削除ツール',
+    tagline: '各単語を1回だけ残す。',
+    description:
+      'テキストから重複した単語を取り除き、最初に出てきたものだけを残します。大文字小文字を無視するオプションもあります。ブラウザ内で処理します。',
+    keywords: ['重複 単語 削除', '単語 重複 除去', 'remove duplicate words', '単語 ユニーク化', 'unique words'],
+  },
+  'shoe-size-converter': {
+    name: '靴のサイズ換算ツール',
+    tagline: 'US・EU・UK・cmの靴サイズを換算。',
+    description:
+      'メンズ・レディース・キッズの靴サイズを、US・EU・UK・センチメートルで相互に換算します。ブラウザ内で完結します。',
+    keywords: ['靴 サイズ 換算', 'us eu 靴 サイズ', 'shoe size converter', '靴 サイズ 表', 'shoe size chart'],
+  },
+  'text-shadow': {
+    name: 'CSS テキストシャドウジェネレーター',
+    tagline: 'ライブプレビュー付きでtext-shadowを生成。',
+    description:
+      'オフセット・ぼかし・色を調整して、ライブプレビューとコピー付きでCSSのtext-shadowコードを生成します。',
+    keywords: ['text shadow ジェネレーター', 'css text-shadow', 'テキストシャドウ 生成', '文字 影 css', 'text shadow'],
+  },
+  'tsv-to-csv': {
+    name: 'TSV ⇄ CSV 変換ツール',
+    tagline: 'TSVとCSVを相互変換。',
+    description:
+      'タブ区切り（TSV）データをカンマ区切り（CSV）に、また逆方向にも、適切なクォート処理付きで変換します。ブラウザ内で完結します。',
+    keywords: ['tsv csv 変換', 'csv tsv 変換', 'tsv to csv', 'タブ カンマ 変換', 'tab to comma'],
+  },
+  'uuid-validate': {
+    name: 'UUID バリデーター',
+    tagline: 'UUIDを検証しバージョンを判定。',
+    description:
+      'UUID/GUIDの形式が正しいかを検証し、バージョン（v1〜v5）とバリアントを判定します。ブラウザ内で処理します。',
+    keywords: ['uuid 検証', 'uuid バリデーター', 'uuid validator', 'uuid バージョン', 'guid 検証'],
+  },
+  'week-number': {
+    name: '週番号計算ツール',
+    tagline: '日付からISO週番号を求める。',
+    description:
+      '任意の日付のISO-8601週番号を求めたり、指定した週番号がどの日付に当たるかを確認できます。ブラウザ内で完結します。',
+    keywords: ['週番号 計算', 'iso 週番号', 'week number', '第何週', 'week of year'],
+  },
 };
 
 /** IDs that have curated Japanese copy, in insertion order. */
