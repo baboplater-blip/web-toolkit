@@ -1010,6 +1010,476 @@ export const COMPARES: Compare[] = [
     keywords: ['xlsx vs csv', 'csv or excel', 'spreadsheet format', 'convert xlsx csv'],
     relatedConverts: ['csv-to-xlsx', 'xlsx-to-csv'],
   },
+  {
+    slug: 'crontab-builder-vs-cron-explainer',
+    category: 'dev',
+    title: 'Crontab Builder vs Cron Explainer — Build or Decode a Schedule?',
+    h1: 'Crontab Builder vs Cron Explainer',
+    description:
+      'Build a cron expression visually when you don’t know the syntax, or paste an existing one to read what it runs and when — free, in your browser.',
+    intro:
+      'These two cron tools work in opposite directions. The builder helps you assemble a brand-new cron expression by picking minutes, hours and days from menus, so you never have to memorize the field order. The explainer takes an expression you already have and translates it into plain English plus the next run times, so you can verify exactly what a schedule does.',
+    options: [
+      {
+        label: 'Crontab Builder',
+        toolId: 'crontab-builder',
+        best: 'You need a new schedule but aren’t sure of the cron syntax.',
+        pros: [
+          'Pick fields from menus instead of memorizing the format',
+          'See the generated expression update as you choose',
+          'Avoids off-by-one mistakes with day-of-week and month',
+        ],
+        cons: ['Not for decoding an expression you already have'],
+      },
+      {
+        label: 'Cron Explainer',
+        toolId: 'cron-explainer',
+        best: 'You already have a cron line and want to confirm what it runs.',
+        pros: [
+          'Translates any expression into plain English',
+          'Shows the upcoming run times so you can sanity-check it',
+          'Great for reviewing a schedule from a config file or crontab',
+        ],
+        cons: ['Doesn’t generate a schedule from scratch'],
+      },
+    ],
+    verdict:
+      'Starting from nothing? Use the builder to generate the expression. Holding an expression and wondering what it does? Use the explainer to decode and verify it. Many people build first, then paste the result into the explainer to double-check. Both run entirely in your browser.',
+    faqs: [
+      {
+        q: 'Can I check the schedule I just built?',
+        a: 'Yes. Copy the expression from the builder and paste it into the explainer to read it in plain English and preview the next run times.',
+      },
+      {
+        q: 'Do these run my cron jobs?',
+        a: 'No. They only build and decode the schedule expression — actually running the job happens on your own server or scheduler.',
+      },
+    ],
+    keywords: ['crontab builder vs cron explainer', 'build cron expression', 'explain cron', 'cron schedule generator'],
+  },
+  {
+    slug: 'hash-identifier-vs-text-hash',
+    category: 'security',
+    title: 'Hash Identifier vs Text Hash Generator — Identify or Generate?',
+    h1: 'Hash Identifier vs Text Hash Generator',
+    description:
+      'Guess which algorithm produced an unknown hash, or generate a hash from your own text — both run free, in your browser, with nothing uploaded.',
+    intro:
+      'These tools sit on opposite ends of a hash. The identifier starts from a hash you already have and guesses which algorithm — MD5, SHA-1, SHA-256, bcrypt and so on — likely produced it, based on length and format. The generator starts from text or input you provide and produces a hash for you. One reads a hash backward; the other creates one forward.',
+    options: [
+      {
+        label: 'Hash Identifier',
+        toolId: 'hash-identifier',
+        best: 'You have a mystery hash and need to know its likely algorithm.',
+        pros: [
+          'Detects likely algorithm from length and prefix',
+          'Recognizes MD5, SHA-family, bcrypt and more',
+          'Useful before trying to verify or crack a value',
+        ],
+        cons: ['Can only guess — multiple algorithms can share a length'],
+      },
+      {
+        label: 'Text Hash Generator',
+        toolId: 'text-hash',
+        best: 'You have input and want to produce a hash from it.',
+        pros: [
+          'Generate MD5, SHA-1, SHA-256 and more from any text',
+          'Compare checksums or create integrity fingerprints',
+          'Instant output as you type, nothing uploaded',
+        ],
+        cons: ['Doesn’t analyze a hash you already have'],
+      },
+    ],
+    verdict:
+      'Holding a hash you can’t place? Use the identifier to narrow down the algorithm. Need to turn input into a hash? Use the generator. They pair naturally: identify an unknown hash, then regenerate a candidate with the same algorithm to compare. Everything stays in your browser.',
+    faqs: [
+      {
+        q: 'Can the identifier always tell me the exact algorithm?',
+        a: 'Not always. Several algorithms produce hashes of the same length, so the identifier reports the most likely candidates rather than a guaranteed answer.',
+      },
+      {
+        q: 'Is my text sent anywhere when I generate a hash?',
+        a: 'No. Hashing happens entirely in your browser, so your input never leaves your device.',
+      },
+    ],
+    keywords: ['hash identifier vs text hash', 'identify hash type', 'generate hash', 'md5 sha256 hash'],
+  },
+  {
+    slug: 'css-clamp-vs-css-units',
+    category: 'dev',
+    title: 'CSS clamp() vs CSS Unit Converter — Fluid or Fixed Sizing?',
+    h1: 'CSS clamp() vs CSS Unit Converter',
+    description:
+      'Build a fluid size that scales with the viewport, or convert one fixed value between px, rem, em and pt — both free, in your browser.',
+    intro:
+      'These tools handle sizing in two different ways. clamp() builds a fluid, responsive value that grows and shrinks between a minimum and maximum as the viewport changes — one declaration that adapts. The unit converter takes a single fixed value and rewrites it in another unit, such as px to rem, without any responsiveness. One produces a range; the other restates a constant.',
+    options: [
+      {
+        label: 'CSS clamp()',
+        toolId: 'css-clamp',
+        best: 'Responsive typography or spacing that scales with the screen.',
+        pros: [
+          'One value smoothly scales between a min and max',
+          'No media queries needed for fluid sizing',
+          'Generates the full clamp() expression for you',
+        ],
+        cons: ['Overkill when you just need one static value in another unit'],
+      },
+      {
+        label: 'CSS Unit Converter',
+        toolId: 'css-units',
+        best: 'Restating a fixed measurement in px, rem, em or pt.',
+        pros: [
+          'Convert one value between px, rem, em and pt',
+          'Set the root font size for accurate rem/em math',
+          'Quick, exact and easy to copy',
+        ],
+        cons: ['Produces a fixed value — it doesn’t scale with the viewport'],
+      },
+    ],
+    verdict:
+      'Want text or spacing that adapts to screen size? Use clamp(). Just need to express one fixed measurement in a different unit? Use the converter. They complement each other — convert your min and max to rem first, then drop them into a clamp(). Both run in your browser.',
+    faqs: [
+      {
+        q: 'When should I use clamp() instead of a fixed unit?',
+        a: 'Use clamp() when a size should respond to the viewport — like heading text that shrinks on phones. Use a fixed unit when the value should stay constant.',
+      },
+      {
+        q: 'Do I need rem values for clamp()?',
+        a: 'Not strictly, but rem-based bounds scale better with user font settings. Convert your px bounds to rem first, then build the clamp() expression.',
+      },
+    ],
+    keywords: ['css clamp vs css units', 'fluid responsive css', 'px to rem', 'clamp font size'],
+  },
+  {
+    slug: 'luhn-generator-vs-cc-validate',
+    category: 'security',
+    title: 'Luhn Generator vs Card Number Validator — Generate or Validate Test Numbers?',
+    h1: 'Luhn Generator vs Card Number Validator',
+    description:
+      'Generate Luhn-valid test card numbers for QA, or validate the checksum of a number — both for testing only, free, in your browser.',
+    intro:
+      'Both tools work with the Luhn checksum that card numbers use, and both deal strictly with test data — no real, active account is implied either way. The generator produces fresh numbers that pass the Luhn check so you can fill forms and exercise QA flows. The validator takes a number you already have and confirms whether its checksum is valid. One creates test numbers; the other checks them.',
+    options: [
+      {
+        label: 'Luhn Generator',
+        toolId: 'luhn-generator',
+        best: 'Filling forms or QA flows that need Luhn-valid test numbers.',
+        pros: [
+          'Produces numbers that pass the Luhn checksum',
+          'Ideal for testing forms, payment UIs and validation logic',
+          'Generated locally — for testing only, not real accounts',
+        ],
+        cons: ['These are test numbers, never tied to a real or active card'],
+      },
+      {
+        label: 'Card Number Validator',
+        toolId: 'cc-validate',
+        best: 'Checking whether a number passes the Luhn checksum.',
+        pros: [
+          'Confirms the Luhn checksum of any number you enter',
+          'Spots typos and transposed digits in test data',
+          'Runs in your browser with nothing uploaded',
+        ],
+        cons: ['A valid checksum only means the format is plausible, not that an account exists'],
+      },
+    ],
+    verdict:
+      'Need plausible test numbers to feed a form? Use the generator. Want to confirm a number’s checksum is correct? Use the validator. They pair up cleanly — generate a batch, then validate them to prove your form logic works. Remember both are for testing only; neither produces or checks a real, active account, and everything stays in your browser.',
+    faqs: [
+      {
+        q: 'Are the generated numbers real credit cards?',
+        a: 'No. They only satisfy the Luhn checksum for testing. They are not linked to any real or active account and cannot be used for payments.',
+      },
+      {
+        q: 'Does a valid checksum mean the card works?',
+        a: 'No. The validator confirms only that the digits pass the Luhn math. It says nothing about whether a real account exists — these are test numbers.',
+      },
+    ],
+    keywords: ['luhn generator vs cc validate', 'test card numbers', 'luhn checksum', 'validate card number'],
+  },
+  {
+    slug: 'json-schema-vs-json-to-ts',
+    category: 'dev',
+    title: 'JSON Schema vs JSON to TypeScript — Runtime or Compile-Time Safety?',
+    h1: 'JSON Schema vs JSON to TypeScript',
+    description:
+      'Generate a JSON Schema for runtime validation, or TypeScript types for compile-time safety — both free, in your browser, from your sample JSON.',
+    intro:
+      'These tools turn sample JSON into two different kinds of guardrails. JSON Schema describes the shape of your data so a validator can check incoming JSON at runtime — rejecting bad payloads as they arrive. JSON to TypeScript produces interfaces and types that your editor and compiler enforce while you write code, catching mismatches before anything runs. One guards data; the other guards your source.',
+    options: [
+      {
+        label: 'JSON Schema Generator',
+        toolId: 'json-schema',
+        best: 'Validating real, incoming data at runtime.',
+        pros: [
+          'Describes required fields, types and constraints',
+          'Lets validators reject malformed payloads as they arrive',
+          'Language-agnostic — works beyond TypeScript',
+        ],
+        cons: ['Doesn’t give your editor compile-time autocomplete'],
+      },
+      {
+        label: 'JSON to TypeScript',
+        toolId: 'json-to-ts',
+        best: 'Catching shape mismatches while you write code.',
+        pros: [
+          'Generates interfaces and types from sample JSON',
+          'Compile-time errors and editor autocomplete',
+          'Keeps your code in sync with the data shape',
+        ],
+        cons: ['Types are erased at runtime — no live data validation'],
+      },
+    ],
+    verdict:
+      'Need to reject bad data when it actually arrives? Generate a JSON Schema. Want your editor and compiler to catch mistakes as you code? Generate TypeScript types. Most robust setups use both — types for development, a schema to validate at the boundary. Both run in your browser.',
+    faqs: [
+      {
+        q: 'Why not just use TypeScript types for validation?',
+        a: 'TypeScript types disappear when the code compiles, so they can’t check real data at runtime. A JSON Schema runs an actual check on incoming JSON.',
+      },
+      {
+        q: 'Can I use both together?',
+        a: 'Yes, and it’s a common pattern. Generate TypeScript types for development ergonomics and a JSON Schema to validate data at your API or input boundary.',
+      },
+    ],
+    keywords: ['json schema vs json to typescript', 'runtime validation', 'typescript types from json', 'json schema generator'],
+  },
+  {
+    slug: 'markdown-table-vs-html-table',
+    category: 'docs',
+    title: 'Markdown Table vs CSV to HTML Table — Which Output Do You Need?',
+    h1: 'Markdown Table vs HTML Table',
+    description:
+      'Output a GitHub-flavored Markdown table for docs, or HTML <table> markup for web pages and email — both free, in your browser.',
+    intro:
+      'Both tools build a table, but they produce different markup for different homes. The Markdown table generator outputs GitHub-flavored Markdown that renders cleanly in READMEs, wikis and docs. The CSV to HTML converter emits real HTML <table> markup you can drop straight into a web page or HTML email. Pick the one that matches where the table will live.',
+    options: [
+      {
+        label: 'Markdown Table Generator',
+        toolId: 'markdown-table-gen',
+        best: 'READMEs, wikis and Markdown-based documentation.',
+        pros: [
+          'GitHub-flavored Markdown that renders in docs and wikis',
+          'Plain-text source that diffs cleanly in version control',
+          'Easy to edit by hand later',
+        ],
+        cons: ['Limited styling — no colors, merged cells or rich formatting'],
+      },
+      {
+        label: 'CSV to HTML Table',
+        toolId: 'csv-to-html',
+        best: 'Web pages and HTML email that need real table markup.',
+        pros: [
+          'Outputs ready-to-paste <table> HTML',
+          'Works in browsers and HTML email clients',
+          'Can be styled with CSS for full control',
+        ],
+        cons: ['Verbose markup that’s harder to hand-edit than Markdown'],
+      },
+    ],
+    verdict:
+      'Putting the table in a README, wiki or Markdown doc? Generate Markdown. Embedding it in a web page or HTML email? Convert to an HTML table. If you have raw CSV, the HTML converter takes it directly. Both run entirely in your browser.',
+    faqs: [
+      {
+        q: 'Can Markdown tables be styled like HTML ones?',
+        a: 'Not really. Markdown tables render as plain tables, while HTML tables can be styled with CSS — colors, borders, alignment and more.',
+      },
+      {
+        q: 'Which should I use for a GitHub README?',
+        a: 'Markdown. GitHub renders Markdown tables natively and they stay readable in the raw file, unlike HTML markup.',
+      },
+    ],
+    keywords: ['markdown table vs html table', 'markdown table generator', 'csv to html table', 'table markup'],
+  },
+  {
+    slug: 'world-clock-vs-timezone-converter',
+    category: 'util',
+    title: 'World Clock vs Time Zone Converter — Glance or Convert?',
+    h1: 'World Clock vs Time Zone Converter',
+    description:
+      'See the current time across many cities at a glance, or convert one specific time between two zones — both free, in your browser.',
+    intro:
+      'These tools answer two different time-zone questions. The world clock shows the current time in many cities at once, so you can glance and see who’s awake right now. The time zone converter takes one specific date and time and translates it between two zones, so you can pin down when a meeting lands. One is a live overview; the other is a precise one-off calculation.',
+    options: [
+      {
+        label: 'World Clock',
+        toolId: 'world-clock',
+        best: 'Seeing the current time in several cities at once.',
+        pros: [
+          'Live current time across many cities',
+          'Great for spotting overlapping working hours',
+          'No input needed — just glance',
+        ],
+        cons: ['Not built for converting a specific future time'],
+      },
+      {
+        label: 'Time Zone Converter',
+        toolId: 'timezone',
+        best: 'Converting one specific time or date between two zones.',
+        pros: [
+          'Convert an exact time between two time zones',
+          'Handles future dates and daylight saving shifts',
+          'Pin down meeting times precisely',
+        ],
+        cons: ['Shows one conversion at a time, not a live overview'],
+      },
+    ],
+    verdict:
+      'Just want to know who’s awake right now? Use the world clock. Need to convert a specific time — like a 3 PM call — into another zone? Use the converter. They work together: glance at the world clock to find a workable window, then convert the exact time to confirm. Both run in your browser.',
+    faqs: [
+      {
+        q: 'Does the converter handle daylight saving time?',
+        a: 'Yes. It accounts for daylight saving rules for the date you choose, so a converted time is correct even across a DST change.',
+      },
+      {
+        q: 'Can the world clock convert a future meeting time?',
+        a: 'No — it shows current times across cities. For a specific future time, use the time zone converter instead.',
+      },
+    ],
+    keywords: ['world clock vs timezone converter', 'current time in cities', 'convert time zones', 'meeting time zones'],
+  },
+  {
+    slug: 'readability-vs-word-count',
+    category: 'text',
+    title: 'Readability Score vs Word & Character Count — Difficulty or Length?',
+    h1: 'Readability Score vs Word & Character Count',
+    description:
+      'Measure how easy your text is to read, or count its words, characters and length — two different text metrics, free in your browser.',
+    intro:
+      'These tools measure text in two distinct ways. The readability score estimates how easy a passage is to read using metrics like Flesch reading ease and grade level, telling you whether the writing is accessible. The word and character counter reports raw size — words, characters and length — without judging difficulty. One measures quality of reading; the other measures quantity of text.',
+    options: [
+      {
+        label: 'Readability Score',
+        toolId: 'readability-score',
+        best: 'Checking whether your writing is easy to read.',
+        pros: [
+          'Flesch reading ease and grade-level estimates',
+          'Flags overly dense or complex passages',
+          'Helps tune content for your audience',
+        ],
+        cons: ['Doesn’t give exact word or character limits'],
+      },
+      {
+        label: 'Word & Character Count',
+        toolId: 'text-count',
+        best: 'Meeting length limits for essays, posts or fields.',
+        pros: [
+          'Exact word and character counts',
+          'Useful for limits on essays, tweets and meta tags',
+          'Updates live as you type',
+        ],
+        cons: ['Says nothing about how readable the text is'],
+      },
+    ],
+    verdict:
+      'Want to know if your text is easy to follow? Use the readability score. Need to hit a word or character limit? Use the counter. They’re complementary: count to stay within a limit, then check readability to make sure the trimmed text still reads well. Both run in your browser.',
+    faqs: [
+      {
+        q: 'What’s a good Flesch reading ease score?',
+        a: 'Around 60–70 is considered plain English suitable for a general audience. Lower scores mean denser, more academic writing.',
+      },
+      {
+        q: 'Does the word counter judge writing quality?',
+        a: 'No. It only measures length — words, characters and so on. For difficulty, use the readability score instead.',
+      },
+    ],
+    keywords: ['readability vs word count', 'flesch reading ease', 'word character count', 'text difficulty'],
+  },
+  {
+    slug: 'bill-split-vs-tip-calculator',
+    category: 'util',
+    title: 'Bill Splitter vs Tip Calculator — Split the Bill or Just the Tip?',
+    h1: 'Bill Splitter vs Tip Calculator',
+    description:
+      'Split a total including tax and tip evenly among people, or compute just the tip on a bill — both free, in your browser.',
+    intro:
+      'Both tools help at the end of a meal, but they answer different questions. The bill splitter takes a full total — including tax and tip — and divides it evenly among a number of people, telling each person what they owe. The tip calculator focuses only on the gratuity, working out the tip amount and percentage on a bill. One shares the whole cost; the other figures the tip alone.',
+    options: [
+      {
+        label: 'Bill Splitter',
+        toolId: 'bill-split',
+        best: 'Dividing a shared total evenly among a group.',
+        pros: [
+          'Splits the full total including tax and tip',
+          'Shows the per-person amount instantly',
+          'Perfect for group meals and shared expenses',
+        ],
+        cons: ['More than you need if you only want the tip'],
+      },
+      {
+        label: 'Tip Calculator',
+        toolId: 'tip-calc',
+        best: 'Working out just the gratuity on a bill.',
+        pros: [
+          'Computes the tip amount and percentage',
+          'Quick for a solo bill or deciding how much to leave',
+          'Adjust the tip rate and see it update',
+        ],
+        cons: ['Doesn’t divide the total among several people'],
+      },
+    ],
+    verdict:
+      'Eating out with friends and need everyone’s share? Use the bill splitter. Just figuring out how much to tip? Use the tip calculator. They chain nicely — calculate the tip first, then split the grand total across the group. Both run in your browser.',
+    faqs: [
+      {
+        q: 'Can the bill splitter include the tip?',
+        a: 'Yes. It splits the full total including tax and tip, so each person’s share already covers everything.',
+      },
+      {
+        q: 'Which do I use for a solo meal?',
+        a: 'The tip calculator — there’s no one to split with, so you just need the gratuity amount.',
+      },
+    ],
+    keywords: ['bill split vs tip calculator', 'split the bill', 'calculate tip', 'split bill among people'],
+  },
+  {
+    slug: 'ideal-weight-vs-bmi',
+    category: 'util',
+    title: 'Ideal Weight vs BMI Calculator — Target Weight or Current Status?',
+    h1: 'Ideal Weight vs BMI Calculator',
+    description:
+      'Estimate a target weight range from your height, or assess your current weight status with BMI — both free, in your browser.',
+    intro:
+      'These calculators look at weight from two angles. The ideal weight tool estimates a target weight range from your height alone, using formulas like Devine or a BMI-22 reference, suggesting where your weight could land. The BMI calculator instead takes your current height and weight together and tells you which category that places you in right now. One projects a goal; the other assesses the present.',
+    options: [
+      {
+        label: 'Ideal Weight',
+        toolId: 'ideal-weight',
+        best: 'Estimating a target weight range from your height.',
+        pros: [
+          'Suggests a healthy weight range from height',
+          'Uses recognized formulas like Devine and BMI-22',
+          'Helpful as a goal-setting reference',
+        ],
+        cons: ['An estimate only — it can’t assess your current status'],
+      },
+      {
+        label: 'BMI Calculator',
+        toolId: 'bmi-calc',
+        best: 'Assessing your current weight relative to your height.',
+        pros: [
+          'Computes BMI from your current height and weight',
+          'Shows your category against standard ranges',
+          'A quick snapshot of where you are now',
+        ],
+        cons: ['Doesn’t suggest a target weight to aim for'],
+      },
+    ],
+    verdict:
+      'Want a goal to aim for based on your height? Use the ideal weight tool. Want to know where your current weight stands? Use the BMI calculator. They complement each other — check your BMI now, then use the ideal weight range as a target. Both are estimates and run in your browser; neither replaces medical advice.',
+    faqs: [
+      {
+        q: 'Is ideal weight the same as a healthy BMI?',
+        a: 'They’re related but not identical. Ideal weight formulas estimate a single range from height, while BMI categorizes your actual height-and-weight combination.',
+      },
+      {
+        q: 'Should I rely on these for health decisions?',
+        a: 'No. Both are rough estimates for general reference. Consult a healthcare professional for advice tailored to you.',
+      },
+    ],
+    keywords: ['ideal weight vs bmi', 'ideal body weight', 'bmi calculator', 'target weight from height'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);

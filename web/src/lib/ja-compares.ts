@@ -909,6 +909,396 @@ export const COMPARES_JA: Compare[] = [
     keywords: ['xlsx csv 違い', 'excel csv', '表計算 フォーマット', 'xlsx csv 変換'],
     relatedConverts: ['csv-to-xlsx', 'xlsx-to-csv'],
   },
+  {
+    slug: 'crontab-builder-vs-cron-explainer',
+    category: 'dev',
+    title: 'Crontab Builder vs Cron Explainer — cron式を作るか読み解くか',
+    h1: 'Crontab Builder vs Cron Explainer',
+    description:
+      'Crontab Builderは構文を知らなくても選ぶだけでcron式を組み立て、Cron Explainerは既存の式が何をいつ実行するか解説します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは逆方向の作業です。Crontab Builderはゼロから新しいスケジュールを作るためのもので、曜日・時刻・間隔をフォームで選べば正しいcron式が出ます。Cron Explainerはすでにある式を貼り付けて、何が・いつ動くのかを人間語で確認・検証するためのものです。どちらもブラウザ内で処理され、入力はアップロードされません。',
+    options: [
+      {
+        label: 'Crontab Builder（cron式ビルダー）',
+        toolId: 'crontab-builder',
+        best: 'cronの書式を覚えていないのに新しいスケジュールを組みたいとき。',
+        pros: ['分・時・日・月・曜日を選ぶだけで式が完成', '構文ミスを防げる', '次回実行のプレビューで意図を確認できる'],
+        cons: ['すでにある式の意味を読み解く用途には向かない'],
+      },
+      {
+        label: 'Cron Explainer（cron式の解説）',
+        toolId: 'cron-explainer',
+        best: '既存のcron式を貼り付けて、いつ実行されるか確かめたいとき。',
+        pros: ['謎の式を日本語の説明に変換', '次回実行時刻を一覧で確認', 'レビューや引き継ぎで挙動を検証できる'],
+        cons: ['新しいスケジュールをフォームから組み立てる機能はない'],
+      },
+    ],
+    verdict:
+      'これから新しいジョブを設定するならCrontab Builder、既存の式の意味や次回実行を確かめたいならCron Explainerです。作った式をExplainerで読み直して検算する使い方も便利です。',
+    faqs: [
+      {
+        q: 'Builderで作った式が正しいか確認できますか？',
+        a: 'はい。Crontab Builderで組み立てた式をCron Explainerに貼り付ければ、何がいつ実行されるかを日本語で読み返して検証できます。すべてブラウザ内で処理されます。',
+      },
+      {
+        q: '曜日の指定（0と7など）はどう扱われますか？',
+        a: 'どちらのツールも標準cronに従い、0と7をどちらも日曜として扱います。Explainerなら貼り付けた式の曜日解釈をそのまま確認できます。',
+      },
+    ],
+    keywords: ['crontab builder vs cron explainer', 'cron 式 作成', 'cron 式 解説', 'crontab 書き方'],
+  },
+  {
+    slug: 'hash-identifier-vs-text-hash',
+    category: 'security',
+    title: 'Hash Identifier vs Text Hash Generator — ハッシュを識別するか生成するか',
+    h1: 'Hash Identifier vs Text Hash Generator',
+    description:
+      'Hash Identifierは手元のハッシュがどのアルゴリズムか推定し、Text Hash Generatorはテキストからハッシュを作ります。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは入口が逆です。Hash Identifierはすでにハッシュ文字列を持っていて、それがMD5・SHA-1・SHA-256・bcryptのどれで作られたかを長さや形から推定します。Text Hash Generatorは元のテキストや入力からハッシュを生成します。どちらもブラウザ内で計算され、入力はアップロードされません。',
+    options: [
+      {
+        label: 'Hash Identifier（ハッシュ識別）',
+        toolId: 'hash-identifier',
+        best: '正体不明のハッシュ文字列のアルゴリズムを当てたいとき。',
+        pros: ['長さや接頭辞から候補を提示', 'MD5・SHA-1・SHA-256・bcryptなどを判別', 'ログや設定で見つけた謎の値を調べられる'],
+        cons: ['元のテキストを復元することはできない'],
+      },
+      {
+        label: 'Text Hash Generator（ハッシュ生成）',
+        toolId: 'text-hash',
+        best: 'テキストから実際にハッシュ値を作りたいとき。',
+        pros: ['複数アルゴリズムでハッシュを生成', '整合性チェックや指紋作成に使える', '即座に結果をコピーできる'],
+        cons: ['既存ハッシュの種類を当てる用途には使えない'],
+      },
+    ],
+    verdict:
+      '手元にあるハッシュの正体を知りたいならHash Identifier、入力からハッシュを作りたいならText Hash Generatorです。識別で種類を特定してから、同じアルゴリズムで生成して照合することもできます。',
+    faqs: [
+      {
+        q: 'ハッシュから元のテキストに戻せますか？',
+        a: 'いいえ。ハッシュは一方向で、元の入力を復元することはできません。Identifierは種類の推定、Generatorは生成に使います。どちらもブラウザ内で処理されます。',
+      },
+      {
+        q: '識別はどうやってアルゴリズムを当てるのですか？',
+        a: '文字数や接頭辞などの形から候補を絞ります。例えば32桁の16進数はMD5、64桁はSHA-256の可能性が高い、といった推定です。確定ではなく候補の提示です。',
+      },
+    ],
+    keywords: ['hash identifier vs text hash', 'ハッシュ 種類 判別', 'ハッシュ 生成', 'md5 sha256 識別'],
+  },
+  {
+    slug: 'css-clamp-vs-css-units',
+    category: 'dev',
+    title: 'CSS clamp() vs CSS単位変換 — 可変サイズか固定値の換算か',
+    h1: 'CSS clamp() vs CSS Unit Converter',
+    description:
+      'clamp()は最小と最大の間でビューポートに応じて伸縮する可変サイズを作り、CSS単位変換はpx/rem/em/ptを1つの固定値として換算します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは目的が違います。clamp()はレスポンシブな可変サイズ向けで、最小値・最大値・ビューポート連動の中間値を組み合わせて画面幅に応じて滑らかに変化する値を作ります。CSS単位変換は固定された1つの値をpxとrem、emやptの間で換算するだけのものです。どちらの計算もブラウザ内で完結します。',
+    options: [
+      {
+        label: 'CSS clamp()（可変サイズ生成）',
+        toolId: 'css-clamp',
+        best: '画面幅に応じて滑らかに伸縮する文字や余白を作りたいとき。',
+        pros: ['最小〜最大の範囲でビューポート連動', 'メディアクエリを書かずに流体タイポグラフィ', '上限・下限で崩れを防げる'],
+        cons: ['固定値どうしの単純な単位換算には大げさ'],
+      },
+      {
+        label: 'CSS Unit Converter（単位変換）',
+        toolId: 'css-units',
+        best: '1つの固定値をpx・rem・em・ptの間で換算したいとき。',
+        pros: ['px↔rem↔em↔ptを即換算', 'ルートフォントサイズ基準で計算', 'デザインの数値をすばやく合わせられる'],
+        cons: ['画面幅に応じて変化する値は作れない'],
+      },
+    ],
+    verdict:
+      'レスポンシブに伸縮させたいならclamp()、固定の1値を別の単位に直したいだけならCSS単位変換です。換算で基準値を決めてから、その最小・最大をclamp()に渡す流れも自然です。',
+    faqs: [
+      {
+        q: 'clamp()の中の単位もこのツールで揃えられますか？',
+        a: 'はい。まずCSS単位変換でpxをremなどに換算して基準を決め、その値をclamp()ビルダーの最小・最大に使えば一貫した可変サイズが作れます。すべてブラウザ内で計算されます。',
+      },
+      {
+        q: 'remとemの違いはどちらのツールで分かりますか？',
+        a: 'CSS単位変換がルートフォントサイズ基準で換算するので、remの基準が分かります。emは親要素基準で変わる点に注意して使い分けてください。',
+      },
+    ],
+    keywords: ['css clamp vs css units', 'clamp 流体タイポグラフィ', 'px rem 変換', 'css 単位 換算'],
+  },
+  {
+    slug: 'luhn-generator-vs-cc-validate',
+    category: 'security',
+    title: 'Luhn Generator vs カード番号検証 — テスト番号を作るか検証するか',
+    h1: 'Luhn Generator vs Card Number Validator',
+    description:
+      'Luhn GeneratorはQAやフォーム検証用のLuhn有効なテスト番号を作り、カード番号検証は既存番号のLuhnチェックサムを確かめます。どちらもテスト専用で実在・有効な口座ではありません。ブラウザで完結する無料ツール。',
+    intro:
+      'この2つはテスト目的の表裏です。Luhn Generatorは入力フォームやQAで使うために、Luhnアルゴリズムを満たすダミーのカード番号を生成します。カード番号検証は手元の番号がLuhnチェックを通るかを確認します。いずれも生成・検証される番号はテスト専用で、実在する有効なカードや口座を表すものではありません。すべてブラウザ内で処理され、入力はアップロードされません。',
+    options: [
+      {
+        label: 'Luhn Generator（テスト番号生成）',
+        toolId: 'luhn-generator',
+        best: 'フォームやQAでLuhn有効なダミー番号が必要なとき。',
+        pros: ['Luhnチェックを通るテスト番号を生成', '入力検証やデモのサンプル作りに便利', '何件でもすぐ作れる'],
+        cons: ['生成番号はテスト専用で実在カードではない', '実際の決済には一切使えない'],
+      },
+      {
+        label: 'Card Number Validator（番号検証）',
+        toolId: 'cc-validate',
+        best: '既存の番号がLuhnチェックサムを満たすか確かめたいとき。',
+        pros: ['Luhnチェックの成否を即判定', '桁の打ち間違いを発見できる', 'ブランド推定の目安も得られる'],
+        cons: ['チェックサムが合っても実在・有効とは限らない', '番号を新規に作る機能はない'],
+      },
+    ],
+    verdict:
+      'テスト用のダミー番号を作るならLuhn Generator、手元の番号の整合性を確かめるならカード番号検証です。どちらもあくまでLuhn計算上の話で、実在・有効な口座を意味しない点に注意してください。すべてブラウザ内で処理されます。',
+    faqs: [
+      {
+        q: '生成した番号で実際に決済できますか？',
+        a: 'いいえ。Luhnチェックを通るだけのテスト専用番号で、実在する有効なカードや口座ではありません。決済には一切使えず、QAやフォーム検証のためのものです。',
+      },
+      {
+        q: '検証でLuhnを通れば本物のカードですか？',
+        a: 'いいえ。Luhnチェックは桁の打ち間違いを見つけるための計算にすぎず、実在・有効・利用可能かは判定できません。あくまでチェックサムの確認です。',
+      },
+    ],
+    keywords: ['luhn generator vs cc validate', 'テスト カード番号 生成', 'luhn チェック 検証', 'ダミー カード番号'],
+  },
+  {
+    slug: 'json-schema-vs-json-to-ts',
+    category: 'dev',
+    title: 'JSON Schema vs JSON to TypeScript — 実行時検証か型安全か',
+    h1: 'JSON Schema vs JSON to TypeScript',
+    description:
+      'JSON Schema Generatorは実行時バリデーション用のスキーマを作り、JSON to TypeScriptはコンパイル時の型安全のための型・インターフェースを生成します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つはJSONから出す成果物が違います。JSON Schema Generatorは実行時にデータの形を検証するためのJSON Schemaを出力します。JSON to TypeScriptはコンパイル時に型をチェックするためのTypeScriptの型・インターフェースを出力します。どちらの生成もブラウザ内で完結し、入力はアップロードされません。',
+    options: [
+      {
+        label: 'JSON Schema Generator（スキーマ生成）',
+        toolId: 'json-schema',
+        best: '受け取ったデータを実行時に検証したいとき。',
+        pros: ['実行時にデータ構造を検証できる', 'APIやフォームの入力チェックに使える', '言語を問わず共有できる仕様になる'],
+        cons: ['エディタ上の型補完やコンパイル時チェックは得られない'],
+      },
+      {
+        label: 'JSON to TypeScript（型生成）',
+        toolId: 'json-to-ts',
+        best: 'TypeScriptでコンパイル時の型安全がほしいとき。',
+        pros: ['interface/typeを自動生成', 'エディタ補完とコンパイル時チェック', 'リファクタリングが安全になる'],
+        cons: ['実行時に実データを検証する仕組みではない'],
+      },
+    ],
+    verdict:
+      '実行時に入力を検証したいならJSON Schema、TypeScriptのコード上で型安全を得たいならJSON to TypeScriptです。両方を組み合わせ、スキーマで検証しつつ型でも守る設計もよくあります。すべてブラウザ内で処理されます。',
+    faqs: [
+      {
+        q: '両方を一緒に使う意味はありますか？',
+        a: 'はい。JSON Schemaで実行時に外部入力を検証し、JSON to TypeScriptでコード内の型安全を確保すれば、境界と内部の両方を守れます。どちらの生成もブラウザ内で完結します。',
+      },
+      {
+        q: 'TypeScriptの型だけで実行時の検証はできますか？',
+        a: 'いいえ。TypeScriptの型はコンパイル時に消えるため、実行時の値は検証されません。実データのチェックにはJSON Schemaのような実行時の仕組みが必要です。',
+      },
+    ],
+    keywords: ['json schema vs json to ts', 'json スキーマ 生成', 'json typescript 型 変換', '実行時 検証 型安全'],
+  },
+  {
+    slug: 'markdown-table-vs-html-table',
+    category: 'docs',
+    title: 'Markdownテーブル vs HTMLテーブル — READMEかWebページか',
+    h1: 'Markdown Table Generator vs CSV to HTML Table',
+    description:
+      'Markdown Table GeneratorはGitHub風のMarkdown表を、CSV to HTML TableはHTMLの<table>マークアップを出力します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは出力する形式が違います。Markdown Table GeneratorはREADMEやドキュメント、Wikiに貼れるGFM（GitHub Flavored Markdown）の表を作ります。CSV to HTML TableはWebページやメールに埋め込めるHTMLの<table>マークアップを出力します。どちらの変換もブラウザ内で完結し、入力はアップロードされません。',
+    options: [
+      {
+        label: 'Markdown Table Generator（Markdown表）',
+        toolId: 'markdown-table-gen',
+        best: 'README・ドキュメント・WikiにそのままMarkdown表を貼りたいとき。',
+        pros: ['GFM対応の読みやすい表記', 'GitHubやドキュメントでそのまま描画', 'プレーンテキストで差分も追いやすい'],
+        cons: ['細かいスタイルやセル結合などの装飾はできない'],
+      },
+      {
+        label: 'CSV to HTML Table（HTML表）',
+        toolId: 'csv-to-html',
+        best: 'WebページやメールにHTMLの表を埋め込みたいとき。',
+        pros: ['そのまま貼れる<table>マークアップ', 'CSSで自由にスタイリングできる', 'メールやサイトで安定して表示'],
+        cons: ['MarkdownのREADMEには直接そぐわない'],
+      },
+    ],
+    verdict:
+      'README・ドキュメント・WikiならMarkdownテーブル、WebページやメールならHTMLテーブルです。同じ表データでも貼り先に合わせて使い分けるのが手早いです。すべてブラウザ内で処理されます。',
+    faqs: [
+      {
+        q: 'GitHubのREADMEにはどちらが良いですか？',
+        a: 'Markdownテーブルです。GitHubはGFMの表をそのまま描画するため、HTMLを書くより簡潔で差分も読みやすくなります。変換はブラウザ内で完結します。',
+      },
+      {
+        q: 'CSVのデータからどちらも作れますか？',
+        a: 'CSV to HTML TableはCSVを直接HTML表に変換します。Markdown表が必要なら同じ列・行のデータをMarkdown Table Generatorで整えれば、貼り先に応じて両方そろえられます。',
+      },
+    ],
+    keywords: ['markdown table vs html table', 'markdown 表 作成', 'csv html 表 変換', 'readme 表 埋め込み'],
+  },
+  {
+    slug: 'world-clock-vs-timezone-converter',
+    category: 'util',
+    title: 'World Clock vs タイムゾーン変換 — 各地の今を一覧か特定時刻の換算か',
+    h1: 'World Clock vs Time Zone Converter',
+    description:
+      'World Clockは複数都市の現在時刻を一目で並べ、タイムゾーン変換は特定の日時を2つのゾーン間で換算します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは見たいものが違います。World Clockは世界各地の「今」の時刻を同時に並べて、いま何時かをパッと把握するためのものです。タイムゾーン変換は特定の日付・時刻を、あるゾーンから別のゾーンへ正確に換算するためのものです。どちらの計算もブラウザ内で行われます。',
+    options: [
+      {
+        label: 'World Clock（世界時計）',
+        toolId: 'world-clock',
+        best: '複数都市の現在時刻をまとめて確認したいとき。',
+        pros: ['多数の都市の今を一画面で一覧', '海外の相手が起きている時間帯を把握', '常に現在時刻を表示'],
+        cons: ['特定の未来・過去の日時を換算する用途には向かない'],
+      },
+      {
+        label: 'Time Zone Converter（タイムゾーン変換）',
+        toolId: 'timezone',
+        best: '特定の日時を2つのゾーン間で正確に換算したいとき。',
+        pros: ['任意の日付・時刻を相互に換算', '会議や締切の時刻合わせに最適', 'サマータイムも考慮される'],
+        cons: ['多数都市の現在時刻を一覧する用途ではない'],
+      },
+    ],
+    verdict:
+      '各地の今を一目で見たいならWorld Clock、ある特定の日時を別ゾーンに直したいならタイムゾーン変換です。まず世界時計で時差感をつかみ、変換で会議時刻を確定する流れが便利です。すべてブラウザ内で処理されます。',
+    faqs: [
+      {
+        q: '海外との会議時刻を決めるならどちら？',
+        a: 'タイムゾーン変換です。具体的な日付・時刻を入力して相手のゾーンに換算すれば、サマータイムも考慮した正確な開始時刻が分かります。計算はブラウザ内で完結します。',
+      },
+      {
+        q: 'サマータイムは正しく扱われますか？',
+        a: 'はい。タイムゾーン変換は各地域のサマータイムを考慮して換算します。World Clockも各都市の現在時刻にDSTが反映されます。',
+      },
+    ],
+    keywords: ['world clock vs timezone converter', '世界時計 一覧', 'タイムゾーン 変換', '時差 計算'],
+  },
+  {
+    slug: 'readability-vs-word-count',
+    category: 'text',
+    title: 'Readability Score vs 文字数カウント — 読みやすさか分量か',
+    h1: 'Readability Score vs Word & Character Count',
+    description:
+      'Readability Scoreは文章の読みやすさ（Flesch読みやすさ・学年レベル）を測り、文字数カウントは単語数・文字数・長さを数えます。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは測る対象が違います。Readability Scoreは文章がどれだけ読みやすいかを、Flesch読みやすさスコアや想定学年として評価します。文字数カウントは単語数・文字数・長さといった分量そのものを数えます。どちらの計算もブラウザ内で行われ、文章はアップロードされません。',
+    options: [
+      {
+        label: 'Readability Score（読みやすさ判定）',
+        toolId: 'readability-score',
+        best: '文章が難しすぎないか、読みやすさを確かめたいとき。',
+        pros: ['Flesch読みやすさや想定学年で評価', '一文の長さや難語の傾向が分かる', '読み手に合わせて推敲できる'],
+        cons: ['単純な文字数・単語数の集計用途ではない'],
+      },
+      {
+        label: 'Word & Character Count（文字数カウント）',
+        toolId: 'text-count',
+        best: '単語数・文字数・長さの制限に収めたいとき。',
+        pros: ['単語数・文字数を即集計', '文字数制限のチェックに最適', 'シンプルで速い'],
+        cons: ['読みやすさや難易度は測れない'],
+      },
+    ],
+    verdict:
+      '文章の難易度や読みやすさを整えたいならReadability Score、分量や文字数制限を確認したいなら文字数カウントです。まず分量を整えてから読みやすさを調整する流れも有効です。すべてブラウザ内で処理されます。',
+    faqs: [
+      {
+        q: '読みやすさスコアを上げるにはどうすれば？',
+        a: '一文を短くし、難しい語を平易な語に置き換えると改善しやすいです。Readability Scoreで数値を見ながら推敲し、文字数カウントで分量も確認できます。処理はブラウザ内で完結します。',
+      },
+      {
+        q: '文字数制限のチェックにはどちらですか？',
+        a: '文字数カウントです。単語数・文字数を即座に数えるので、投稿や提出の文字数制限に収まっているかをすばやく確認できます。',
+      },
+    ],
+    keywords: ['readability vs word count', '読みやすさ スコア', '文字数 カウント', 'flesch 読みやすさ'],
+  },
+  {
+    slug: 'bill-split-vs-tip-calculator',
+    category: 'util',
+    title: 'Bill Splitter vs チップ計算 — 割り勘かチップ額か',
+    h1: 'Bill Splitter vs Tip Calculator',
+    description:
+      'Bill Splitterは税・チップ込みの合計を人数で等分し、チップ計算は会計に対するチップの額や率だけを出します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは出したい答えが違います。Bill Splitterは税やチップを含めた合計を、N人で均等に割って1人あたりの支払額を出します。チップ計算は会計額に対するチップの金額や割合だけを計算します。どちらの計算もブラウザ内で完結します。',
+    options: [
+      {
+        label: 'Bill Splitter（割り勘）',
+        toolId: 'bill-split',
+        best: '税・チップ込みの合計を複数人で等分したいとき。',
+        pros: ['税・チップを含めて合計を等分', '人数を変えても即再計算', '1人あたりの支払額がすぐ分かる'],
+        cons: ['チップだけを単独で求める用途には大げさ'],
+      },
+      {
+        label: 'Tip Calculator（チップ計算）',
+        toolId: 'tip-calc',
+        best: '会計に対するチップの額や率だけを知りたいとき。',
+        pros: ['チップの金額や率をすぐ算出', '率を変えてすばやく比較', '合計やチップ込み金額も確認できる'],
+        cons: ['複数人で均等に割る計算は主目的ではない'],
+      },
+    ],
+    verdict:
+      'みんなで合計を等分したいならBill Splitter、チップ額だけを知りたいならチップ計算です。チップ計算でチップ込みの合計を出してから、その合計をBill Splitterで割る流れも自然です。すべてブラウザ内で処理されます。',
+    faqs: [
+      {
+        q: 'チップ込みで割り勘するにはどうすれば？',
+        a: 'Bill Splitterは税・チップを含めた合計を人数で等分できます。あるいはチップ計算でチップ込みの合計を出し、その額をBill Splitterに入れて割ることもできます。計算はブラウザ内で完結します。',
+      },
+      {
+        q: '端数はどちらのツールで調整できますか？',
+        a: 'Bill Splitterで人数を変えれば1人あたりの額が再計算されます。チップ率による端数はチップ計算で率を微調整して合わせられます。',
+      },
+    ],
+    keywords: ['bill split vs tip calculator', '割り勘 計算', 'チップ 計算', '会計 割り勘 チップ'],
+  },
+  {
+    slug: 'ideal-weight-vs-bmi',
+    category: 'util',
+    title: 'Ideal Weight vs BMI計算 — 身長からの目標体重か今の判定か',
+    h1: 'Ideal Weight vs BMI Calculator',
+    description:
+      'Ideal Weightは身長から目標体重の範囲（Devine式・BMI22基準）を推定し、BMI計算は今の身長と体重から肥満度（BMI）を判定します。どちらを使うか — ブラウザで完結する無料ツール。',
+    intro:
+      'この2つは入口と出口が逆です。Ideal Weightは身長から、目標としうる体重の目安レンジ（Devine式やBMI22基準）を出します。BMI計算は今の身長と体重を入力して、現在の肥満度（BMI）と判定区分を求めます。どちらの計算もブラウザ内で行われ、入力は保存されません。',
+    options: [
+      {
+        label: 'Ideal Weight（理想体重）',
+        toolId: 'ideal-weight',
+        best: '身長を基準に目標体重の目安レンジを知りたいとき。',
+        pros: ['身長から目標体重の範囲を推定', 'Devine式やBMI22基準を参照', '目標設定の出発点になる'],
+        cons: ['今の体重が健康域かどうかの判定はしない'],
+      },
+      {
+        label: 'BMI Calculator（BMI計算）',
+        toolId: 'bmi-calc',
+        best: '今の身長と体重から肥満度を判定したいとき。',
+        pros: ['現在のBMIと判定区分を算出', '身長と体重だけで手軽', '健康域かどうかの目安が分かる'],
+        cons: ['身長から目標体重を逆算する用途ではない'],
+      },
+    ],
+    verdict:
+      '身長から目指す体重の範囲を知りたいならIdeal Weight、今の状態を評価したいならBMI計算です。まずBMIで現状を確認し、Ideal Weightで目標を決める流れがおすすめです。いずれの計算もブラウザ内で完結します。',
+    faqs: [
+      {
+        q: '理想体重とBMIはどう使い分けますか？',
+        a: 'Ideal Weightは身長から目標体重のレンジを示し、BMI計算は今の体重が健康域かを判定します。現状確認はBMI、目標設定はIdeal Weightという使い分けが分かりやすいです。計算はブラウザ内で完結します。',
+      },
+      {
+        q: 'これらの数値は医療的な診断ですか？',
+        a: 'いいえ。あくまで一般的な目安の計算で、診断や医療助言ではありません。健康に関する判断は専門家に相談してください。',
+      },
+    ],
+    keywords: ['ideal weight vs bmi', '理想体重 計算', 'bmi 計算', '目標体重 身長'],
+  },
 ];
 
 export function getCompareJa(slug: string): Compare | undefined {
