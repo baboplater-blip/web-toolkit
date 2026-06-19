@@ -1298,6 +1298,782 @@ export const USE_CASES: UseCase[] = [
       en: ['extract images from pdf', 'extract epub images', 'get images from document', 'pdf image extractor'], ja: ['pdf 画像 抽出', 'epub 画像 抽出', '文書 画像 取り出し', '電子書籍 挿絵 抽出'], zh: ['pdf 图片 提取', 'epub 图片 提取', '文档 图片 取出', '电子书 插图 提取'],
     },
   },
+  {
+    slug: 'prepare-page-seo-tags',
+    category: 'dev',
+    title: { ko: '웹페이지 SEO 메타 태그와 크롤 규칙 준비', en: 'Prepare a Page’s SEO Meta Tags & Crawl Rules', ja: 'ページのSEOメタタグとクロール規則を準備', zh: '准备网页的 SEO 元标签与抓取规则' },
+    h1: { ko: '페이지 SEO 태그 준비하기', en: 'Prepare a page’s SEO tags', ja: 'ページのSEOタグを準備', zh: '准备网页的 SEO 标签' },
+    description: {
+      ko: '페이지의 Open Graph·메타 태그를 만들고 robots.txt로 크롤 규칙까지 정리하세요. 코드 한 벌이면 검색·공유 미리보기가 깔끔해집니다.',
+      en: 'Generate a page’s Open Graph and meta tags, then set crawl rules with robots.txt. One block of code makes search and share previews clean.', ja: 'ページのOpen Graph・メタタグを作り、robots.txtでクロール規則まで整えます。コード一式で検索・共有プレビューがきれいになります。', zh: '生成网页的 Open Graph 与元标签，再用 robots.txt 设定抓取规则。一套代码让搜索和分享预览更整洁。',
+    },
+    intro: {
+      ko: '검색 노출과 SNS 공유 미리보기는 페이지 <head>의 메타 태그가 좌우합니다. 제목·설명·OG 이미지를 채워 태그를 생성하고, robots.txt로 크롤러가 어디를 보고 어디를 건너뛸지 정하면 됩니다. 모든 생성이 브라우저에서 처리돼 입력값이 서버로 전송되지 않습니다.',
+      en: 'Search snippets and social share previews are driven by the meta tags in a page’s <head>. Fill in the title, description and OG image to generate the tags, then use robots.txt to tell crawlers what to read and what to skip. Everything is generated in your browser, so your inputs are never sent to a server.', ja: '検索結果やSNS共有プレビューは、ページの<head>にあるメタタグで決まります。タイトル・説明・OG画像を入力してタグを生成し、robots.txtでクローラーが見る場所と飛ばす場所を指定します。すべてブラウザ内で生成されるため、入力内容がサーバーに送られることはありません。', zh: '搜索摘要和社交分享预览由页面 <head> 中的元标签决定。填入标题、描述和 OG 图片来生成标签，再用 robots.txt 告诉爬虫该读哪里、跳过哪里。所有生成都在浏览器中完成，输入内容不会发送到服务器。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/meta-tags',
+        name: { ko: 'Open Graph·메타 태그 생성', en: 'Generate Open Graph & meta tags', ja: 'Open Graph・メタタグを生成', zh: '生成 Open Graph 与元标签' },
+        text: {
+          ko: '제목·설명·OG 이미지·트위터 카드를 입력하면 <head>에 붙여넣을 태그가 만들어집니다.',
+          en: 'Enter the title, description, OG image and Twitter card to get tags you can paste into <head>.', ja: 'タイトル・説明・OG画像・Twitterカードを入力すると、<head>に貼り付けるタグが生成されます。', zh: '输入标题、描述、OG 图片和 Twitter 卡片，即可得到可粘贴进 <head> 的标签。',
+        },
+      },
+      {
+        href: '/tools/dev/robots-txt',
+        name: { ko: 'robots.txt 크롤 규칙 작성', en: 'Build robots.txt crawl rules', ja: 'robots.txtのクロール規則を作成', zh: '编写 robots.txt 抓取规则' },
+        text: {
+          ko: 'Allow·Disallow와 사이트맵 경로를 지정해 robots.txt를 만듭니다.',
+          en: 'Set Allow/Disallow paths and your sitemap URL to build robots.txt.', ja: 'Allow・Disallowとサイトマップのパスを指定してrobots.txtを作成します。', zh: '设定 Allow/Disallow 路径与站点地图地址来生成 robots.txt。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: 'OG 이미지는 어떤 크기가 좋나요?', en: 'What size should the OG image be?', ja: 'OG画像はどのサイズが良いですか？', zh: 'OG 图片用什么尺寸好？' },
+        a: {
+          ko: '가로형 1200×630이 가장 무난합니다. 대부분의 SNS가 이 비율로 미리보기를 보여줍니다.',
+          en: 'A landscape 1200×630 is the safest choice — most networks preview at that ratio.', ja: '横長の1200×630が無難です。多くのSNSがこの比率でプレビューを表示します。', zh: '横版 1200×630 最稳妥，大多数社交平台都按这个比例显示预览。',
+        },
+      },
+      {
+        q: { ko: 'robots.txt로 페이지를 확실히 숨길 수 있나요?', en: 'Does robots.txt fully hide a page?', ja: 'robots.txtでページを確実に隠せますか？', zh: 'robots.txt 能彻底隐藏页面吗？' },
+        a: {
+          ko: 'robots.txt는 크롤 요청만 막습니다. 색인에서 완전히 빼려면 noindex 메타 태그를 함께 쓰세요.',
+          en: 'robots.txt only blocks crawling. To keep a page out of the index entirely, also add a noindex meta tag.', ja: 'robots.txtはクロールを止めるだけです。インデックスから完全に外すにはnoindexメタタグも併用してください。', zh: 'robots.txt 只阻止抓取。要彻底不被收录，请同时加上 noindex 元标签。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['메타 태그 생성', 'open graph 태그', 'robots.txt 만들기', 'seo 태그', '검색 미리보기'],
+      en: ['meta tag generator', 'open graph tags', 'robots.txt generator', 'seo meta tags', 'social preview'], ja: ['メタタグ 生成', 'open graph タグ', 'robots.txt 作成', 'seo タグ', '検索 プレビュー'], zh: ['元标签 生成', 'open graph 标签', 'robots.txt 生成', 'seo 标签', '搜索 预览'],
+    },
+  },
+  {
+    slug: 'build-responsive-design-system',
+    category: 'dev',
+    title: { ko: 'CSS 반응형 크기·색상 시스템 만들기', en: 'Build a Responsive Sizing & Color System', ja: 'CSSのレスポンシブなサイズ・カラー体系を作成', zh: '构建响应式尺寸与配色系统' },
+    h1: { ko: '반응형 디자인 시스템 만들기', en: 'Build a responsive design system', ja: 'レスポンシブなデザイン体系を作成', zh: '构建响应式设计系统' },
+    description: {
+      ko: '50–950 색상 스케일, 유동적인 clamp() 크기, px·rem·em 변환까지 한 흐름으로 CSS 디자인 시스템을 갖추세요.',
+      en: 'Build a CSS design system in one flow: a 50–950 color scale, fluid clamp() sizes and px/rem/em conversions.', ja: '50–950のカラースケール、流動的なclamp()サイズ、px・rem・em変換まで、一つの流れでCSSデザイン体系を整えます。', zh: '一气呵成搭建 CSS 设计系统：50–950 配色梯度、流动的 clamp() 尺寸，以及 px/rem/em 换算。',
+    },
+    intro: {
+      ko: '일관된 UI는 색상 단계와 간격 규칙에서 시작됩니다. 브랜드 색 하나로 50부터 950까지 명도 단계를 뽑고, 화면 폭에 따라 부드럽게 커지는 clamp() 크기를 만든 뒤, 단위를 px·rem·em으로 자유롭게 변환하면 됩니다. 모든 계산이 브라우저에서 즉시 처리됩니다.',
+      en: 'A consistent UI starts with a color ramp and spacing rules. Generate a 50-to-950 brightness scale from one brand color, make clamp() sizes that grow smoothly with the viewport, then convert freely between px, rem and em. Every calculation happens instantly in your browser.', ja: '一貫したUIは、カラーの段階と余白のルールから始まります。ブランドカラー1つから50〜950の明度段階を作り、画面幅に応じてなめらかに変わるclamp()サイズを生成し、単位をpx・rem・emで自由に変換します。すべての計算はブラウザ内で即座に行われます。', zh: '一致的界面始于配色梯度与间距规则。用一个品牌色生成 50 到 950 的明度梯度，做出随视口平滑变化的 clamp() 尺寸，再在 px、rem、em 之间自由换算。所有计算都在浏览器中即时完成。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/tailwind-shades',
+        name: { ko: '50–950 색상 스케일 생성', en: 'Generate a 50–950 color scale', ja: '50–950のカラースケールを生成', zh: '生成 50–950 配色梯度' },
+        text: {
+          ko: '브랜드 색을 입력해 Tailwind식 50–950 명도 단계를 뽑습니다.',
+          en: 'Enter a brand color to produce a Tailwind-style 50–950 brightness ramp.', ja: 'ブランドカラーを入力してTailwind風の50–950明度段階を作ります。', zh: '输入品牌色，生成 Tailwind 风格的 50–950 明度梯度。',
+        },
+      },
+      {
+        href: '/tools/dev/css-clamp',
+        name: { ko: '유동적 clamp() 크기 만들기', en: 'Make fluid clamp() sizes', ja: '流動的なclamp()サイズを作成', zh: '制作流动的 clamp() 尺寸' },
+        text: {
+          ko: '최소·최대값과 뷰포트 범위를 지정해 부드럽게 스케일되는 clamp() 값을 만듭니다.',
+          en: 'Set min/max values and a viewport range to get a clamp() value that scales smoothly.', ja: '最小・最大値とビューポート範囲を指定し、なめらかに変化するclamp()値を作ります。', zh: '设定最小/最大值与视口范围，生成平滑缩放的 clamp() 值。',
+        },
+      },
+      {
+        href: '/tools/dev/css-units',
+        name: { ko: 'px ↔ rem ↔ em 변환', en: 'Convert px ↔ rem ↔ em', ja: 'px ↔ rem ↔ em 変換', zh: 'px ↔ rem ↔ em 换算' },
+        text: {
+          ko: '루트 폰트 크기를 기준으로 px·rem·em 값을 서로 변환합니다.',
+          en: 'Convert between px, rem and em based on your root font size.', ja: 'ルートフォントサイズを基準にpx・rem・em値を相互変換します。', zh: '以根字号为基准，在 px、rem、em 之间相互换算。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: 'clamp()는 미디어 쿼리를 대체하나요?', en: 'Does clamp() replace media queries?', ja: 'clamp()はメディアクエリの代わりになりますか？', zh: 'clamp() 能替代媒体查询吗？' },
+        a: {
+          ko: '폰트 크기·간격처럼 연속적으로 변하는 값엔 clamp()가 더 간결합니다. 레이아웃 구조 전환은 미디어 쿼리가 여전히 필요합니다.',
+          en: 'For continuously scaling values like font size or spacing, clamp() is cleaner. You still need media queries to switch layout structure.', ja: 'フォントサイズや余白のように連続的に変わる値にはclamp()が簡潔です。レイアウト構造の切り替えには依然メディアクエリが必要です。', zh: '对字号、间距这类连续变化的值，clamp() 更简洁。切换布局结构仍然需要媒体查询。',
+        },
+      },
+      {
+        q: { ko: 'rem과 em은 무엇이 다른가요?', en: 'What’s the difference between rem and em?', ja: 'remとemは何が違いますか？', zh: 'rem 和 em 有什么区别？' },
+        a: {
+          ko: 'rem은 루트(html) 폰트 크기, em은 해당 요소의 폰트 크기를 기준으로 합니다. 변환 도구에서 기준 크기를 바꿔 확인할 수 있습니다.',
+          en: 'rem is relative to the root (html) font size; em is relative to the element’s own font size. The converter lets you change the base to see both.', ja: 'remはルート(html)のフォントサイズ、emはその要素のフォントサイズが基準です。変換ツールで基準サイズを変えて確認できます。', zh: 'rem 相对根（html）字号，em 相对元素自身字号。在换算工具中可更改基准查看两者。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['tailwind 색상 스케일', 'css clamp 생성', 'px rem 변환', '반응형 폰트', '디자인 시스템'],
+      en: ['tailwind color scale', 'css clamp generator', 'px to rem', 'fluid typography', 'design system'], ja: ['tailwind カラースケール', 'css clamp 生成', 'px rem 変換', '可変フォント', 'デザインシステム'], zh: ['tailwind 配色梯度', 'css clamp 生成', 'px rem 换算', '流式字体', '设计系统'],
+    },
+  },
+  {
+    slug: 'api-json-to-types',
+    category: 'dev',
+    title: { ko: 'API JSON 응답을 스키마와 타입으로', en: 'Turn an API JSON Response into a Schema & Types', ja: 'APIのJSONレスポンスをスキーマと型に', zh: '把 API JSON 响应转成 Schema 和类型' },
+    h1: { ko: 'JSON 응답을 타입으로', en: 'Turn an API response into types', ja: 'JSONレスポンスを型に', zh: '把 JSON 响应转成类型' },
+    description: {
+      ko: 'API 응답 JSON 한 덩어리에서 JSON Schema를 추론하고 TypeScript 타입까지 뽑아내세요. 손으로 타입 쓰는 수고를 없애줍니다.',
+      en: 'Infer a JSON Schema from a sample API response, then generate TypeScript types — no more hand-writing interfaces.', ja: 'APIレスポンスのJSONからJSON Schemaを推論し、TypeScript型まで生成します。型を手書きする手間がなくなります。', zh: '从一段 API 响应 JSON 推断出 JSON Schema，再生成 TypeScript 类型，省去手写接口的工夫。',
+    },
+    intro: {
+      ko: 'API 응답 구조를 코드로 안전하게 다루려면 스키마와 타입이 필요합니다. 실제 응답 샘플을 붙여넣어 JSON Schema(draft-07)를 추론하고, 그 구조에서 TypeScript 인터페이스를 자동 생성하면 됩니다. JSON은 브라우저 안에서만 분석돼 외부로 전송되지 않습니다.',
+      en: 'To handle an API response safely in code you need a schema and types. Paste a real sample response to infer a JSON Schema (draft-07), then generate TypeScript interfaces from that shape. The JSON is analyzed only in your browser and never sent anywhere.', ja: 'APIレスポンスをコードで安全に扱うにはスキーマと型が必要です。実際のレスポンス例を貼り付けてJSON Schema(draft-07)を推論し、その構造からTypeScriptのインターフェースを自動生成します。JSONはブラウザ内だけで解析され、外部に送信されません。', zh: '要在代码中安全处理 API 响应，需要 Schema 和类型。粘贴一段真实响应来推断 JSON Schema（draft-07），再据此自动生成 TypeScript 接口。JSON 仅在浏览器中解析，不会发送到任何地方。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/json-schema',
+        name: { ko: '샘플 JSON에서 스키마 추론', en: 'Infer a JSON Schema from sample JSON', ja: 'サンプルJSONからスキーマを推論', zh: '从示例 JSON 推断 Schema' },
+        text: {
+          ko: '응답 JSON을 붙여넣으면 필드 타입과 필수 여부를 추론한 JSON Schema가 나옵니다.',
+          en: 'Paste the response JSON to get a JSON Schema with inferred field types and required flags.', ja: 'レスポンスJSONを貼り付けると、フィールドの型と必須かどうかを推論したJSON Schemaが得られます。', zh: '粘贴响应 JSON，即可得到推断出字段类型与必填项的 JSON Schema。',
+        },
+      },
+      {
+        href: '/tools/dev/json-to-ts',
+        name: { ko: 'TypeScript 타입 생성', en: 'Generate TypeScript types', ja: 'TypeScript型を生成', zh: '生成 TypeScript 类型' },
+        text: {
+          ko: '같은 JSON에서 중첩 객체까지 반영한 TypeScript 인터페이스를 만듭니다.',
+          en: 'Generate TypeScript interfaces from the same JSON, including nested objects.', ja: '同じJSONから、ネストしたオブジェクトまで反映したTypeScriptインターフェースを作ります。', zh: '从同一段 JSON 生成包含嵌套对象的 TypeScript 接口。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '중첩된 객체와 배열도 처리되나요?', en: 'Does it handle nested objects and arrays?', ja: 'ネストしたオブジェクトや配列も処理できますか？', zh: '嵌套对象和数组也能处理吗？' },
+        a: {
+          ko: '네. 중첩 구조를 따라 내려가며 타입을 추론하고, 배열은 요소 타입을 통일해 표현합니다.',
+          en: 'Yes. It walks nested structures to infer types and represents arrays by their unified element type.', ja: 'はい。ネスト構造をたどって型を推論し、配列は要素型をまとめて表現します。', zh: '可以。会沿嵌套结构推断类型，并以统一的元素类型表示数组。',
+        },
+      },
+      {
+        q: { ko: 'null이나 비어 있는 값은 어떻게 되나요?', en: 'How are null or empty values handled?', ja: 'nullや空の値はどうなりますか？', zh: 'null 或空值如何处理？' },
+        a: {
+          ko: '샘플에 null이 있으면 해당 필드를 옵셔널·nullable로 표현합니다. 가능하면 값이 채워진 샘플을 쓰면 정확도가 높아집니다.',
+          en: 'If the sample contains null, that field is marked optional/nullable. Using a fully populated sample improves accuracy.', ja: 'サンプルにnullがあると、そのフィールドはオプショナル・nullableとして表現されます。値が埋まったサンプルを使うと精度が上がります。', zh: '若示例中含 null，该字段会标记为可选/可空。使用填满值的示例可提高准确度。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['json 스키마 추론', 'json to typescript', 'api 타입 생성', 'json 타입 변환', 'typescript 인터페이스'],
+      en: ['json schema generator', 'json to typescript', 'api types', 'infer types from json', 'typescript interface'], ja: ['json スキーマ 推論', 'json typescript 変換', 'api 型 生成', 'json 型 変換', 'typescript インターフェース'], zh: ['json schema 推断', 'json 转 typescript', 'api 类型 生成', 'json 类型 转换', 'typescript 接口'],
+    },
+  },
+  {
+    slug: 'schedule-cron-job',
+    category: 'dev',
+    title: { ko: 'cron 스케줄 식 만들고 검증하기', en: 'Build & Verify a Cron Schedule', ja: 'cronスケジュール式を作成して検証', zh: '构建并验证 cron 调度表达式' },
+    h1: { ko: 'cron 스케줄 식 만들기', en: 'Build a cron schedule', ja: 'cronスケジュール式を作成', zh: '构建 cron 调度表达式' },
+    description: {
+      ko: '클릭만으로 cron 식을 조립하고, 그 식이 언제 실행되는지 사람 말로 풀어 확인하세요. 오타로 인한 잘못된 스케줄을 막아줍니다.',
+      en: 'Assemble a cron expression by clicking, then read back in plain words exactly when it runs. Catch typos before they break a schedule.', ja: 'クリックだけでcron式を組み立て、その式がいつ実行されるかを言葉で確認します。タイプミスによる誤ったスケジュールを防げます。', zh: '点击即可拼出 cron 表达式，再用人话读出它何时执行，避免因笔误而出错的调度。',
+    },
+    intro: {
+      ko: 'cron 식은 다섯 칸의 의미를 외우기 어려워 실수가 잦습니다. 분·시·일·월·요일을 시각적으로 골라 식을 조립한 뒤, 그 식이 실제로 언제 실행되는지 설명과 다음 실행 시각으로 검증하면 안심입니다. 모든 계산이 브라우저에서 처리됩니다.',
+      en: 'Cron expressions are easy to get wrong because the five fields are hard to memorize. Pick minute, hour, day, month and weekday visually to assemble the expression, then verify it with a plain-language explanation and the next run times. Everything is computed in your browser.', ja: 'cron式は5つのフィールドの意味を覚えにくく、間違えがちです。分・時・日・月・曜日を視覚的に選んで式を組み立て、その式が実際にいつ実行されるかを説明と次回実行時刻で検証すれば安心です。すべての計算はブラウザ内で行われます。', zh: 'cron 表达式因五个字段含义难记而容易出错。可视化选择分、时、日、月、星期来拼出表达式，再用通俗解释和下次执行时间来验证，便能放心。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/crontab-builder',
+        name: { ko: 'cron 식 시각적으로 조립', en: 'Build the cron expression visually', ja: 'cron式を視覚的に組み立て', zh: '可视化拼出 cron 表达式' },
+        text: {
+          ko: '분·시·일·월·요일을 클릭으로 선택해 cron 식을 만듭니다.',
+          en: 'Pick minute, hour, day, month and weekday by clicking to build the cron expression.', ja: '分・時・日・月・曜日をクリックで選んでcron式を作ります。', zh: '点击选择分、时、日、月、星期来生成 cron 表达式。',
+        },
+      },
+      {
+        href: '/tools/dev/cron',
+        name: { ko: '무엇이 실행되는지 설명·검증', en: 'Explain & verify what it runs', ja: '何が実行されるか説明・検証', zh: '解释并验证执行内容' },
+        text: {
+          ko: '만든 식을 붙여넣어 사람 말 설명과 다음 실행 시각을 확인합니다.',
+          en: 'Paste the expression to read a plain-language explanation and the next run times.', ja: '作った式を貼り付けて、言葉での説明と次回実行時刻を確認します。', zh: '粘贴表达式，查看通俗解释和下次执行时间。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '요일은 0과 7 중 무엇이 일요일인가요?', en: 'For weekdays, is Sunday 0 or 7?', ja: '曜日は0と7のどちらが日曜ですか？', zh: '星期里 0 和 7 哪个是周日？' },
+        a: {
+          ko: '대부분의 cron에서 0과 7 모두 일요일로 인식합니다. 검증 도구가 해석 결과를 알려주니 헷갈리면 확인하세요.',
+          en: 'In most cron implementations both 0 and 7 mean Sunday. The verify tool shows how it’s interpreted if you’re unsure.', ja: '多くのcronでは0と7のどちらも日曜です。迷ったら検証ツールが解釈結果を示します。', zh: '在多数 cron 实现中 0 和 7 都表示周日。不确定时，验证工具会显示其解释结果。',
+        },
+      },
+      {
+        q: { ko: '"매주 평일 오전 9시"는 어떻게 쓰나요?', en: 'How do I write “9am every weekday”?', ja: '「平日の午前9時」はどう書きますか？', zh: '“每个工作日上午 9 点”怎么写？' },
+        a: {
+          ko: '조립 도구에서 시=9, 분=0, 요일=월–금을 고르면 0 9 * * 1-5가 만들어집니다. 검증 도구로 다음 실행 시각도 확인할 수 있습니다.',
+          en: 'In the builder set hour 9, minute 0 and weekdays Mon–Fri to get 0 9 * * 1-5, then confirm the next run times in the verifier.', ja: '組み立てツールで時=9、分=0、曜日=月〜金を選ぶと0 9 * * 1-5になります。検証ツールで次回実行時刻も確認できます。', zh: '在拼装工具中选时=9、分=0、星期=周一至周五，得到 0 9 * * 1-5，再用验证工具确认下次执行时间。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['cron 식 만들기', 'crontab 생성기', 'cron 설명', '스케줄 식', '다음 실행 시각'],
+      en: ['cron expression builder', 'crontab generator', 'cron explainer', 'cron schedule', 'next run time'], ja: ['cron 式 作成', 'crontab 生成', 'cron 説明', 'スケジュール式', '次回実行時刻'], zh: ['cron 表达式 生成', 'crontab 生成器', 'cron 解释', '调度表达式', '下次执行时间'],
+    },
+  },
+  {
+    slug: 'style-social-bio-text',
+    category: 'text',
+    title: { ko: 'SNS 프로필·게시물용 멋진 유니코드 글자', en: 'Fancy Unicode Text for Social Bios & Posts', ja: 'SNSプロフィール・投稿用のおしゃれな文字', zh: '社交简介与帖子用的花式文字' },
+    h1: { ko: 'SNS용 멋진 글자 만들기', en: 'Make fancy text for social', ja: 'SNS用のおしゃれな文字を作成', zh: '制作社交用花式文字' },
+    description: {
+      ko: '인스타·X 프로필과 게시물에 쓸 굵은·필기체 유니코드 글자에 취소선·위첨자까지 더해 눈에 띄게 꾸미세요.',
+      en: 'Dress up Instagram or X bios and posts with bold/script Unicode text, plus strikethrough and superscript flourishes.', ja: 'インスタやXのプロフィール・投稿に使う太字・筆記体のUnicode文字に、取り消し線や上付きまで加えて目立たせます。', zh: '用粗体、花体 Unicode 文字，再加上删除线和上标，为 Instagram、X 的简介和帖子增色。',
+    },
+    intro: {
+      ko: 'SNS는 폰트를 직접 바꿀 수 없지만, 유니코드의 특수 글자를 쓰면 굵은체·필기체처럼 보이게 할 수 있습니다. 기본 글자를 멋진 스타일로 바꾸고, 취소선·밑줄이나 위·아래 첨자를 더해 한 줄 소개를 개성 있게 꾸미면 됩니다. 변환은 브라우저에서 즉시 이뤄집니다.',
+      en: 'Social apps don’t let you change fonts directly, but Unicode’s special letters can look bold or script. Convert your text into a fancy style, then add strikethrough, underline or super/subscript to give your bio personality. The conversion happens instantly in your browser.', ja: 'SNSはフォントを直接変えられませんが、Unicodeの特殊文字を使えば太字や筆記体のように見せられます。文字をおしゃれなスタイルに変換し、取り消し線・下線や上付き・下付きを加えて、ひとこと紹介を個性的に飾れます。変換はブラウザ内で即座に行われます。', zh: '社交应用无法直接改字体，但用 Unicode 的特殊字符就能呈现粗体、花体效果。把文字转成花式样式，再加上删除线、下划线或上下标，让简介更有个性。转换在浏览器中即时完成。',
+    },
+    steps: [
+      {
+        href: '/tools/text/fancy',
+        name: { ko: '멋진·굵은 유니코드 글자 생성', en: 'Generate fancy/bold Unicode text', ja: 'おしゃれ・太字のUnicode文字を生成', zh: '生成花式/粗体 Unicode 文字' },
+        text: {
+          ko: '글자를 입력하면 굵은체·필기체 등 여러 유니코드 스타일로 변환됩니다.',
+          en: 'Type your text and get it in several Unicode styles like bold and script.', ja: '文字を入力すると、太字や筆記体などのUnicodeスタイルに変換されます。', zh: '输入文字，即可转换为粗体、花体等多种 Unicode 样式。',
+        },
+      },
+      {
+        href: '/tools/text/strikethrough',
+        name: { ko: '취소선·밑줄 추가', en: 'Add strikethrough/underline', ja: '取り消し線・下線を追加', zh: '添加删除线/下划线' },
+        text: {
+          ko: '글자에 취소선이나 밑줄을 입혀 강조합니다.',
+          en: 'Overlay a strikethrough or underline to emphasize text.', ja: '文字に取り消し線や下線を重ねて強調します。', zh: '为文字叠加删除线或下划线以示强调。',
+        },
+      },
+      {
+        href: '/tools/text/superscript',
+        name: { ko: '위·아래 첨자 추가', en: 'Add superscript/subscript', ja: '上付き・下付きを追加', zh: '添加上标/下标' },
+        text: {
+          ko: '글자를 작은 위첨자·아래첨자 형태로 바꿉니다.',
+          en: 'Turn text into small superscript or subscript characters.', ja: '文字を小さな上付き・下付きの形に変えます。', zh: '把文字变成小号的上标或下标形式。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '어디에 붙여넣어도 똑같이 보이나요?', en: 'Does it look the same everywhere I paste it?', ja: 'どこに貼っても同じに見えますか？', zh: '粘贴到任何地方都一样吗？' },
+        a: {
+          ko: '유니코드 글자라 대부분의 앱에서 보이지만, 일부 글꼴·플랫폼에선 일부 스타일이 네모로 표시될 수 있습니다. 붙여넣기 전에 미리보기로 확인하세요.',
+          en: 'These are Unicode characters, so they show in most apps — but some fonts or platforms may render certain styles as boxes. Check the preview before pasting.', ja: 'Unicode文字なので多くのアプリで表示されますが、一部のフォントやプラットフォームでは□で表示されることがあります。貼り付ける前にプレビューで確認してください。', zh: '这些是 Unicode 字符，多数应用都能显示，但部分字体或平台可能把某些样式显示为方块。粘贴前请用预览确认。',
+        },
+      },
+      {
+        q: { ko: '검색이나 스크린리더에 영향이 있나요?', en: 'Does it affect search or screen readers?', ja: '検索やスクリーンリーダーに影響しますか？', zh: '会影响搜索或屏幕阅读器吗？' },
+        a: {
+          ko: '멋진 글자는 일반 글자와 코드가 달라 검색·접근성에 불리할 수 있습니다. 닉네임 장식 정도로 가볍게 쓰는 것을 권합니다.',
+          en: 'Fancy characters have different code points than normal letters, which can hurt search and accessibility. Use them lightly, mainly to decorate a handle.', ja: 'おしゃれな文字は通常の文字とコードが異なり、検索やアクセシビリティに不利なことがあります。ニックネームの装飾程度に軽く使うのがおすすめです。', zh: '花式字符与普通字母的码点不同，可能不利于搜索和无障碍。建议仅用于点缀昵称等轻度场景。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['멋진 글씨', '유니코드 폰트', 'sns 닉네임 꾸미기', '취소선 글자', '위첨자 글자'],
+      en: ['fancy text generator', 'unicode fonts', 'instagram bio fonts', 'strikethrough text', 'superscript text'], ja: ['おしゃれ 文字', 'unicode フォント', 'sns ニックネーム 装飾', '取り消し線 文字', '上付き 文字'], zh: ['花式文字', 'unicode 字体', '社交 昵称 装饰', '删除线 文字', '上标 文字'],
+    },
+  },
+  {
+    slug: 'improve-writing-readability',
+    category: 'text',
+    title: { ko: '글의 가독성 점검하고 다듬기', en: 'Check & Improve Your Writing’s Readability', ja: '文章の読みやすさを点検して整える', zh: '检查并改善文章的可读性' },
+    h1: { ko: '글 가독성 다듬기', en: 'Improve your writing’s readability', ja: '文章の読みやすさを整える', zh: '改善文章可读性' },
+    description: {
+      ko: 'Flesch 읽기 쉬움 점수와 학년 수준으로 글의 난이도를 진단하고, 음절·단어 수까지 확인해 더 쉽게 다듬으세요.',
+      en: 'Diagnose your writing with the Flesch reading ease score and grade level, then check syllables and word counts to make it clearer.', ja: 'Fleschの読みやすさスコアと学年レベルで文章の難易度を診断し、音節・単語数まで確認してより読みやすく整えます。', zh: '用 Flesch 易读度评分和年级水平诊断文章难度，再核对音节与字数，让表达更易懂。',
+    },
+    intro: {
+      ko: '글이 어렵게 느껴지는 데는 긴 문장과 어려운 단어가 큰 몫을 합니다. Flesch 점수와 학년 수준으로 현재 난이도를 객관적으로 보고, 음절 수와 단어·글자 수를 확인하며 문장을 줄이고 쉬운 말로 바꾸면 됩니다. 분석은 브라우저에서만 이뤄지고 글이 외부로 나가지 않습니다.',
+      en: 'Long sentences and hard words are what make writing feel difficult. See the current difficulty objectively with a Flesch score and grade level, then count syllables and words to shorten sentences and simplify wording. The analysis runs only in your browser, so your text never leaves it.', ja: '文章が難しく感じる主な原因は、長い文と難しい単語です。Fleschスコアと学年レベルで現在の難易度を客観的に把握し、音節数や単語・文字数を確認しながら文を短く、平易な言葉に直します。分析はブラウザ内だけで行われ、文章が外部に出ることはありません。', zh: '让文章显得难懂的主因是长句和生僻词。用 Flesch 评分和年级水平客观了解当前难度，再核对音节数与词数、字数，缩短句子、改用浅显措辞。分析只在浏览器中进行，文章不会外流。',
+    },
+    steps: [
+      {
+        href: '/tools/text/readability',
+        name: { ko: 'Flesch 점수·학년 수준 측정', en: 'Score Flesch reading ease & grade', ja: 'Fleschスコア・学年レベルを測定', zh: '测算 Flesch 易读度与年级' },
+        text: {
+          ko: '글을 붙여넣어 읽기 쉬움 점수와 대략의 학년 수준을 확인합니다.',
+          en: 'Paste your text to see its reading-ease score and approximate grade level.', ja: '文章を貼り付けて、読みやすさスコアとおおよその学年レベルを確認します。', zh: '粘贴文章，查看其易读度评分和大致年级水平。',
+        },
+      },
+      {
+        href: '/tools/text/syllable',
+        name: { ko: '음절 수 세기(시·하이쿠)', en: 'Count syllables (poems/haiku)', ja: '音節を数える(詩・俳句)', zh: '统计音节（诗/俳句）' },
+        text: {
+          ko: '단어·행의 음절 수를 세어 운율이나 5-7-5 구조를 맞춥니다.',
+          en: 'Count syllables per word or line to fit a meter or a 5-7-5 structure.', ja: '単語・行の音節数を数えて、韻律や5-7-5の構造を整えます。', zh: '统计每个词或每行的音节数，以契合格律或 5-7-5 结构。',
+        },
+      },
+      {
+        href: '/tools/text/count',
+        name: { ko: '단어·글자 수 세기', en: 'Count words & characters', ja: '単語・文字数を数える', zh: '统计字数与字符数' },
+        text: {
+          ko: '단어·글자·문장 수를 확인해 분량을 가늠합니다.',
+          en: 'Check word, character and sentence counts to gauge length.', ja: '単語・文字・文の数を確認して分量を把握します。', zh: '查看词数、字符数与句数，掌握篇幅。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: 'Flesch 점수는 몇 점이 좋은 건가요?', en: 'What Flesch score is good?', ja: 'Fleschスコアは何点が良いですか？', zh: 'Flesch 评分多少算好？' },
+        a: {
+          ko: '60–70이면 일반 성인이 무난히 읽는 수준입니다. 점수가 높을수록 쉽고, 낮을수록 전문적·어려운 글입니다.',
+          en: '60–70 reads comfortably for most adults. Higher is easier; lower means more technical, harder text.', ja: '60〜70なら一般的な成人が無理なく読めるレベルです。高いほど易しく、低いほど専門的で難しい文章です。', zh: '60–70 适合大多数成年人轻松阅读。分数越高越易读，越低则越专业、越难。',
+        },
+      },
+      {
+        q: { ko: '한국어 글에도 정확한가요?', en: 'Is it accurate for non-English text?', ja: '日本語の文章でも正確ですか？', zh: '对非英文文章准确吗？' },
+        a: {
+          ko: 'Flesch·음절 공식은 영어 기준으로 설계돼 영어 글에서 가장 정확합니다. 다른 언어에서는 단어·글자 수를 참고 지표로 활용하세요.',
+          en: 'The Flesch and syllable formulas are designed for English and are most accurate there. For other languages, use the word/character counts as a guide.', ja: 'Fleschや音節の公式は英語向けに設計されており、英語で最も正確です。他言語では単語・文字数を参考指標として使ってください。', zh: 'Flesch 和音节公式针对英文设计，对英文最准确。其他语言可把词数、字符数作为参考指标。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['가독성 점수', 'flesch 읽기 쉬움', '음절 수 세기', '단어 수 세기', '글 난이도'],
+      en: ['readability score', 'flesch reading ease', 'syllable counter', 'word counter', 'reading level'], ja: ['読みやすさ スコア', 'flesch リーダビリティ', '音節 カウント', '単語数 カウント', '文章 難易度'], zh: ['可读性 评分', 'flesch 易读度', '音节 统计', '字数 统计', '阅读难度'],
+    },
+  },
+  {
+    slug: 'split-the-bill',
+    category: 'util',
+    title: { ko: '세금·팁 포함 단체 계산서 나누기', en: 'Split a Group Bill with Tax & Tip', ja: '税・チップ込みでグループの会計を割り勘', zh: '含税与小费的多人账单分摊' },
+    h1: { ko: '단체 계산서 나누기', en: 'Split a group bill', ja: 'グループの会計を割り勘', zh: '分摊多人账单' },
+    description: {
+      ko: '세금과 팁까지 더한 총액을 인원수로 공평하게 나누세요. 팁 금액만 따로 계산하는 것도 한 번에 됩니다.',
+      en: 'Split a total that includes tax and tip fairly among everyone — and figure the tip amount on its own, too.', ja: '税とチップを含めた総額を人数で公平に分けます。チップ額だけを別に計算することもできます。', zh: '把含税与小费的总额公平地按人数分摊，也可单独算出小费金额。',
+    },
+    intro: {
+      ko: '여럿이 함께 먹은 자리에서 계산서를 나눌 땐 세금과 팁을 빠뜨리기 쉽습니다. 총액에 팁을 더한 뒤 인원수로 나누면 한 사람당 낼 금액이 깔끔하게 떨어지고, 팁만 따로 계산해 비율을 확인할 수도 있습니다. 모든 계산이 브라우저에서 즉시 처리됩니다.',
+      en: 'When several people share a meal, it’s easy to forget tax and tip while splitting the bill. Add the tip to the total and divide by the number of people for a clean per-person amount, or calculate the tip alone to check the rate. Every calculation happens instantly in your browser.', ja: '大勢で食事をした席では、割り勘の際に税やチップを忘れがちです。総額にチップを足して人数で割れば一人当たりの金額がきれいに出ますし、チップだけを別に計算して割合を確認することもできます。すべての計算はブラウザ内で即座に行われます。', zh: '多人聚餐分账时，很容易漏掉税和小费。把小费加到总额后按人数平分，每人金额一目了然；也可单独算小费来核对比例。所有计算都在浏览器中即时完成。',
+    },
+    steps: [
+      {
+        href: '/tools/util/bill-split',
+        name: { ko: '세금·팁 포함해 균등 분배', en: 'Split the bill evenly with tax/tip', ja: '税・チップ込みで均等に分割', zh: '含税与小费均分账单' },
+        text: {
+          ko: '총액·세금·팁·인원수를 입력하면 한 사람당 낼 금액이 나옵니다.',
+          en: 'Enter the total, tax, tip and number of people to get the per-person amount.', ja: '総額・税・チップ・人数を入力すると、一人当たりの金額が出ます。', zh: '输入总额、税、小费和人数，得出每人应付金额。',
+        },
+      },
+      {
+        href: '/tools/util/tip-calc',
+        name: { ko: '팁 금액 계산', en: 'Calculate the tip amount', ja: 'チップ額を計算', zh: '计算小费金额' },
+        text: {
+          ko: '식대와 팁 비율을 입력해 팁 금액과 합계를 확인합니다.',
+          en: 'Enter the bill and tip percentage to see the tip amount and the grand total.', ja: '飲食代とチップ率を入力して、チップ額と合計を確認します。', zh: '输入餐费和小费比例，查看小费金额与合计。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '팁은 세금 전 금액으로 계산하나요?', en: 'Is the tip figured before or after tax?', ja: 'チップは税抜きで計算しますか？', zh: '小费按税前还是税后算？' },
+        a: {
+          ko: '관례는 지역마다 다릅니다. 도구에서 기준 금액을 직접 정할 수 있어 세전·세후 어느 쪽이든 맞출 수 있습니다.',
+          en: 'The custom varies by region. The tool lets you choose the base amount, so you can tip on the pre-tax or post-tax figure.', ja: '慣習は地域によって異なります。ツールで基準額を選べるので、税抜き・税込みのどちらにも対応できます。', zh: '惯例因地区而异。工具允许自选计费基数，税前或税后均可。',
+        },
+      },
+      {
+        q: { ko: '나눈 금액이 딱 떨어지지 않으면요?', en: 'What if the split doesn’t divide evenly?', ja: '割り切れない場合はどうなりますか？', zh: '分不开整数怎么办？' },
+        a: {
+          ko: '한 사람당 금액을 올림으로 보여줘 합계가 부족하지 않게 합니다. 남는 잔돈은 한 명이 더 내는 식으로 조정하면 됩니다.',
+          en: 'It rounds the per-person amount up so the total isn’t short; one person can cover the small remainder.', ja: '一人当たりの金額を切り上げて表示し、合計が不足しないようにします。余りは誰か一人が多めに負担して調整できます。', zh: '会向上取整每人金额以免总额不足，零头可由某一人多付来调整。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['더치페이 계산', '계산서 나누기', '팁 계산기', '세금 팁 분배', 'n분의 1'],
+      en: ['bill splitter', 'split the bill', 'tip calculator', 'divide bill with tax', 'cost per person'], ja: ['割り勘 計算', '会計 分割', 'チップ 計算機', '税 チップ 分担', '一人当たり 金額'], zh: ['账单 分摊', '均分 账单', '小费 计算器', '含税 小费 分摊', '人均 金额'],
+    },
+  },
+  {
+    slug: 'track-time-across-timezones',
+    category: 'util',
+    title: { ko: '시간대 넘어 회의 시간 맞추기', en: 'Coordinate Meeting Times Across Time Zones', ja: 'タイムゾーンをまたいで会議時間を調整', zh: '跨时区协调会议时间' },
+    h1: { ko: '여러 시간대 회의 맞추기', en: 'Coordinate times across time zones', ja: '複数のタイムゾーンで時間を調整', zh: '跨时区协调会议' },
+    description: {
+      ko: '여러 도시의 현재 시각을 한눈에 보고, 특정 시간을 시간대별로 변환한 뒤 회의까지 남은 시간을 카운트다운하세요.',
+      en: 'See many cities’ current times at a glance, convert a specific time across zones, then count down to the meeting.', ja: '複数都市の現在時刻を一目で確認し、特定の時間をタイムゾーン別に変換して、会議までをカウントダウンします。', zh: '一眼看清多座城市的当前时间，把某个时间按时区换算，再倒数到会议开始。',
+    },
+    intro: {
+      ko: '시차가 있는 팀과 일정을 잡으려면 상대 도시의 시각을 정확히 알아야 합니다. 여러 도시의 현재 시각을 한 화면에서 보고, 회의 후보 시간을 각 시간대로 변환해 누구에게도 너무 이르거나 늦지 않은지 확인한 뒤, 시작까지 카운트다운을 걸면 됩니다. 모든 계산이 브라우저에서 처리됩니다.',
+      en: 'Scheduling with a team in another time zone means knowing exactly what time it is there. View several cities’ current times on one screen, convert a candidate meeting time into each zone to check it isn’t too early or late for anyone, then set a countdown to the start. Every calculation runs in your browser.', ja: '時差のあるチームと予定を組むには、相手の都市の時刻を正確に知る必要があります。複数都市の現在時刻を一画面で確認し、会議候補の時間を各タイムゾーンに変換して誰にとっても早すぎ・遅すぎないかを確認し、開始までカウントダウンを設定します。すべての計算はブラウザ内で行われます。', zh: '与异时区团队排程，需要准确知道对方城市的时间。在一个屏幕上查看多座城市的当前时间，把候选会议时间换算到各时区，确认对谁都不算太早或太晚，再设置倒计时到开始。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/util/world-clock',
+        name: { ko: '여러 도시 현재 시각 보기', en: 'See current time in many cities', ja: '複数都市の現在時刻を表示', zh: '查看多座城市当前时间' },
+        text: {
+          ko: '관심 있는 도시들을 추가해 현재 시각을 한눈에 비교합니다.',
+          en: 'Add the cities you care about to compare their current times at a glance.', ja: '気になる都市を追加して、現在時刻を一目で比較します。', zh: '添加关注的城市，一眼对比它们的当前时间。',
+        },
+      },
+      {
+        href: '/tools/util/timezone',
+        name: { ko: '특정 시간을 시간대별로 변환', en: 'Convert a specific time across zones', ja: '特定の時間をタイムゾーン別に変換', zh: '把特定时间按时区换算' },
+        text: {
+          ko: '한 도시의 회의 시간을 입력해 다른 시간대의 해당 시각을 확인합니다.',
+          en: 'Enter the meeting time in one city to see the matching time in other zones.', ja: 'ある都市の会議時間を入力して、他のタイムゾーンでの時刻を確認します。', zh: '输入某城市的会议时间，查看其他时区对应的时刻。',
+        },
+      },
+      {
+        href: '/tools/util/countdown',
+        name: { ko: '회의까지 카운트다운', en: 'Count down to the meeting', ja: '会議までカウントダウン', zh: '倒数到会议' },
+        text: {
+          ko: '회의 시작 시각을 정해 남은 시간을 실시간으로 셉니다.',
+          en: 'Set the meeting start time and count down the remaining time live.', ja: '会議の開始時刻を設定して、残り時間をリアルタイムで数えます。', zh: '设定会议开始时间，实时倒数剩余时间。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '서머타임도 반영되나요?', en: 'Does it account for daylight saving time?', ja: 'サマータイムも反映されますか？', zh: '会考虑夏令时吗？' },
+        a: {
+          ko: '네. 브라우저의 시간대 데이터를 사용해 서머타임 적용 여부를 자동으로 반영합니다.',
+          en: 'Yes. It uses your browser’s time zone data, so daylight saving is applied automatically.', ja: 'はい。ブラウザのタイムゾーンデータを用いるため、サマータイムの有無が自動で反映されます。', zh: '会。它使用浏览器的时区数据，自动反映是否处于夏令时。',
+        },
+      },
+      {
+        q: { ko: '내 시간대는 어떻게 정해지나요?', en: 'How is my time zone determined?', ja: '自分のタイムゾーンはどう決まりますか？', zh: '我的时区如何确定？' },
+        a: {
+          ko: '기기 설정의 시간대를 기준으로 합니다. 다른 기준이 필요하면 도시를 직접 골라 비교할 수 있습니다.',
+          en: 'It uses your device’s time zone setting. If you need a different baseline, pick cities manually to compare.', ja: '端末設定のタイムゾーンを基準にします。別の基準が必要なら、都市を手動で選んで比較できます。', zh: '以设备设置的时区为准。如需其他基准，可手动选择城市进行对比。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['세계 시간', '시간대 변환', '회의 시간 조율', '시차 계산', '카운트다운'],
+      en: ['world clock', 'time zone converter', 'meeting time across zones', 'time difference', 'countdown timer'], ja: ['世界時計', 'タイムゾーン 変換', '会議時間 調整', '時差 計算', 'カウントダウン'], zh: ['世界时钟', '时区 换算', '会议时间 协调', '时差 计算', '倒计时'],
+    },
+  },
+  {
+    slug: 'generate-test-card-numbers',
+    category: 'security',
+    title: { ko: '결제 테스트용 Luhn 유효 번호 생성', en: 'Generate Luhn-Valid Test Numbers for Payments', ja: '決済テスト用のLuhn有効な番号を生成', zh: '生成支付测试用的 Luhn 有效号码' },
+    h1: { ko: '결제 테스트용 번호 생성', en: 'Generate test numbers for payments', ja: '決済テスト用の番号を生成', zh: '生成支付测试号码' },
+    description: {
+      ko: '결제 폼 테스트에 쓸 Luhn 검사 통과 번호를 만들고, 체크섬과 IBAN까지 검증하세요. 모두 테스트용 가짜 번호입니다.',
+      en: 'Make Luhn-passing numbers for payment-form testing, then validate the checksum and an IBAN. These are fake test numbers only.', ja: '決済フォームのテストに使うLuhn検査を通る番号を作り、チェックサムやIBANまで検証します。すべてテスト用の架空番号です。', zh: '生成可通过 Luhn 校验的号码用于支付表单测试，再验证校验位和 IBAN。这些都是仅供测试的虚构号码。',
+    },
+    intro: {
+      ko: '결제 폼의 입력 검증을 테스트하려면 형식이 올바른 가짜 카드번호가 필요합니다. Luhn 알고리즘을 통과하는 번호를 생성해 검증 로직이 잘 작동하는지 확인하고, 체크섬과 IBAN까지 점검하면 됩니다. 이 번호들은 실제 계좌가 아닌 순수 테스트용이며, 모든 처리는 브라우저에서만 이뤄집니다.',
+      en: 'Testing a payment form’s validation needs format-correct fake card numbers. Generate numbers that pass the Luhn algorithm to confirm your validation works, then check the checksum and an IBAN as well. These are purely test numbers — never real accounts — and all processing happens only in your browser.', ja: '決済フォームの入力検証をテストするには、形式が正しい架空のカード番号が必要です。Luhnアルゴリズムを通る番号を生成して検証ロジックが機能するか確認し、チェックサムやIBANも点検します。これらは実在の口座ではなく純粋なテスト用で、すべての処理はブラウザ内だけで行われます。', zh: '测试支付表单的输入校验，需要格式正确的虚构卡号。生成可通过 Luhn 算法的号码来确认校验逻辑是否正常，再核对校验位和 IBAN。这些纯属测试号码，绝非真实账户，且所有处理仅在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/security/luhn-generator',
+        name: { ko: 'Luhn 유효 번호 생성', en: 'Generate Luhn-valid numbers', ja: 'Luhn有効な番号を生成', zh: '生成 Luhn 有效号码' },
+        text: {
+          ko: '자릿수와 발급사 접두사를 골라 Luhn 검사를 통과하는 테스트 번호를 만듭니다.',
+          en: 'Pick the length and issuer prefix to make test numbers that pass the Luhn check.', ja: '桁数と発行会社のプレフィックスを選び、Luhn検査を通るテスト番号を作ります。', zh: '选择位数和发卡机构前缀，生成可通过 Luhn 校验的测试号码。',
+        },
+      },
+      {
+        href: '/tools/security/cc-validate',
+        name: { ko: 'Luhn 체크섬 검증', en: 'Validate the Luhn checksum', ja: 'Luhnチェックサムを検証', zh: '验证 Luhn 校验位' },
+        text: {
+          ko: '번호를 붙여넣어 Luhn 체크섬 통과 여부와 추정 발급사를 확인합니다.',
+          en: 'Paste a number to check whether it passes the Luhn checksum and its likely issuer.', ja: '番号を貼り付けて、Luhnチェックサムを通るかと推定発行会社を確認します。', zh: '粘贴号码，查看是否通过 Luhn 校验及其可能的发卡机构。',
+        },
+      },
+      {
+        href: '/tools/security/iban-validator',
+        name: { ko: 'IBAN 검증(mod-97)', en: 'Validate an IBAN (mod-97)', ja: 'IBANを検証(mod-97)', zh: '验证 IBAN（mod-97）' },
+        text: {
+          ko: 'IBAN을 입력해 mod-97 검사로 형식과 체크 숫자를 확인합니다.',
+          en: 'Enter an IBAN to verify its format and check digits with the mod-97 test.', ja: 'IBANを入力し、mod-97検査で形式とチェック数字を確認します。', zh: '输入 IBAN，用 mod-97 检验其格式与校验数字。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '이 번호로 실제 결제가 되나요?', en: 'Can these numbers make a real payment?', ja: 'この番号で実際に決済できますか？', zh: '这些号码能完成真实支付吗？' },
+        a: {
+          ko: '아니요. Luhn 형식만 맞춘 가짜 번호라 실제 계좌·카드가 아니며 결제가 일어나지 않습니다. 오직 폼 검증 테스트용입니다.',
+          en: 'No. They only satisfy the Luhn format — they’re fake, not real cards or accounts, and cannot make a payment. They’re strictly for testing form validation.', ja: 'いいえ。Luhn形式を満たすだけの架空番号で、実在のカード・口座ではなく決済は発生しません。あくまでフォーム検証テスト用です。', zh: '不能。它们只满足 Luhn 格式，是虚构号码，并非真实卡片或账户，无法完成支付。仅用于表单校验测试。',
+        },
+      },
+      {
+        q: { ko: 'Luhn 검사는 무엇을 보장하나요?', en: 'What does the Luhn check guarantee?', ja: 'Luhn検査は何を保証しますか？', zh: 'Luhn 校验保证什么？' },
+        a: {
+          ko: '입력 오타 같은 단순 오류를 걸러줄 뿐, 그 번호가 실제로 발급된 유효한 카드라는 뜻은 아닙니다.',
+          en: 'It catches simple errors like typos, but it doesn’t mean the number is a real, issued card.', ja: '入力ミスのような単純な誤りを検出するだけで、その番号が実在の有効なカードであることを意味しません。', zh: '它能拦截打字等简单错误，但并不代表该号码是真实已发行的卡片。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['테스트 카드번호 생성', 'luhn 번호', '카드번호 검증', 'iban 검증', '결제 테스트'],
+      en: ['test card number generator', 'luhn number', 'card number validator', 'iban validator', 'payment testing'], ja: ['テスト カード番号 生成', 'luhn 番号', 'カード番号 検証', 'iban 検証', '決済 テスト'], zh: ['测试卡号 生成', 'luhn 号码', '卡号 验证', 'iban 验证', '支付 测试'],
+    },
+  },
+  {
+    slug: 'identify-unknown-hash',
+    category: 'security',
+    title: { ko: '알 수 없는 해시 식별하고 비교하기', en: 'Identify an Unknown Hash & Compare It', ja: '不明なハッシュを識別して比較', zh: '识别未知哈希并进行比对' },
+    h1: { ko: '해시 식별하고 비교하기', en: 'Identify and compare a hash', ja: 'ハッシュを識別して比較', zh: '识别并比对哈希' },
+    description: {
+      ko: '정체 모를 해시 문자열의 알고리즘을 추정하고, 원본 텍스트를 같은 방식으로 해싱해 일치하는지 비교하세요.',
+      en: 'Guess the algorithm of a mystery hash string, then hash the source text the same way to compare for a match.', ja: '正体不明のハッシュ文字列のアルゴリズムを推定し、元のテキストを同じ方式でハッシュして一致するか比較します。', zh: '推测一段未知哈希字符串的算法，再用同样方式哈希原文进行比对。',
+    },
+    intro: {
+      ko: '로그나 DB에서 마주친 해시가 어떤 알고리즘인지 모를 때가 있습니다. 길이와 형식으로 알고리즘 후보를 추정한 뒤, 원본 텍스트를 MD5·SHA 등으로 해싱해 그 결과가 일치하는지 비교하면 됩니다. 모든 해싱이 브라우저에서 처리돼 입력이 외부로 나가지 않습니다.',
+      en: 'Sometimes you find a hash in a log or database and don’t know which algorithm made it. Guess candidate algorithms from its length and format, then hash the source text with MD5, SHA and others to compare for a match. All hashing happens in your browser, so your input never leaves it.', ja: 'ログやDBで見つけたハッシュが、どのアルゴリズムのものか分からないことがあります。長さや形式からアルゴリズム候補を推定し、元のテキストをMD5・SHAなどでハッシュして一致するか比較します。すべてのハッシュ処理はブラウザ内で行われ、入力が外部に出ることはありません。', zh: '有时在日志或数据库中遇到一段哈希，却不知它由哪种算法生成。可根据长度和格式推测候选算法，再用 MD5、SHA 等对原文进行哈希以比对是否匹配。所有哈希计算都在浏览器中完成，输入不会外流。',
+    },
+    steps: [
+      {
+        href: '/tools/security/hash-identifier',
+        name: { ko: '해시 알고리즘 추정', en: 'Guess the hash algorithm', ja: 'ハッシュアルゴリズムを推定', zh: '推测哈希算法' },
+        text: {
+          ko: '해시 문자열을 붙여넣으면 길이·형식으로 가능한 알고리즘 후보를 알려줍니다.',
+          en: 'Paste a hash string to get candidate algorithms based on its length and format.', ja: 'ハッシュ文字列を貼り付けると、長さ・形式から可能なアルゴリズム候補が分かります。', zh: '粘贴哈希字符串，依据长度和格式给出可能的算法候选。',
+        },
+      },
+      {
+        href: '/tools/security/text-hash',
+        name: { ko: '텍스트 해싱해 비교(MD5/SHA)', en: 'Hash text to compare (MD5/SHA)', ja: 'テキストをハッシュして比較(MD5/SHA)', zh: '哈希文本以比对（MD5/SHA）' },
+        text: {
+          ko: '원본 텍스트를 추정한 알고리즘으로 해싱해 같은 값이 나오는지 확인합니다.',
+          en: 'Hash the source text with the guessed algorithm to see if it produces the same value.', ja: '元のテキストを推定したアルゴリズムでハッシュし、同じ値になるか確認します。', zh: '用推测的算法对原文进行哈希，查看是否得到相同的值。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '해시를 원래 텍스트로 되돌릴 수 있나요?', en: 'Can a hash be reversed to the original text?', ja: 'ハッシュを元のテキストに戻せますか？', zh: '哈希能还原成原文吗？' },
+        a: {
+          ko: '아니요. 해시는 단방향이라 복원할 수 없습니다. 원본 후보를 같은 방식으로 해싱해 결과가 일치하는지 비교하는 방식만 가능합니다.',
+          en: 'No. Hashing is one-way and can’t be reversed. You can only hash a candidate input the same way and compare the result for a match.', ja: 'いいえ。ハッシュは一方向で復元できません。候補となる入力を同じ方式でハッシュし、結果が一致するか比較する方法のみ可能です。', zh: '不能。哈希是单向的，无法还原。只能用同样方式哈希候选原文，再比对结果是否一致。',
+        },
+      },
+      {
+        q: { ko: '식별 결과가 항상 정확한가요?', en: 'Is the identification always correct?', ja: '識別結果は常に正確ですか？', zh: '识别结果总是准确吗？' },
+        a: {
+          ko: '길이가 같은 알고리즘이 여럿이라 추정은 후보 목록입니다. 원본을 실제로 해싱해 비교하는 단계로 확정하는 것이 안전합니다.',
+          en: 'Several algorithms share the same length, so the guess is a list of candidates. Confirm it by actually hashing the source and comparing.', ja: '長さが同じアルゴリズムが複数あるため、推定は候補リストです。実際に元データをハッシュして比較する手順で確定するのが安全です。', zh: '多种算法长度相同，因此推测是一份候选列表。通过实际哈希原文并比对来确认更稳妥。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['해시 식별', '해시 종류 추정', 'md5 sha 해시', '해시 비교', '텍스트 해시'],
+      en: ['hash identifier', 'identify hash type', 'md5 sha hash', 'compare hash', 'text hash'], ja: ['ハッシュ 識別', 'ハッシュ 種類 推定', 'md5 sha ハッシュ', 'ハッシュ 比較', 'テキスト ハッシュ'], zh: ['哈希 识别', '哈希 类型 推测', 'md5 sha 哈希', '哈希 比对', '文本 哈希'],
+    },
+  },
+  {
+    slug: 'polish-screenshot-for-post',
+    category: 'image',
+    title: { ko: '게시물·문서용으로 스크린샷 다듬기', en: 'Polish a Screenshot for Posts & Docs', ja: '投稿・資料用にスクリーンショットを整える', zh: '为帖子与文档美化截图' },
+    h1: { ko: '스크린샷 보기 좋게 다듬기', en: 'Polish a screenshot', ja: 'スクリーンショットを整える', zh: '美化截图' },
+    description: {
+      ko: '밋밋한 스크린샷에 배경·여백·그림자를 더하고 깔끔한 테두리까지 입혀 게시물이나 문서에 어울리게 만드세요.',
+      en: 'Add a background, padding and shadow to a plain screenshot, then a clean border so it fits posts and docs.', ja: '味気ないスクリーンショットに背景・余白・影を加え、きれいな枠線まで付けて投稿や資料になじませます。', zh: '为平淡的截图加上背景、留白和阴影，再加一道干净的边框，让它更契合帖子和文档。',
+    },
+    intro: {
+      ko: '그냥 찍은 스크린샷은 게시물이나 문서에 넣으면 어딘가 허전해 보입니다. 배경과 여백, 부드러운 그림자를 더하면 입체감이 생기고, 여기에 깔끔한 테두리를 두르면 화면 경계가 또렷해져 훨씬 정돈된 느낌을 줍니다. 모든 편집이 브라우저에서 처리돼 이미지가 업로드되지 않습니다.',
+      en: 'A raw screenshot often looks bare inside a post or document. Adding a background, padding and a soft shadow gives it depth, and a clean border makes the edge crisp for a much tidier look. All editing happens in your browser, so the image is never uploaded.', ja: 'そのまま撮ったスクリーンショットは、投稿や資料に入れると物足りなく見えがちです。背景・余白・柔らかい影を加えると立体感が出て、さらにきれいな枠線を付けると画面の境界がはっきりして整った印象になります。すべての編集はブラウザ内で行われ、画像がアップロードされることはありません。', zh: '直接截取的截图放进帖子或文档常显得单调。加上背景、留白和柔和阴影会增加层次感，再配一道干净的边框让画面边缘更分明，整体更整洁。所有编辑都在浏览器中完成，图片不会被上传。',
+    },
+    steps: [
+      {
+        href: '/tools/image/screenshot-shadow',
+        name: { ko: '배경·여백·그림자 추가', en: 'Add background, padding & shadow', ja: '背景・余白・影を追加', zh: '添加背景、留白与阴影' },
+        text: {
+          ko: '스크린샷을 올려 배경색·여백·그림자를 조절해 입체감을 줍니다.',
+          en: 'Upload the screenshot and tune the background, padding and shadow for depth.', ja: 'スクリーンショットをアップロードし、背景色・余白・影を調整して立体感を出します。', zh: '上传截图，调整背景色、留白和阴影以增加立体感。',
+        },
+      },
+      {
+        href: '/tools/image/border',
+        name: { ko: '깔끔한 테두리 추가', en: 'Add a clean border', ja: 'きれいな枠線を追加', zh: '添加干净的边框' },
+        text: {
+          ko: '색·두께를 골라 이미지에 또렷한 테두리를 두릅니다.',
+          en: 'Pick a color and thickness to add a crisp border around the image.', ja: '色・太さを選んで画像にくっきりした枠線を付けます。', zh: '选择颜色与粗细，为图片添加清晰的边框。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '투명 배경으로 내보낼 수 있나요?', en: 'Can I export with a transparent background?', ja: '透明な背景で書き出せますか？', zh: '可以导出透明背景吗？' },
+        a: {
+          ko: '그림자·테두리를 PNG로 내보내면 투명도가 유지됩니다. 단색 배경을 넣었다면 그 색이 함께 저장됩니다.',
+          en: 'Exporting to PNG preserves transparency for the shadow and border. If you added a solid background, that color is saved with it.', ja: 'PNGで書き出せば影や枠線の透明度が保たれます。単色背景を入れた場合はその色も一緒に保存されます。', zh: '导出为 PNG 可保留阴影和边框的透明度。若加了纯色背景，则该颜色会一并保存。',
+        },
+      },
+      {
+        q: { ko: '여백을 추가해도 화질이 떨어지나요?', en: 'Does adding padding reduce quality?', ja: '余白を加えると画質が落ちますか？', zh: '加留白会降低画质吗？' },
+        a: {
+          ko: '여백·그림자는 원본 픽셀 주위에 더해질 뿐이라 스크린샷 내용 자체의 화질은 그대로 유지됩니다.',
+          en: 'Padding and shadow are added around the original pixels, so the screenshot’s own quality stays intact.', ja: '余白や影は元のピクセルの周りに加わるだけなので、スクリーンショットの内容自体の画質はそのまま保たれます。', zh: '留白和阴影只是加在原始像素周围，截图内容本身的画质保持不变。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['스크린샷 꾸미기', '배경 그림자 추가', '이미지 테두리', '캡처 보기 좋게', '게시물 이미지'],
+      en: ['polish screenshot', 'add shadow to screenshot', 'image border', 'pretty screenshot', 'screenshot background'], ja: ['スクリーンショット 装飾', '背景 影 追加', '画像 枠線', 'キャプチャ きれい', '投稿 画像'], zh: ['截图 美化', '添加 背景 阴影', '图片 边框', '截图 好看', '帖子 配图'],
+    },
+  },
+  {
+    slug: 'make-data-table-for-web',
+    category: 'docs',
+    title: { ko: '데이터를 웹·마크다운 표로 만들기', en: 'Turn Data into a Web / Markdown Table', ja: 'データをWeb・Markdownの表に変換', zh: '把数据转成网页/Markdown 表格' },
+    h1: { ko: '데이터를 표로 만들기', en: 'Turn data into a table', ja: 'データを表に変換', zh: '把数据转成表格' },
+    description: {
+      ko: 'CSV 데이터를 바로 붙여넣을 수 있는 HTML 표로 바꾸거나, 손으로 깔끔한 마크다운 표를 만들어 문서에 넣으세요.',
+      en: 'Convert CSV data into a paste-ready HTML table, or build a clean Markdown table by hand for your docs.', ja: 'CSVデータをそのまま貼れるHTMLの表に変換したり、手できれいなMarkdownの表を作って文書に入れたりできます。', zh: '把 CSV 数据转成可直接粘贴的 HTML 表格，或手动制作整洁的 Markdown 表格放进文档。',
+    },
+    intro: {
+      ko: '표 데이터를 블로그나 README에 넣을 때 형식을 일일이 맞추긴 번거롭습니다. 가진 CSV를 HTML 표로 바로 변환하거나, 행·열을 채워 깔끔한 마크다운 표를 만들면 그대로 붙여넣을 수 있습니다. 모든 변환이 브라우저에서 처리돼 데이터가 외부로 전송되지 않습니다.',
+      en: 'Formatting table data by hand for a blog or README is tedious. Convert your CSV straight into an HTML table, or fill in rows and columns to build a clean Markdown table you can paste as-is. Every conversion happens in your browser, so your data is never sent anywhere.', ja: '表データをブログやREADMEに入れる際、形式を一つずつ整えるのは面倒です。手元のCSVをHTMLの表に直接変換したり、行・列を埋めてきれいなMarkdownの表を作れば、そのまま貼り付けられます。すべての変換はブラウザ内で行われ、データが外部に送信されることはありません。', zh: '把表格数据放进博客或 README 时，逐一调整格式很麻烦。可把手头的 CSV 直接转成 HTML 表格，或填写行列做出整洁的 Markdown 表格直接粘贴。所有转换都在浏览器中完成，数据不会发送到任何地方。',
+    },
+    steps: [
+      {
+        href: '/tools/docs/csv-to-html',
+        name: { ko: 'CSV를 HTML 표로 변환', en: 'Convert CSV to an HTML table', ja: 'CSVをHTMLの表に変換', zh: '把 CSV 转成 HTML 表格' },
+        text: {
+          ko: 'CSV를 붙여넣으면 헤더·행을 갖춘 HTML 표 코드가 만들어집니다.',
+          en: 'Paste CSV to get HTML table markup with headers and rows.', ja: 'CSVを貼り付けると、ヘッダー・行を備えたHTMLの表コードが生成されます。', zh: '粘贴 CSV，即可生成带表头和行的 HTML 表格代码。',
+        },
+      },
+      {
+        href: '/tools/docs/markdown-table',
+        name: { ko: '마크다운 표 작성', en: 'Build a Markdown table', ja: 'Markdownの表を作成', zh: '制作 Markdown 表格' },
+        text: {
+          ko: '행·열과 정렬을 지정해 README에 쓸 마크다운 표를 만듭니다.',
+          en: 'Set rows, columns and alignment to build a Markdown table for your README.', ja: '行・列と配置を指定して、READMEに使うMarkdownの表を作ります。', zh: '设定行、列与对齐方式，制作可用于 README 的 Markdown 表格。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '첫 줄을 헤더로 인식하나요?', en: 'Is the first row treated as a header?', ja: '1行目はヘッダーとして扱われますか？', zh: '第一行会当作表头吗？' },
+        a: {
+          ko: '네. CSV의 첫 줄을 표 헤더로 처리하며, 필요하면 헤더 사용 여부를 끌 수도 있습니다.',
+          en: 'Yes. The first CSV row becomes the table header, and you can turn that off if needed.', ja: 'はい。CSVの1行目を表のヘッダーとして扱い、必要ならヘッダー使用をオフにもできます。', zh: '会。CSV 第一行作为表头，必要时也可关闭表头识别。',
+        },
+      },
+      {
+        q: { ko: '쉼표가 들어간 값은 어떻게 처리되나요?', en: 'How are values containing commas handled?', ja: 'カンマを含む値はどう処理されますか？', zh: '含逗号的值如何处理？' },
+        a: {
+          ko: '따옴표로 감싼 필드를 인식해 값 안의 쉼표를 구분자로 오해하지 않습니다. 표준 CSV 규칙을 따릅니다.',
+          en: 'Quoted fields are recognized, so commas inside a value aren’t mistaken for separators. It follows standard CSV rules.', ja: '引用符で囲まれたフィールドを認識するため、値の中のカンマを区切り文字と誤認しません。標準的なCSVルールに従います。', zh: '会识别用引号包裹的字段，因此值内的逗号不会被误判为分隔符，遵循标准 CSV 规则。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['csv html 표 변환', '마크다운 표 만들기', '표 생성기', 'readme 표', '데이터 표'],
+      en: ['csv to html table', 'markdown table generator', 'table maker', 'readme table', 'data table'], ja: ['csv html 表 変換', 'markdown 表 作成', '表 生成', 'readme 表', 'データ 表'], zh: ['csv html 表格 转换', 'markdown 表格 制作', '表格 生成器', 'readme 表格', '数据 表格'],
+    },
+  },
+  {
+    slug: 'apply-vintage-photo-filter',
+    category: 'image',
+    title: { ko: '사진에 빈티지 필름 느낌 입히기', en: 'Give a Photo a Vintage Film Look', ja: '写真にヴィンテージなフィルム調を加える', zh: '为照片营造复古胶片质感' },
+    h1: { ko: '사진 빈티지 필터', en: 'Vintage film look for photos', ja: '写真にヴィンテージ調を', zh: '照片复古滤镜' },
+    description: {
+      ko: '따뜻한 세피아 톤과 가장자리 비네팅, 색 틴트를 차례로 더해 평범한 사진을 빈티지 필름 느낌으로 바꾸세요.',
+      en: 'Layer a warm sepia tone, edge vignette and color tint to turn an ordinary photo into a vintage film look.', ja: '温かみのあるセピア、周辺のビネット、色のティントを順に重ねて、普通の写真をヴィンテージなフィルム調に変えます。', zh: '依次叠加暖色棕褐调、边缘暗角和色彩着色，把普通照片变成复古胶片质感。',
+    },
+    intro: {
+      ko: '빈티지한 분위기는 한 가지 효과가 아니라 여러 톤이 겹쳐 만들어집니다. 먼저 따뜻한 세피아로 색감을 옛 사진처럼 바꾸고, 가장자리를 어둡게 하는 비네팅으로 시선을 가운데로 모은 뒤, 은은한 색 틴트를 덧입히면 필름 특유의 분위기가 완성됩니다. 모든 효과가 브라우저에서 처리돼 사진이 업로드되지 않습니다.',
+      en: 'A vintage mood comes from layering several tones, not one effect. Start with a warm sepia to age the colors, darken the edges with a vignette to pull the eye to the center, then add a subtle color tint to finish that film feel. Every effect runs in your browser, so the photo is never uploaded.', ja: 'ヴィンテージな雰囲気は一つの効果ではなく、複数のトーンを重ねて生まれます。まず温かいセピアで色合いを古写真風にし、周辺を暗くするビネットで視線を中央に集め、さりげない色ティントを重ねるとフィルム特有の雰囲気が完成します。すべての効果はブラウザ内で処理され、写真がアップロードされることはありません。', zh: '复古氛围并非单一效果，而是多种色调叠加而成。先用暖色棕褐让色彩泛旧，再用暗角压暗边缘把视线引向中央，最后叠一层淡淡的色彩着色，便有了胶片特有的味道。所有效果都在浏览器中完成，照片不会被上传。',
+    },
+    steps: [
+      {
+        href: '/tools/image/sepia',
+        name: { ko: '따뜻한 세피아 톤 적용', en: 'Apply a warm sepia tone', ja: '温かいセピアを適用', zh: '应用暖色棕褐调' },
+        text: {
+          ko: '사진을 올려 세피아 강도를 조절하며 옛 사진 같은 색감을 입힙니다.',
+          en: 'Upload a photo and adjust the sepia strength for an aged color cast.', ja: '写真をアップロードし、セピアの強さを調整して古写真のような色合いにします。', zh: '上传照片，调整棕褐强度，营造泛旧的色调。',
+        },
+      },
+      {
+        href: '/tools/image/vignette',
+        name: { ko: '가장자리 어둡게(비네팅)', en: 'Darken the edges (vignette)', ja: '周辺を暗く(ビネット)', zh: '压暗边缘（暗角）' },
+        text: {
+          ko: '비네팅 범위와 강도를 조절해 시선을 가운데로 모읍니다.',
+          en: 'Tune the vignette size and strength to draw the eye to the center.', ja: 'ビネットの範囲と強さを調整して、視線を中央に集めます。', zh: '调整暗角范围与强度，把视线引向中央。',
+        },
+      },
+      {
+        href: '/tools/image/tint',
+        name: { ko: '색 틴트 덧입히기', en: 'Overlay a color tint', ja: '色ティントを重ねる', zh: '叠加色彩着色' },
+        text: {
+          ko: '은은한 색을 전체에 덧입혀 통일된 분위기를 만듭니다.',
+          en: 'Overlay a subtle color across the image for a unified mood.', ja: 'さりげない色を全体に重ねて、統一感のある雰囲気を作ります。', zh: '为整张图叠一层淡色，营造统一氛围。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '효과를 적용하면 원본이 사라지나요?', en: 'Does applying effects overwrite the original?', ja: '効果を適用すると元画像は失われますか？', zh: '应用效果会覆盖原图吗？' },
+        a: {
+          ko: '아니요. 결과는 새 이미지로 내려받게 되어 원본 파일은 그대로 남습니다. 강도가 마음에 안 들면 다시 조절하면 됩니다.',
+          en: 'No. The result downloads as a new image, leaving your original file untouched. Just readjust if the strength isn’t right.', ja: 'いいえ。結果は新しい画像としてダウンロードされ、元のファイルはそのまま残ります。強さが気に入らなければ調整し直せます。', zh: '不会。结果会作为新图片下载，原文件保持不变。强度不满意可重新调整。',
+        },
+      },
+      {
+        q: { ko: '효과 순서를 바꿔도 되나요?', en: 'Can I change the order of the effects?', ja: '効果の順番を変えてもいいですか？', zh: '可以更改效果顺序吗？' },
+        a: {
+          ko: '됩니다. 다만 세피아 → 비네팅 → 틴트 순서가 가장 자연스러운 결과를 주는 편입니다. 각 단계의 결과를 다음 도구에 넣어 이어가세요.',
+          en: 'You can. That said, sepia → vignette → tint tends to give the most natural result. Feed each step’s output into the next tool.', ja: '構いません。ただしセピア→ビネット→ティントの順が最も自然な仕上がりになりやすいです。各段階の結果を次のツールに入れて続けてください。', zh: '可以。不过棕褐 → 暗角 → 着色的顺序往往效果最自然。把每一步的结果送入下一个工具继续即可。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['빈티지 필터', '세피아 효과', '비네팅', '필름 느낌 사진', '레트로 사진'],
+      en: ['vintage filter', 'sepia effect', 'vignette', 'film look photo', 'retro photo'], ja: ['ヴィンテージ フィルター', 'セピア 効果', 'ビネット', 'フィルム調 写真', 'レトロ 写真'], zh: ['复古 滤镜', '棕褐 效果', '暗角', '胶片感 照片', '复古 照片'],
+    },
+  },
+  {
+    slug: 'clean-up-pdf-pages',
+    category: 'pdf',
+    title: { ko: 'PDF 불필요한 페이지 삭제하고 재정렬', en: 'Delete Unwanted Pages & Reorder a PDF', ja: 'PDFの不要なページを削除して並べ替え', zh: '删除多余页面并重排 PDF' },
+    h1: { ko: 'PDF 페이지 정리하기', en: 'Clean up PDF pages', ja: 'PDFのページを整理', zh: '整理 PDF 页面' },
+    description: {
+      ko: '빈 페이지나 필요 없는 페이지를 골라 지우고, 남은 페이지의 순서를 보기 좋게 재정렬하세요. 업로드 없이 브라우저에서.',
+      en: 'Pick out blank or unwanted pages to delete, then reorder the remaining pages neatly — in your browser, no upload.', ja: '空白や不要なページを選んで削除し、残ったページの順番を見やすく並べ替えます。アップロードなし、ブラウザで。', zh: '挑出空白或多余页面删除，再把剩余页面整齐重排。无需上传，在浏览器中完成。',
+    },
+    intro: {
+      ko: '스캔하거나 합쳐 만든 PDF에는 빈 페이지나 중복 페이지가 끼어 있곤 합니다. 먼저 필요 없는 페이지를 골라 삭제하고, 남은 페이지를 끌어다 순서를 바로잡으면 깔끔한 문서가 됩니다. 모든 편집이 브라우저에서 처리돼 파일이 업로드되지 않습니다.',
+      en: 'PDFs you scan or merge often end up with blank or duplicate pages. Delete the ones you don’t need first, then drag the remaining pages into the right order for a clean document. All editing happens in your browser, so the file is never uploaded.', ja: 'スキャンや結合で作ったPDFには、空白ページや重複ページが紛れ込みがちです。まず不要なページを選んで削除し、残ったページをドラッグして順番を整えれば、すっきりした文書になります。すべての編集はブラウザ内で行われ、ファイルがアップロードされることはありません。', zh: '扫描或合并得到的 PDF 常夹杂空白页或重复页。先挑出不需要的页面删除，再拖动剩余页面调整顺序，就能得到整洁的文档。所有编辑都在浏览器中完成，文件不会被上传。',
+    },
+    steps: [
+      {
+        href: '/tools/pdf/delete-pages',
+        name: { ko: '특정 페이지 삭제', en: 'Delete specific pages', ja: '特定のページを削除', zh: '删除指定页面' },
+        text: {
+          ko: 'PDF를 올려 삭제할 페이지 번호나 범위를 지정합니다.',
+          en: 'Upload the PDF and specify the page numbers or ranges to delete.', ja: 'PDFをアップロードし、削除するページ番号や範囲を指定します。', zh: '上传 PDF，指定要删除的页码或范围。',
+        },
+      },
+      {
+        href: '/tools/pdf/organize',
+        name: { ko: '남은 페이지 재정렬', en: 'Reorder the remaining pages', ja: '残ったページを並べ替え', zh: '重排剩余页面' },
+        text: {
+          ko: '남은 페이지를 끌어다 놓아 원하는 순서로 정렬합니다.',
+          en: 'Drag the remaining pages to arrange them in the order you want.', ja: '残ったページをドラッグして、好みの順番に並べ替えます。', zh: '拖动剩余页面，按需要的顺序排列。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '한 번에 여러 페이지를 지울 수 있나요?', en: 'Can I delete several pages at once?', ja: '一度に複数ページを削除できますか？', zh: '可以一次删除多页吗？' },
+        a: {
+          ko: '네. 2,5,8처럼 쉼표로 나열하거나 3-7처럼 범위로 지정해 여러 페이지를 한 번에 삭제할 수 있습니다.',
+          en: 'Yes. List them with commas like 2,5,8 or give a range like 3-7 to delete several pages at once.', ja: 'はい。2,5,8のようにカンマで列挙したり、3-7のように範囲で指定して、複数ページを一度に削除できます。', zh: '可以。用逗号列出如 2,5,8，或用范围如 3-7，即可一次删除多页。',
+        },
+      },
+      {
+        q: { ko: '편집 후 원본 PDF가 바뀌나요?', en: 'Does editing change the original PDF?', ja: '編集すると元のPDFは変わりますか？', zh: '编辑会改动原始 PDF 吗？' },
+        a: {
+          ko: '아니요. 결과는 새 PDF로 저장되고 원본 파일은 그대로 남습니다. 마음에 들지 않으면 다시 시작하면 됩니다.',
+          en: 'No. The result is saved as a new PDF and your original file stays as-is. Just start over if you’re not happy.', ja: 'いいえ。結果は新しいPDFとして保存され、元のファイルはそのまま残ります。気に入らなければやり直せます。', zh: '不会。结果会另存为新的 PDF，原文件保持不变。不满意可重新开始。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['pdf 페이지 삭제', 'pdf 페이지 정리', 'pdf 순서 변경', '빈 페이지 제거', 'pdf 재정렬'],
+      en: ['delete pdf pages', 'remove pages from pdf', 'reorder pdf pages', 'organize pdf', 'pdf page cleanup'], ja: ['pdf ページ 削除', 'pdf ページ 整理', 'pdf 順番 変更', '空白ページ 削除', 'pdf 並べ替え'], zh: ['pdf 删除 页面', 'pdf 页面 整理', 'pdf 重排 顺序', '删除 空白页', 'pdf 重新排列'],
+    },
+  },
 ];
 
 export const USE_CASE_SLUGS: string[] = USE_CASES.map((u) => u.slug);
