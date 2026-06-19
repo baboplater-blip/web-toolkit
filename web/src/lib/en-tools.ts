@@ -2444,6 +2444,223 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'A browser metronome that clicks in time at your chosen BPM and meter.',
     keywords: ['metronome', 'bpm', 'beat', 'tempo'],
   },
+  'mime-type-lookup': {
+    name: 'MIME Type Lookup',
+    tagline: 'Find the MIME type for a file extension and back.',
+    description:
+      'Look up the MIME (content) type for any file extension, or find extensions for a MIME type.',
+    keywords: ['mime type', 'content type', 'file extension', 'mime lookup'],
+  },
+  'semver-checker': {
+    name: 'Semver Checker',
+    tagline: 'Parse and compare semantic versions.',
+    description:
+      'Parse semantic versions, compare which is higher, and inspect major/minor/patch/prerelease parts.',
+    keywords: ['semver', 'semantic version', 'version compare', 'version parser'],
+  },
+  'sql-in-clause': {
+    name: 'SQL IN Clause Builder',
+    tagline: 'Turn a list into a SQL IN (...) clause.',
+    description:
+      'Paste a list of values and get a quoted, comma-separated SQL IN (...) clause ready to paste into a query.',
+    keywords: ['sql in clause', 'in clause generator', 'sql list', 'quote list'],
+  },
+  'color-mix': {
+    name: 'Color Mixer',
+    tagline: 'Blend two colors by ratio.',
+    description:
+      'Mix two HEX colors at any ratio to get the blended color, with a live preview and copyable HEX/RGB.',
+    keywords: ['color mixer', 'blend colors', 'mix hex colors', 'color blend'],
+  },
+  'git-command-builder': {
+    name: 'Git Command Builder',
+    tagline: 'Build common git commands from options.',
+    description:
+      'Pick a task (commit, branch, reset, stash, undo) and get the exact git command to copy and run.',
+    keywords: ['git command', 'git generator', 'git cheatsheet', 'git builder'],
+  },
+  'htaccess-redirect': {
+    name: '.htaccess Redirect Generator',
+    tagline: 'Generate Apache .htaccess redirect rules.',
+    description:
+      'Create 301/302 redirects, force HTTPS and www/non-www rules for an Apache .htaccess file.',
+    keywords: ['htaccess generator', '301 redirect', 'apache redirect', 'force https'],
+  },
+  'query-string-builder': {
+    name: 'Query String Builder',
+    tagline: 'Build a URL query string from key-value pairs.',
+    description:
+      'Enter key-value pairs and get a properly URL-encoded query string to append to any URL.',
+    keywords: ['query string builder', 'url parameters', 'querystring', 'url encode params'],
+  },
+  'regex-escape': {
+    name: 'Regex Escaper',
+    tagline: 'Escape special characters for a regular expression.',
+    description:
+      'Escape regex metacharacters in any text so it matches literally inside a regular expression.',
+    keywords: ['regex escape', 'escape regex', 'regex special characters', 'literal regex'],
+  },
+  'reverse-words': {
+    name: 'Reverse Word Order',
+    tagline: 'Reverse the order of words in text.',
+    description:
+      'Flip the order of words in each line — useful for puzzles, captions and language exercises.',
+    keywords: ['reverse words', 'reverse word order', 'flip words', 'word reverser'],
+  },
+  'pig-latin': {
+    name: 'Pig Latin Translator',
+    tagline: 'Translate English text to Pig Latin.',
+    description:
+      'Convert English words to Pig Latin (e.g. hello → ellohay) with the standard vowel/consonant rules.',
+    keywords: ['pig latin', 'pig latin translator', 'pig latin converter'],
+  },
+  'remove-emoji': {
+    name: 'Remove Emoji',
+    tagline: 'Strip emoji and symbols from text.',
+    description:
+      'Remove all emoji and pictographic symbols from text, leaving clean plain text behind.',
+    keywords: ['remove emoji', 'strip emoji', 'delete emoji', 'emoji remover'],
+  },
+  'remove-numbers': {
+    name: 'Remove Numbers',
+    tagline: 'Remove all digits from text.',
+    description:
+      'Strip every digit (0-9) from your text in one click, optionally keeping or collapsing the spaces.',
+    keywords: ['remove numbers', 'strip digits', 'delete numbers', 'remove digits'],
+  },
+  'smart-quotes': {
+    name: 'Smart Quotes Converter',
+    tagline: 'Convert straight quotes to curly quotes and back.',
+    description:
+      'Turn straight quotes (" \') into typographic curly quotes (“ ” ‘ ’), or strip them back to straight.',
+    keywords: ['smart quotes', 'curly quotes', 'typographic quotes', 'straight quotes'],
+  },
+  'time-card-calc': {
+    name: 'Time Card Calculator',
+    tagline: 'Add up work hours from clock-in/out times.',
+    description:
+      'Enter clock-in and clock-out times with breaks to total daily and weekly work hours and pay.',
+    keywords: ['time card calculator', 'work hours', 'timesheet calculator', 'hours calculator'],
+  },
+  'date-add': {
+    name: 'Date Add / Subtract',
+    tagline: 'Add or subtract days, weeks, months or years from a date.',
+    description:
+      'Pick a start date and add or subtract days, weeks, months or years to get the resulting date.',
+    keywords: ['date add', 'date calculator', 'days from today', 'add days to date'],
+  },
+  'grade-calc': {
+    name: 'Grade Calculator',
+    tagline: 'Compute a weighted final grade.',
+    description:
+      'Enter scores and weights for each component to calculate your weighted average and final grade.',
+    keywords: ['grade calculator', 'weighted grade', 'final grade calculator', 'test grade'],
+  },
+  'ovulation-calc': {
+    name: 'Ovulation Calculator',
+    tagline: 'Estimate your fertile window and ovulation day.',
+    description:
+      'From your last period date and cycle length, estimate your ovulation day and fertile window.',
+    keywords: ['ovulation calculator', 'fertile window', 'fertility calculator', 'ovulation day'],
+  },
+  'pregnancy-due-date': {
+    name: 'Pregnancy Due Date Calculator',
+    tagline: 'Estimate your due date and current week.',
+    description:
+      'Calculate your estimated due date and how far along you are from your last menstrual period.',
+    keywords: ['due date calculator', 'pregnancy calculator', 'estimated due date', 'weeks pregnant'],
+  },
+  'paint-calc': {
+    name: 'Paint Calculator',
+    tagline: 'Estimate how much paint a wall needs.',
+    description:
+      'Enter wall dimensions, coats and coverage to estimate how many liters or gallons of paint you need.',
+    keywords: ['paint calculator', 'how much paint', 'wall paint', 'paint coverage'],
+  },
+  'currency-format': {
+    name: 'Currency Formatter',
+    tagline: 'Format numbers as currency with separators.',
+    description:
+      'Format any number with thousands separators and a currency symbol for many locales (no exchange rates).',
+    keywords: ['currency formatter', 'number format', 'thousands separator', 'money format'],
+  },
+  'random-team-generator': {
+    name: 'Random Team Generator',
+    tagline: 'Split a list of names into random teams.',
+    description:
+      'Paste names and shuffle them into a chosen number of balanced random teams or groups.',
+    keywords: ['random team generator', 'group generator', 'team picker', 'split into teams'],
+  },
+  'random-emoji': {
+    name: 'Random Emoji Generator',
+    tagline: 'Pick random emoji to copy.',
+    description:
+      'Generate one or many random emoji by category and copy them with a click.',
+    keywords: ['random emoji', 'emoji generator', 'random emoji picker'],
+  },
+  'markup-calc': {
+    name: 'Markup & Margin Calculator',
+    tagline: 'Get selling price from cost and margin.',
+    description:
+      'Enter cost and a markup or margin percentage to compute the selling price, profit and the other ratio.',
+    keywords: ['markup calculator', 'margin calculator', 'profit margin', 'selling price'],
+  },
+  'isbn-validate': {
+    name: 'ISBN Validator',
+    tagline: 'Validate ISBN-10 and ISBN-13 checksums.',
+    description:
+      'Check whether an ISBN-10 or ISBN-13 has a valid checksum and format, and convert between them.',
+    keywords: ['isbn validator', 'isbn checksum', 'validate isbn', 'isbn 13'],
+  },
+  'vin-validate': {
+    name: 'VIN Validator',
+    tagline: 'Validate a vehicle VIN check digit.',
+    description:
+      'Validate a 17-character Vehicle Identification Number\'s check digit and format (ISO 3779).',
+    keywords: ['vin validator', 'vin check digit', 'validate vin', 'vehicle id number'],
+  },
+  'imei-validate': {
+    name: 'IMEI Validator',
+    tagline: 'Validate a phone IMEI with the Luhn check.',
+    description:
+      'Check whether a 15-digit IMEI passes the Luhn checksum and has a valid length.',
+    keywords: ['imei validator', 'imei check', 'validate imei', 'imei luhn'],
+  },
+  'csv-to-sql': {
+    name: 'CSV to SQL',
+    tagline: 'Convert CSV into SQL INSERT statements.',
+    description:
+      'Turn CSV rows into INSERT statements for a table, with a header row mapped to column names.',
+    keywords: ['csv to sql', 'csv to insert', 'sql insert generator', 'csv import sql'],
+  },
+  'markdown-to-text': {
+    name: 'Markdown to Plain Text',
+    tagline: 'Strip Markdown formatting to plain text.',
+    description:
+      'Remove Markdown syntax (headings, bold, links, lists, code) to get clean readable plain text.',
+    keywords: ['markdown to text', 'strip markdown', 'markdown to plain text', 'remove markdown'],
+  },
+  'image-noise': {
+    name: 'Add Image Noise / Grain',
+    tagline: 'Add film grain or noise to a photo.',
+    description:
+      'Add adjustable film grain or noise to an image for a vintage or textured look — in your browser.',
+    keywords: ['add noise', 'film grain', 'image grain', 'photo noise'],
+  },
+  'image-threshold': {
+    name: 'Image Threshold',
+    tagline: 'Binarize an image to pure black and white.',
+    description:
+      'Convert an image to pure black and white at an adjustable brightness threshold — great for scans and stencils.',
+    keywords: ['image threshold', 'binarize image', 'black and white threshold', 'image to bw'],
+  },
+  'bpm-tap': {
+    name: 'BPM Tap Counter',
+    tagline: 'Tap along to measure a song\'s BPM.',
+    description:
+      'Tap a key or button in time with the beat to measure the tempo (BPM) of any song, averaged live.',
+    keywords: ['bpm tapper', 'tap bpm', 'tempo counter', 'find bpm'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */

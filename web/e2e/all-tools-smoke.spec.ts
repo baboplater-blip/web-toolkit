@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * 전 도구(320) + 주요 허브 라우트 마운트 스모크.
+ * 전 도구(385) + 주요 허브 라우트 마운트 스모크.
  *
  * 헤더 스타일(ToolHeader vs 표준형 sticky 헤더)에 무관하게 보편적으로 검증한다:
  *   ① HTTP 200 응답(404·500 아님)
@@ -382,6 +382,38 @@ const TOOL_ROUTES: string[] = [
   '/tools/docs/csv-to-html',
   '/tools/pdf/delete-pages',
   '/tools/audio/metronome',
+  // 팩5 (31종)
+  '/tools/dev/mime-type',
+  '/tools/dev/semver',
+  '/tools/dev/sql-in-clause',
+  '/tools/dev/color-mix',
+  '/tools/dev/git-command',
+  '/tools/dev/htaccess',
+  '/tools/dev/query-string',
+  '/tools/dev/regex-escape',
+  '/tools/text/reverse-words',
+  '/tools/text/pig-latin',
+  '/tools/text/remove-emoji',
+  '/tools/text/remove-numbers',
+  '/tools/text/smart-quotes',
+  '/tools/util/time-card',
+  '/tools/util/date-add',
+  '/tools/util/grade',
+  '/tools/util/ovulation',
+  '/tools/util/due-date',
+  '/tools/util/paint',
+  '/tools/util/currency-format',
+  '/tools/util/random-team',
+  '/tools/util/random-emoji',
+  '/tools/util/markup',
+  '/tools/security/isbn',
+  '/tools/security/vin',
+  '/tools/security/imei',
+  '/tools/docs/csv-to-sql',
+  '/tools/docs/markdown-to-text',
+  '/tools/image/noise',
+  '/tools/image/threshold',
+  '/tools/audio/bpm-tap',
 ];
 
 /** 마운트 시 무관한 외부 노이즈(확장프로그램·SW 등)는 회귀로 보지 않는다. */
@@ -436,7 +468,7 @@ test.describe('허브 라우트 스모크', () => {
   }
 });
 
-test.describe('전 도구 마운트 스모크 (354)', () => {
+test.describe('전 도구 마운트 스모크 (385)', () => {
   for (const route of TOOL_ROUTES) {
     test(route, async ({ page }) => {
       await smoke(page, route);
