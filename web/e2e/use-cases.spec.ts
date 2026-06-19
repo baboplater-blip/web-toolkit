@@ -26,6 +26,12 @@ const CASES: Array<{ slug: string; prefix: string; expectHref: string }> = [
   { slug: 'make-data-table-for-web', prefix: '/ja', expectHref: '/tools/docs/csv-to-html' },
   { slug: 'apply-vintage-photo-filter', prefix: '', expectHref: '/tools/image/sepia' },
   { slug: 'clean-up-pdf-pages', prefix: '/zh', expectHref: '/tools/pdf/delete-pages' },
+  // 라운드12 — 팩5 유스케이스
+  { slug: 'validate-product-codes', prefix: '', expectHref: '/tools/security/isbn' },
+  { slug: 'build-sql-from-csv', prefix: '', expectHref: '/tools/docs/csv-to-sql' },
+  { slug: 'track-cycle-to-due-date', prefix: '/en', expectHref: '/tools/util/ovulation' },
+  { slug: 'find-song-bpm', prefix: '', expectHref: '/tools/audio/bpm-tap' },
+  { slug: 'scan-to-black-and-white', prefix: '/ja', expectHref: '/tools/image/threshold' },
 ];
 
 test.describe('유스케이스 — 신규 14종 렌더 + 단계 링크', () => {

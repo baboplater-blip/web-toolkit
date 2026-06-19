@@ -24,6 +24,12 @@ const CASES: Array<{ slug: string; prefix: string; a: string; b: string }> = [
   { slug: 'bill-split-vs-tip-calculator', prefix: '', a: 'bill-split', b: 'tip-calc' },
   // 로케일(/zh) 도구 라우트는 registry id(bmi-calc)를 쓴다(ko 전체경로 세그먼트 bmi 와 다름).
   { slug: 'ideal-weight-vs-bmi', prefix: '/zh', a: 'ideal-weight', b: 'bmi-calc' },
+  // 라운드12 — 팩5 비교 (ko prefix는 href 세그먼트, 로케일은 registry id)
+  { slug: 'ovulation-vs-due-date', prefix: '', a: 'ovulation', b: 'due-date' },
+  { slug: 'date-add-vs-date-diff', prefix: '', a: 'date-add', b: 'date-diff' },
+  { slug: 'csv-to-sql-vs-csv-to-html', prefix: '', a: 'csv-to-sql', b: 'csv-to-html' },
+  { slug: 'regex-escape-vs-string-escape', prefix: '/en', a: 'regex-escape', b: 'string-escape' },
+  { slug: 'bpm-tap-vs-metronome', prefix: '', a: 'bpm-tap', b: 'metronome' },
 ];
 
 test.describe('비교 — 신규 10종 렌더 + 양쪽 도구 링크', () => {

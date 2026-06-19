@@ -45,7 +45,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'url-encoder': ['base64', 'html-entities', 'jwt-decoder', 'json-format'],
   'jwt-decoder': ['base64', 'url-encoder', 'totp', 'hmac-gen'],
   'css-units': ['css-clamp', 'color-converter', 'color-name', 'css-minify'],
-  'color-converter': ['color-name', 'tailwind-shades', 'css-units', 'color-contrast'],
+  'color-converter': ['color-name', 'color-mix', 'tailwind-shades', 'css-units'],
   'color-name': ['color-converter', 'tailwind-shades', 'css-units', 'color-contrast'],
   'code-case': ['text-case', 'slugify', 'json-to-go', 'css-units'],
   'http-status': ['user-agent-parser', 'url-encoder', 'curl-to-code', 'json-format'],
@@ -60,7 +60,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'text-diff': ['text-count', 'text-case', 'regex-tester', 'remove-accents'],
   'text-count': ['readability-score', 'text-diff', 'word-frequency', 'count-occurrences'],
   'text-case': ['code-case', 'slugify', 'text-count', 'remove-accents'],
-  'regex-tester': ['text-diff', 'text-case', 'json-format', 'text-count'],
+  'regex-tester': ['regex-escape', 'text-diff', 'text-case', 'json-format'],
   'remove-accents': ['slugify', 'text-case', 'text-count', 'html-entities'],
   slugify: ['remove-accents', 'text-case', 'code-case', 'lorem-ipsum'],
   'html-entities': ['url-encoder', 'base64', 'json-escape', 'text-case'],
@@ -127,7 +127,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'loan-calc': ['compound-interest', 'percentage', 'discount', 'bmi-calc'],
   discount: ['percentage', 'tip-calc', 'vat-calc', 'loan-calc'],
   timezone: ['timestamp-converter', 'date-diff', 'unit-converter', 'cron-explainer'],
-  'date-diff': ['timezone', 'timestamp-converter', 'age-calc', 'dday'],
+  'date-diff': ['date-add', 'timezone', 'timestamp-converter', 'age-calc'],
   'aspect-ratio': ['image-resize', 'unit-converter', 'image-crop', 'percentage'],
 
   // ── 라운드5: 보안 ──
@@ -186,6 +186,46 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'pdf-delete-pages': ['pdf-organize', 'pdf-split', 'pdf-insert', 'pdf-reverse'],
   // 오디오
   metronome: ['tone-gen', 'audio-speed', 'mic-record', 'audio-waveform'],
+
+  // ── 라운드12: 팩5 31종 워크플로 클러스터 ──
+  // 개발
+  'mime-type-lookup': ['http-status', 'user-agent-parser', 'base64', 'url-parser'],
+  'semver-checker': ['git-command-builder', 'gitignore-gen', 'json-to-ts', 'code-case'],
+  'sql-in-clause': ['csv-to-sql', 'sql-format', 'regex-tester', 'code-case'],
+  'color-mix': ['color-converter', 'color-name', 'tailwind-shades', 'css-gradient'],
+  'git-command-builder': ['gitignore-gen', 'semver-checker', 'cron-explainer', 'code-case'],
+  'htaccess-redirect': ['robots-txt', 'meta-tags', 'http-status', 'url-encoder'],
+  'query-string-builder': ['url-encoder', 'url-parser', 'string-escape', 'json-format'],
+  'regex-escape': ['regex-tester', 'string-escape', 'text-replace', 'slugify'],
+  // 텍스트
+  'reverse-words': ['reverse-text', 'text-sort', 'sort-numbers', 'word-frequency'],
+  'pig-latin': ['caesar-cipher', 'morse-code', 'fancy-text', 'reverse-words'],
+  'remove-emoji': ['remove-numbers', 'remove-accents', 'whitespace-clean', 'remove-line-breaks'],
+  'remove-numbers': ['remove-emoji', 'whitespace-clean', 'remove-accents', 'text-replace'],
+  'smart-quotes': ['remove-accents', 'text-replace', 'whitespace-clean', 'fancy-text'],
+  // 유틸: 시간/건강/계산/랜덤
+  'time-card-calc': ['salary-calc', 'date-diff', 'time-duration', 'timezone'],
+  'date-add': ['date-diff', 'age-calc', 'dday', 'timezone'],
+  'grade-calc': ['gpa', 'percentage', 'ratio-calc', 'number-to-words'],
+  'ovulation-calc': ['pregnancy-due-date', 'date-add', 'dday', 'bmi-calc'],
+  'pregnancy-due-date': ['ovulation-calc', 'date-add', 'dday', 'age-calc'],
+  'paint-calc': ['unit-converter', 'aspect-ratio', 'ratio-calc', 'percentage'],
+  'currency-format': ['number-to-words', 'percentage', 'discount', 'vat-calc'],
+  'random-team-generator': ['random-pick', 'list-shuffle', 'decision-wheel', 'random-number'],
+  'random-emoji': ['random-pick', 'decision-wheel', 'magic-8-ball', 'fancy-text'],
+  'markup-calc': ['discount', 'vat-calc', 'percentage', 'loan-calc'],
+  // 보안: 체크섬 검증
+  'isbn-validate': ['cc-validate', 'iban-validator', 'luhn-generator', 'checksum-verify'],
+  'vin-validate': ['isbn-validate', 'imei-validate', 'cc-validate', 'checksum-verify'],
+  'imei-validate': ['luhn-generator', 'cc-validate', 'vin-validate', 'isbn-validate'],
+  // 문서
+  'csv-to-sql': ['csv-to-html', 'csv-to-md', 'sql-in-clause', 'csv-json'],
+  'markdown-to-text': ['markdown-preview', 'md-html', 'markdown-toc', 'markdown-stats'],
+  // 이미지
+  'image-noise': ['image-denoise', 'image-filters', 'image-sepia', 'image-pixelate'],
+  'image-threshold': ['image-black-white', 'image-duotone', 'image-filters', 'image-pixelate'],
+  // 오디오
+  'bpm-tap': ['metronome', 'tone-gen', 'audio-speed', 'audio-waveform'],
 };
 
 /**

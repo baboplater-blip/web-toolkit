@@ -2074,6 +2074,610 @@ export const USE_CASES: UseCase[] = [
       en: ['delete pdf pages', 'remove pages from pdf', 'reorder pdf pages', 'organize pdf', 'pdf page cleanup'], ja: ['pdf ページ 削除', 'pdf ページ 整理', 'pdf 順番 変更', '空白ページ 削除', 'pdf 並べ替え'], zh: ['pdf 删除 页面', 'pdf 页面 整理', 'pdf 重排 顺序', '删除 空白页', 'pdf 重新排列'],
     },
   },
+  {
+    slug: 'validate-product-codes',
+    category: 'security',
+    title: { ko: '상품·기기 코드 검증 (ISBN·VIN·IMEI)', en: 'Validate Product & Device Codes (ISBN, VIN, IMEI)', ja: '商品・機器コードを検証 (ISBN・VIN・IMEI)', zh: '校验商品・设备代码 (ISBN・VIN・IMEI)' },
+    h1: { ko: '상품·기기 코드 검증하기', en: 'Validate product & device codes', ja: '商品・機器コードを検証する', zh: '校验商品・设备代码' },
+    description: {
+      ko: '책의 ISBN, 차량의 VIN, 휴대폰의 IMEI가 올바른 형식인지 체크 숫자로 확인하세요. 업로드 없이 브라우저에서 무료로.',
+      en: 'Check whether a book’s ISBN, a vehicle’s VIN or a phone’s IMEI is correctly formed using its check digit. Free, in your browser, no upload.', ja: '本のISBN、車のVIN、スマホのIMEIが正しい形式かをチェックディジットで確認。アップロードなし、ブラウザで無料。', zh: '用校验位确认书籍的 ISBN、车辆的 VIN、手机的 IMEI 格式是否正确。无需上传，浏览器中免费完成。',
+    },
+    intro: {
+      ko: 'ISBN·VIN·IMEI는 모두 마지막 자리에 체크 숫자를 두어 입력 오류를 잡아냅니다. 코드를 붙여넣으면 정해진 계산식(ISBN의 mod-11/mod-10, VIN의 ISO 3779 가중치, IMEI의 Luhn)으로 형식이 맞는지 즉시 확인할 수 있습니다. 모든 계산은 브라우저 안에서 끝나 코드가 서버로 전송되지 않습니다.',
+      en: 'ISBN, VIN and IMEI all carry a check digit in their last position to catch typos. Paste a code and each tool instantly confirms whether the format checks out using its formula (ISBN’s mod-11/mod-10, the VIN’s ISO 3779 weighting, the IMEI’s Luhn). Everything is computed in your browser, so the code is never sent to a server.', ja: 'ISBN・VIN・IMEIはいずれも末尾にチェックディジットを持ち、入力ミスを検出します。コードを貼り付ければ、それぞれの計算式(ISBNのmod-11/mod-10、VINのISO 3779重み付け、IMEIのLuhn)で形式の正しさをすぐに確認できます。すべてブラウザ内で計算され、コードがサーバーに送られることはありません。', zh: 'ISBN、VIN、IMEI 都在末位设有校验位，用来发现录入错误。粘贴代码后，各工具会用各自的算法(ISBN 的 mod-11/mod-10、VIN 的 ISO 3779 加权、IMEI 的 Luhn)立即确认格式是否正确。所有计算都在浏览器中完成，代码不会被发送到服务器。',
+    },
+    steps: [
+      {
+        href: '/tools/security/isbn',
+        name: { ko: 'ISBN 검증 (책)', en: 'Validate an ISBN (book)', ja: 'ISBNを検証 (書籍)', zh: '校验 ISBN (书籍)' },
+        text: {
+          ko: '책 뒤표지의 ISBN-10 또는 ISBN-13을 붙여넣어 체크 숫자가 맞는지 확인하고 서로 변환합니다.',
+          en: 'Paste the ISBN-10 or ISBN-13 from a book’s back cover to verify the check digit and convert between the two.', ja: '本の裏表紙にあるISBN-10またはISBN-13を貼り付け、チェックディジットを確認して相互変換します。', zh: '粘贴书籍封底的 ISBN-10 或 ISBN-13，确认校验位并在两者之间转换。',
+        },
+      },
+      {
+        href: '/tools/security/vin',
+        name: { ko: 'VIN 검증 (차량)', en: 'Validate a VIN (vehicle)', ja: 'VINを検証 (車両)', zh: '校验 VIN (车辆)' },
+        text: {
+          ko: '17자리 차대번호(VIN)를 입력해 ISO 3779 체크 숫자가 맞는지 확인합니다.',
+          en: 'Enter the 17-character VIN to check that its ISO 3779 check digit is valid.', ja: '17桁の車台番号(VIN)を入力し、ISO 3779のチェックディジットが正しいか確認します。', zh: '输入 17 位车辆识别码(VIN)，确认其 ISO 3779 校验位是否有效。',
+        },
+      },
+      {
+        href: '/tools/security/imei',
+        name: { ko: 'IMEI 검증 (휴대폰)', en: 'Validate an IMEI (phone)', ja: 'IMEIを検証 (スマホ)', zh: '校验 IMEI (手机)' },
+        text: {
+          ko: '휴대폰의 15자리 IMEI를 입력해 Luhn 체크 숫자가 맞는지 확인합니다.',
+          en: 'Enter your phone’s 15-digit IMEI to confirm its Luhn check digit is correct.', ja: 'スマホの15桁のIMEIを入力し、Luhnのチェックディジットが正しいか確認します。', zh: '输入手机的 15 位 IMEI，确认其 Luhn 校验位是否正确。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '검증이 통과하면 진짜 책·차·폰이라는 뜻인가요?', en: 'Does a valid result mean the book, car or phone is genuine?', ja: '検証に通れば本物の本・車・スマホということですか？', zh: '校验通过就代表书、车或手机是真的吗？' },
+        a: {
+          ko: '아니요. 이 도구는 숫자가 형식 규칙(체크 숫자)에 맞는지만 확인합니다. 실제 등록 여부나 정품·도난 여부는 알 수 없습니다.',
+          en: 'No. These tools only check that the number follows the format rule (the check digit). They cannot tell you whether it is actually registered, genuine or stolen.', ja: 'いいえ。これらのツールは数字が形式ルール(チェックディジット)に合うかだけを確認します。実際の登録状況や正規品・盗難の有無は分かりません。', zh: '不能。这些工具只检查数字是否符合格式规则(校验位)，无法判断它是否真正注册、正品或被盗。',
+        },
+      },
+      {
+        q: { ko: 'ISBN-10과 ISBN-13의 차이는 무엇인가요?', en: 'What’s the difference between ISBN-10 and ISBN-13?', ja: 'ISBN-10とISBN-13の違いは何ですか？', zh: 'ISBN-10 和 ISBN-13 有什么区别？' },
+        a: {
+          ko: 'ISBN-13은 앞에 978 또는 979를 붙인 13자리 형식이고, ISBN-10은 옛 10자리 형식입니다. 도구가 둘을 서로 변환해 줍니다.',
+          en: 'ISBN-13 is the 13-digit format prefixed with 978 or 979; ISBN-10 is the older 10-digit form. The tool converts between them for you.', ja: 'ISBN-13は先頭に978または979を付けた13桁形式で、ISBN-10は旧来の10桁形式です。ツールが両者を相互変換します。', zh: 'ISBN-13 是带 978 或 979 前缀的 13 位格式，ISBN-10 是旧的 10 位格式。工具会在两者之间转换。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['isbn 검증', 'vin 확인', 'imei 검사', '체크 숫자 확인', '코드 유효성'],
+      en: ['validate isbn', 'check vin', 'verify imei', 'check digit validator', 'product code check'], ja: ['isbn 検証', 'vin 確認', 'imei チェック', 'チェックディジット 確認', 'コード 有効性'], zh: ['isbn 校验', 'vin 验证', 'imei 检查', '校验位 验证', '代码 有效性'],
+    },
+  },
+  {
+    slug: 'setup-apache-redirects',
+    category: 'dev',
+    title: { ko: '아파치 리다이렉트·URL 규칙 만들기', en: 'Set Up Apache Redirects and URL Rules', ja: 'Apacheリダイレクト・URLルールを作成', zh: '设置 Apache 重定向与 URL 规则' },
+    h1: { ko: '아파치 리다이렉트 설정하기', en: 'Set up Apache redirects', ja: 'Apacheリダイレクトを設定する', zh: '设置 Apache 重定向' },
+    description: {
+      ko: '.htaccess로 301/302 리다이렉트·HTTPS·www 규칙을 만들고, URL 쿼리 문자열과 MIME 타입까지 한 번에 정리하세요. 무료, 브라우저에서.',
+      en: 'Generate 301/302 redirect, HTTPS and www rules for .htaccess, then build the URL query string and check MIME types — all in one place, free in your browser.', ja: '.htaccessで301/302リダイレクト・HTTPS・wwwルールを作り、URLクエリ文字列やMIMEタイプまでまとめて整えます。無料、ブラウザで。', zh: '用 .htaccess 生成 301/302 重定向、HTTPS、www 规则，再一并整理 URL 查询字符串和 MIME 类型。免费，在浏览器中完成。',
+    },
+    intro: {
+      ko: '서버 설정을 직접 외우지 않아도 .htaccess 리다이렉트 규칙을 만들 수 있습니다. 옮긴 페이지를 301로 보내고 HTTPS·www를 강제한 뒤, 링크에 붙일 쿼리 문자열을 조립하고 파일이 어떤 MIME 타입으로 전달될지까지 확인하면 한 묶음이 됩니다. 입력값은 브라우저 안에서만 처리됩니다.',
+      en: 'You can build .htaccess redirect rules without memorizing server config. Send moved pages with a 301, force HTTPS and www, then assemble the query string to append to links and check what MIME type a file will be served as — all as one workflow. Your input is processed only in your browser.', ja: 'サーバー設定を暗記しなくても.htaccessのリダイレクトルールを作れます。移動したページを301で送り、HTTPS・wwwを強制したうえで、リンクに付けるクエリ文字列を組み立て、ファイルがどのMIMEタイプで配信されるかまで確認すれば一通りそろいます。入力値はブラウザ内だけで処理されます。', zh: '无需死记服务器配置也能生成 .htaccess 重定向规则。把已迁移的页面用 301 跳转、强制 HTTPS 和 www，再拼出要附加到链接的查询字符串，并确认文件会以哪种 MIME 类型提供，整套流程一次完成。你的输入只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/htaccess',
+        name: { ko: '.htaccess 리다이렉트 규칙 생성', en: 'Generate .htaccess redirect rules', ja: '.htaccessリダイレクトルールを生成', zh: '生成 .htaccess 重定向规则' },
+        text: {
+          ko: '옛 경로와 새 경로를 넣어 301/302 규칙을 만들고 HTTPS·www 강제 옵션을 켭니다.',
+          en: 'Enter the old and new paths to build 301/302 rules and toggle HTTPS / www enforcement.', ja: '旧パスと新パスを入れて301/302ルールを作り、HTTPS・www強制オプションを有効にします。', zh: '填入旧路径和新路径生成 301/302 规则，并开启强制 HTTPS／www 选项。',
+        },
+      },
+      {
+        href: '/tools/dev/query-string',
+        name: { ko: 'URL 쿼리 문자열 만들기', en: 'Build the URL query string', ja: 'URLクエリ文字列を作る', zh: '构建 URL 查询字符串' },
+        text: {
+          ko: '키·값을 넣어 안전하게 인코딩된 쿼리 문자열을 조립합니다.',
+          en: 'Add key/value pairs to assemble a safely encoded query string.', ja: 'キーと値を入れて、安全にエンコードされたクエリ文字列を組み立てます。', zh: '添加键值对，拼出经过安全编码的查询字符串。',
+        },
+      },
+      {
+        href: '/tools/dev/mime-type',
+        name: { ko: '파일 MIME 타입 확인', en: 'Check a file’s MIME type', ja: 'ファイルのMIMEタイプを確認', zh: '查看文件的 MIME 类型' },
+        text: {
+          ko: '확장자를 넣어 서버가 보낼 Content-Type(MIME 타입)을 확인합니다.',
+          en: 'Enter an extension to find the Content-Type (MIME type) the server should send.', ja: '拡張子を入れて、サーバーが送るべきContent-Type(MIMEタイプ)を確認します。', zh: '输入扩展名，查看服务器应发送的 Content-Type (MIME 类型)。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '301과 302 중 무엇을 써야 하나요?', en: 'Should I use 301 or 302?', ja: '301と302のどちらを使うべきですか？', zh: '应该用 301 还是 302？' },
+        a: {
+          ko: '페이지를 영구히 옮겼으면 301, 잠시만 다른 곳으로 보낼 거면 302를 씁니다. 검색엔진은 301일 때 새 주소로 평가를 옮깁니다.',
+          en: 'Use 301 when a page has moved permanently and 302 when the redirect is temporary. Search engines transfer ranking to the new URL on a 301.', ja: 'ページを恒久的に移したなら301、一時的に別の場所へ送るなら302を使います。検索エンジンは301の場合に評価を新しいURLへ移します。', zh: '页面永久迁移用 301，临时跳转用 302。搜索引擎在 301 时会把权重转移到新网址。',
+        },
+      },
+      {
+        q: { ko: '.htaccess 규칙이 적용되려면 무엇이 필요한가요?', en: 'What is needed for .htaccess rules to take effect?', ja: '.htaccessルールが有効になるには何が必要ですか？', zh: '.htaccess 规则生效需要什么？' },
+        a: {
+          ko: '아파치 서버에서 mod_rewrite가 켜져 있어야 하고, .htaccess가 해당 디렉터리에 놓여야 합니다. 규칙 생성은 브라우저에서 끝나니 만든 내용을 서버에 올리기만 하면 됩니다.',
+          en: 'The Apache server needs mod_rewrite enabled and the .htaccess file placed in the right directory. Rule generation happens in your browser, so you just upload the result to your server.', ja: 'Apacheサーバーでmod_rewriteが有効で、.htaccessが対象ディレクトリに置かれている必要があります。ルール生成はブラウザで完結するので、作った内容をサーバーに上げるだけです。', zh: 'Apache 服务器需启用 mod_rewrite，并把 .htaccess 放在对应目录中。规则生成在浏览器中完成，你只需把结果上传到服务器即可。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['htaccess 리다이렉트', '301 리다이렉트', 'https 강제', 'url rewrite', 'mime 타입'],
+      en: ['htaccess redirect', '301 redirect', 'force https', 'url rewrite', 'mime type'], ja: ['htaccess リダイレクト', '301 リダイレクト', 'https 強制', 'url rewrite', 'mime タイプ'], zh: ['htaccess 重定向', '301 重定向', '强制 https', 'url 重写', 'mime 类型'],
+    },
+  },
+  {
+    slug: 'build-sql-from-csv',
+    category: 'docs',
+    title: { ko: 'CSV·스프레드시트를 SQL로 만들기', en: 'Turn a CSV / Spreadsheet into SQL', ja: 'CSV・表計算をSQLに変換', zh: '把 CSV／表格变成 SQL' },
+    h1: { ko: 'CSV를 SQL로 바꾸기', en: 'Turn a CSV into SQL', ja: 'CSVをSQLに変換する', zh: '把 CSV 转成 SQL' },
+    description: {
+      ko: '엑셀·CSV 데이터를 INSERT 문으로 바꾸고, 조회용 IN (...) 절까지 만들어 바로 쿼리에 붙여넣으세요. 업로드 없이 무료로.',
+      en: 'Convert Excel/CSV data into INSERT statements and build an IN (...) clause for lookups, ready to paste into your query. Free, no upload.', ja: 'Excel・CSVデータをINSERT文に変換し、検索用のIN (...)句まで作って、そのままクエリに貼り付けられます。アップロードなし、無料。', zh: '把 Excel／CSV 数据转成 INSERT 语句，并生成查询用的 IN (...) 子句，直接粘进 SQL。无需上传，免费完成。',
+    },
+    intro: {
+      ko: '손으로 INSERT 문을 쓰지 않아도 CSV나 스프레드시트 데이터를 SQL로 옮길 수 있습니다. 표를 붙여넣으면 행마다 INSERT 문이 만들어지고, 특정 값들만 조회할 때 쓰는 IN (...) 절도 따옴표 처리까지 깔끔하게 조립됩니다. 데이터는 브라우저를 벗어나지 않습니다.',
+      en: 'You can move CSV or spreadsheet data into SQL without hand-writing INSERT statements. Paste a table and you get one INSERT per row, plus an IN (...) clause — with quoting handled — for looking up specific values. Your data never leaves the browser.', ja: '手作業でINSERT文を書かなくても、CSVや表計算データをSQLに移せます。表を貼り付ければ行ごとにINSERT文が作られ、特定の値だけを検索するときのIN (...)句も引用符の処理まできれいに組み立てられます。データはブラウザの外に出ません。', zh: '无需手写 INSERT 语句，也能把 CSV 或表格数据搬进 SQL。粘贴表格后，会逐行生成 INSERT 语句，还能拼出查询特定值用的 IN (...) 子句，并自动处理好引号。数据不会离开浏览器。',
+    },
+    steps: [
+      {
+        href: '/tools/docs/csv-to-sql',
+        name: { ko: 'CSV를 INSERT 문으로 변환', en: 'Convert CSV to INSERT statements', ja: 'CSVをINSERT文に変換', zh: '把 CSV 转成 INSERT 语句' },
+        text: {
+          ko: 'CSV를 붙여넣고 테이블 이름을 지정하면 행마다 INSERT 문이 생성됩니다.',
+          en: 'Paste the CSV and set a table name to generate one INSERT statement per row.', ja: 'CSVを貼り付けてテーブル名を指定すると、行ごとにINSERT文が生成されます。', zh: '粘贴 CSV 并指定表名，即可逐行生成 INSERT 语句。',
+        },
+      },
+      {
+        href: '/tools/dev/sql-in-clause',
+        name: { ko: 'SQL IN (...) 절 만들기', en: 'Build a SQL IN (...) clause', ja: 'SQL IN (...)句を作る', zh: '构建 SQL IN (...) 子句' },
+        text: {
+          ko: '한 열의 값 목록을 붙여넣어 따옴표·중복 제거까지 된 IN (...) 절을 만듭니다.',
+          en: 'Paste a column of values to build an IN (...) clause with quoting and de-duplication handled.', ja: '1列分の値リストを貼り付け、引用符付け・重複除去まで済んだIN (...)句を作ります。', zh: '粘贴一列值，生成已处理引号和去重的 IN (...) 子句。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '문자열에 작은따옴표가 있으면 깨지지 않나요?', en: 'Won’t values with single quotes break the SQL?', ja: '値にシングルクォートがあると壊れませんか？', zh: '值里有单引号会不会让 SQL 出错？' },
+        a: {
+          ko: '도구가 작은따옴표를 자동으로 이스케이프해 안전한 SQL을 만듭니다. 다만 실제 DB에 넣기 전에는 항상 결과를 확인하세요.',
+          en: 'The tool escapes single quotes automatically to produce safe SQL. Still, always review the output before running it against a real database.', ja: 'ツールがシングルクォートを自動でエスケープし、安全なSQLを作ります。ただし実際のDBに入れる前は必ず結果を確認してください。', zh: '工具会自动转义单引号以生成安全的 SQL。但在导入真实数据库前，请务必检查结果。',
+        },
+      },
+      {
+        q: { ko: '데이터가 서버로 전송되나요?', en: 'Is my data sent to a server?', ja: 'データはサーバーに送られますか？', zh: '我的数据会被发送到服务器吗？' },
+        a: {
+          ko: '아니요. CSV 파싱과 SQL 생성이 모두 브라우저 안에서 처리돼 데이터가 기기를 떠나지 않습니다.',
+          en: 'No. CSV parsing and SQL generation both happen in your browser, so the data never leaves your device.', ja: 'いいえ。CSVの解析とSQL生成はすべてブラウザ内で行われ、データが端末を離れることはありません。', zh: '不会。CSV 解析和 SQL 生成都在浏览器中完成，数据不会离开你的设备。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['csv sql 변환', 'insert 문 생성', 'sql in 절', '엑셀 sql', 'csv insert'],
+      en: ['csv to sql', 'generate insert statements', 'sql in clause', 'excel to sql', 'csv insert'], ja: ['csv sql 変換', 'insert 文 生成', 'sql in 句', 'excel sql', 'csv insert'], zh: ['csv 转 sql', '生成 insert 语句', 'sql in 子句', 'excel sql', 'csv insert'],
+    },
+  },
+  {
+    slug: 'track-cycle-to-due-date',
+    category: 'util',
+    title: { ko: '생리주기부터 출산예정일까지', en: 'From Cycle Tracking to a Due Date', ja: '生理周期から出産予定日まで', zh: '从月经周期到预产期' },
+    h1: { ko: '주기 추적에서 출산예정일까지', en: 'From cycle tracking to a due date', ja: '周期トラッキングから出産予定日まで', zh: '从周期追踪到预产期' },
+    description: {
+      ko: '생리주기로 가임기를 가늠하고, 마지막 생리 시작일로 출산예정일을 추정하세요. 모두 추정치이며, 업로드 없이 브라우저에서 무료로.',
+      en: 'Estimate your fertile window from your cycle and a due date from your last period’s start. All estimates only — free, in your browser, no upload.', ja: '生理周期から妊娠しやすい時期を把握し、最終生理開始日から出産予定日を推定します。いずれも推定値で、アップロードなし・ブラウザで無料。', zh: '用月经周期估算易孕期，用末次月经开始日推算预产期。均为估算值，无需上传，浏览器中免费完成。',
+    },
+    intro: {
+      ko: '주기 길이와 마지막 생리 시작일만 알면 가임기와 출산예정일을 대략 가늠할 수 있습니다. 가임 가능성이 높은 기간을 먼저 살펴보고, 임신했다면 마지막 생리일 기준으로 예정일을 계산해 보세요. 모든 값은 평균에 기반한 추정치이며 의학적 진단이 아닙니다. 입력한 날짜는 브라우저에서만 처리됩니다.',
+      en: 'With just your cycle length and the start of your last period you can roughly gauge your fertile window and a due date. Look at the most fertile days first, and if you’re pregnant, estimate the due date from your last period. Every value is an average-based estimate, not a medical diagnosis. The dates you enter are processed only in your browser.', ja: '周期の長さと最終生理開始日が分かれば、妊娠しやすい時期と出産予定日をおおよそ把握できます。まず妊娠しやすい期間を確認し、妊娠している場合は最終生理日を基準に予定日を計算してみましょう。すべての値は平均に基づく推定値であり、医学的な診断ではありません。入力した日付はブラウザ内だけで処理されます。', zh: '只要知道周期长度和末次月经开始日，就能大致估算易孕期和预产期。先查看最易受孕的日子，如果已怀孕，再以末次月经为基准推算预产期。所有数值都是基于平均值的估算，并非医学诊断。你输入的日期只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/util/ovulation',
+        name: { ko: '가임기 확인', en: 'Find your fertile window', ja: '妊娠しやすい時期を確認', zh: '查看易孕期' },
+        text: {
+          ko: '마지막 생리 시작일과 주기 길이를 넣어 배란일과 가임 가능 기간을 추정합니다.',
+          en: 'Enter your last period’s start and cycle length to estimate ovulation and your fertile days.', ja: '最終生理開始日と周期の長さを入れて、排卵日と妊娠しやすい期間を推定します。', zh: '输入末次月经开始日和周期长度，估算排卵日和易孕期。',
+        },
+      },
+      {
+        href: '/tools/util/due-date',
+        name: { ko: '출산예정일 추정', en: 'Estimate the due date', ja: '出産予定日を推定', zh: '推算预产期' },
+        text: {
+          ko: '마지막 생리 시작일을 기준으로 약 280일(네겔레 법칙) 후 예정일을 계산합니다.',
+          en: 'From your last period’s start, the due date is estimated at about 280 days (Naegele’s rule).', ja: '最終生理開始日を基準に、約280日後(ネーゲレの法則)の予定日を計算します。', zh: '以末次月经开始日为基准，按约 280 天(内格勒法则)推算预产期。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '이 추정치를 의료적으로 믿어도 되나요?', en: 'Can I rely on these estimates medically?', ja: 'これらの推定値を医学的に信頼してよいですか？', zh: '这些估算值能在医疗上依赖吗？' },
+        a: {
+          ko: '아니요. 평균 주기를 가정한 참고용 추정치일 뿐입니다. 실제 배란·예정일은 사람마다 다르니 정확한 판단은 의료진과 상담하세요.',
+          en: 'No. These are reference estimates that assume an average cycle. Actual ovulation and due dates vary, so consult a healthcare professional for anything important.', ja: 'いいえ。平均的な周期を仮定した参考用の推定値にすぎません。実際の排卵日・予定日は人によって異なるため、正確な判断は医療従事者に相談してください。', zh: '不能。这些只是假设平均周期的参考估算。实际排卵和预产期因人而异，重要判断请咨询医疗专业人员。',
+        },
+      },
+      {
+        q: { ko: '주기가 불규칙하면 어떻게 하나요?', en: 'What if my cycle is irregular?', ja: '周期が不規則な場合はどうすればよいですか？', zh: '如果我的周期不规律怎么办？' },
+        a: {
+          ko: '주기가 불규칙하면 추정 오차가 커집니다. 여러 달의 평균 주기를 넣으면 조금 더 정확해지지만, 여전히 참고용입니다.',
+          en: 'Irregular cycles widen the margin of error. Entering an average cycle over several months helps, but the result is still just a guide.', ja: '周期が不規則だと推定の誤差が大きくなります。数か月の平均周期を入れると多少正確になりますが、それでも参考用です。', zh: '周期不规律会加大估算误差。输入几个月的平均周期会更准一些，但仍仅供参考。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['가임기 계산', '배란일 계산', '출산예정일', '임신 주수', '생리주기'],
+      en: ['fertile window calculator', 'ovulation date', 'due date estimate', 'pregnancy weeks', 'menstrual cycle'], ja: ['妊娠しやすい時期', '排卵日 計算', '出産予定日', '妊娠 週数', '生理周期'], zh: ['易孕期 计算', '排卵日 计算', '预产期', '孕周', '月经周期'],
+    },
+  },
+  {
+    slug: 'work-hours-to-pay',
+    category: 'util',
+    title: { ko: '근무 시간 합산과 급여 정리', en: 'Total Work Hours and Pay', ja: '勤務時間の合計と給与の整理', zh: '统计工时与薪资' },
+    h1: { ko: '근무 시간과 급여 정리하기', en: 'Total work hours and pay', ja: '勤務時間と給与を整理する', zh: '统计工时与薪资' },
+    description: {
+      ko: '출퇴근 시간을 더해 실제 근무 시간을 구하고, 급여 금액을 통화 형식으로 깔끔하게 정리하세요. 업로드 없이 무료로.',
+      en: 'Add up clock-in/clock-out times to get the hours worked, then format the pay as tidy currency. Free, no upload.', ja: '出退勤時刻を足して実労働時間を求め、給与額を通貨形式で整えます。アップロードなし、無料。', zh: '把上下班时间相加得出实际工时，再把薪资金额整理成规范的货币格式。无需上传，免费完成。',
+    },
+    intro: {
+      ko: '출퇴근 기록만 있으면 한 주·한 달의 근무 시간을 손쉽게 합산할 수 있습니다. 야간 근무가 자정을 넘겨도 자동으로 보정되고, 시급을 곱한 급여 금액은 통화 형식으로 정리하면 그대로 명세서에 옮길 수 있습니다. 모든 계산은 브라우저 안에서 처리됩니다.',
+      en: 'With your clock-in/clock-out records you can easily total the hours for a week or month. Night shifts that cross midnight are corrected automatically, and once you multiply by an hourly rate, formatting the pay as currency makes it ready to drop into a pay slip. Everything is computed in your browser.', ja: '出退勤の記録さえあれば、1週間・1か月の勤務時間を簡単に合計できます。深夜勤務が日付をまたいでも自動で補正され、時給を掛けた給与額を通貨形式で整えれば、そのまま明細に転記できます。すべての計算はブラウザ内で処理されます。', zh: '只要有上下班记录，就能轻松统计一周或一个月的工时。夜班跨过午夜也会自动校正，乘以时薪后把薪资整理成货币格式，即可直接填入工资单。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/util/time-card',
+        name: { ko: '근무 시간 합산', en: 'Add up the worked hours', ja: '勤務時間を合計', zh: '统计工时' },
+        text: {
+          ko: '날짜별 출퇴근 시간을 입력하면 휴게 시간을 빼고 총 근무 시간을 계산합니다.',
+          en: 'Enter clock-in/out times per day to total the worked hours with breaks deducted.', ja: '日付ごとの出退勤時刻を入力すると、休憩を差し引いた総勤務時間を計算します。', zh: '逐日输入上下班时间，扣除休息后计算出总工时。',
+        },
+      },
+      {
+        href: '/tools/util/currency-format',
+        name: { ko: '급여 금액 형식 맞추기', en: 'Format the pay amount', ja: '給与額を整形', zh: '格式化薪资金额' },
+        text: {
+          ko: '시급을 곱한 급여 금액을 통화·구분 기호에 맞춰 보기 좋게 정리합니다.',
+          en: 'Format the pay (hours × rate) with the right currency and separators so it reads cleanly.', ja: '時給を掛けた給与額を、通貨記号や桁区切りに合わせて見やすく整えます。', zh: '把薪资(工时×时薪)按货币符号和分隔符整理得清晰易读。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '자정을 넘기는 야간 근무도 계산되나요?', en: 'Does it handle night shifts that cross midnight?', ja: '日付をまたぐ深夜勤務も計算できますか？', zh: '跨过午夜的夜班也能计算吗？' },
+        a: {
+          ko: '네. 퇴근 시간이 출근 시간보다 이르면 다음 날로 보아 자동으로 보정합니다.',
+          en: 'Yes. If the clock-out time is earlier than the clock-in, it’s treated as the next day and corrected automatically.', ja: 'はい。退勤時刻が出勤時刻より早い場合は翌日とみなし、自動で補正します。', zh: '可以。如果下班时间早于上班时间，会视为次日并自动校正。',
+        },
+      },
+      {
+        q: { ko: '통화 기호를 바꿀 수 있나요?', en: 'Can I change the currency symbol?', ja: '通貨記号を変えられますか？', zh: '可以更改货币符号吗？' },
+        a: {
+          ko: '네. 통화 형식 도구에서 원·달러·엔 등 통화와 소수 자릿수, 구분 기호를 선택할 수 있습니다.',
+          en: 'Yes. The currency-format tool lets you pick the currency (₩, $, ¥…), decimal places and separators.', ja: 'はい。通貨形式ツールで、ウォン・ドル・円などの通貨や小数点以下の桁数、区切り記号を選べます。', zh: '可以。货币格式工具支持选择货币(₩、$、¥…)、小数位数和分隔符。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['근무 시간 계산', '출퇴근 시간 합산', '급여 계산', '타임카드', '시급 계산'],
+      en: ['work hours calculator', 'timesheet total', 'pay calculator', 'time card', 'hourly pay'], ja: ['勤務時間 計算', 'タイムカード 合計', '給与 計算', 'タイムシート', '時給 計算'], zh: ['工时 计算', '考勤 统计', '薪资 计算', '工时卡', '时薪 计算'],
+    },
+  },
+  {
+    slug: 'price-a-product',
+    category: 'util',
+    title: { ko: '원가와 마진으로 판매가 정하기', en: 'Price a Product from Cost and Margin', ja: '原価と利益率で販売価格を決める', zh: '根据成本与利润率定价' },
+    h1: { ko: '원가와 마진으로 가격 정하기', en: 'Price a product from cost and margin', ja: '原価と利益率で価格を決める', zh: '根据成本与利润率定价' },
+    description: {
+      ko: '원가에 마진·마크업을 적용해 판매가를 구하고, 통화 형식으로 깔끔하게 표시하세요. 업로드 없이 브라우저에서 무료로.',
+      en: 'Apply markup or margin to your cost to get a selling price, then display it as clean currency. Free, in your browser, no upload.', ja: '原価に利益率・マークアップを適用して販売価格を求め、通貨形式できれいに表示します。アップロードなし、ブラウザで無料。', zh: '在成本上应用加成或利润率得出售价，再以规范的货币格式显示。无需上传，浏览器中免费完成。',
+    },
+    intro: {
+      ko: '마진(margin)과 마크업(markup)은 비슷해 보여도 계산 기준이 달라 헷갈리기 쉽습니다. 원가를 넣고 원하는 마진이나 마크업을 적용하면 판매가가 바로 나오고, 그 금액을 통화 형식으로 정리하면 가격표에 그대로 쓸 수 있습니다. 입력값은 브라우저 안에서만 처리됩니다.',
+      en: 'Margin and markup look similar but use different bases, which is easy to mix up. Enter the cost, apply the margin or markup you want, and you get the selling price instantly — format it as currency and it’s ready for a price tag. Your input is processed only in your browser.', ja: '利益率(margin)とマークアップ(markup)は似て見えても計算の基準が異なり、混同しやすいものです。原価を入れて希望の利益率やマークアップを適用すると販売価格がすぐに出て、その金額を通貨形式で整えれば値札にそのまま使えます。入力値はブラウザ内だけで処理されます。', zh: '利润率(margin)和加成(markup)看似相近，但计算基准不同，很容易混淆。输入成本、应用想要的利润率或加成，售价立刻得出，再把金额整理成货币格式即可用于价签。你的输入只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/util/markup',
+        name: { ko: '마크업·마진 적용', en: 'Apply markup / margin', ja: 'マークアップ・利益率を適用', zh: '应用加成／利润率' },
+        text: {
+          ko: '원가와 원하는 마진(또는 마크업) 비율을 넣어 판매가를 계산합니다.',
+          en: 'Enter the cost and your target margin (or markup) percentage to calculate the selling price.', ja: '原価と希望する利益率(またはマークアップ)の割合を入れて販売価格を計算します。', zh: '输入成本和目标利润率(或加成)百分比，计算出售价。',
+        },
+      },
+      {
+        href: '/tools/util/currency-format',
+        name: { ko: '가격 형식 맞추기', en: 'Format the price', ja: '価格を整形', zh: '格式化价格' },
+        text: {
+          ko: '계산된 판매가를 통화·구분 기호에 맞춰 보기 좋게 정리합니다.',
+          en: 'Format the resulting price with the right currency and separators so it reads cleanly.', ja: '計算された販売価格を、通貨記号や桁区切りに合わせて見やすく整えます。', zh: '把算出的售价按货币符号和分隔符整理得清晰易读。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '마진과 마크업은 어떻게 다른가요?', en: 'How are margin and markup different?', ja: '利益率とマークアップはどう違いますか？', zh: '利润率和加成有什么不同？' },
+        a: {
+          ko: '마크업은 원가를 기준으로, 마진은 판매가를 기준으로 한 비율입니다. 같은 50%라도 결과 가격이 달라지니 어느 기준인지 꼭 확인하세요.',
+          en: 'Markup is a percentage of cost, while margin is a percentage of the selling price. The same 50% gives different prices, so always confirm which base you mean.', ja: 'マークアップは原価を基準に、利益率は販売価格を基準にした割合です。同じ50%でも結果の価格が変わるため、どちらの基準かを必ず確認してください。', zh: '加成是相对成本的百分比，利润率是相对售价的百分比。同样是 50%，得出的价格也不同，所以务必确认基准。',
+        },
+      },
+      {
+        q: { ko: '세금은 포함되나요?', en: 'Is tax included?', ja: '税金は含まれますか？', zh: '含税吗？' },
+        a: {
+          ko: '아니요. 이 계산은 원가와 마진만 다룹니다. 부가세 등 세금은 별도로 더해 최종 판매가를 정하세요.',
+          en: 'No. This calculation covers only cost and margin. Add VAT or other taxes separately to set the final price.', ja: 'いいえ。この計算は原価と利益率のみを扱います。消費税などは別途加えて最終販売価格を決めてください。', zh: '不含。此计算只涉及成本和利润率。增值税等税费请另行加上以确定最终售价。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['판매가 계산', '마진 계산', '마크업 계산', '원가 가격', '이익률'],
+      en: ['pricing calculator', 'margin calculator', 'markup calculator', 'cost to price', 'profit margin'], ja: ['販売価格 計算', '利益率 計算', 'マークアップ 計算', '原価 価格', '粗利'], zh: ['售价 计算', '利润率 计算', '加成 计算', '成本 定价', '毛利率'],
+    },
+  },
+  {
+    slug: 'clean-text-for-publishing',
+    category: 'text',
+    title: { ko: '게시 전 텍스트 다듬기', en: 'Clean Text Before Publishing', ja: '公開前にテキストを整える', zh: '发布前清理文本' },
+    h1: { ko: '게시 전 텍스트 정리하기', en: 'Clean text before publishing', ja: '公開前にテキストを整える', zh: '发布前清理文本' },
+    description: {
+      ko: '이모지를 빼고, 필요하면 숫자를 제거한 뒤, 곧은 따옴표를 출판용 둥근 따옴표로 바꿔 깔끔한 본문을 만드세요. 업로드 없이 무료로.',
+      en: 'Strip emoji, optionally remove numbers, then turn straight quotes into typographic ones for clean copy. Free, no upload.', ja: '絵文字を取り除き、必要なら数字を削除し、まっすぐな引用符を出版用の丸い引用符に変えてきれいな本文を作ります。アップロードなし、無料。', zh: '去掉表情符号，必要时删除数字，再把直引号换成排版用的弯引号，得到干净的正文。无需上传，免费完成。',
+    },
+    intro: {
+      ko: '원고를 그대로 게시하면 이모지나 곧은 따옴표 때문에 다듬어지지 않은 느낌이 들곤 합니다. 먼저 이모지를 제거하고, 본문에 안 맞는 숫자가 있으면 빼낸 뒤, 곧은 따옴표를 문맥에 맞는 둥근 따옴표로 바꾸면 출판에 어울리는 깔끔한 텍스트가 됩니다. 모든 처리가 브라우저에서 끝납니다.',
+      en: 'Publishing a draft as-is can look unpolished because of emoji or straight quotes. Remove the emoji first, strip numbers that don’t belong, then turn straight quotes into context-aware curly ones to get clean, publication-ready text. It all happens in your browser.', ja: '原稿をそのまま公開すると、絵文字やまっすぐな引用符のせいで未整理に見えがちです。まず絵文字を取り除き、本文に合わない数字があれば削り、まっすぐな引用符を文脈に合う丸い引用符に変えれば、出版にふさわしいきれいなテキストになります。すべてブラウザ内で完結します。', zh: '把草稿原样发布，常因表情符号或直引号显得不够精致。先去掉表情符号，删掉不该有的数字，再把直引号换成符合上下文的弯引号，就能得到干净、适合出版的文本。所有处理都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/text/remove-emoji',
+        name: { ko: '이모지 제거', en: 'Remove emoji', ja: '絵文字を削除', zh: '删除表情符号' },
+        text: {
+          ko: '텍스트를 붙여넣어 이모지·기호 그림 문자를 한 번에 제거합니다.',
+          en: 'Paste the text to strip emoji and pictographic symbols all at once.', ja: 'テキストを貼り付けて、絵文字や記号系のピクトグラムをまとめて削除します。', zh: '粘贴文本，一次性删除表情符号和图形符号。',
+        },
+      },
+      {
+        href: '/tools/text/remove-numbers',
+        name: { ko: '숫자 제거(선택)', en: 'Remove numbers (optional)', ja: '数字を削除(任意)', zh: '删除数字(可选)' },
+        text: {
+          ko: '본문에 어울리지 않는 숫자가 있으면 한 번에 제거합니다.',
+          en: 'Remove numbers that don’t fit the body text in one pass.', ja: '本文に合わない数字があれば、まとめて削除します。', zh: '若正文中有不合适的数字，可一次性删除。',
+        },
+      },
+      {
+        href: '/tools/text/smart-quotes',
+        name: { ko: '출판용 따옴표 적용', en: 'Apply typographic quotes', ja: '出版用の引用符を適用', zh: '应用排版引号' },
+        text: {
+          ko: '곧은 따옴표를 문맥에 맞는 여닫는 둥근 따옴표로 바꿉니다.',
+          en: 'Convert straight quotes into context-aware opening and closing curly quotes.', ja: 'まっすぐな引用符を、文脈に合った開き・閉じの丸い引用符に変えます。', zh: '把直引号转换为符合上下文的左右弯引号。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '둥근 따옴표를 다시 곧은 따옴표로 되돌릴 수 있나요?', en: 'Can I switch curly quotes back to straight ones?', ja: '丸い引用符をまっすぐな引用符に戻せますか？', zh: '可以把弯引号换回直引号吗？' },
+        a: {
+          ko: '네. 따옴표 도구는 곧은→둥근, 둥근→곧은 양방향 변환을 지원합니다.',
+          en: 'Yes. The quotes tool converts both ways — straight to curly and curly to straight.', ja: 'はい。引用符ツールは、まっすぐ→丸い、丸い→まっすぐの双方向変換に対応しています。', zh: '可以。引号工具支持双向转换——直转弯、弯转直。',
+        },
+      },
+      {
+        q: { ko: '여러 단계를 한 번에 적용하나요?', en: 'Are the steps applied all at once?', ja: '複数のステップを一度に適用しますか？', zh: '这些步骤是一次性应用的吗？' },
+        a: {
+          ko: '각 단계는 별도 도구로, 한 결과를 다음 도구에 붙여넣는 방식입니다. 필요 없는 단계(예: 숫자 제거)는 건너뛰어도 됩니다.',
+          en: 'Each step is a separate tool — paste one result into the next. Skip any step you don’t need (for example, removing numbers).', ja: '各ステップは別々のツールで、ある結果を次のツールに貼り付ける方式です。不要なステップ(例:数字の削除)は飛ばして構いません。', zh: '每一步是单独的工具，把一个结果粘进下一个工具即可。不需要的步骤(如删除数字)可以跳过。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['이모지 제거', '텍스트 정리', '곧은 따옴표 변환', '둥근 따옴표', '출판 텍스트'],
+      en: ['remove emoji', 'clean text', 'smart quotes', 'curly quotes', 'publishing text'], ja: ['絵文字 削除', 'テキスト 整形', 'スマートクォート', '丸い引用符', '出版 テキスト'], zh: ['删除 表情符号', '清理 文本', '弯引号 转换', '排版 引号', '出版 文本'],
+    },
+  },
+  {
+    slug: 'compare-package-versions',
+    category: 'dev',
+    title: { ko: '패키지 버전 비교·관리', en: 'Compare and Manage Package Versions', ja: 'パッケージのバージョンを比較・管理', zh: '比较与管理包版本' },
+    h1: { ko: '패키지 버전 비교하고 관리하기', en: 'Compare and manage package versions', ja: 'パッケージのバージョンを比較・管理する', zh: '比较与管理包版本' },
+    description: {
+      ko: '두 시맨틱 버전 중 어느 쪽이 최신인지 정확히 비교하고, 릴리스 태그·커밋용 git 명령까지 만드세요. 업로드 없이 무료로.',
+      en: 'Precisely compare two semantic versions to see which is newer, then build the git command to tag or commit. Free, no upload.', ja: '2つのセマンティックバージョンのどちらが新しいかを正確に比較し、リリースタグ・コミット用のgitコマンドまで作ります。アップロードなし、無料。', zh: '精确比较两个语义化版本以确定哪个更新，再生成打标签或提交用的 git 命令。无需上传，免费完成。',
+    },
+    intro: {
+      ko: '1.10.0과 1.9.0 중 어느 쪽이 최신인지 문자열로만 보면 헷갈리기 쉽습니다. 시맨틱 버저닝 규칙(메이저·마이너·패치, 프리릴리스 우선순위)에 따라 두 버전을 정확히 비교한 뒤, 결정한 버전으로 태그를 달거나 커밋할 git 명령을 만들면 릴리스 흐름이 깔끔해집니다. 입력값은 브라우저에서만 처리됩니다.',
+      en: 'Reading 1.10.0 vs 1.9.0 as plain strings is easy to get wrong. Compare the two precisely by semantic-versioning rules (major/minor/patch and pre-release precedence), then build the git command to tag or commit the version you chose — and your release flow stays clean. Your input is processed only in your browser.', ja: '1.10.0と1.9.0のどちらが新しいかを文字列だけで見ると間違えやすいものです。セマンティックバージョニングのルール(メジャー・マイナー・パッチ、プレリリースの優先順位)に従って2つを正確に比較し、決めたバージョンでタグを付けたりコミットしたりするgitコマンドを作れば、リリースの流れがすっきりします。入力値はブラウザ内だけで処理されます。', zh: '只把 1.10.0 和 1.9.0 当字符串看很容易出错。按语义化版本规则(主／次／补丁版本、预发布优先级)精确比较两者，再为选定的版本生成打标签或提交的 git 命令，发布流程就会清爽。你的输入只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/semver',
+        name: { ko: '두 시맨틱 버전 비교', en: 'Compare two semantic versions', ja: '2つのセマンティックバージョンを比較', zh: '比较两个语义化版本' },
+        text: {
+          ko: '두 버전을 입력하면 어느 쪽이 더 최신인지 규칙대로 판정합니다.',
+          en: 'Enter two versions and the tool decides which is newer by the rules.', ja: '2つのバージョンを入力すると、ルールに従ってどちらが新しいかを判定します。', zh: '输入两个版本，工具会按规则判定哪个更新。',
+        },
+      },
+      {
+        href: '/tools/dev/git-command',
+        name: { ko: 'git 태그·커밋 명령 만들기', en: 'Get the git tag/commit command', ja: 'gitのタグ・コミットコマンドを作る', zh: '生成 git 标签／提交命令' },
+        text: {
+          ko: '결정한 버전으로 태그를 달거나 커밋할 git 명령을 조립합니다.',
+          en: 'Assemble the git command to tag or commit with the version you chose.', ja: '決めたバージョンでタグを付けたりコミットしたりするgitコマンドを組み立てます。', zh: '用选定的版本拼出打标签或提交的 git 命令。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '1.10.0과 1.9.0 중 어느 쪽이 더 최신인가요?', en: 'Which is newer, 1.10.0 or 1.9.0?', ja: '1.10.0と1.9.0ではどちらが新しいですか？', zh: '1.10.0 和 1.9.0 哪个更新？' },
+        a: {
+          ko: '1.10.0이 더 최신입니다. 시맨틱 버저닝은 각 자리를 숫자로 비교하므로 10이 9보다 큽니다. 문자열 비교와 결과가 다를 수 있어 도구로 확인하는 게 안전합니다.',
+          en: '1.10.0 is newer. Semantic versioning compares each part numerically, so 10 is greater than 9. String comparison can disagree, so it’s safer to check with the tool.', ja: '1.10.0の方が新しいです。セマンティックバージョニングは各桁を数値で比較するため、10は9より大きくなります。文字列比較とは結果が異なることがあるので、ツールで確認するのが安全です。', zh: '1.10.0 更新。语义化版本按数字比较每一段，所以 10 大于 9。字符串比较可能给出不同结果，用工具确认更稳妥。',
+        },
+      },
+      {
+        q: { ko: '프리릴리스(예: 1.0.0-rc.1)도 비교되나요?', en: 'Are pre-releases (e.g. 1.0.0-rc.1) compared too?', ja: 'プレリリース(例:1.0.0-rc.1)も比較できますか？', zh: '预发布版本(如 1.0.0-rc.1)也能比较吗？' },
+        a: {
+          ko: '네. 프리릴리스는 동일한 정식 버전보다 낮은 것으로 취급되며, 규칙에 따라 우선순위가 정해집니다.',
+          en: 'Yes. A pre-release ranks below the matching final release, and precedence follows the spec’s rules.', ja: 'はい。プレリリースは同じ正式バージョンより低く扱われ、優先順位は仕様のルールに従います。', zh: '可以。预发布版本排在对应正式版本之前(更低)，优先级遵循规范规则。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['시맨틱 버전 비교', 'semver 비교', '버전 관리', 'git 태그 명령', '릴리스 버전'],
+      en: ['compare semver', 'semantic version compare', 'version management', 'git tag command', 'release version'], ja: ['セマンティックバージョン 比較', 'semver 比較', 'バージョン管理', 'git タグ コマンド', 'リリース バージョン'], zh: ['语义化版本 比较', 'semver 比较', '版本管理', 'git 标签 命令', '发布版本'],
+    },
+  },
+  {
+    slug: 'find-song-bpm',
+    category: 'audio',
+    title: { ko: '곡의 BPM 찾아 연습하기', en: 'Find a Song’s BPM and Practice to It', ja: '曲のBPMを調べて練習する', zh: '测出歌曲 BPM 并跟练' },
+    h1: { ko: '곡의 BPM 찾고 연습하기', en: 'Find a song’s BPM and practice', ja: '曲のBPMを調べて練習する', zh: '测出歌曲 BPM 并跟练' },
+    description: {
+      ko: '박자에 맞춰 두드려 곡의 BPM을 측정하고, 그 템포로 메트로놈을 켜 연습하세요. 업로드 없이 브라우저에서 무료로.',
+      en: 'Tap along to measure a song’s BPM, then run a metronome at that tempo to practice. Free, in your browser, no upload.', ja: 'リズムに合わせてタップして曲のBPMを測り、そのテンポでメトロノームを鳴らして練習します。アップロードなし、ブラウザで無料。', zh: '跟着节奏点击测出歌曲 BPM，再用该速度开节拍器跟练。无需上传，浏览器中免费完成。',
+    },
+    intro: {
+      ko: '악보에 BPM이 적혀 있지 않아도 박자에 맞춰 화면을 두드리면 곡의 템포를 알 수 있습니다. 측정한 BPM을 그대로 메트로놈에 넣으면 같은 빠르기로 손쉽게 연습할 수 있습니다. 모든 처리가 브라우저 안에서 이뤄집니다.',
+      en: 'Even without a BPM marked on the score, tapping along to the beat reveals a song’s tempo. Drop that BPM into the metronome and you can practice at the exact same speed. Everything runs in your browser.', ja: '楽譜にBPMが書かれていなくても、リズムに合わせて画面をタップすれば曲のテンポが分かります。測ったBPMをそのままメトロノームに入れれば、同じ速さで手軽に練習できます。すべてブラウザ内で行われます。', zh: '即使乐谱上没有标 BPM，跟着节拍点击屏幕也能得出歌曲的速度。把测出的 BPM 直接填进节拍器，就能以相同速度轻松练习。所有处理都在浏览器中进行。',
+    },
+    steps: [
+      {
+        href: '/tools/audio/bpm-tap',
+        name: { ko: '두드려서 BPM 측정', en: 'Tap to measure the BPM', ja: 'タップしてBPMを測定', zh: '点击测量 BPM' },
+        text: {
+          ko: '곡의 박자에 맞춰 버튼을 여러 번 두드리면 평균 간격으로 BPM을 계산합니다.',
+          en: 'Tap the button in time with the beat several times and it computes the BPM from the average interval.', ja: '曲のリズムに合わせてボタンを数回タップすると、平均間隔からBPMを計算します。', zh: '跟着节拍多次点击按钮，工具会按平均间隔算出 BPM。',
+        },
+      },
+      {
+        href: '/tools/audio/metronome',
+        name: { ko: '메트로놈으로 연습', en: 'Practice with a metronome', ja: 'メトロノームで練習', zh: '用节拍器练习' },
+        text: {
+          ko: '측정한 BPM을 메트로놈에 입력해 같은 템포로 박자를 들으며 연습합니다.',
+          en: 'Enter the measured BPM into the metronome to practice along at the same tempo.', ja: '測定したBPMをメトロノームに入力し、同じテンポで拍を聞きながら練習します。', zh: '把测出的 BPM 输入节拍器，以相同速度边听拍子边练习。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '몇 번 두드려야 정확한가요?', en: 'How many taps do I need for accuracy?', ja: '何回タップすれば正確ですか？', zh: '需要点击几次才准确？' },
+        a: {
+          ko: '여덟 번 이상 일정하게 두드릴수록 평균이 안정돼 정확해집니다. 박자를 놓치면 다시 시작하세요.',
+          en: 'Eight or more steady taps stabilize the average and improve accuracy. If you lose the beat, just start over.', ja: '8回以上一定のリズムでタップするほど平均が安定し、正確になります。拍を逃したらやり直してください。', zh: '稳定点击八次以上，平均值更稳、更准确。错过节拍就重新开始。',
+        },
+      },
+      {
+        q: { ko: '메트로놈 소리가 곡과 정확히 맞나요?', en: 'Will the metronome line up exactly with the song?', ja: 'メトロノームの音は曲とぴったり合いますか？', zh: '节拍器声音会和歌曲完全对齐吗？' },
+        a: {
+          ko: '메트로놈은 측정한 BPM으로 일정하게 울립니다. 곡의 시작점에 맞춰 함께 시작하면 박자가 잘 맞습니다.',
+          en: 'The metronome ticks steadily at the measured BPM. Start it together with the song’s downbeat and they line up well.', ja: 'メトロノームは測定したBPMで一定に鳴ります。曲の頭に合わせて一緒に始めれば、拍がよく合います。', zh: '节拍器会以测出的 BPM 稳定发声。和歌曲的起拍一起开始，节拍就能对齐。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['bpm 측정', '탭 템포', '곡 박자', '메트로놈', '템포 연습'],
+      en: ['bpm finder', 'tap tempo', 'song beat', 'metronome', 'tempo practice'], ja: ['bpm 測定', 'タップテンポ', '曲 テンポ', 'メトロノーム', 'テンポ 練習'], zh: ['bpm 测量', '点击 测速', '歌曲 节拍', '节拍器', '速度 练习'],
+    },
+  },
+  {
+    slug: 'estimate-paint-job-cost',
+    category: 'util',
+    title: { ko: '페인트칠 양과 견적 계산', en: 'Estimate a Paint Job and Its Cost', ja: '塗装の量と見積もりを計算', zh: '估算油漆用量与报价' },
+    h1: { ko: '페인트칠 견적 내기', en: 'Estimate a paint job and its cost', ja: '塗装の見積もりを出す', zh: '估算油漆工程与费用' },
+    description: {
+      ko: '벽 면적으로 필요한 페인트 양을 구하고, 마진을 더해 견적을 낸 뒤 통화 형식으로 정리하세요. 업로드 없이 무료로.',
+      en: 'Estimate the paint needed from wall area, add markup for a quote, then format it as currency. Free, no upload.', ja: '壁の面積から必要な塗料の量を求め、マージンを足して見積もりを出し、通貨形式で整えます。アップロードなし、無料。', zh: '根据墙面面积估算所需油漆量，加上加成得出报价，再整理成货币格式。无需上传，免费完成。',
+    },
+    intro: {
+      ko: '벽 면적과 칠할 횟수만 알면 필요한 페인트 양을 계산할 수 있습니다. 자재 비용에 인건비·이윤을 마진으로 더해 견적을 만들고, 통화 형식으로 깔끔하게 정리하면 고객에게 바로 제시할 수 있습니다. 모든 계산은 브라우저 안에서 처리됩니다.',
+      en: 'With the wall area and number of coats you can work out how much paint you’ll need. Add labor and profit as markup over the material cost to build a quote, then format it as currency so it’s ready to present. Everything is computed in your browser.', ja: '壁の面積と塗る回数が分かれば、必要な塗料の量を計算できます。材料費に人件費や利益をマージンとして足して見積もりを作り、通貨形式で整えれば、お客様にそのまま提示できます。すべての計算はブラウザ内で処理されます。', zh: '只要知道墙面面积和涂刷遍数，就能算出所需油漆量。在材料成本上以加成方式加入人工和利润得出报价，再整理成货币格式即可直接报给客户。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/util/paint',
+        name: { ko: '필요한 페인트 양 계산', en: 'Estimate paint needed', ja: '必要な塗料の量を計算', zh: '估算所需油漆量' },
+        text: {
+          ko: '벽 면적과 칠할 횟수, 도포율을 넣어 필요한 페인트 양을 구합니다.',
+          en: 'Enter the wall area, number of coats and coverage rate to find the paint needed.', ja: '壁の面積・塗る回数・塗布率を入れて、必要な塗料の量を求めます。', zh: '输入墙面面积、涂刷遍数和覆盖率，得出所需油漆量。',
+        },
+      },
+      {
+        href: '/tools/util/markup',
+        name: { ko: '견적용 마진 더하기', en: 'Add markup for a quote', ja: '見積もり用のマージンを足す', zh: '为报价加上加成' },
+        text: {
+          ko: '자재 비용에 인건비·이윤을 마진으로 더해 견적 금액을 만듭니다.',
+          en: 'Add labor and profit as markup over the material cost to form the quote amount.', ja: '材料費に人件費や利益をマージンとして足し、見積もり金額を作ります。', zh: '在材料成本上以加成方式加入人工和利润，得出报价金额。',
+        },
+      },
+      {
+        href: '/tools/util/currency-format',
+        name: { ko: '견적 금액 형식 맞추기', en: 'Format the quote', ja: '見積もり金額を整形', zh: '格式化报价' },
+        text: {
+          ko: '견적 금액을 통화·구분 기호에 맞춰 보기 좋게 정리합니다.',
+          en: 'Format the quote with the right currency and separators so it reads cleanly.', ja: '見積もり金額を、通貨記号や桁区切りに合わせて見やすく整えます。', zh: '把报价金额按货币符号和分隔符整理得清晰易读。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '도포율은 어디서 확인하나요?', en: 'Where do I find the coverage rate?', ja: '塗布率はどこで確認しますか？', zh: '覆盖率在哪里查看？' },
+        a: {
+          ko: '페인트 통이나 제조사 안내에 1L(또는 1통)당 칠할 수 있는 면적이 적혀 있습니다. 그 값을 도포율로 넣으면 됩니다.',
+          en: 'The can or the manufacturer’s spec lists the area covered per liter (or per can). Enter that as the coverage rate.', ja: '塗料の缶やメーカーの案内に、1L(または1缶)あたりに塗れる面積が記載されています。その値を塗布率として入れてください。', zh: '油漆桶或厂商说明上会标明每升(或每桶)可涂的面积。把它作为覆盖率填入即可。',
+        },
+      },
+      {
+        q: { ko: '창문·문 면적은 어떻게 빼나요?', en: 'How do I subtract windows and doors?', ja: '窓やドアの面積はどう引きますか？', zh: '窗户和门的面积怎么扣除？' },
+        a: {
+          ko: '벽 전체 면적에서 창문·문 면적을 빼고 남은 면적을 입력하면 됩니다. 여유분을 약간 더해 두면 안전합니다.',
+          en: 'Subtract the window and door areas from the total wall area and enter what remains. Adding a small buffer is a safe move.', ja: '壁全体の面積から窓やドアの面積を引き、残った面積を入力してください。少し余裕を持たせておくと安心です。', zh: '从墙面总面积中减去窗户和门的面积，填入剩余面积即可。留一点余量更稳妥。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['페인트 양 계산', '도장 견적', '벽 면적 페인트', '페인트 비용', '도포율'],
+      en: ['paint calculator', 'paint job quote', 'wall area paint', 'paint cost', 'coverage rate'], ja: ['塗料 量 計算', '塗装 見積もり', '壁 面積 塗料', '塗装 費用', '塗布率'], zh: ['油漆 用量 计算', '油漆 报价', '墙面 面积 油漆', '油漆 费用', '覆盖率'],
+    },
+  },
+  {
+    slug: 'scan-to-black-and-white',
+    category: 'image',
+    title: { ko: '스캔본을 순흑백으로 만들기', en: 'Make a Scan Pure Black & White', ja: 'スキャンを純粋な白黒にする', zh: '把扫描件做成纯黑白' },
+    h1: { ko: '스캔본을 흑백으로', en: 'Make a scan pure black & white', ja: 'スキャンを白黒にする', zh: '把扫描件做成黑白' },
+    description: {
+      ko: '문서·라인 아트 스캔을 임계값으로 순흑백 이진화하거나, 부드러운 그레이스케일로 바꾸세요. 업로드 없이 브라우저에서 무료로.',
+      en: 'Binarize document or line-art scans to pure black & white by threshold, or convert to smooth grayscale. Free, in your browser, no upload.', ja: '文書やラインアートのスキャンを閾値で純粋な白黒に二値化したり、滑らかなグレースケールに変換します。アップロードなし、ブラウザで無料。', zh: '用阈值把文档或线稿扫描件二值化为纯黑白，或转换为平滑的灰度。无需上传，浏览器中免费完成。',
+    },
+    intro: {
+      ko: '문서나 서명 스캔은 배경의 회색기를 없애 순흑백으로 만들면 훨씬 또렷해집니다. 임계값을 조절해 밝기 기준으로 흑백을 가르면 글자·선이 선명하게 분리되고, 사진처럼 계조가 필요하면 부드러운 그레이스케일을 쓰면 됩니다. 모든 처리가 브라우저에서 끝나 이미지가 업로드되지 않습니다.',
+      en: 'Document or signature scans look much crisper when you remove the gray cast and make them pure black & white. Adjusting the threshold splits black from white by brightness so text and lines come out sharp; if you need tonal gradation like a photo, use smooth grayscale instead. Everything runs in your browser, so the image is never uploaded.', ja: '文書や署名のスキャンは、背景のグレーを取り除いて純粋な白黒にすると格段に鮮明になります。閾値を調整して明るさで白黒を分ければ文字や線がくっきり分離し、写真のような階調が必要なら滑らかなグレースケールを使えば大丈夫です。すべてブラウザ内で処理され、画像がアップロードされることはありません。', zh: '文档或签名扫描件去掉背景灰调、做成纯黑白后会清晰得多。调整阈值按亮度把黑白分开，文字和线条就会清晰分离；如果需要像照片那样的层次，则改用平滑灰度。所有处理都在浏览器中完成，图片不会被上传。',
+    },
+    steps: [
+      {
+        href: '/tools/image/threshold',
+        name: { ko: '임계값으로 이진화', en: 'Binarize by threshold', ja: '閾値で二値化', zh: '按阈值二值化' },
+        text: {
+          ko: '임계값 슬라이더로 밝기 기준을 정해 픽셀을 검정 또는 흰색으로 가릅니다.',
+          en: 'Set the brightness cutoff with the threshold slider to split each pixel into black or white.', ja: '閾値スライダーで明るさの基準を決め、各ピクセルを黒か白に分けます。', zh: '用阈值滑块设定亮度界限，把每个像素分成黑或白。',
+        },
+      },
+      {
+        href: '/tools/image/black-white',
+        name: { ko: '부드러운 그레이스케일로(대안)', en: 'Or use smooth grayscale', ja: '滑らかなグレースケールに(代替)', zh: '或使用平滑灰度(替代)' },
+        text: {
+          ko: '계조를 살리고 싶으면 순흑백 대신 부드러운 흑백 그레이스케일로 변환합니다.',
+          en: 'To keep tonal gradation, convert to smooth grayscale instead of pure black & white.', ja: '階調を残したい場合は、純粋な白黒ではなく滑らかなグレースケールに変換します。', zh: '想保留层次时，转换为平滑灰度而非纯黑白。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '이진화와 그레이스케일은 어떻게 다른가요?', en: 'How is binarizing different from grayscale?', ja: '二値化とグレースケールはどう違いますか？', zh: '二值化和灰度有什么不同？' },
+        a: {
+          ko: '이진화는 각 픽셀을 검정 아니면 흰색 둘 중 하나로 만들고, 그레이스케일은 회색 계조를 그대로 남깁니다. 문서는 이진화, 사진은 그레이스케일이 어울립니다.',
+          en: 'Binarizing makes every pixel either black or white, while grayscale keeps the gray gradations. Binarizing suits documents; grayscale suits photos.', ja: '二値化は各ピクセルを黒か白のどちらかにし、グレースケールはグレーの階調をそのまま残します。文書には二値化、写真にはグレースケールが向いています。', zh: '二值化把每个像素变成黑或白，灰度则保留灰色层次。文档适合二值化，照片适合灰度。',
+        },
+      },
+      {
+        q: { ko: '글자가 끊겨 보이면 어떻게 하나요?', en: 'What if the text looks broken up?', ja: '文字が途切れて見える場合はどうしますか？', zh: '如果文字看起来断裂怎么办？' },
+        a: {
+          ko: '임계값을 조금 낮추면 옅은 글자가 더 많이 검정으로 남습니다. 미리보기를 보며 글자가 또렷해지는 지점을 찾으세요.',
+          en: 'Lowering the threshold a little keeps more of the faint strokes as black. Watch the preview and find the point where the text stays sharp.', ja: '閾値を少し下げると、薄い文字がより多く黒として残ります。プレビューを見ながら、文字がくっきりする値を探してください。', zh: '稍微调低阈值，能让更多浅色笔画保留为黑色。看着预览找到文字最清晰的那个点。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['스캔 흑백 변환', '이미지 이진화', '임계값 흑백', '문서 순흑백', '그레이스케일'],
+      en: ['scan to black and white', 'image threshold', 'binarize image', 'pure black white document', 'grayscale'], ja: ['スキャン 白黒 変換', '画像 二値化', '閾値 白黒', '文書 純白黒', 'グレースケール'], zh: ['扫描 黑白 转换', '图像 二值化', '阈值 黑白', '文档 纯黑白', '灰度'],
+    },
+  },
 ];
 
 export const USE_CASE_SLUGS: string[] = USE_CASES.map((u) => u.slug);

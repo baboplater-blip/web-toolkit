@@ -1480,6 +1480,382 @@ export const COMPARES: Compare[] = [
     ],
     keywords: ['ideal weight vs bmi', 'ideal body weight', 'bmi calculator', 'target weight from height'],
   },
+  {
+    slug: 'ovulation-vs-due-date',
+    category: 'util',
+    title: 'Ovulation vs Due Date Calculator — Plan or Track a Pregnancy?',
+    h1: 'Ovulation vs Due Date Calculator',
+    description:
+      'Find your fertile window to plan conception, or estimate a birth date once you’re already pregnant — both free, in your browser.',
+    intro:
+      'These two calculators sit on opposite sides of pregnancy. The ovulation calculator looks ahead to conception: from your last period and cycle length it estimates the fertile window and likely ovulation day. The due date calculator assumes you’re already pregnant and projects forward to an estimated birth date using Naegele’s rule. Both produce estimates only — they are not medical advice, and your body or your doctor may say otherwise.',
+    options: [
+      {
+        label: 'Ovulation Calculator',
+        toolId: 'ovulation-calc',
+        best: 'Planning conception by finding your most fertile days.',
+        pros: [
+          'Estimates the fertile window from your last period and cycle length',
+          'Pinpoints the likely ovulation day to time conception',
+          'Useful month to month while trying to conceive',
+        ],
+        cons: ['An estimate only — actual ovulation varies and this is not medical advice'],
+      },
+      {
+        label: 'Due Date Calculator',
+        toolId: 'pregnancy-due-date',
+        best: 'Tracking an existing pregnancy toward an estimated birth date.',
+        pros: [
+          'Projects an estimated due date once you’re already pregnant',
+          'Uses Naegele’s rule (last period + 280 days)',
+          'Gives a simple milestone to plan around',
+        ],
+        cons: ['An estimate only — most births don’t land exactly on the date, and this is not medical advice'],
+      },
+    ],
+    verdict:
+      'Trying to conceive? Start with the ovulation calculator to find your fertile window. Already pregnant? Use the due date calculator to estimate the birth date. Both run entirely in your browser, and both are estimates — not a substitute for advice from a healthcare professional.',
+    faqs: [
+      {
+        q: 'Can I use these together?',
+        a: 'Yes — many people use the ovulation calculator while trying to conceive, then switch to the due date calculator once pregnant. Each is a rough estimate based on cycle dates, not a medical diagnosis.',
+      },
+      {
+        q: 'How accurate are these dates?',
+        a: 'They’re approximations. Ovulation timing shifts with cycle variation, and only about 1 in 20 births falls on the estimated due date. Treat both as a guide and confirm anything important with your doctor.',
+      },
+    ],
+    keywords: ['ovulation vs due date', 'fertile window calculator', 'due date estimate', 'pregnancy calculator'],
+  },
+  {
+    slug: 'date-add-vs-date-diff',
+    category: 'util',
+    title: 'Date Add vs Date Difference — Shift a Date or Measure a Gap?',
+    h1: 'Date Add vs Date Difference',
+    description:
+      'Shift a date forward or back by days, weeks or months, or count the time between two dates — both free, in your browser.',
+    intro:
+      'These two date tools answer opposite questions. Date Add / Subtract takes one date and moves it by a number of days, weeks, months or years to land on a new date. Date Difference takes two dates and tells you how far apart they are. One projects to a date; the other measures a span.',
+    options: [
+      {
+        label: 'Date Add / Subtract',
+        toolId: 'date-add',
+        best: 'Projecting to a future or past date by a known offset.',
+        pros: [
+          'Shift a date by days, weeks, months or years',
+          'Works forward or backward from any start date',
+          'Handles month-end clamping automatically',
+        ],
+        cons: ['Won’t tell you the gap between two existing dates'],
+      },
+      {
+        label: 'Date Difference',
+        toolId: 'date-diff',
+        best: 'Measuring how much time lies between two dates.',
+        pros: [
+          'Counts the days (and weeks/months) between two dates',
+          'Great for deadlines, ages and durations',
+          'No need to know an offset in advance',
+        ],
+        cons: ['Won’t project a new date from an offset'],
+      },
+    ],
+    verdict:
+      'Know a start date and an offset, and need the resulting date? Use Date Add / Subtract. Have two dates and need the gap between them? Use Date Difference. Both calculate instantly in your browser.',
+    faqs: [
+      {
+        q: 'Which tool finds a deadline 90 days from today?',
+        a: 'Date Add / Subtract. Enter today as the start, add 90 days, and it returns the deadline date. Date Difference does the reverse — it counts days between two dates you already have.',
+      },
+      {
+        q: 'Can these handle months with different lengths?',
+        a: 'Yes. Date Add clamps to the last valid day when a month is shorter, and Date Difference counts the real calendar gap, including leap years.',
+      },
+    ],
+    keywords: ['date add vs date diff', 'add days to date', 'days between dates', 'date calculator'],
+  },
+  {
+    slug: 'csv-to-sql-vs-csv-to-html',
+    category: 'docs',
+    title: 'CSV to SQL vs CSV to HTML — Load a Database or Show a Table?',
+    h1: 'CSV to SQL vs CSV to HTML',
+    description:
+      'Turn a CSV into INSERT statements for a database, or into an HTML table for a web page — both free, in your browser.',
+    intro:
+      'Both tools start from the same CSV but aim at different destinations. CSV to SQL generates INSERT statements you can run to load the rows into a database. CSV to HTML Table generates a ready-to-paste HTML <table> to display the data on a web page. The question is simply where the data is going next.',
+    options: [
+      {
+        label: 'CSV to SQL',
+        toolId: 'csv-to-sql',
+        best: 'Importing CSV rows into a database table.',
+        pros: [
+          'Generates INSERT statements from your columns',
+          'Drop the output straight into a database client',
+          'Handles quoting and escaping for you',
+        ],
+        cons: ['Not meant for displaying data on a page'],
+      },
+      {
+        label: 'CSV to HTML Table',
+        toolId: 'csv-to-html',
+        best: 'Showing tabular data on a web page.',
+        pros: [
+          'Outputs a clean HTML <table> you can paste anywhere',
+          'Keeps headers and rows structured for the browser',
+          'No styling lock-in — restyle with your own CSS',
+        ],
+        cons: ['Doesn’t load anything into a database'],
+      },
+    ],
+    verdict:
+      'Loading the data into a database? Use CSV to SQL. Displaying it on a web page? Use CSV to HTML Table. Both convert your CSV instantly in the browser, so the file never leaves your device.',
+    faqs: [
+      {
+        q: 'Can I do both from the same CSV?',
+        a: 'Yes. Run CSV to SQL to seed a database and CSV to HTML to show the same rows on a page. Each conversion happens locally in your browser.',
+      },
+      {
+        q: 'Will the SQL work in my database?',
+        a: 'The output is standard INSERT syntax that works in most databases. You may need to tweak the table name or column types to match your schema.',
+      },
+    ],
+    keywords: ['csv to sql vs csv to html', 'csv to insert statements', 'csv to html table', 'convert csv'],
+  },
+  {
+    slug: 'image-threshold-vs-black-white',
+    category: 'image',
+    title: 'Image Threshold vs Black & White — Binarize or Grayscale?',
+    h1: 'Image Threshold vs Black & White',
+    description:
+      'Make a pure two-tone black-and-white image by a brightness cutoff, or a smooth grayscale photo — both free, in your browser.',
+    intro:
+      'Both tools drop the color, but they end up looking very different. Image Threshold binarizes: every pixel becomes pure black or pure white depending on whether its brightness clears a cutoff, leaving just two tones. Black & White instead desaturates to a smooth range of grays, preserving the photo’s tonal detail.',
+    options: [
+      {
+        label: 'Image Threshold',
+        toolId: 'image-threshold',
+        best: 'Scans, stencils and line art that should be pure two-tone.',
+        pros: [
+          'Reduces the image to pure black and white',
+          'Adjustable luminance cutoff for crisp edges',
+          'Ideal for documents, logos and stencils',
+        ],
+        cons: ['Loses all in-between tones, so photos look harsh'],
+      },
+      {
+        label: 'Black & White',
+        toolId: 'image-black-white',
+        best: 'Photos that should keep tonal detail without color.',
+        pros: [
+          'Smooth grayscale that preserves shading',
+          'Keeps depth and detail in photographs',
+          'A classic, natural monochrome look',
+        ],
+        cons: ['Won’t give you the clean two-tone result a scan needs'],
+      },
+    ],
+    verdict:
+      'Cleaning up a scan, stencil or piece of line art? Use Image Threshold for a crisp two-tone result. Converting a photograph? Use Black & White to keep its tones. Both process the image right in your browser.',
+    faqs: [
+      {
+        q: 'Why does my photo look harsh with threshold?',
+        a: 'Threshold keeps only two tones — pure black and pure white — so the smooth shading in a photo disappears. For photos, use Black & White instead, which preserves the grays.',
+      },
+      {
+        q: 'Which is better for scanning a document?',
+        a: 'Image Threshold. A brightness cutoff turns faint gray paper into clean white and the text into solid black, which is exactly what a readable scan needs.',
+      },
+    ],
+    keywords: ['image threshold vs black white', 'binarize image', 'grayscale photo', 'black and white image'],
+  },
+  {
+    slug: 'markdown-to-text-vs-markdown-preview',
+    category: 'docs',
+    title: 'Markdown to Text vs Markdown Preview — Strip It or See It?',
+    h1: 'Markdown to Text vs Markdown Preview',
+    description:
+      'Strip Markdown down to clean plain text, or render it to formatted HTML to see how it looks — both free, in your browser.',
+    intro:
+      'These two tools take Markdown in opposite directions. Markdown to Text removes all the formatting syntax and gives you clean plain text you can paste anywhere. Markdown Preview does the reverse — it renders the Markdown into formatted HTML so you can see headings, lists and links the way a reader would. One gets plain text out; the other lets you see the result.',
+    options: [
+      {
+        label: 'Markdown to Text',
+        toolId: 'markdown-to-text',
+        best: 'Getting clean, unformatted plain text out of Markdown.',
+        pros: [
+          'Strips headings, emphasis, links and list markers',
+          'Leaves readable plain text you can paste anywhere',
+          'Great for plain-text emails, fields and word counts',
+        ],
+        cons: ['Discards all formatting — you can’t see the styled result'],
+      },
+      {
+        label: 'Markdown Preview',
+        toolId: 'markdown-preview',
+        best: 'Seeing how your Markdown will actually render.',
+        pros: [
+          'Renders Markdown to formatted HTML live',
+          'Shows headings, lists, links and emphasis as readers see them',
+          'Catches syntax mistakes before you publish',
+        ],
+        cons: ['Doesn’t give you a plain-text version to copy out'],
+      },
+    ],
+    verdict:
+      'Need plain text with the formatting gone? Use Markdown to Text. Want to see how the document will look once rendered? Use Markdown Preview. Both run entirely in your browser.',
+    faqs: [
+      {
+        q: 'Which one removes the # and * symbols?',
+        a: 'Markdown to Text. It strips the syntax characters and leaves clean prose. Markdown Preview instead interprets those symbols to render headings and emphasis.',
+      },
+      {
+        q: 'Can I check my formatting before publishing?',
+        a: 'Yes — Markdown Preview renders your Markdown to HTML so you can confirm headings, lists and links look right before you ship it.',
+      },
+    ],
+    keywords: ['markdown to text vs markdown preview', 'strip markdown', 'render markdown', 'markdown to plain text'],
+  },
+  {
+    slug: 'regex-escape-vs-string-escape',
+    category: 'dev',
+    title: 'Regex Escaper vs String Escaper — Escape for Regex or for Code?',
+    h1: 'Regex Escaper vs String Escaper',
+    description:
+      'Escape regex metacharacters so text matches literally, or escape a string for JSON, JS, HTML or SQL — both free, in your browser.',
+    intro:
+      'Both tools add backslashes and entities, but for different targets. The Regex Escaper escapes characters that have special meaning inside a regular expression — like . * + ? ( ) — so your text matches literally. The String Escaper escapes a string for a code or markup context such as JSON, JavaScript, HTML or SQL. The deciding question is what the escaped text is going into.',
+    options: [
+      {
+        label: 'Regex Escaper',
+        toolId: 'regex-escape',
+        best: 'Making text match literally inside a regular expression.',
+        pros: [
+          'Escapes regex metacharacters (. * + ? [ ] ( ) etc.)',
+          'Turns arbitrary text into a safe literal pattern',
+          'Prevents accidental wildcards in your regex',
+        ],
+        cons: ['Not for escaping strings in JSON, JS, HTML or SQL'],
+      },
+      {
+        label: 'String Escaper',
+        toolId: 'string-escape',
+        best: 'Embedding a string safely in code or markup.',
+        pros: [
+          'Escapes for JSON, JavaScript, HTML or SQL contexts',
+          'Handles quotes, backslashes and special entities',
+          'Pick the target language for the right rules',
+        ],
+        cons: ['Won’t make text safe to drop into a regular expression'],
+      },
+    ],
+    verdict:
+      'Putting literal text inside a regex pattern? Use the Regex Escaper. Embedding a string in JSON, JavaScript, HTML or SQL? Use the String Escaper. Both escape your text instantly in the browser.',
+    faqs: [
+      {
+        q: 'Why doesn’t string escaping work for my regex?',
+        a: 'They escape different character sets. A regex needs metacharacters like . and * escaped, while JSON or JS escaping targets quotes and backslashes. Use the Regex Escaper when the text goes into a pattern.',
+      },
+      {
+        q: 'Which one do I use for a SQL query?',
+        a: 'The String Escaper, with the SQL target selected. It escapes quotes for SQL contexts. (For real queries, parameterized statements are still safer than manual escaping.)',
+      },
+    ],
+    keywords: ['regex escape vs string escape', 'escape regex characters', 'escape string for json', 'escape special characters'],
+  },
+  {
+    slug: 'bpm-tap-vs-metronome',
+    category: 'audio',
+    title: 'BPM Tap Counter vs Metronome — Measure a Tempo or Play One?',
+    h1: 'BPM Tap Counter vs Metronome',
+    description:
+      'Tap along to measure an unknown song’s tempo, or play a steady click at a tempo you set — both free, in your browser.',
+    intro:
+      'These two tools handle tempo from opposite ends. The BPM Tap Counter measures: you tap along with a track and it works out the beats per minute from your timing. The Metronome plays: you set a BPM and it produces a steady click to play or practice against. One finds an unknown tempo; the other holds a known one.',
+    options: [
+      {
+        label: 'BPM Tap Counter',
+        toolId: 'bpm-tap',
+        best: 'Finding the tempo of a song you’re listening to.',
+        pros: [
+          'Measures BPM from your taps in seconds',
+          'No need to know the tempo in advance',
+          'Great for DJs, remixers and transcription',
+        ],
+        cons: ['Doesn’t produce a click to play along to'],
+      },
+      {
+        label: 'Metronome',
+        toolId: 'metronome',
+        best: 'Practicing or recording at a tempo you choose.',
+        pros: [
+          'Plays a steady, accurate click at any BPM you set',
+          'Keeps your timing locked while you play',
+          'Ideal for practice and recording',
+        ],
+        cons: ['Won’t tell you the tempo of an existing track'],
+      },
+    ],
+    verdict:
+      'Need to discover how fast a song is? Tap it out with the BPM Tap Counter. Need a steady beat to play against? Set the Metronome. Both work right in your browser with no install.',
+    faqs: [
+      {
+        q: 'How do I find a song’s BPM?',
+        a: 'Use the BPM Tap Counter: play the track and tap along with the beat. After a few taps it averages your timing into a BPM. The Metronome does the opposite — it plays a click at a BPM you enter.',
+      },
+      {
+        q: 'Can I practice to a fixed tempo?',
+        a: 'Yes — set the Metronome to your target BPM and it plays a steady click to play along with. Use the BPM Tap Counter first if you need to match an existing recording.',
+      },
+    ],
+    keywords: ['bpm tap vs metronome', 'tap tempo counter', 'online metronome', 'find song bpm'],
+  },
+  {
+    slug: 'random-team-vs-random-pick',
+    category: 'util',
+    title: 'Random Team Generator vs Random Picker — Split Into Groups or Pick a Winner?',
+    h1: 'Random Team Generator vs Random Picker',
+    description:
+      'Split a list of names into balanced teams, or pick one or a few winners at random — both free, in your browser.',
+    intro:
+      'Both tools shuffle a list, but they hand you different results. The Random Team Generator divides everyone into balanced groups, so each name lands on a team. The Random Picker selects just one — or a few — winners from the list and sets the rest aside. The question is whether everyone gets placed or only a subset is chosen.',
+    options: [
+      {
+        label: 'Random Team Generator',
+        toolId: 'random-team-generator',
+        best: 'Dividing a full list of people into balanced teams.',
+        pros: [
+          'Splits a name list into evenly sized teams',
+          'Everyone is placed into a group',
+          'Great for sports, classrooms and group projects',
+        ],
+        cons: ['Not for choosing a single winner from the list'],
+      },
+      {
+        label: 'Random Picker',
+        toolId: 'random-pick',
+        best: 'Picking one or a few winners from a list.',
+        pros: [
+          'Selects a single winner or a small subset',
+          'Perfect for giveaways, raffles and draws',
+          'Leaves everyone else unselected',
+        ],
+        cons: ['Doesn’t organize the whole list into groups'],
+      },
+    ],
+    verdict:
+      'Need to place everyone into groups? Use the Random Team Generator. Need to pick a winner or a handful of names? Use the Random Picker. Both draw fairly and run entirely in your browser.',
+    faqs: [
+      {
+        q: 'Which tool makes two even teams?',
+        a: 'The Random Team Generator. It splits your list into the number of teams you choose and balances the sizes. The Random Picker instead selects a winner or two and leaves the rest out.',
+      },
+      {
+        q: 'How do I run a fair giveaway?',
+        a: 'Paste your entrants into the Random Picker and choose how many winners to draw. It selects them at random in your browser, so nothing is uploaded.',
+      },
+    ],
+    keywords: ['random team vs random pick', 'random team generator', 'random name picker', 'split into teams'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);

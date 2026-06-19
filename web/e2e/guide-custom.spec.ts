@@ -164,6 +164,10 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     { guide: 'iban-validator', prefix: '/en', expectLinks: ['cc-validate', 'luhn-generator', 'checksum-verify'] },
     { guide: 'world-clock', prefix: '', expectLinks: ['timezone', 'countdown', 'dday'] },
     { guide: 'pdf-delete-pages', prefix: '', expectLinks: ['pdf-organize', 'pdf-split', 'pdf-insert'] },
+    // 라운드12 — 팩5 클러스터
+    { guide: 'isbn-validate', prefix: '', expectLinks: ['cc-validate', 'iban-validator', 'luhn-generator'] },
+    { guide: 'ovulation-calc', prefix: '', expectLinks: ['pregnancy-due-date', 'date-add', 'dday'] },
+    { guide: 'image-threshold', prefix: '/en', expectLinks: ['image-black-white', 'image-duotone', 'image-filters'] },
   ];
 
   for (const { guide, prefix, expectLinks } of CLUSTERS) {
