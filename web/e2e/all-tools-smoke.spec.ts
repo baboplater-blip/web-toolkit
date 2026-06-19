@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * 전 도구(385) + 주요 허브 라우트 마운트 스모크.
+ * 전 도구(415) + 주요 허브 라우트 마운트 스모크.
  *
  * 헤더 스타일(ToolHeader vs 표준형 sticky 헤더)에 무관하게 보편적으로 검증한다:
  *   ① HTTP 200 응답(404·500 아님)
@@ -414,6 +414,37 @@ const TOOL_ROUTES: string[] = [
   '/tools/image/noise',
   '/tools/image/threshold',
   '/tools/audio/bpm-tap',
+  // 팩6 (30종)
+  '/tools/dev/css-grid',
+  '/tools/dev/text-shadow',
+  '/tools/dev/css-triangle',
+  '/tools/dev/uuid-validate',
+  '/tools/dev/base58',
+  '/tools/dev/regex-cheatsheet',
+  '/tools/dev/nanoid',
+  '/tools/dev/email-validator',
+  '/tools/text/random-words',
+  '/tools/text/hashtag',
+  '/tools/text/leetspeak',
+  '/tools/text/remove-duplicate-words',
+  '/tools/text/letter-frequency',
+  '/tools/util/dog-age',
+  '/tools/util/shoe-size',
+  '/tools/util/cooking',
+  '/tools/util/love',
+  '/tools/util/business-days',
+  '/tools/util/week-number',
+  '/tools/util/age-difference',
+  '/tools/util/bmr',
+  '/tools/util/random-letter',
+  '/tools/security/ean',
+  '/tools/security/mac-address',
+  '/tools/security/cc-type',
+  '/tools/docs/tsv-to-csv',
+  '/tools/docs/html-to-markdown',
+  '/tools/image/posterize',
+  '/tools/image/glitch',
+  '/tools/audio/noise',
 ];
 
 /** 마운트 시 무관한 외부 노이즈(확장프로그램·SW 등)는 회귀로 보지 않는다. */
@@ -468,7 +499,7 @@ test.describe('허브 라우트 스모크', () => {
   }
 });
 
-test.describe('전 도구 마운트 스모크 (385)', () => {
+test.describe('전 도구 마운트 스모크 (415)', () => {
   for (const route of TOOL_ROUTES) {
     test(route, async ({ page }) => {
       await smoke(page, route);

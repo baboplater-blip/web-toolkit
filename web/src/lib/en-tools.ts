@@ -2661,6 +2661,216 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Tap a key or button in time with the beat to measure the tempo (BPM) of any song, averaged live.',
     keywords: ['bpm tapper', 'tap bpm', 'tempo counter', 'find bpm'],
   },
+  'css-grid': {
+    name: 'CSS Grid Generator',
+    tagline: 'Generate CSS grid layout code visually.',
+    description:
+      'Set rows, columns and gaps to generate ready-to-use CSS grid layout code with a live preview.',
+    keywords: ['css grid generator', 'grid layout', 'css grid', 'grid template'],
+  },
+  'text-shadow': {
+    name: 'CSS Text Shadow Generator',
+    tagline: 'Generate CSS text-shadow with a live preview.',
+    description:
+      'Adjust offset, blur and color to generate CSS text-shadow code, with a live preview and copy.',
+    keywords: ['text shadow generator', 'css text-shadow', 'text shadow css'],
+  },
+  'css-triangle': {
+    name: 'CSS Triangle Generator',
+    tagline: 'Generate a CSS triangle with the border trick.',
+    description:
+      'Pick a direction, size and color to generate a pure-CSS triangle using the border technique.',
+    keywords: ['css triangle generator', 'css triangle', 'border triangle'],
+  },
+  'uuid-validate': {
+    name: 'UUID Validator',
+    tagline: 'Validate a UUID and detect its version.',
+    description:
+      'Check whether a UUID/GUID has a valid format and identify its version (v1–v5) and variant.',
+    keywords: ['uuid validator', 'validate uuid', 'uuid version', 'guid validator'],
+  },
+  'base58': {
+    name: 'Base58 Encode / Decode',
+    tagline: 'Encode and decode Base58 (Bitcoin alphabet).',
+    description:
+      'Convert text to and from Base58 using the Bitcoin alphabet — no confusing 0/O/I/l characters.',
+    keywords: ['base58 encode', 'base58 decode', 'base58 converter', 'bitcoin base58'],
+  },
+  'regex-cheatsheet': {
+    name: 'Regex Cheatsheet',
+    tagline: 'Searchable regular expression reference.',
+    description:
+      'A searchable cheatsheet of regex tokens, character classes, quantifiers, anchors and flags with examples.',
+    keywords: ['regex cheatsheet', 'regex reference', 'regular expression cheat sheet'],
+  },
+  'nanoid-gen': {
+    name: 'NanoID Generator',
+    tagline: 'Generate URL-safe unique IDs.',
+    description:
+      'Generate short, URL-safe unique IDs of any length using the Web Crypto API — a compact UUID alternative.',
+    keywords: ['nanoid generator', 'unique id generator', 'short id', 'url safe id'],
+  },
+  'email-validator': {
+    name: 'Email Validator',
+    tagline: 'Validate email address format.',
+    description:
+      'Check whether email addresses have a valid format, one at a time or a whole list at once.',
+    keywords: ['email validator', 'validate email', 'email format checker', 'verify email'],
+  },
+  'random-words': {
+    name: 'Random Word Generator',
+    tagline: 'Generate random English words.',
+    description:
+      'Generate any number of random English words for brainstorming, games, prompts and naming.',
+    keywords: ['random word generator', 'random words', 'word generator'],
+  },
+  'hashtag-generator': {
+    name: 'Hashtag Generator',
+    tagline: 'Turn keywords into social hashtags.',
+    description:
+      'Convert keywords or a sentence into clean #hashtags for Instagram, X and other social posts.',
+    keywords: ['hashtag generator', 'instagram hashtags', 'create hashtags'],
+  },
+  'leetspeak': {
+    name: 'Leetspeak Translator',
+    tagline: 'Convert text to 1337 5p34k.',
+    description:
+      'Translate normal text into leetspeak (e.g. leet → 1337) and back, with adjustable substitution levels.',
+    keywords: ['leetspeak translator', 'leet converter', '1337 text', 'leet speak'],
+  },
+  'remove-duplicate-words': {
+    name: 'Remove Duplicate Words',
+    tagline: 'Keep each word only once.',
+    description:
+      'Remove repeated words from text, keeping the first occurrence — optionally case-insensitive.',
+    keywords: ['remove duplicate words', 'unique words', 'deduplicate words'],
+  },
+  'letter-frequency': {
+    name: 'Letter Frequency Counter',
+    tagline: 'Count how often each letter appears.',
+    description:
+      'Analyze the frequency of each letter in text — useful for cryptograms, puzzles and linguistics.',
+    keywords: ['letter frequency', 'letter counter', 'character frequency', 'frequency analysis'],
+  },
+  'dog-age-calc': {
+    name: 'Dog Age Calculator',
+    tagline: 'Convert dog years to human years.',
+    description:
+      'Estimate your dog\'s age in human years using a size-aware formula, not the old ×7 myth.',
+    keywords: ['dog age calculator', 'dog years to human years', 'dog age in human years'],
+  },
+  'shoe-size-converter': {
+    name: 'Shoe Size Converter',
+    tagline: 'Convert US, EU, UK and cm shoe sizes.',
+    description:
+      'Convert shoe sizes between US, EU, UK and centimeters for men, women and kids.',
+    keywords: ['shoe size converter', 'us to eu shoe size', 'shoe size chart'],
+  },
+  'cooking-converter': {
+    name: 'Cooking Measurement Converter',
+    tagline: 'Convert cups, tbsp, ml and grams.',
+    description:
+      'Convert between cups, tablespoons, teaspoons, milliliters and grams for common cooking ingredients.',
+    keywords: ['cooking converter', 'cups to ml', 'cooking measurement converter', 'tablespoon to ml'],
+  },
+  'love-calculator': {
+    name: 'Love Calculator',
+    tagline: 'A fun name-compatibility score.',
+    description:
+      'Enter two names for a just-for-fun love compatibility score — a deterministic novelty, not real advice.',
+    keywords: ['love calculator', 'name compatibility', 'love test', 'love percentage'],
+  },
+  'business-days': {
+    name: 'Business Days Calculator',
+    tagline: 'Count working days between two dates.',
+    description:
+      'Count the number of business days between two dates, excluding weekends (and optional holidays).',
+    keywords: ['business days calculator', 'working days', 'weekdays between dates'],
+  },
+  'week-number': {
+    name: 'Week Number Calculator',
+    tagline: 'Find the ISO week number of a date.',
+    description:
+      'Find the ISO-8601 week number for any date, and see which dates a given week number covers.',
+    keywords: ['week number', 'iso week number', 'what week is it', 'week of year'],
+  },
+  'age-difference': {
+    name: 'Age Difference Calculator',
+    tagline: 'Find the age gap between two people.',
+    description:
+      'Calculate the exact age difference between two birth dates in years, months and days.',
+    keywords: ['age difference calculator', 'age gap calculator', 'age difference between two dates'],
+  },
+  'bmr-calculator': {
+    name: 'BMR Calculator',
+    tagline: 'Calculate your basal metabolic rate.',
+    description:
+      'Estimate your basal metabolic rate (BMR) from height, weight, age and sex using the Mifflin-St Jeor formula.',
+    keywords: ['bmr calculator', 'basal metabolic rate', 'mifflin st jeor', 'metabolism calculator'],
+  },
+  'random-letter': {
+    name: 'Random Letter Generator',
+    tagline: 'Pick random letters of the alphabet.',
+    description:
+      'Generate random letters (A–Z) — handy for games, drawing prompts and classroom activities.',
+    keywords: ['random letter generator', 'random letter picker', 'random alphabet'],
+  },
+  'ean-validate': {
+    name: 'EAN / UPC Validator',
+    tagline: 'Validate EAN-13, EAN-8 and UPC-A check digits.',
+    description:
+      'Check whether an EAN-13, EAN-8 or UPC-A barcode number has a valid checksum.',
+    keywords: ['ean validator', 'upc validator', 'barcode checksum', 'ean 13 check digit'],
+  },
+  'mac-address': {
+    name: 'MAC Address Validator',
+    tagline: 'Validate and reformat a MAC address.',
+    description:
+      'Validate a MAC address and convert between colon, hyphen and dot-separated formats and case.',
+    keywords: ['mac address validator', 'mac address format', 'validate mac address'],
+  },
+  'credit-card-type': {
+    name: 'Credit Card Type Detector',
+    tagline: 'Detect the card brand from its number.',
+    description:
+      'Identify the card network (Visa, Mastercard, Amex, Discover, etc.) from the number\'s prefix — locally, nothing sent.',
+    keywords: ['credit card type', 'card brand detector', 'identify card type', 'card number prefix'],
+  },
+  'tsv-to-csv': {
+    name: 'TSV to CSV Converter',
+    tagline: 'Convert between TSV and CSV.',
+    description:
+      'Convert tab-separated (TSV) data to comma-separated (CSV) and back, with proper quoting.',
+    keywords: ['tsv to csv', 'csv to tsv', 'tab to comma', 'tsv converter'],
+  },
+  'html-to-markdown': {
+    name: 'HTML to Markdown',
+    tagline: 'Convert HTML into Markdown.',
+    description:
+      'Convert HTML (headings, links, lists, bold, code) into clean Markdown you can paste into docs or READMEs.',
+    keywords: ['html to markdown', 'convert html to markdown', 'html to md'],
+  },
+  'image-posterize': {
+    name: 'Posterize Image',
+    tagline: 'Reduce an image to fewer color levels.',
+    description:
+      'Posterize a photo by reducing the number of color levels per channel for a bold, poster-like look.',
+    keywords: ['posterize image', 'poster effect', 'reduce colors', 'color levels'],
+  },
+  'image-glitch': {
+    name: 'Glitch Image Effect',
+    tagline: 'Add an RGB-shift glitch effect.',
+    description:
+      'Apply an adjustable glitch effect (RGB channel shift and scanlines) to an image — all in your browser.',
+    keywords: ['glitch effect', 'image glitch', 'rgb shift', 'glitch photo'],
+  },
+  'noise-generator': {
+    name: 'White Noise Generator',
+    tagline: 'Play white, pink and brown noise.',
+    description:
+      'Generate and play white, pink or brown noise for focus, sleep or masking — synthesized in your browser.',
+    keywords: ['white noise generator', 'pink noise', 'brown noise', 'noise generator'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
