@@ -128,6 +128,13 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/en/guide/luhn-generator', phrase: 'Luhn', note: 'EN Luhn 체크섬' },
     { path: '/ja/guide/meta-tags', phrase: 'OG', note: 'JA OG 메타태그' },
     { path: '/zh/guide/ideal-weight', phrase: 'BMI', note: 'ZH 이상체중 BMI' },
+    // 라운드11 — 팩5 31종 맞춤 가이드(4개국어)
+    { path: '/guide/vin-validate', phrase: '3779', note: 'KO VIN ISO 3779' },
+    { path: '/guide/imei-validate', phrase: 'Luhn', note: 'KO IMEI Luhn' },
+    { path: '/en/guide/isbn-validate', phrase: 'ISBN-13', note: 'EN ISBN 13' },
+    { path: '/en/guide/semver-checker', phrase: 'prerelease', note: 'EN semver precedence' },
+    { path: '/ja/guide/pregnancy-due-date', phrase: '280', note: 'JA 출산예정일 280일' },
+    { path: '/zh/guide/image-threshold', phrase: '0.299', note: 'ZH 휘도 계수' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {

@@ -5466,6 +5466,1339 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'mime-type-lookup': {
+    metaTitle: 'MIME Type Lookup — Extension ↔ MIME (Free Online)',
+    metaDescription:
+      'Look up the MIME type for any file extension, or the reverse. Type "png" to get image/png, or "application/pdf" to find pdf. ~80 mappings, free, runs in your browser.',
+    intro:
+      'This MIME type lookup resolves a file extension into its MIME type and vice versa from a built-in table of about 80 mappings. Type "png" and it returns image/png; type "application/pdf" or even "image/" and it lists every matching extension. It auto-detects the direction — anything containing a slash is treated as a MIME query.',
+    features: [
+      'Built-in dictionary of roughly 80 extension-to-MIME mappings covering text and code, data formats (json, yaml, toml, wasm), documents (docx, xlsx, epub), images, fonts, audio, video and archives.',
+      'Auto-detects direction: an input with a "/" is a MIME query that returns extensions, otherwise it is an extension query that returns MIME types.',
+      'Supports partial matching — typing "image/" returns every image row, and a leading dot like ".json" is stripped before matching.',
+      'An empty box shows the full table sorted alphabetically, and a counter tells you how many rows matched and which direction is active.',
+      'Each row has its own copy button and the whole lookup runs in your browser with no network requests.',
+    ],
+    steps: [
+      {
+        title: 'Enter an extension or MIME type',
+        body: 'Type a query such as "png", ".json", "image/" or "application/pdf" into the single search field. A leading dot is ignored, so "json" and ".json" behave the same.',
+      },
+      {
+        title: 'Read the matching rows',
+        body: 'Each result shows the extension (e.g. .png) above its MIME type (image/png). The counter reports the match count and whether it is resolving extension → MIME or MIME → extension.',
+      },
+      {
+        title: 'Copy the value you need',
+        body: 'Click Copy on a row to grab the MIME string (in extension mode) or the extension (in MIME mode) straight to your clipboard.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the correct MIME type for a .json file?',
+        a: 'application/json. JSON-LD maps to application/ld+json instead. Just type "json" to confirm both.',
+      },
+      {
+        q: 'Why does one MIME type map to several extensions?',
+        a: 'Some types cover multiple extensions — image/jpeg covers both jpg and jpeg, and audio/ogg covers ogg and oga — so a MIME query returns every extension that maps to it.',
+      },
+      {
+        q: 'Which MIME type should I send for a WebAssembly file?',
+        a: 'application/wasm. Serving .wasm with that type lets browsers use streaming compilation; type "wasm" to verify.',
+      },
+    ],
+  },
+
+  'semver-checker': {
+    metaTitle: 'SemVer Comparator — Compare Versions (Free Online)',
+    metaDescription:
+      'Compare two semantic versions by the official SemVer 2.0.0 rules. See why 1.2.0-rc.1 is lower than 1.2.0 and why build metadata is ignored. Free, runs in your browser.',
+    intro:
+      'This SemVer comparator parses two semantic versions and ranks them by the official SemVer 2.0.0 precedence rules. For example 1.2.0-rc.1 is reported as lower than 1.2.0, because a pre-release version always ranks below its associated normal release. Each version is broken into major, minor, patch, prerelease and build so you can see exactly why.',
+    features: [
+      'Validates each input against the SemVer 2.0.0 grammar (major.minor.patch with optional -prerelease and +build) and tolerates a leading "v".',
+      'Splits each version into a card showing its major, minor, patch, prerelease and build components.',
+      'Follows spec precedence exactly: numeric major/minor/patch first, then a version with a pre-release ranks below one without.',
+      'Compares pre-release identifiers left to right — numeric ones compare numerically, numeric ranks below alphanumeric, and a longer identifier set wins when the prefixes are equal.',
+      'Build metadata after the "+" is ignored, so 1.0.0+build.5 equals 1.0.0, and the verdict reads A < B, A > B or A = B — all in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter version A and version B',
+        body: 'Type two semantic versions, for example 1.2.0-rc.1+build.5 and 1.2.0, into the A and B fields. A leading "v" prefix is accepted.',
+      },
+      {
+        title: 'Check the parsed breakdown',
+        body: 'Each card shows the parsed major/minor/patch/prerelease/build. An invalid string shows a SemVer format error instead of a comparison.',
+      },
+      {
+        title: 'Read the verdict',
+        body: 'The result panel reports A < B, A > B or A = B with a sentence explaining the precedence rule that decided it, noting that build metadata was excluded.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Is 1.0.0-alpha lower or higher than 1.0.0?',
+        a: 'Lower. Per SemVer, a version with a pre-release identifier has lower precedence than the associated normal release, so 1.0.0-alpha < 1.0.0.',
+      },
+      {
+        q: 'Does build metadata affect which version is newer?',
+        a: 'No. Build metadata after the "+" sign is ignored when comparing, so 1.0.0+build.5 and 1.0.0 are treated as exactly equal.',
+      },
+      {
+        q: 'How are pre-release tags like rc.1 and rc.2 ordered?',
+        a: 'Identifiers are compared field by field. Numeric identifiers compare numerically (rc.1 < rc.2), and when the leading identifiers match, the version with more identifiers wins.',
+      },
+    ],
+  },
+
+  'sql-in-clause': {
+    metaTitle: 'SQL IN Clause Builder — Quote & Escape (Free)',
+    metaDescription:
+      'Turn a list of values into a SQL IN (...) clause. apple, banana → IN (\'apple\', \'banana\') with apostrophes escaped to \'\'. String or numeric mode, dedupe, free.',
+    intro:
+      'This SQL IN clause builder turns a list of values — one per line or comma-separated — into a ready-to-paste IN (...) clause. A list like apple/banana/cherry becomes IN (\'apple\', \'banana\', \'cherry\'), with every internal apostrophe doubled to \'\' so the string literals are safe. Switch to numeric mode and the same values are emitted unquoted.',
+    features: [
+      'Splits input on both newlines and commas, trims each value and drops empty entries automatically.',
+      'A quote-mode toggle wraps each value in single quotes (escaping internal \' as \'\') for string mode, or emits raw values for numeric mode.',
+      'De-duplication is on by default, removing repeated values before the clause is built.',
+      'An optional column field turns the output into "column IN (...)" — for example user_id IN (...) — otherwise it emits just the IN (...) clause.',
+      'A live value counter and one-click copy make it fast, and all processing runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste your values',
+        body: 'Enter the list in the value box, one per line or comma-separated — both delimiters work, and you can mix them.',
+      },
+      {
+        title: 'Pick quoting and options',
+        body: 'Choose string (single-quoted) or numeric (unquoted) mode, toggle de-duplication, and optionally type a column name like user_id.',
+      },
+      {
+        title: 'Copy the generated clause',
+        body: 'The result panel shows the IN (...) clause with a value count. Click Copy to drop it straight into your query.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I safely include text values with apostrophes in a SQL IN clause?',
+        a: 'Use string mode. Each value is single-quoted and any internal apostrophe is doubled (\' becomes \'\'), which is the standard SQL escaping for string literals.',
+      },
+      {
+        q: 'Can I build an IN clause from a comma-separated list instead of line breaks?',
+        a: 'Yes. The tool splits on both newlines and commas, so a comma-separated list, a line-per-value list, or a mix of the two all work.',
+      },
+      {
+        q: 'Does it remove duplicate IDs automatically?',
+        a: 'Yes, de-duplication is enabled by default. Turn it off if you specifically need duplicate values preserved in the clause.',
+      },
+    ],
+  },
+
+  'color-mix': {
+    metaTitle: 'Color Mixer — Blend Two HEX Colors (Free Online)',
+    metaDescription:
+      'Blend two HEX colors by ratio. Mix #ff0000 and #0000ff at 50% to get #800080, with HEX and rgb() output. Per-channel interpolation, runs in your browser.',
+    intro:
+      'This color mixer blends two HEX colors by a ratio using per-channel linear interpolation. Mix #ff0000 and #0000ff at 50% and each RGB channel is rounded to round(a*(1-t) + b*t), giving the midpoint #800080. The result is shown as both a HEX string and an rgb() value, with live swatches for A, the mix, and B.',
+    features: [
+      'Accepts HEX as #rgb, #rrggbb or without the prefix, with a native color picker and a text field for each color plus inline validation.',
+      'A ratio slider from 0 to 100 controls the blend (A 100−ratio% / B ratio%), where t = ratio / 100.',
+      'Uses per-channel linear interpolation with rounding: each of r, g and b is computed as round(channelA*(1-t) + channelB*t) independently.',
+      'Live swatches show color A, the mixed result and color B side by side as you drag.',
+      'Outputs both #rrggbb and rgb(r, g, b) with separate copy buttons, fully client-side.',
+    ],
+    steps: [
+      {
+        title: 'Pick two colors',
+        body: 'Set color A and color B with the swatch pickers or by typing HEX values such as #ff0000 and #0000ff. Three-digit shorthand and prefix-less input both work.',
+      },
+      {
+        title: 'Adjust the mix ratio',
+        body: 'Drag the ratio slider. The label shows how much of A versus B is used — for example A 70% / B 30% — and the swatch updates instantly.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Copy the blended color as a #rrggbb HEX string or as an rgb() value, whichever your code needs.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What color do you get mixing red and blue equally?',
+        a: 'At a 50/50 ratio each channel is averaged, giving #800080 (rgb(128, 0, 128)), a purple. Each channel is rounded independently.',
+      },
+      {
+        q: 'Does the mixer work in RGB or another color space?',
+        a: 'It interpolates linearly in sRGB/RGB space, one channel at a time. It does not convert to a perceptual space such as LAB, so results match a simple pixel blend.',
+      },
+      {
+        q: 'Can I enter HEX without the # sign?',
+        a: 'Yes. Three-digit shorthand (#rgb), six-digit (#rrggbb) and prefix-less values are all accepted for either color.',
+      },
+    ],
+  },
+
+  'git-command-builder': {
+    metaTitle: 'Git Command Builder — Build Git Commands (Free)',
+    metaDescription:
+      'Pick a Git task, fill the fields and copy the exact command. "New branch" with feature/login gives git switch -c feature/login. 10 presets, free, no install.',
+    intro:
+      'This Git command builder lets you pick a task, fill in a few fields, and copy the exact command. Choose "create new branch" and type feature/login and you get git switch -c feature/login. Leave a field empty and it falls back to an angle-bracket placeholder like <branch>, so the shape of the command is always visible.',
+    features: [
+      'Ten task presets: new branch (git switch -c), commit, amend last commit (--amend), unstage (git restore --staged), discard changes, push (-u origin), stash, reset to commit (--hard), merge and tag.',
+      'Context-aware fields — each task only shows the inputs it actually needs, such as a branch, message, file path or commit hash.',
+      'Empty inputs are substituted with placeholders (<branch>, <message>, <file>, <hash>) so the command template is always complete.',
+      'Commit messages are automatically wrapped in double quotes for you.',
+      'A live preview updates as you type and a single click copies the command, all in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Select a task',
+        body: 'Choose the operation — commit, push, merge, reset and so on — from the task dropdown. Only the relevant fields appear.',
+      },
+      {
+        title: 'Fill in the fields',
+        body: 'Provide the values the task needs: a branch name, commit message, file path or commit hash. Anything you leave blank becomes a placeholder.',
+      },
+      {
+        title: 'Copy the command',
+        body: 'The assembled git command updates live in the preview. Click Copy and paste it straight into your terminal.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the command to create and switch to a new Git branch?',
+        a: 'The builder uses the modern form git switch -c <branch>, for example git switch -c feature/login, which creates the branch and checks it out in one step.',
+      },
+      {
+        q: 'How do I unstage a file without losing my changes?',
+        a: 'Select the unstage task to get git restore --staged <file>. It removes the file from the staging area but keeps your edits in the working tree.',
+      },
+      {
+        q: 'How do I amend my last commit message?',
+        a: 'Pick the amend task and you get git commit --amend -m "<message>" with your new message already quoted.',
+      },
+    ],
+  },
+
+  'htaccess-redirect': {
+    metaTitle: '.htaccess Redirect Generator — 301, HTTPS, www (Free)',
+    metaDescription:
+      'Generate Apache .htaccess rules: 301/302 path redirects, force HTTPS, and www normalization. Get RewriteCond %{HTTPS} off rules ready to paste. Free, in your browser.',
+    intro:
+      'This .htaccess generator builds Apache redirect rules for path redirects, HTTPS enforcement and www normalization. For example it can emit a 301 from /old-page to a new URL, plus a RewriteCond %{HTTPS} off rule that forces HTTP to HTTPS. RewriteEngine On is only added when an HTTPS or www rule is actually enabled, and each block is annotated with comments.',
+    features: [
+      'Path redirect with a selectable status code — 301 (permanent) or 302 (temporary) — emitted as "Redirect <code> <from> <to>".',
+      'A Force HTTPS toggle adds RewriteCond %{HTTPS} off and a RewriteRule that rewrites to https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301].',
+      'www normalization with three modes: no change, force www (non-www → www), or force non-www (www → non-www) via a RewriteCond on HTTP_HOST.',
+      'RewriteEngine On is emitted only when a RewriteRule is actually needed, and rules are grouped with explanatory comments.',
+      'A live preview with a copy button generates plain text that runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Set up the path redirect',
+        body: 'Enter the From path (e.g. /old-page) and the To URL, then choose 301 permanent or 302 temporary.',
+      },
+      {
+        title: 'Toggle HTTPS and www rules',
+        body: 'Enable Force HTTPS and/or pick a domain mode (force www or force non-www) depending on how you want your canonical URLs to look.',
+      },
+      {
+        title: 'Copy the .htaccess block',
+        body: 'Review the generated rules in the preview and copy them into your site’s .htaccess file in the document root.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How do I redirect HTTP to HTTPS in .htaccess?',
+        a: 'Enable Force HTTPS. It generates RewriteCond %{HTTPS} off and a RewriteRule that rewrites to https://%{HTTP_HOST}%{REQUEST_URI} with a 301 status.',
+      },
+      {
+        q: 'Should I use a 301 or a 302 redirect?',
+        a: 'Use 301 for a permanent move — it passes SEO value and is cached — and 302 for a temporary one. The tool lets you pick either for the path redirect.',
+      },
+      {
+        q: 'How do I force www or remove www from my domain?',
+        a: 'Choose the domain mode: "force www" redirects non-www to www, and "force non-www" strips www, each via a matching RewriteCond/RewriteRule pair.',
+      },
+    ],
+  },
+
+  'query-string-builder': {
+    metaTitle: 'Query String Builder — Encode URL Params (Free)',
+    metaDescription:
+      'Build a URL query string from key-value pairs with proper encoding. name=John Doe becomes ?name=John%20Doe, pairs joined by &. encodeURIComponent, free, in your browser.',
+    intro:
+      'This query string builder turns key-value pairs into a properly encoded URL query string. Enter name=John Doe and it becomes ?name=John%20Doe, with each extra pair joined by &. Both keys and values are percent-encoded with encodeURIComponent, so spaces and reserved characters are escaped and the result is safe to append to any URL.',
+    features: [
+      'Add and remove rows of key-value pairs (it starts with two rows and never drops below one).',
+      'Only rows with a non-empty key are included; values may be left empty and produce key=.',
+      'Both keys and values are percent-encoded with encodeURIComponent, so spaces become %20 and characters like &, = and ? are escaped.',
+      'The output is prefixed with ? and pairs are joined by &, for example ?a=1&b=2.',
+      'A live preview with a copy button generates the string entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter key-value pairs',
+        body: 'Type a key and value in each row, and click "Add row" for more parameters.',
+      },
+      {
+        title: 'Watch it encode live',
+        body: 'As you type, the query string updates with each value percent-encoded and the leading ? added automatically.',
+      },
+      {
+        title: 'Copy the query string',
+        body: 'Click Copy to grab the encoded string and append it directly to your base URL.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are spaces and special characters handled in the query string?',
+        a: 'Both keys and values are encoded with encodeURIComponent, so spaces become %20 and reserved characters such as &, =, ? and # are escaped to be URL-safe.',
+      },
+      {
+        q: 'What happens to a row with an empty key?',
+        a: 'It is skipped. Only pairs whose key is non-empty are emitted; empty values are allowed and simply produce key= with nothing after the equals sign.',
+      },
+      {
+        q: 'Is the output safe to paste directly after my URL?',
+        a: 'Yes. The result already starts with ? and is fully percent-encoded, so you can append it to your base URL as-is.',
+      },
+    ],
+  },
+
+  'regex-escape': {
+    metaTitle: 'Regex Escape / Unescape — Literal Patterns (Free)',
+    metaDescription:
+      'Escape regex metacharacters so text matches literally, or reverse it. a.b(c)* becomes a\\.b\\(c\\)\\*. Escapes . * + ? ^ $ { } ( ) | [ ] \\. Free, in your browser.',
+    intro:
+      'This tool escapes regex metacharacters so your text matches literally, or reverses the process. In escape mode a.b(c)* becomes a\\.b\\(c\\)\\*, where each special character gets a leading backslash; in unescape mode those backslashes are stripped back to the original. It is handy whenever you need to feed a fixed string into a regular expression.',
+    features: [
+      'Escape mode prefixes a backslash before each metacharacter in the set . * + ? ^ $ { } ( ) | [ ] and the backslash itself.',
+      'Unescape mode removes backslashes only from valid backslash+metacharacter pairs, precisely reversing the escape.',
+      'Toggle buttons switch between escape and unescape, each with a mode-specific example placeholder.',
+      'Side-by-side input and output textareas update live as you type.',
+      'A copy button grabs the result and everything is processed in your browser with no uploads.',
+    ],
+    steps: [
+      {
+        title: 'Choose escape or unescape',
+        body: 'Use the toggle to pick escape (make text literal) or unescape (remove the added backslashes).',
+      },
+      {
+        title: 'Paste your text',
+        body: 'Type or paste into the input textarea. An example placeholder shows the expected format for the current mode.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'The escaped or unescaped output appears live in the result pane — click Copy to drop it into your pattern.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which characters need escaping in a regular expression?',
+        a: 'The tool escapes the standard metacharacters . * + ? ^ $ { } ( ) | [ ] and the backslash itself, giving each a leading backslash so it matches literally.',
+      },
+      {
+        q: 'How do I match a literal dot or parenthesis in regex?',
+        a: 'Paste your text in escape mode: a literal "." becomes "\\." and "(" becomes "\\(", so they match the actual characters instead of acting as metacharacters.',
+      },
+      {
+        q: 'Can I reverse an already-escaped pattern?',
+        a: 'Yes. Unescape mode removes backslashes from valid metacharacter pairs (e.g. \\. back to .) to recover the original literal text.',
+      },
+    ],
+  },
+
+  'reverse-words': {
+    metaTitle: 'Reverse Word Order — Flip Words per Line (Free)',
+    metaDescription:
+      'Reverse the order of words on each line while keeping line breaks. "hello world foo" becomes "foo world hello". Letters stay intact. Free, runs in your browser.',
+    intro:
+      'This tool reverses the order of words within each line while keeping your line breaks intact. "hello world foo" becomes "foo world hello" — each line is split on whitespace, the words are reversed, and they are rejoined with single spaces. The letters inside each word are never touched, so "cat dog" becomes "dog cat", not "tac god".',
+    features: [
+      'Processes each line independently, splitting on runs of whitespace and discarding empty tokens.',
+      'Reverses the word order within a line and rejoins the words with a single space.',
+      'Newlines are preserved, so multi-line text keeps its original line structure.',
+      'A live two-pane view shows the input on the left and the reversed output on the right.',
+      'Copy and download (.txt) buttons are provided, and all processing happens in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Type or paste text into the input box. It can span as many lines as you like.',
+      },
+      {
+        title: 'See the reversed order',
+        body: 'Each line’s words appear in reverse order in the output, with the line breaks preserved exactly.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Use Copy to grab the result, or Download to save it as reverse-words.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does reversing words also reverse the letters in each word?',
+        a: 'No. It only flips the word order; each word’s spelling stays the same. "cat dog" becomes "dog cat", not "tac god".',
+      },
+      {
+        q: 'Are line breaks kept when reversing words?',
+        a: 'Yes. Each line is reversed on its own and newlines are preserved, so the overall line layout does not change.',
+      },
+      {
+        q: 'What happens to extra spaces between words?',
+        a: 'They collapse. Words are split on whitespace and rejoined with a single space each, so irregular spacing is normalized.',
+      },
+    ],
+  },
+
+  'pig-latin': {
+    metaTitle: 'Pig Latin Translator — English to Pig Latin (Free)',
+    metaDescription:
+      'Translate English to Pig Latin. hello → ellohay, string → ingstray, apple → appleway or appleyay. Keeps capitalization and punctuation. Free, in your browser.',
+    intro:
+      'This Pig Latin translator converts English text word by word. Words that start with consonants move the leading consonant cluster to the end and add "ay" (hello → ellohay, string → ingstray), while words that start with a vowel get a chosen suffix (apple → appleway or appleyay). Capitalization and punctuation are preserved in place.',
+    features: [
+      'Consonant rule: the leading consonant cluster up to the first vowel moves to the end and "ay" is appended (e.g. string → ingstray).',
+      'Vowel rule with a selectable suffix — "way" (apple → appleway) or "yay" (apple → appleyay).',
+      'The original capitalization of a word’s first letter is preserved in the result.',
+      'Words with no vowel (e.g. "tsk") simply get "ay" appended, and only alphabetic A–Z tokens are converted.',
+      'Non-alphabetic characters — spaces, punctuation and numbers — stay exactly in place, with live output, copy and .txt download.',
+    ],
+    steps: [
+      {
+        title: 'Type English text',
+        body: 'Enter your text in the input box. Each alphabetic word is translated while everything else is left untouched.',
+      },
+      {
+        title: 'Choose the vowel suffix',
+        body: 'Select "way" or "yay" to control how words that already start with a vowel are suffixed.',
+      },
+      {
+        title: 'Copy or download the result',
+        body: 'Read the Pig Latin output and copy it, or save it as pig-latin.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does Pig Latin handle words starting with consonant clusters like "string"?',
+        a: 'The entire leading consonant cluster — every consonant up to the first vowel — moves to the end before "ay", so "string" becomes "ingstray".',
+      },
+      {
+        q: 'What suffix do vowel-starting words get?',
+        a: 'You choose: "way" (apple → appleway) or "yay" (apple → appleyay). Both are common Pig Latin conventions for vowel-initial words.',
+      },
+      {
+        q: 'Does it keep capitalization and punctuation?',
+        a: 'Yes. A capitalized first letter stays capitalized in the result, and punctuation and spacing remain in their original positions.',
+      },
+    ],
+  },
+
+  'remove-emoji': {
+    metaTitle: 'Remove Emoji — Strip Emoji from Text (Free Online)',
+    metaDescription:
+      'Strip emoji and pictographic symbols from text while keeping letters and numbers. Removes flags, skin tones, ZWJ sequences and keycaps. Free, runs in your browser.',
+    intro:
+      'This tool strips emoji and pictographic symbols from text while leaving ordinary letters, numbers and punctuation untouched. It correctly removes ZWJ sequences, skin-tone modifiers, flag pairs and keycap emoji (such as 1️⃣) as whole units, and it counts how many code points were removed so you know the cleanup worked.',
+    features: [
+      'Unicode-aware matching with \\p{Extended_Pictographic}, handling skin-tone modifiers and ZWJ-joined sequences (like family emoji) as single units.',
+      'Removes keycap sequences ([#*0-9] + variation selector + combining keycap) while preserving plain numbers like 42.',
+      'Removes regional-indicator flag pairs and absorbs any trailing orphan variation selector (VS16).',
+      'An optional "collapse spaces" cleans up runs of spaces and tabs left behind, while newlines are preserved.',
+      'A live count of removed code points is shown, with copy and .txt download, all in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste text with emoji',
+        body: 'Enter or paste your text into the input box.',
+      },
+      {
+        title: 'Optionally collapse spaces',
+        body: 'Toggle "collapse spaces" to merge the extra spaces created where emoji were removed.',
+      },
+      {
+        title: 'Copy the cleaned text',
+        body: 'The emoji-free output and the removed count appear live — copy it or download it as remove-emoji.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does removing emoji also delete numbers like a phone number?',
+        a: 'No. Plain digits are preserved; only emoji keycap sequences (a digit followed by the keycap combining mark) are removed, so 42 stays but 4️⃣ is dropped.',
+      },
+      {
+        q: 'Are multi-part emoji like flags and family emoji removed completely?',
+        a: 'Yes. ZWJ sequences, skin-tone modifiers and regional-indicator flag pairs are matched as whole units, so no leftover fragments remain.',
+      },
+      {
+        q: 'Will it leave odd extra spaces behind?',
+        a: 'Only if you want it to. Enable "collapse spaces" to merge consecutive spaces and tabs into one, while line breaks are kept intact.',
+      },
+    ],
+  },
+
+  'remove-numbers': {
+    metaTitle: 'Remove Numbers — Delete Digits from Text (Free)',
+    metaDescription:
+      'Delete digits from text. Removes ASCII 0-9 by default, or all Unicode decimals (\\p{Nd}) including full-width digits. Optional space collapse. Free, in your browser.',
+    intro:
+      'This tool deletes digits from text. By default it removes the ASCII digits 0-9, and with the Unicode option it removes every decimal-number character (\\p{Nd}), including full-width and other-script digits. Letters and punctuation such as the decimal point are left in place, and an optional setting collapses any spaces left behind.',
+    features: [
+      'Removes ASCII digits 0-9 by default.',
+      'A Unicode digits toggle switches to \\p{Nd} to also strip full-width, Arabic-Indic and other-script decimal digits.',
+      'An optional "collapse spaces" merges runs of spaces and tabs (not newlines) into a single space after removal.',
+      'A live side-by-side view shows the input and the number-free output.',
+      'Copy and .txt download are provided, and all processing is local to your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Paste text containing numbers into the input box.',
+      },
+      {
+        title: 'Pick digit scope and spacing',
+        body: 'Optionally enable "include Unicode digits" to widen the match, and "collapse spaces" to tidy the result.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The number-free result appears live — copy it or save it as remove-numbers.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it remove only 0-9, or also full-width and other-script digits?',
+        a: 'By default only ASCII 0-9. Enable the Unicode digits option to also remove \\p{Nd} characters such as full-width and Arabic-Indic numerals.',
+      },
+      {
+        q: 'Will removing numbers leave double spaces?',
+        a: 'It can, but the "collapse spaces" option merges consecutive spaces and tabs into one while keeping line breaks intact.',
+      },
+      {
+        q: 'Are decimal points or letters affected?',
+        a: 'No. Only digit characters are removed; punctuation like "." and all letters remain in place.',
+      },
+    ],
+  },
+
+  'smart-quotes': {
+    metaTitle: 'Smart Quotes Converter — Straight ↔ Curly (Free)',
+    metaDescription:
+      'Convert straight quotes to typographic curly quotes by context, or reverse it. Apostrophes in contractions become right single quotes. Free, runs in your browser.',
+    intro:
+      'This converter turns straight quotes (\' and ") into typographic curly quotes based on context, or reverses it. A quote after a space or opening bracket becomes an opening quote, otherwise a closing quote — so the apostrophe in a contraction like don’t correctly becomes a right single quote. Switch to straight mode to flatten curly quotes back to plain ones.',
+    features: [
+      'Context-aware: a quote preceded by whitespace, the string start, an opening bracket or a dash becomes an opening (left) quote, otherwise a closing (right) quote.',
+      'Maps " to left/right double quotes and \' to left/right single quotes.',
+      'Contractions and possessives — a mid-word apostrophe — correctly become the right single quote.',
+      'Straight mode reverses curly quotes back to plain \' and " characters.',
+      'A two-pane live conversion with copy and .txt download runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Choose a direction',
+        body: 'Pick "to smart quotes" (curly) or "to straight quotes" (plain).',
+      },
+      {
+        title: 'Paste your text',
+        body: 'Enter text with quotes and apostrophes into the input box.',
+      },
+      {
+        title: 'Copy the converted text',
+        body: 'Read the live output and copy it, or download it as smart-quotes.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does the tool know whether a quote is opening or closing?',
+        a: 'It looks at the preceding character: if it is a space, line start, opening bracket or dash, the quote opens; otherwise it closes — so contractions get a right single quote.',
+      },
+      {
+        q: 'Can I convert curly quotes back to straight quotes?',
+        a: 'Yes. Switch to straight mode to turn all curly double and single quotes back into plain " and \' characters.',
+      },
+      {
+        q: 'Will apostrophes in words like don’t be handled correctly?',
+        a: 'Yes. A mid-word apostrophe is treated as a closing context, producing the correct right single quote in don’t.',
+      },
+    ],
+  },
+
+  'time-card-calc': {
+    metaTitle: 'Time Card Calculator — Weekly Hours & Pay (Free)',
+    metaDescription:
+      'Sum weekly work hours from clock-in/out times minus breaks, with overnight shift handling. 22:00–06:00 counts as 8 hours. Optional pay estimate. Free, in your browser.',
+    intro:
+      'This time card calculator sums your weekly work hours from daily clock-in and clock-out times, minus break minutes, and handles overnight shifts. If clock-out is earlier than clock-in — say 22:00 to 06:00 — it adds 24 hours to span the midnight crossing, so that shift counts as 8 hours. Add an hourly rate and it also estimates your weekly pay.',
+    features: [
+      'Seven day rows (Mon–Sun), each with clock-in, clock-out and break minutes.',
+      'Per-row worked time is (out − in) − break, and overnight shifts (out earlier than in) automatically add 24 hours.',
+      'If the break exceeds the worked time the row clamps to 0, and each row shows hours and minutes plus decimal hours.',
+      'The weekly total is shown in both H:M and decimal hours, and an optional hourly rate produces a rounded pay estimate.',
+      'All calculations run instantly in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter daily times',
+        body: 'For each weekday, set the clock-in and clock-out times and the break minutes.',
+      },
+      {
+        title: 'Add an hourly rate (optional)',
+        body: 'Enter your hourly wage to also get an estimated weekly pay figure.',
+      },
+      {
+        title: 'Read the weekly total',
+        body: 'The summary shows total hours (and decimal hours), plus estimated pay if you entered a rate.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does the calculator handle overnight shifts that cross midnight?',
+        a: 'If clock-out is earlier than clock-in, it assumes the shift ran past midnight and adds 24 hours, so 22:00 to 06:00 counts as 8 hours minus any break.',
+      },
+      {
+        q: 'How is break time subtracted?',
+        a: 'Break minutes are subtracted from the clocked span each day. If the break is longer than the worked time, that day is counted as 0 rather than going negative.',
+      },
+      {
+        q: 'Can it estimate my weekly pay?',
+        a: 'Yes. Enter an hourly rate and it multiplies your total decimal hours by the rate, showing a rounded pay estimate.',
+      },
+    ],
+  },
+
+  'date-add': {
+    metaTitle: 'Date Add / Subtract — Add Days, Months, Years (Free)',
+    metaDescription:
+      'Add or subtract days, weeks, months or years from a date and see the weekday. Jan 31 + 1 month gives Feb 28/29 with an end-of-month clamp. Free, in your browser.',
+    intro:
+      'This date calculator adds or subtracts days, weeks, months or years from a start date and shows the resulting date with its weekday. Month and year math clamps to the end of the month, so January 31 plus one month gives February 28 (or 29 in a leap year) instead of overflowing into March. The start date defaults to today.',
+    features: [
+      'An operation toggle (add or subtract) with a unit selector for day, week, month or year.',
+      'Day and week math is straightforward calendar addition, while month and year math clamp the day to the target month’s last valid day.',
+      'Validates the start date and rejects impossible ones like Feb 30; the start date defaults to today after the page loads.',
+      'The result shows the date as YYYY-MM-DD plus the localized weekday.',
+      'One-click copy of the result, with all computation done in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Set the start date',
+        body: 'Pick the base date. It defaults to today, so you can leave it as-is for quick calculations.',
+      },
+      {
+        title: 'Choose operation, amount and unit',
+        body: 'Select add or subtract, type the number, and pick day, week, month or year.',
+      },
+      {
+        title: 'Copy the result date',
+        body: 'The computed date with its weekday appears instantly — click Copy to grab it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does January 31 plus one month give?',
+        a: 'February 28, or 29 in a leap year. The tool clamps the day to the target month’s last day instead of rolling over into March.',
+      },
+      {
+        q: 'Can I subtract time as well as add it?',
+        a: 'Yes. Toggle to subtract and the same units — day, week, month and year — are applied backward from the start date.',
+      },
+      {
+        q: 'Does the result show the day of the week?',
+        a: 'Yes. The output is formatted as YYYY-MM-DD followed by the weekday so you can see which day it lands on.',
+      },
+    ],
+  },
+
+  'grade-calc': {
+    metaTitle: 'Weighted Grade Calculator — Average & Letter (Free)',
+    metaDescription:
+      'Compute a weighted average from scores and weights, then map it to a letter grade. Normalizes even if weights don’t total 100%. A≥90, B≥80, C≥70, D≥60. Free.',
+    intro:
+      'This weighted grade calculator computes an average from items with scores and weights, then maps it to a letter grade. The average is Sum(score × weight) / Sum(weight), normalized by the actual total weight even if your weights don’t add up to 100. The result is mapped to a letter — A for 90 and up, B for 80+, C for 70+, D for 60+, otherwise F.',
+    features: [
+      'Add and remove grade rows (it starts with midterm, final and assignment), each with a name, score (0–100) and weight (%).',
+      'The weighted average is Sum(score × weight) / Sum(weight), counting only rows where both the score and weight are valid.',
+      'It normalizes by the actual total weight, so weights that don’t sum to 100 still work — with a warning shown.',
+      'Letter grade mapping: A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, and F below 60.',
+      'It shows the rounded average, the letter and the total weight, computed instantly in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter each item',
+        body: 'Type a name, score (0–100) and weight (%) for each component, adding rows as needed.',
+      },
+      {
+        title: 'Review the weighted average',
+        body: 'The tool sums score × weight and divides by the total weight, showing the average and its letter grade.',
+      },
+      {
+        title: 'Check the weight total',
+        body: 'If your weights don’t add up to 100%, a notice explains that it normalized using your actual total.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Do my weights have to add up to 100%?',
+        a: 'No. The average is normalized by the sum of your weights, so any totals work — though a warning appears if they don’t add up to 100%.',
+      },
+      {
+        q: 'What score earns each letter grade?',
+        a: 'A is 90 and up, B is 80+, C is 70+, D is 60+, and F is anything below 60, applied to the weighted average.',
+      },
+      {
+        q: 'How is the weighted average calculated?',
+        a: 'It is Sum(score × weight) divided by Sum(weight), counting only the rows where both the score and weight are valid numbers.',
+      },
+    ],
+  },
+
+  'ovulation-calc': {
+    metaTitle: 'Ovulation Calculator — Fertile Window Estimate (Free)',
+    metaDescription:
+      'Estimate ovulation, fertile window and next period from your last period and cycle length. Ovulation = LMP + (cycle − 14). An estimate, not medical advice. Free.',
+    intro:
+      'This ovulation calculator estimates your ovulation day, fertile window and next period from your last menstrual period (LMP) and average cycle length. Ovulation is calculated as LMP + (cycle − 14), the fertile window spans from 5 days before to 1 day after ovulation, and the next period is LMP + cycle length. It is an estimate based on average cycles, not a medical diagnosis.',
+    features: [
+      'Inputs are your last period start date and average cycle length (accepted from 21 to 45 days, default 28).',
+      'Ovulation day = LMP + (cycle − 14), based on the luteal phase lasting roughly 14 days.',
+      'The fertile window runs from ovulation day − 5 to ovulation day + 1.',
+      'The next period is predicted as LMP + cycle length, and every date is shown with its weekday.',
+      'It is clearly labeled as an estimate rather than a diagnosis, and all math runs in your browser with no data sent out.',
+    ],
+    steps: [
+      {
+        title: 'Enter your last period date',
+        body: 'Set the start date of your most recent menstrual period.',
+      },
+      {
+        title: 'Set your cycle length',
+        body: 'Enter your average cycle length in days (21–45; the default is 28).',
+      },
+      {
+        title: 'Read the predictions',
+        body: 'See your estimated ovulation day, fertile window and next period date, each with its weekday.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is the ovulation date calculated?',
+        a: 'It uses ovulation = LMP + (cycle length − 14), assuming a roughly 14-day luteal phase before the next period.',
+      },
+      {
+        q: 'What is the fertile window shown?',
+        a: 'From 5 days before ovulation to 1 day after, since sperm can survive several days and the egg stays viable for about a day.',
+      },
+      {
+        q: 'Is this accurate enough to rely on?',
+        a: 'It is an estimate based on average cycles and varies from person to person. The tool notes it is not a medical diagnosis — consult a professional for anything you need to rely on.',
+      },
+    ],
+  },
+
+  'pregnancy-due-date': {
+    metaTitle: 'Pregnancy Due Date Calculator — Naegele’s Rule (Free)',
+    metaDescription:
+      'Estimate your due date with Naegele’s rule: LMP + 280 days, adjusted for cycle length, plus current gestational age. An estimate, not medical advice. Free.',
+    intro:
+      'This pregnancy due date calculator estimates your due date from your last menstrual period using Naegele’s rule: due date = LMP + 280 days (40 weeks). For non-standard cycles it shifts the date by (cycle length − 28) days, and it also shows your current gestational age in weeks and days. It is a standard estimate, not a medical diagnosis.',
+    features: [
+      'Naegele’s rule: the due date is LMP + 280 days (40 weeks).',
+      'A cycle adjustment shifts the due date by (cycle length − 28) days when you provide an optional cycle (21–45).',
+      'It computes your current gestational age as the weeks and days elapsed since the LMP (shown once the LMP is in the past).',
+      'Every date includes its weekday, and the LMP defaults to today.',
+      'It is marked as an estimate rather than a diagnosis and runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter the last period date',
+        body: 'Set the first day of your last menstrual period.',
+      },
+      {
+        title: 'Optionally set cycle length',
+        body: 'Enter your average cycle (the default is 28) to adjust the due date for longer or shorter cycles.',
+      },
+      {
+        title: 'View due date and gestation',
+        body: 'Read the estimated due date and, where applicable, your current weeks and days of pregnancy.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is the due date calculated?',
+        a: 'By Naegele’s rule: 280 days (40 weeks) added to the first day of your last period, optionally adjusted by your cycle length minus 28 days.',
+      },
+      {
+        q: 'Does a longer or shorter cycle change the due date?',
+        a: 'Yes. Each day your average cycle differs from 28 shifts the estimated due date by the same number of days.',
+      },
+      {
+        q: 'How accurate is this estimate?',
+        a: 'It is a standard estimate, and actual delivery often differs. The tool notes it is not a medical diagnosis — consult your doctor.',
+      },
+    ],
+  },
+
+  'paint-calc': {
+    metaTitle: 'Paint Calculator — How Much Paint You Need (Free)',
+    metaDescription:
+      'Calculate paint from wall area, coats and coverage. 40 m², 2 coats at 10 m²/L needs 8 L. Subtract doors/windows, get can count. Free, runs in your browser.',
+    intro:
+      'This paint calculator works out how much paint you need from your wall area, the number of coats and the coverage rate. The required liters are (net area × coats) / coverage in m² per liter — for 40 m² at 2 coats and 10 m²/L that is 8 L. It rounds the liters up and divides by your can size to tell you how many cans to buy.',
+    features: [
+      'Two area modes: enter each wall’s width × height (for multiple walls) or a single total area in square meters.',
+      'Subtract the area of doors and windows; the net area is max(0, gross − openings).',
+      'The formula is liters = net area × coats / coverage rate (m² per liter), with defaults of 2 coats and 10 m²/L.',
+      'It rounds the required liters up, then computes cans = ceil(liters / can size), with a default 4 L can.',
+      'It shows the net paint area, the exact and rounded liters and the can count, all calculated in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter the area',
+        body: 'Add each wall’s width × height in meters, or switch to total-area mode and type the square meters directly.',
+      },
+      {
+        title: 'Set coats, coverage and can size',
+        body: 'Adjust the number of coats, the coverage rate (m²/L) and the can volume, and subtract any door or window area.',
+      },
+      {
+        title: 'Read the paint needed',
+        body: 'See the net area, the required liters (exact and rounded up) and how many cans to buy.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How much paint do I need for a given wall area?',
+        a: 'Liters = (area minus openings) × number of coats / coverage rate. For 40 m² at 2 coats and 10 m²/L, that is 8 L.',
+      },
+      {
+        q: 'How does it decide how many cans to buy?',
+        a: 'It rounds the total liters up, then divides by your can size and rounds up again, so you always buy enough to finish the job.',
+      },
+      {
+        q: 'Can I account for doors and windows?',
+        a: 'Yes. Enter their combined area as "openings" and it is subtracted from the wall area before the paint is calculated.',
+      },
+    ],
+  },
+
+  'currency-format': {
+    metaTitle: 'Currency Formatter — Format Money with Commas (Free)',
+    metaDescription:
+      'Format a number as currency with thousands separators. 1234567.89 in USD becomes $1,234,567.89. Does not convert rates. KRW/USD/EUR/JPY/GBP, free, in your browser.',
+    intro:
+      'This currency formatter turns a number into a localized currency string and a plain grouped number using Intl.NumberFormat. It does not convert exchange rates — 1234567.89 with USD/en-US becomes $1,234,567.89 and the plain form 1,234,567.89. Pick from five currency/locale presets and optionally override the decimal places.',
+    features: [
+      'Five currency/locale presets: KRW (ko-KR), USD (en-US), EUR (de-DE), JPY (ja-JP) and GBP (en-GB).',
+      'Uses Intl.NumberFormat with style "currency" for the symbol form and "decimal" for a plain grouped number.',
+      'An optional decimal-places override (0–20); leave it blank to use each currency’s default fraction digits.',
+      'It strips commas from the input so pasted values parse correctly, and shows both the currency and plain outputs.',
+      'Separate copy buttons for each output; it formats only — no rate conversion — and runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Type a number',
+        body: 'Enter the amount, for example 1234567.89. Commas in the input are ignored.',
+      },
+      {
+        title: 'Pick currency and decimals',
+        body: 'Choose a currency/locale and optionally set fixed decimal places, or leave it blank for the currency’s default.',
+      },
+      {
+        title: 'Copy the formatted value',
+        body: 'Copy either the currency-symbol form or the plain thousands-separated number.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does this tool convert between currencies using exchange rates?',
+        a: 'No. It only formats the number you enter into a chosen currency’s style and locale; no rate conversion is performed.',
+      },
+      {
+        q: 'Why does JPY show no decimal places by default?',
+        a: 'Intl.NumberFormat uses each currency’s standard fraction digits, and JPY defaults to 0. You can override the decimals manually if you need them.',
+      },
+      {
+        q: 'How does it add thousands separators?',
+        a: 'It relies on the locale of the chosen currency — en-US uses commas while de-DE uses dots — via Intl.NumberFormat.',
+      },
+    ],
+  },
+
+  'random-team-generator': {
+    metaTitle: 'Random Team Generator — Split Names into Teams (Free)',
+    metaDescription:
+      'Shuffle a list of names and split into balanced teams with a secure Fisher-Yates shuffle. Choose team count or size; teams differ by at most one. Free, in your browser.',
+    intro:
+      'This random team generator shuffles a list of names with a cryptographically secure Fisher-Yates shuffle and splits them into balanced teams using round-robin distribution. You choose either the number of teams or the people per team, and team sizes never differ by more than one. It is perfect for fair group assignments, and the names never leave your browser.',
+    features: [
+      'Reads names one per line, trims blank lines and shows a recognized-count.',
+      'Two modes: split by the number of teams, or by people per team (team count derived with a ceiling).',
+      'A cryptographically secure shuffle using crypto.getRandomValues with rejection sampling to avoid modulo bias, applied in a Fisher-Yates shuffle.',
+      'Round-robin distribution keeps the teams balanced, so sizes differ by at most one.',
+      'A re-shuffle button and copy-all output grouped by team make it quick, and names are never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Paste your names',
+        body: 'Enter one name per line into the names box.',
+      },
+      {
+        title: 'Choose how to split',
+        body: 'Pick "by number of teams" or "by people per team" and set the value.',
+      },
+      {
+        title: 'Generate and copy',
+        body: 'Click to form teams, re-shuffle for a new arrangement, or copy all the teams at once.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are the teams truly random and fair?',
+        a: 'Yes. It uses crypto.getRandomValues with rejection sampling (no modulo bias) for a Fisher-Yates shuffle, then distributes round-robin so the teams stay balanced.',
+      },
+      {
+        q: 'Can I set a fixed number of people per team instead of a team count?',
+        a: 'Yes. Switch to "by people per team" mode and the number of teams is computed automatically.',
+      },
+      {
+        q: 'How balanced are the teams?',
+        a: 'Round-robin distribution means any two team sizes differ by at most one, so no team is left noticeably larger than another.',
+      },
+    ],
+  },
+
+  'random-emoji': {
+    metaTitle: 'Random Emoji Picker — Generate Random Emoji (Free)',
+    metaDescription:
+      'Pick random emoji from curated categories with secure randomness. Choose 1–50 and a category (faces, animals, food and more) or all. Copyable, free, in your browser.',
+    intro:
+      'This random emoji picker draws random emoji from curated category pools using crypto-secure randomness. Choose how many you want (1 to 50) and a category — faces, animals, food, activity, objects, symbols, or all — and it generates a set you can copy as a single string. Duplicates are allowed, since picks are made with replacement.',
+    features: [
+      'Six categories (faces, animals, food, activity, objects and symbols) plus an "all" pool.',
+      'A count selector from 1 to 50 emoji per draw.',
+      'Cryptographically secure selection via crypto.getRandomValues with rejection sampling to avoid modulo bias.',
+      'Picks with replacement, so duplicates are possible, and results are shown large and copyable as one concatenated string.',
+      'It is entirely client-side with instant generation.',
+    ],
+    steps: [
+      {
+        title: 'Set count and category',
+        body: 'Choose how many emoji you want (1–50) and which category, or "all".',
+      },
+      {
+        title: 'Draw the emoji',
+        body: 'Click to pick random emoji from the selected pool.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Click "copy all" to copy the emoji as a single string.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can the same emoji appear more than once?',
+        a: 'Yes. Picks are made with replacement, so the same emoji can occur multiple times in a single draw.',
+      },
+      {
+        q: 'How random is the selection?',
+        a: 'It uses the Web Crypto API (crypto.getRandomValues) with rejection sampling to ensure unbiased, uniform random picks.',
+      },
+      {
+        q: 'Can I limit it to one theme like animals or food?',
+        a: 'Yes. Choose a specific category (faces, animals, food, activity, objects or symbols), or pick "all" for the full set.',
+      },
+    ],
+  },
+
+  'markup-calc': {
+    metaTitle: 'Markup & Margin Calculator — Price & Profit (Free)',
+    metaDescription:
+      'From a cost and a markup% or margin%, get the selling price, profit and the other ratio. 50% markup equals a 33.3% margin. Free, runs in your browser.',
+    intro:
+      'This markup and margin calculator takes a cost plus either a markup% or a margin% and computes the selling price, the profit and the other ratio. Markup% is profit/cost × 100, so price = cost × (1 + markup/100); margin% is profit/price × 100, so price = cost / (1 − margin/100). It always shows both ratios so you can compare them at a glance.',
+    features: [
+      'Enter a cost and choose to input either a markup% or a margin%.',
+      'Markup basis: price = cost × (1 + markup/100).',
+      'Margin basis: price = cost / (1 − margin/100), with the margin required to be under 100% (otherwise the price is undefined).',
+      'It outputs the selling price, the profit and both the markup% and margin% so you can compare them directly.',
+      'A copyable summary is provided and all the math runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter the cost',
+        body: 'Type your unit cost.',
+      },
+      {
+        title: 'Pick markup% or margin%',
+        body: 'Choose which basis you already know and enter that percentage.',
+      },
+      {
+        title: 'Read price and ratios',
+        body: 'See the selling price, the profit, and both the markup% and margin% computed from your input.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between markup and margin?',
+        a: 'Markup is profit divided by cost, while margin is profit divided by the selling price. For the same profit, the markup% is always the larger number.',
+      },
+      {
+        q: 'How do I find the selling price from a target margin?',
+        a: 'Use margin mode: price = cost / (1 − margin/100). The margin must be below 100%, since 100% would imply a zero cost.',
+      },
+      {
+        q: 'If my markup is 50%, what is my margin?',
+        a: 'Enter the cost and 50% markup, and the tool shows the equivalent margin — a 50% markup on cost equals a 33.3% margin.',
+      },
+    ],
+  },
+
+  'isbn-validate': {
+    metaTitle: 'ISBN Validator — Check & Convert ISBN-10/13 (Free)',
+    metaDescription:
+      'Validate ISBN-10 and ISBN-13 checksums and convert between them. ISBN-10 uses mod-11 (X=10), ISBN-13 uses mod-10. 978 ISBNs convert back to ISBN-10. Free, in your browser.',
+    intro:
+      'This ISBN validator checks ISBN-10 and ISBN-13 checksums and converts between the two formats. ISBN-10 uses Sum(digit × (10 − i)) mod 11 with X standing for 10, while ISBN-13 uses the alternating (1, 3) weighted mod-10 checksum. A valid ISBN-10 converts to ISBN-13 with the 978 prefix, and 978-prefixed ISBN-13s convert back to ISBN-10.',
+    features: [
+      'Normalizes input by removing hyphens and spaces and uppercasing X, then detects 10- vs 13-digit length.',
+      'ISBN-10 check: Sum of digit × (10 − i) over the positions must be 0 mod 11, and the last character may be X (= 10).',
+      'ISBN-13 check: the sum of digit × (1 or 3 alternating) must be 0 mod 10.',
+      'Auto-conversion: a valid ISBN-10 becomes an ISBN-13 (978 prefix plus a recomputed check digit), and a 978-ISBN-13 converts back to ISBN-10.',
+      'It notes that 979-prefixed ISBN-13s have no ISBN-10 equivalent, explains the checksum only catches typos, and runs in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste the ISBN',
+        body: 'Enter a 10- or 13-digit ISBN; hyphens and spaces are fine and are stripped automatically.',
+      },
+      {
+        title: 'Read validity and format',
+        body: 'See whether the checksum passes, which format was detected, and the normalized digits.',
+      },
+      {
+        title: 'Use the converted form',
+        body: 'If the ISBN is valid, the equivalent ISBN-10 or ISBN-13 is shown for you to copy.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does the X at the end of an ISBN-10 mean?',
+        a: 'X represents the value 10 in the ISBN-10 mod-11 check digit, used when the computed check digit works out to 10.',
+      },
+      {
+        q: 'How do I convert an ISBN-10 to an ISBN-13?',
+        a: 'Enter a valid ISBN-10 and the tool prefixes 978, drops the old check digit, and recomputes the ISBN-13 mod-10 check digit automatically.',
+      },
+      {
+        q: 'Why can’t my 979 ISBN-13 convert to ISBN-10?',
+        a: 'Only 978-prefixed ISBN-13s map to ISBN-10. The 979 range has no ISBN-10 equivalent by design.',
+      },
+    ],
+  },
+
+  'vin-validate': {
+    metaTitle: 'VIN Validator — Check Digit per ISO 3779 (Free)',
+    metaDescription:
+      'Validate a 17-character VIN by the ISO 3779 check digit. Transliterates letters, applies position weights, takes mod 11, and checks the 9th character (10=X). Free.',
+    intro:
+      'This VIN validator checks a 17-character Vehicle Identification Number using the ISO 3779 check-digit algorithm. It transliterates letters to numbers, multiplies by the position weights (8,7,6,5,4,3,2,10,0,9,8,7,6,5,4,3,2), takes the sum mod 11, and compares the result against the 9th character (where 10 is written as X). It also rejects the letters I, O and Q.',
+    features: [
+      'Requires exactly 17 characters and rejects I, O and Q, which are disallowed to avoid confusion with 1 and 0.',
+      'Uses a letter-to-number transliteration table plus the position weights, with a 0 at the check-digit position.',
+      'Check digit = (weighted sum mod 11), where a remainder of 10 maps to "X", compared against the 9th character.',
+      'Shows the normalized VIN, its length, the expected versus actual check digit, and a specific reason on failure.',
+      'It notes the check applies to the ISO 3779 / North American scheme and runs entirely in your browser with no upload.',
+    ],
+    steps: [
+      {
+        title: 'Enter the VIN',
+        body: 'Paste the 17-character VIN; spaces and hyphens are stripped and letters are uppercased.',
+      },
+      {
+        title: 'Review validity',
+        body: 'See pass or fail along with the expected and actual check digit at the 9th position.',
+      },
+      {
+        title: 'Fix any flagged issue',
+        body: 'The reason message points out a wrong length, a forbidden letter (I/O/Q), or a check-digit mismatch.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why are the letters I, O and Q not allowed in a VIN?',
+        a: 'They look too much like the digits 1 and 0, so the VIN standard excludes them. The validator flags any VIN that contains them.',
+      },
+      {
+        q: 'How is the VIN check digit (9th character) computed?',
+        a: 'Each character is transliterated to a number, multiplied by its position weight, summed, then taken mod 11; a remainder of 10 becomes X. That must equal the 9th character.',
+      },
+      {
+        q: 'Does a valid check digit mean the VIN is a real vehicle?',
+        a: 'No. The ISO 3779 checksum only catches transcription errors; it does not confirm the VIN was actually issued, and some regions and makers do not follow it.',
+      },
+    ],
+  },
+
+  'imei-validate': {
+    metaTitle: 'IMEI Validator — Luhn Check & Complete (Free)',
+    metaDescription:
+      'Validate a 15-digit IMEI with the Luhn checksum, or complete a 14-digit body by computing its check digit. A valid IMEI sums to a multiple of 10. Free, in your browser.',
+    intro:
+      'This IMEI validator checks a 15-digit IMEI with the Luhn checksum, or completes a 14-digit body by computing its check digit. Luhn doubles every second digit from the right (subtracting 9 when the result exceeds 9), and a valid 15-digit IMEI has a total that is 0 mod 10. Enter the first 14 digits and it works out the missing check digit for you.',
+    features: [
+      'Strips spaces and hyphens and requires digits only.',
+      '15-digit input is validated with the Luhn algorithm (the digit sum mod 10 must equal 0).',
+      '14-digit input has its missing Luhn check digit computed, showing the completed 15-digit IMEI.',
+      'It reports the normalized value, its length and a clear pass/fail reason.',
+      'It notes that Luhn only catches typos, not real device allocation, and runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Enter the IMEI',
+        body: 'Type a 15-digit IMEI to validate, or a 14-digit body to compute its check digit.',
+      },
+      {
+        title: 'Read the result',
+        body: 'See whether the Luhn checksum passes (for 15 digits) or the completed IMEI (for 14 digits).',
+      },
+      {
+        title: 'Use the check digit',
+        body: 'For 14-digit input, copy the suggested check digit or the completed 15-digit number.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is an IMEI validated?',
+        a: 'By the Luhn algorithm: every second digit from the right is doubled (subtracting 9 when the result exceeds 9), and a valid 15-digit IMEI sums to a multiple of 10.',
+      },
+      {
+        q: 'Can the tool find the missing last digit of an IMEI?',
+        a: 'Yes. Enter the first 14 digits and it computes the Luhn check digit, then shows the full 15-digit IMEI.',
+      },
+      {
+        q: 'Does a valid checksum guarantee the IMEI is a real phone?',
+        a: 'No. Luhn only detects keying errors; it does not confirm the IMEI is assigned to an actual device.',
+      },
+    ],
+  },
+
+  'csv-to-sql': {
+    metaTitle: 'CSV to SQL INSERT — Generate INSERT Statements (Free)',
+    metaDescription:
+      'Convert CSV into SQL INSERT INTO statements with PapaParse. Numbers stay unquoted, text is escaped, empty cells become NULL or \'\'. Free, runs in your browser.',
+    intro:
+      'This tool converts CSV data into SQL INSERT INTO statements, parsed with PapaParse. Each row becomes one INSERT — plain numbers stay unquoted, text is single-quoted with internal apostrophes doubled to \'\', and empty cells become NULL or an empty string depending on the option you choose. You can use the first row as the header or let it auto-name the columns.',
+    features: [
+      'PapaParse-based CSV parsing that skips empty lines and reports parse errors.',
+      'A table-name field sanitized to alphanumeric/underscore identifiers, plus a "use first row as header" toggle (otherwise columns become col1, col2…).',
+      'Smart literals: plain numbers are emitted raw, leading-zero values are treated as strings, and text is single-quoted with internal apostrophes doubled to \'\'.',
+      'An empty-cell option emits NULL or an empty string; short rows are padded and long rows are trimmed to the column count.',
+      'Copy or download the generated .sql, with everything running in your browser — no upload.',
+    ],
+    steps: [
+      {
+        title: 'Paste your CSV',
+        body: 'Drop CSV text into the input pane (a sample is preloaded to start from).',
+      },
+      {
+        title: 'Set table name and options',
+        body: 'Enter the table name, choose whether the first row is the header, and whether blank cells become NULL.',
+      },
+      {
+        title: 'Copy or download the SQL',
+        body: 'The INSERT statements generate live — copy them or download insert.sql.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are text values escaped safely for SQL?',
+        a: 'Yes. String cells are wrapped in single quotes and any internal apostrophe is doubled (\' to \'\'), which is the standard SQL string escaping.',
+      },
+      {
+        q: 'Can I make empty cells become NULL instead of empty strings?',
+        a: 'Yes. The "empty cell as NULL" option (on by default) emits NULL; turn it off to emit an empty string instead.',
+      },
+      {
+        q: 'What if I don’t have a header row in my CSV?',
+        a: 'Turn off "use first row as header" and the columns are auto-named col1, col2 and so on.',
+      },
+    ],
+  },
+
+  'markdown-to-text': {
+    metaTitle: 'Markdown to Plain Text — Strip Formatting (Free)',
+    metaDescription:
+      'Strip Markdown to clean plain text. Keeps code, turns links/images into their text, drops headings, bullets and emphasis, removes HTML tags. Free, in your browser.',
+    intro:
+      'This tool strips Markdown formatting to produce clean plain text. It keeps the contents of code blocks but removes the fences, turns links and images into their label or alt text, drops heading, list and quote markers along with bold/italic/strikethrough emphasis, and removes any leftover HTML tags. The result is readable plain text you can paste anywhere.',
+    features: [
+      'Fenced code blocks: the ``` fences are removed but the inner code text is preserved, and inline `code` keeps only its content.',
+      'Images ![alt](url) become their alt text and links [text](url) become their visible text, with the URLs dropped.',
+      'Removes ATX heading markers (#), blockquote markers (>) and list bullets (-, *, +, ordered) while keeping indentation, and turns horizontal rules into blank lines.',
+      'Strips bold, italic and strikethrough emphasis (keeping the content) and removes any leftover HTML tags.',
+      'Collapses three or more blank lines to two and trims trailing whitespace, with copy and .txt download, all in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Paste Markdown',
+        body: 'Enter your Markdown into the input pane (a sample is preloaded to start from).',
+      },
+      {
+        title: 'See the plain text',
+        body: 'Formatting is stripped live — links become their text, headings and bullets lose their markers, and code is preserved.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Copy the plain text or download it as plain.txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does converting Markdown to text keep my code blocks?',
+        a: 'Yes. The ``` fences are removed but the code inside is preserved, and inline `code` keeps its content too.',
+      },
+      {
+        q: 'What happens to links and images?',
+        a: 'Links become their visible text and images become their alt text; the URLs are dropped from the output.',
+      },
+      {
+        q: 'Are HTML tags inside the Markdown removed too?',
+        a: 'Yes. Any leftover HTML tags are stripped along with the Markdown emphasis markers, leaving clean plain text.',
+      },
+    ],
+  },
+
+  'image-noise': {
+    metaTitle: 'Image Noise / Film Grain — Add Grain to Photos (Free)',
+    metaDescription:
+      'Add random noise to a photo for a film-grain texture. Choose monochrome grain or color noise, set the amount 0–100%, export a PNG. Free, runs in your browser.',
+    intro:
+      'This tool adds random noise to a photo for a film-grain texture. Each pixel gets a random offset up to ±(amount/100 × 127): monochrome mode applies the same offset to R, G and B for a classic grain look, while color mode uses independent per-channel offsets for speckled color noise. The alpha channel is preserved and nothing is uploaded.',
+    features: [
+      'An amount slider from 0 to 100% controls the noise range (0% leaves the original, 100% allows up to ±127 per channel).',
+      'A monochrome toggle applies one random offset across R/G/B (grain) versus independent per-channel color noise.',
+      'Canvas-based pixel processing with EXIF-aware bitmap loading, a maximum-canvas-size guard, and a preserved alpha channel.',
+      'A debounced live preview (200ms) updates as you adjust the settings, and the result exports as a PNG.',
+      'It is 100% browser-side (up to 50MB input) — your image is never uploaded.',
+    ],
+    steps: [
+      {
+        title: 'Add an image',
+        body: 'Drag and drop or click to load one image (PNG or JPG, up to 50MB).',
+      },
+      {
+        title: 'Adjust grain',
+        body: 'Set the noise amount (0–100%) and toggle between monochrome grain and color noise.',
+      },
+      {
+        title: 'Download the PNG',
+        body: 'The preview updates live — download the grainy result as a PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between monochrome and color noise?',
+        a: 'Monochrome applies one random offset to all three channels (classic film grain), while color mode randomizes each channel separately for speckled color noise.',
+      },
+      {
+        q: 'Does adding noise change the file size?',
+        a: 'Noise reduces how well a PNG compresses, so the exported file is usually larger than the original — more noise means a bigger file.',
+      },
+      {
+        q: 'Will the transparency of my PNG be kept?',
+        a: 'Yes. The alpha channel is preserved; only the RGB values receive the random noise offset.',
+      },
+    ],
+  },
+
+  'image-threshold': {
+    metaTitle: 'Image Threshold — Convert to Black & White (Free)',
+    metaDescription:
+      'Binarize an image to pure black and white by luminance. Uses Rec.601 (0.299R + 0.587G + 0.114B); above the threshold is white. Adjustable cutoff, free, in your browser.',
+    intro:
+      'This tool binarizes an image to pure black and white by comparing each pixel’s luminance to a threshold. Luminance is computed with the Rec.601 weights, 0.299R + 0.587G + 0.114B; pixels above the threshold become white (255) and the rest become black (0), with an optional invert. Drag the 0–255 slider to control how much of the image is black versus white.',
+    features: [
+      'A threshold slider from 0 to 255 (default 128) controls the cutoff between black and white.',
+      'Rec.601 luminance — 0.299R + 0.587G + 0.114B — is computed per pixel and compared to the threshold.',
+      'An invert toggle swaps the black and white regions.',
+      'Canvas pixel processing with EXIF-aware loading, a size guard and preserved alpha, plus a debounced live preview (200ms).',
+      'It exports a PNG and runs entirely in your browser (up to 50MB) with no upload.',
+    ],
+    steps: [
+      {
+        title: 'Load an image',
+        body: 'Drop or pick one image (up to 50MB).',
+      },
+      {
+        title: 'Set the threshold',
+        body: 'Drag the 0–255 slider: a lower value turns more of the image white, a higher value turns more of it black. Toggle invert if you want the opposite.',
+      },
+      {
+        title: 'Download the result',
+        body: 'The pure black-and-white preview updates live — download it as a PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does the tool decide which pixels become black or white?',
+        a: 'It computes each pixel’s Rec.601 luminance (0.299R + 0.587G + 0.114B); anything above the threshold becomes white and anything at or below becomes black.',
+      },
+      {
+        q: 'What does the threshold value do?',
+        a: 'It is the 0–255 cutoff. A lower threshold makes more of the image white, while a higher one makes more of it black.',
+      },
+      {
+        q: 'Can I invert the black-and-white output?',
+        a: 'Yes. The invert toggle flips the result so white areas become black and black areas become white.',
+      },
+    ],
+  },
+
+  'bpm-tap': {
+    metaTitle: 'BPM Tap Tempo — Tap to Find the Tempo (Free)',
+    metaDescription:
+      'Measure tempo by tapping along to the beat. Averages recent tap intervals to BPM = 60000 / average. Tap with mouse or spacebar; a 3s gap resets. Free, in your browser.',
+    intro:
+      'This BPM tap tempo tool measures the tempo of music by tapping along to the beat. It averages the intervals between your recent taps using high-resolution timing and converts them to beats per minute with BPM = 60000 / average interval. A gap of more than 3 seconds restarts the measurement, and you can tap with the mouse or the spacebar.',
+    features: [
+      'Tap by clicking the big button or pressing the spacebar.',
+      'Averages the most recent intervals (up to 8) for a stable BPM = round(60000 / average interval in ms).',
+      'Auto-reset: a gap longer than 3 seconds between taps starts a fresh measurement.',
+      'Uses performance.now() for high-resolution timing and shows a live BPM and tap count.',
+      'It is hydration-safe with a deterministic initial render and runs entirely in your browser.',
+    ],
+    steps: [
+      {
+        title: 'Start tapping',
+        body: 'Click the Tap button or hit the spacebar in time with the music.',
+      },
+      {
+        title: 'Keep a steady beat',
+        body: 'After two taps the BPM appears and refines as you keep tapping, since it averages the last ~8 intervals.',
+      },
+      {
+        title: 'Read or reset',
+        body: 'Read the BPM; pause for 3+ seconds or hit reset to start a new measurement.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How many taps do I need for an accurate BPM?',
+        a: 'At least two taps gives a reading, and accuracy improves the more steadily you tap, since it averages up to the last 8 intervals.',
+      },
+      {
+        q: 'Why did my BPM reset while tapping?',
+        a: 'If more than 3 seconds pass between taps, the tool assumes the beat stopped and restarts the measurement from scratch.',
+      },
+      {
+        q: 'Can I tap with the keyboard instead of clicking?',
+        a: 'Yes. Press the spacebar to register taps; it works exactly the same as clicking the Tap button.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {
