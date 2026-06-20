@@ -63,10 +63,10 @@
 - 배포: Vercel 프로덕션 (정적 export). 라이브 alias = `agent-control-panel-phi.vercel.app`(의도됨, rules.md G-21).
 - Lighthouse 최근: Perf 89-99 / A11y 100 / BP 100 / SEO 95+ / CLS 0.
 
-## ⚠ 보안 조치 권고 (작업과 별개, 사용자 확인 필요)
-- `c:\Users\molma\Desktop\하네스\가이드.ini` 에 **GitHub Personal Access Token 이 평문 노출**되어 있음.
-  → 해당 토큰 **즉시 폐기(revoke) 후 재발급** 권장. (rules.md H-22)
-- 같은 파일에 admin URL `?key=sunhee88` 도 평문 존재 — 키 회전 권장.
+## ⚠ 보안 조치 (2026-06-20 처리)
+- `가이드.ini` 의 **GitHub PAT·admin key 평문 노출** → 로컬 파일에서 **제거 완료**(plaintext redact).
+  노출 범위: 로컬 파일뿐(하네스 폴더는 git repo 아님, 어느 repo에도 미추적). 단 **토큰은 폐기·재발급, admin key는 회전 필요**(사용자 GitHub/대시보드에서 직접). (rules.md H-22)
+- ※실제 비밀값은 이 문서·코드 어디에도 적지 않음(보안 메모는 값 없이 사실만).
 
 ---
 
