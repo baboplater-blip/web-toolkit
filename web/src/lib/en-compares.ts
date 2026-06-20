@@ -1856,6 +1856,433 @@ export const COMPARES: Compare[] = [
     ],
     keywords: ['random team vs random pick', 'random team generator', 'random name picker', 'split into teams'],
   },
+  {
+    slug: 'nanoid-vs-uuid',
+    category: 'dev',
+    title: 'Nano ID vs UUID — Which ID Format Should You Use?',
+    h1: 'Nano ID vs UUID',
+    description:
+      'Nano ID makes short, URL-safe identifiers; UUID makes standard 128-bit identifiers. Compare size, readability and collision odds — free, in your browser.',
+    intro:
+      'Both generate unique identifiers with cryptographically strong randomness, but they trade off length against ubiquity. A Nano ID is short and URL-safe by default — typically 21 characters from a 64-symbol alphabet — so it fits neatly in links and slugs. A UUID is the long-established 128-bit standard (RFC 4122), usually written as 36 characters with hyphens, recognized by virtually every database and language. Neither uploads anything; both run in your browser.',
+    options: [
+      {
+        label: 'Nano ID',
+        toolId: 'nanoid-gen',
+        best: 'Short, link-friendly ids for URLs, slugs and public references.',
+        pros: [
+          'Compact — about 21 characters versus a UUID’s 36',
+          'URL-safe alphabet (A–Z, a–z, 0–9, _ and -), no encoding needed',
+          'Adjustable length and alphabet to tune the collision/size trade-off',
+          'Generated with secure randomness',
+        ],
+        cons: [
+          'Not a recognized standard, so some systems expect the UUID shape',
+          'No built-in version or timestamp semantics',
+        ],
+      },
+      {
+        label: 'UUID',
+        toolId: 'uuid-gen',
+        best: 'Database keys and APIs where a recognized 128-bit standard is expected.',
+        pros: [
+          'RFC 4122 standard understood by nearly every database and language',
+          'Native UUID column types in PostgreSQL and others',
+          'Versioned (v4 random, v1 time-based) with well-known semantics',
+          'Astronomically low collision probability for v4',
+        ],
+        cons: [
+          '36 characters with hyphens — long and not URL-pretty',
+          'Reveals little but takes more space in indexes and links',
+        ],
+      },
+    ],
+    verdict:
+      'Pick Nano ID when the id appears in a URL, slug or anywhere length and readability matter and you control both ends. Pick UUID when you need a recognized standard — a database primary key, a public API contract, or interop with tools that expect the UUID format. A common pattern is UUIDs internally and Nano IDs for public-facing short links.',
+    faqs: [
+      {
+        q: 'Is a Nano ID as collision-resistant as a UUID?',
+        a: 'At its default 21 characters a Nano ID has a similar order of randomness to a UUID v4. Both draw on secure randomness; if you shorten a Nano ID you trade some collision safety for brevity, so keep the default length for high-volume ids.',
+      },
+      {
+        q: 'Can I store a Nano ID where a UUID column is expected?',
+        a: 'No. A UUID column expects the fixed 128-bit UUID format. Store Nano IDs in a plain text/varchar column instead, or use UUIDs if you need the native type.',
+      },
+    ],
+    keywords: ['nanoid vs uuid', 'short unique id', 'url-safe id', 'uuid alternative'],
+  },
+  {
+    slug: 'base58-vs-base64',
+    category: 'dev',
+    title: 'Base58 vs Base64 — Which Encoding Should You Use?',
+    h1: 'Base58 vs Base64',
+    description:
+      'Base58 drops look-alike characters for human-friendly ids (used by Bitcoin); Base64 is the compact, universal binary-to-text standard. Compare both, in your browser.',
+    intro:
+      'Both turn raw bytes into printable text, but they optimize for different things. Base58 uses a 58-character alphabet that deliberately omits the easily-confused 0, O, I and l, plus + and /, so strings are safer to read aloud, copy by hand or put in a URL — which is why Bitcoin addresses and many crypto identifiers use it. Base64 uses a 64-character alphabet, packs data more densely (about 33% overhead) and is supported everywhere for email, data URIs and JSON. Both encode and decode entirely in your browser.',
+    options: [
+      {
+        label: 'Base58',
+        toolId: 'base58',
+        best: 'Human-readable ids people copy, type or read aloud — addresses, short keys.',
+        pros: [
+          'No look-alike characters (0/O, I/l/1 removed) — fewer transcription errors',
+          'No + or / so the output is URL- and filename-safe with no escaping',
+          'The encoding behind Bitcoin addresses and many crypto identifiers',
+        ],
+        cons: [
+          'Slightly larger output than Base64 for the same data',
+          'Less universally built into languages and libraries',
+          'Not meant for large binary blobs',
+        ],
+      },
+      {
+        label: 'Base64',
+        toolId: 'base64',
+        best: 'Embedding or transporting arbitrary binary data — data URIs, email, JSON.',
+        pros: [
+          'Compact: about 33% overhead, denser than Base58',
+          'Built into virtually every language and platform',
+          'The standard for data URIs, MIME email and embedding binary in text',
+        ],
+        cons: [
+          'Contains 0/O, I/l and + / that are easy to mis-copy or need URL-escaping',
+          'Standard alphabet is not URL-safe without the URL-safe variant',
+        ],
+      },
+    ],
+    verdict:
+      'Pick Base58 when a human will read, type or share the string — wallet addresses, short ids and anything spoken aloud — and you want to avoid look-alike characters. Pick Base64 when you are moving arbitrary binary data through a text channel (a data URI, an email attachment, a JSON field) and want the most compact, universally supported encoding.',
+    faqs: [
+      {
+        q: 'Why does Bitcoin use Base58 instead of Base64?',
+        a: 'Base58 removes characters that are easy to confuse (0/O, I/l) and symbols like + and / that break in URLs or when copied. That makes hand-copied addresses far less error-prone, which matters when a typo could send funds to the wrong place.',
+      },
+      {
+        q: 'Is Base58 or Base64 smaller?',
+        a: 'Base64 produces shorter output because its larger alphabet packs more bits per character. Base58 trades a little size for readability and copy-safety.',
+      },
+    ],
+    keywords: ['base58 vs base64', 'base58 encoding', 'bitcoin base58', 'binary to text encoding'],
+  },
+  {
+    slug: 'text-shadow-vs-box-shadow',
+    category: 'dev',
+    title: 'text-shadow vs box-shadow — Which CSS Shadow Do You Need?',
+    h1: 'text-shadow vs box-shadow',
+    description:
+      'text-shadow casts a shadow on the glyphs of text; box-shadow casts one on an element’s rectangular box. Generate either one visually — free, in your browser.',
+    intro:
+      'These two CSS properties both create shadows, but they apply to different things. text-shadow draws a shadow that follows the actual shapes of the characters, so it is for headings, labels and any text you want to lift off the page. box-shadow draws a shadow around the element’s box — its border edges — so it is for cards, buttons, modals and panels. Both generators let you tweak offset, blur and color and copy ready-to-paste CSS.',
+    options: [
+      {
+        label: 'text-shadow',
+        toolId: 'text-shadow',
+        best: 'Adding depth, glow or outlines to text glyphs.',
+        pros: [
+          'Shadow hugs the letterforms, not a rectangle',
+          'Great for headings, neon glow and readable text over images',
+          'Supports multiple comma-separated shadows for outlines or stacked effects',
+        ],
+        cons: [
+          'Has no spread radius (unlike box-shadow)',
+          'Only affects text, not the element’s box',
+        ],
+      },
+      {
+        label: 'box-shadow',
+        toolId: 'box-shadow',
+        best: 'Elevating cards, buttons and panels off the page.',
+        pros: [
+          'Shadows the element’s box, following its border-radius',
+          'Adds a spread radius and an inset option for inner shadows',
+          'The standard way to build depth and elevation in UI',
+        ],
+        cons: [
+          'Follows the rectangular box, so it can’t trace text shapes',
+          'Heavy blurred shadows on many elements can cost paint performance',
+        ],
+      },
+    ],
+    verdict:
+      'Pick text-shadow when the shadow should follow the letters — headings, captions, glow effects, or text laid over a busy photo. Pick box-shadow when you are elevating a whole element — a card, button, dropdown or modal. They are not interchangeable, and you can use both together (shadowed text inside a shadowed card).',
+    faqs: [
+      {
+        q: 'Can box-shadow add a shadow to text?',
+        a: 'Not to the glyphs themselves — box-shadow follows the element’s rectangular box. To shadow the letter shapes, use text-shadow.',
+      },
+      {
+        q: 'Does text-shadow support a spread radius like box-shadow?',
+        a: 'No. text-shadow takes offset-x, offset-y, blur and color only. If you need a spread or an inset shadow, that is a box-shadow feature.',
+      },
+    ],
+    keywords: ['text-shadow vs box-shadow', 'css text shadow', 'css box shadow', 'css shadow generator'],
+  },
+  {
+    slug: 'card-type-vs-card-validate',
+    category: 'security',
+    title: 'Card Type Detector vs Card Validator — Detect or Validate?',
+    h1: 'Credit Card Type vs Card Validation',
+    description:
+      'Detect the card brand from its leading digits, or check the number with the Luhn checksum. See what each does — free, in your browser, nothing uploaded.',
+    intro:
+      'These two tools answer different questions about a card number, and neither contacts a bank. The type detector reads the leading digits (the IIN/BIN prefix) to guess the brand — Visa, Mastercard, Amex and so on — which is handy for showing the right card logo as someone types. The validator runs the Luhn algorithm to check that the digits form a structurally valid number (catching a typo or transposed digit). Both are format checks only; they do not confirm the card exists, is active, or has funds.',
+    options: [
+      {
+        label: 'Credit Card Type',
+        toolId: 'credit-card-type',
+        best: 'Identifying the card brand from the first few digits.',
+        pros: [
+          'Detects the brand from the IIN/BIN prefix as digits are entered',
+          'Useful for showing the matching card logo in a checkout form',
+          'Knows the typical length patterns per brand',
+        ],
+        cons: [
+          'Tells you the brand, not whether the number is valid',
+          'Does not authorize the card or confirm it exists',
+        ],
+      },
+      {
+        label: 'Card Validation (Luhn)',
+        toolId: 'cc-validate',
+        best: 'Catching typos with the Luhn checksum before submitting.',
+        pros: [
+          'Runs the Luhn check used on every real card number',
+          'Catches a mistyped or transposed digit instantly',
+          'Pairs well with brand detection for friendlier form validation',
+        ],
+        cons: [
+          'A passing checksum does not mean the card is real or active',
+          'Does not detect the brand on its own',
+        ],
+      },
+    ],
+    verdict:
+      'Use the type detector to show which brand a number belongs to (for logos and brand-specific rules), and use the Luhn validator to catch obvious typos before you submit. In a real form you typically run both: detect the brand to format and label the field, then validate the checksum. Neither tool authorizes a payment — only your payment processor can confirm a card is genuine and has funds.',
+    faqs: [
+      {
+        q: 'Does a valid Luhn checksum mean the card is real?',
+        a: 'No. Luhn only confirms the digits are internally consistent, which catches typos. It cannot tell whether the card was ever issued, is active, or has funds — only the issuing bank or your payment processor can.',
+      },
+      {
+        q: 'Should I run both checks together?',
+        a: 'Yes. Detect the brand from the prefix to show the right logo and apply brand rules, then run the Luhn check to reject mistyped numbers before submitting.',
+      },
+    ],
+    keywords: ['card type vs card validation', 'detect card brand', 'luhn check card', 'credit card bin'],
+  },
+  {
+    slug: 'ean-vs-isbn',
+    category: 'security',
+    title: 'EAN vs ISBN — Which Code Are You Validating?',
+    h1: 'EAN vs ISBN',
+    description:
+      'EAN validates retail product barcodes (GTIN/EAN-13); ISBN validates book identifiers. Both check the checksum digit — free, in your browser.',
+    intro:
+      'EAN and ISBN are closely related identifier schemes that both end in a check digit. An EAN (part of the GTIN family) is the barcode on retail products — groceries, electronics, packaging — usually 13 digits. An ISBN identifies a specific book edition. They overlap by design: a modern ISBN-13 is actually an EAN-13 in the 978/979 (Bookland) range, and both ISBN-13 and EAN-13 use a mod-10 checksum. The older ISBN-10 is different — it uses a mod-11 checksum where the final character can be an X. These tools verify the checksum and format only, not whether the product or book actually exists.',
+    options: [
+      {
+        label: 'EAN / GTIN',
+        toolId: 'ean-validate',
+        best: 'Checking retail product barcodes (EAN-13, EAN-8, UPC/GTIN).',
+        pros: [
+          'Validates the GTIN/EAN mod-10 check digit',
+          'Covers everyday retail barcodes on packaged goods',
+          'Catches a mistyped or mis-scanned digit',
+        ],
+        cons: [
+          'Confirms the checksum, not that the product is registered or real',
+          'Not specific to books — use ISBN rules for book metadata',
+        ],
+      },
+      {
+        label: 'ISBN',
+        toolId: 'isbn-validate',
+        best: 'Checking book identifiers — both ISBN-13 and legacy ISBN-10.',
+        pros: [
+          'Handles ISBN-13 (mod-10) and ISBN-10 (mod-11, X check digit)',
+          'ISBN-13 is an EAN-13 in the 978/979 range, so it ties into retail',
+          'Catches transcription errors in catalog and library data',
+        ],
+        cons: [
+          'A valid checksum does not prove the book exists or is in print',
+          'ISBN-10 uses a different (mod-11) check than retail barcodes',
+        ],
+      },
+    ],
+    verdict:
+      'Validating the barcode on a physical retail product? Use the EAN/GTIN check. Validating a book identifier — especially a 10-digit code, or one you want treated as a book? Use the ISBN check, which also understands the mod-11 ISBN-10 form. Remember the overlap: an ISBN-13 starting with 978 or 979 is a valid EAN-13 too. Both tools verify structure and the check digit only — they do not look the item up in any database.',
+    faqs: [
+      {
+        q: 'Is an ISBN-13 also a valid EAN?',
+        a: 'Yes. An ISBN-13 is an EAN-13 in the 978 or 979 (Bookland) prefix range, and both share the same mod-10 check digit. So a 978/979 ISBN-13 will pass an EAN-13 checksum check.',
+      },
+      {
+        q: 'Why does ISBN-10 use a different checksum?',
+        a: 'ISBN-10 predates the EAN-13 alignment and uses a mod-11 weighted checksum, where the final character can be X (representing 10). EAN-13 and ISBN-13 both use the simpler mod-10 scheme.',
+      },
+    ],
+    keywords: ['ean vs isbn', 'validate barcode', 'isbn checksum', 'gtin ean13'],
+  },
+  {
+    slug: 'posterize-vs-threshold',
+    category: 'image',
+    title: 'Posterize vs Threshold — Which Image Effect Do You Want?',
+    h1: 'Posterize vs Threshold',
+    description:
+      'Posterize reduces an image to a few flat color levels; threshold converts it to pure black and white by luminance. Compare both — free, in your browser.',
+    intro:
+      'Both effects simplify an image by cutting down its tonal range, but to very different degrees. Posterize quantizes each channel into a chosen number of levels, so smooth gradients become flat bands of color — a poster-like, screen-printed look that keeps color. Threshold goes all the way: it measures each pixel’s luminance and turns it pure black or pure white, producing a stark two-tone, high-contrast result. Both process the image entirely in your browser; nothing is uploaded.',
+    options: [
+      {
+        label: 'Posterize',
+        toolId: 'image-posterize',
+        best: 'A flat, banded, poster-style look that keeps color.',
+        pros: [
+          'Reduces each channel to N levels you choose',
+          'Keeps color while flattening gradients into bands',
+          'Great for screen-print, pop-art and stylized graphics',
+        ],
+        cons: [
+          'Not for pure black-and-white output',
+          'Too few levels can look harsh on photos',
+        ],
+      },
+      {
+        label: 'Threshold',
+        toolId: 'image-threshold',
+        best: 'Stark two-tone black-and-white from luminance.',
+        pros: [
+          'Converts to pure black/white at a luminance cutoff you set',
+          'High-contrast, ideal for stencils, logos and line art',
+          'Clean basis for tracing or silhouettes',
+        ],
+        cons: [
+          'Discards all color and mid-tones',
+          'Fine detail can be lost if the cutoff is off',
+        ],
+      },
+    ],
+    verdict:
+      'Want a stylized, colorful poster look with flat bands of tone? Use posterize and pick how many levels to keep. Want a hard black-and-white image — a stencil, silhouette or logo cleanup? Use threshold and tune the luminance cutoff. Posterize keeps color and several levels; threshold keeps just two. You can even posterize first for a graphic look, then threshold a copy for a matching mask.',
+    faqs: [
+      {
+        q: 'What’s the difference between posterize and threshold?',
+        a: 'Posterize reduces each color channel to a few flat levels but keeps color, giving a banded poster effect. Threshold reduces the whole image to two levels — pure black and white — based on each pixel’s luminance.',
+      },
+      {
+        q: 'Which should I use to make a stencil?',
+        a: 'Threshold. Its pure black-and-white output gives clean shapes to cut or trace. Posterize keeps color and multiple tones, which is better for a stylized graphic than a stencil.',
+      },
+    ],
+    keywords: ['posterize vs threshold', 'image posterize', 'image threshold', 'black and white image effect'],
+  },
+  {
+    slug: 'random-words-vs-lorem',
+    category: 'text',
+    title: 'Random Words vs Lorem Ipsum — Which Placeholder Text?',
+    h1: 'Random Words vs Lorem Ipsum',
+    description:
+      'Random Words outputs real, readable English words; Lorem Ipsum produces classic neutral Latin filler. Pick the right placeholder text — free, in your browser.',
+    intro:
+      'Both generate filler text, but the words themselves differ. The random word generator outputs real English words, so the result is readable and useful when you want recognizable language — word lists, prompts, test data or quick examples. Lorem Ipsum produces the familiar pseudo-Latin filler that reads as neutral gibberish, which is exactly the point in design: it fills space without the words distracting reviewers or implying real content. Both run in your browser with no upload.',
+    options: [
+      {
+        label: 'Random Words',
+        toolId: 'random-words',
+        best: 'Real, readable English words for lists, prompts and test data.',
+        pros: [
+          'Outputs genuine English words people recognize',
+          'Good for word games, prompts, passphrase ideas and sample data',
+          'Choose how many words you need',
+        ],
+        cons: [
+          'Real words can distract reviewers from a layout',
+          'Not the conventional design-mockup filler',
+        ],
+      },
+      {
+        label: 'Lorem Ipsum',
+        toolId: 'lorem-ipsum',
+        best: 'Neutral filler for layouts and design mockups.',
+        pros: [
+          'The industry-standard placeholder for design and print',
+          'Reads as neutral so it doesn’t distract from the layout',
+          'Generate by paragraphs, sentences or words',
+        ],
+        cons: [
+          'Not real language — useless if you need readable words',
+          'Latin-like text can look odd left in a shipped page',
+        ],
+      },
+    ],
+    verdict:
+      'Pick Random Words when you need actual readable English — sample lists, word games, prompts, or test fixtures where the words matter. Pick Lorem Ipsum when you are mocking up a layout and want neutral filler that holds space without the content pulling focus. Designers reach for Lorem; people who need real vocabulary reach for Random Words.',
+    faqs: [
+      {
+        q: 'Why use Lorem Ipsum instead of real words?',
+        a: 'Lorem Ipsum is intentionally meaningless, so reviewers focus on the layout and typography rather than reading the copy. Real words tend to pull attention to the content itself, which is why designers prefer neutral filler.',
+      },
+      {
+        q: 'Which is better for test data?',
+        a: 'Random Words, when you want recognizable English tokens to eyeball. Lorem Ipsum is better when you just need realistic-length blocks of text to fill a design.',
+      },
+    ],
+    keywords: ['random words vs lorem ipsum', 'placeholder text', 'lorem ipsum alternative', 'random word generator'],
+  },
+  {
+    slug: 'business-days-vs-date-diff',
+    category: 'util',
+    title: 'Business Days vs Date Difference — Working or Calendar Days?',
+    h1: 'Business Days vs Date Difference',
+    description:
+      'Business Days counts working days and skips weekends; Date Difference counts the total calendar span between two dates. Pick the right one — free, in your browser.',
+    intro:
+      'Both measure the gap between two dates, but they count differently. The business-days calculator counts only working days, skipping weekends, which is what you want for delivery estimates, SLAs and project timelines. The date-difference calculator counts the full calendar span — every day, or the breakdown in years, months and days — which is what you want for ages, anniversaries and total durations. Choosing the wrong one is a common source of off-by-a-few errors.',
+    options: [
+      {
+        label: 'Business Days',
+        toolId: 'business-days',
+        best: 'Working-day counts that skip weekends — SLAs, deliveries, deadlines.',
+        pros: [
+          'Counts only Monday–Friday, skipping weekends',
+          'Matches how delivery windows and SLAs are quoted',
+          'Better for project and turnaround estimates',
+        ],
+        cons: [
+          'Public holidays vary by region and may need manual allowance',
+          'Not for a simple total-days or age calculation',
+        ],
+      },
+      {
+        label: 'Date Difference',
+        toolId: 'date-diff',
+        best: 'Total calendar span between two dates — ages, durations, countdowns.',
+        pros: [
+          'Counts every calendar day between the dates',
+          'Breaks the span into years, months and days',
+          'Ideal for ages, anniversaries and total durations',
+        ],
+        cons: [
+          'Includes weekends, so it overstates working time',
+          'Not aware of business holidays',
+        ],
+      },
+    ],
+    verdict:
+      'Quoting a turnaround, a delivery date or an SLA? Use Business Days so weekends don’t inflate the count. Measuring an age, an anniversary, or the total time between two dates? Use Date Difference for the full calendar span. The two answers will differ whenever a weekend falls inside the range, so match the tool to whether weekends should count.',
+    faqs: [
+      {
+        q: 'Do these tools account for public holidays?',
+        a: 'The business-days calculator skips weekends; public holidays vary by country and region, so check whether you need to subtract any specific holidays manually. The date-difference calculator counts every calendar day regardless.',
+      },
+      {
+        q: 'Why do the two give different numbers?',
+        a: 'Date Difference counts all calendar days, including weekends, while Business Days skips Saturdays and Sundays. Any weekend inside the range makes the business-day count smaller.',
+      },
+    ],
+    keywords: ['business days vs date difference', 'working days calculator', 'days between dates', 'skip weekends'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);

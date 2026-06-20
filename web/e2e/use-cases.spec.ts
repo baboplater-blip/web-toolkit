@@ -32,6 +32,18 @@ const CASES: Array<{ slug: string; prefix: string; expectHref: string }> = [
   { slug: 'track-cycle-to-due-date', prefix: '/en', expectHref: '/tools/util/ovulation' },
   { slug: 'find-song-bpm', prefix: '', expectHref: '/tools/audio/bpm-tap' },
   { slug: 'scan-to-black-and-white', prefix: '/ja', expectHref: '/tools/image/threshold' },
+  // 라운드B — 팩6 유스케이스 11종
+  { slug: 'generate-short-ids-for-apps', prefix: '', expectHref: '/tools/dev/nanoid' },
+  { slug: 'verify-cards-and-barcodes', prefix: '/en', expectHref: '/tools/security/cc-type' },
+  { slug: 'build-css-shapes-without-images', prefix: '', expectHref: '/tools/dev/css-triangle' },
+  { slug: 'convert-html-to-markdown-docs', prefix: '/ja', expectHref: '/tools/docs/html-to-markdown' },
+  { slug: 'clean-and-analyze-a-word-list', prefix: '', expectHref: '/tools/text/remove-duplicate-words' },
+  { slug: 'count-business-days-between-dates', prefix: '/zh', expectHref: '/tools/util/business-days' },
+  { slug: 'convert-recipe-measurements', prefix: '', expectHref: '/tools/util/cooking' },
+  { slug: 'estimate-daily-calorie-needs', prefix: '/en', expectHref: '/tools/util/bmr' },
+  { slug: 'make-catchy-social-media-text', prefix: '', expectHref: '/tools/text/hashtag' },
+  { slug: 'create-retro-glitch-art', prefix: '', expectHref: '/tools/image/glitch' },
+  { slug: 'play-focus-background-noise', prefix: '/ja', expectHref: '/tools/audio/noise' },
 ];
 
 test.describe('유스케이스 — 신규 14종 렌더 + 단계 링크', () => {

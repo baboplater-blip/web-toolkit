@@ -2678,6 +2678,658 @@ export const USE_CASES: UseCase[] = [
       en: ['scan to black and white', 'image threshold', 'binarize image', 'pure black white document', 'grayscale'], ja: ['スキャン 白黒 変換', '画像 二値化', '閾値 白黒', '文書 純白黒', 'グレースケール'], zh: ['扫描 黑白 转换', '图像 二值化', '阈值 黑白', '文档 纯黑白', '灰度'],
     },
   },
+  {
+    slug: 'generate-short-ids-for-apps',
+    category: 'dev',
+    title: { ko: '앱·DB용 짧은 고유 ID 만들기', en: 'Generate Short Unique IDs for Apps', ja: 'アプリ・DB用の短い一意IDを生成', zh: '为应用・数据库生成短的唯一ID' },
+    h1: { ko: '앱·DB용 짧은 고유 ID 만들기', en: 'Generate short unique IDs for apps', ja: 'アプリ・DB用の短い一意IDを生成', zh: '为应用・数据库生成短的唯一ID' },
+    description: {
+      ko: 'URL·DB 키에 쓸 충돌 적은 짧은 ID(NanoID)나 표준 UUID를 즉석에서 만들고, 받은 UUID가 유효한지 검증하세요. 전부 브라우저에서.',
+      en: 'Mint collision-resistant short IDs (NanoID) or standard UUIDs for URLs and DB keys, and validate a UUID you were handed — all in your browser.', ja: 'URL・DBキー向けに衝突しにくい短いID(NanoID)や標準UUIDをその場で生成し、受け取ったUUIDが有効か検証できます。すべてブラウザで。', zh: '即时生成用于 URL、数据库键的短而少冲突的 ID(NanoID)或标准 UUID，并校验拿到的 UUID 是否有效。全部在浏览器中完成。',
+    },
+    intro: {
+      ko: '짧은 링크나 DB 기본키에는 길고 무거운 UUID 대신 NanoID 같은 짧은 ID가 편할 때가 많습니다. 여기서 충돌 가능성이 낮은 짧은 ID를 뽑고, 호환이 필요하면 표준 UUID도 만들 수 있습니다. 외부에서 받은 UUID는 형식이 맞는지 검증해 버그를 미리 막으세요. 모든 값은 브라우저에서 생성돼 서버로 전송되지 않습니다.',
+      en: 'For short links or DB primary keys, a compact NanoID is often handier than a long UUID. Generate collision-resistant short IDs here, or fall back to a standard UUID when you need interoperability. Validate any UUID you received from elsewhere to catch format bugs early. Every value is generated in your browser and never sent to a server.', ja: '短いリンクやDBの主キーには、長いUUIDより短いNanoIDが便利なことが多いです。ここで衝突しにくい短いIDを生成でき、互換性が必要なら標準UUIDも作れます。外部から受け取ったUUIDは形式が正しいか検証して、バグを事前に防ぎましょう。すべての値はブラウザ内で生成され、サーバーに送信されません。', zh: '对于短链接或数据库主键，紧凑的 NanoID 往往比冗长的 UUID 更方便。这里可以生成少冲突的短 ID，需要互通时也能生成标准 UUID。对从外部拿到的 UUID 进行格式校验，提前发现 bug。所有值都在浏览器中生成，不会发送到服务器。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/nanoid',
+        name: { ko: '짧은 ID(NanoID) 생성', en: 'Generate a short ID (NanoID)', ja: '短いID(NanoID)を生成', zh: '生成短 ID(NanoID)' },
+        text: {
+          ko: '길이와 알파벳을 정해 URL에 안전한 짧은 ID를 뽑습니다.',
+          en: 'Set the length and alphabet to mint URL-safe short IDs.', ja: '長さと文字セットを決めて、URLセーフな短いIDを生成します。', zh: '设定长度和字符集，生成 URL 安全的短 ID。',
+        },
+      },
+      {
+        href: '/tools/dev/uuid',
+        name: { ko: '표준 UUID 생성', en: 'Generate a standard UUID', ja: '標準UUIDを生成', zh: '生成标准 UUID' },
+        text: {
+          ko: '시스템 간 호환이 필요하면 표준 UUID(v4)를 만듭니다.',
+          en: 'When you need cross-system compatibility, generate a standard UUID (v4).', ja: 'システム間の互換性が必要なら、標準UUID(v4)を生成します。', zh: '需要跨系统兼容时，生成标准 UUID(v4)。',
+        },
+      },
+      {
+        href: '/tools/dev/uuid-validate',
+        name: { ko: 'UUID 형식 검증', en: 'Validate UUID format', ja: 'UUIDの形式を検証', zh: '校验 UUID 格式' },
+        text: {
+          ko: '받은 UUID의 버전·variant가 올바른지 확인합니다.',
+          en: 'Check that a received UUID has the correct version and variant.', ja: '受け取ったUUIDのバージョン・variantが正しいか確認します。', zh: '检查收到的 UUID 的版本和 variant 是否正确。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: 'NanoID와 UUID 중 뭘 써야 하나요?', en: 'Should I use NanoID or UUID?', ja: 'NanoIDとUUIDのどちらを使うべき？', zh: '该用 NanoID 还是 UUID？' },
+        a: {
+          ko: '짧은 링크·작은 키엔 NanoID가, 다른 시스템과 호환이 중요하면 표준 UUID가 적합합니다.',
+          en: 'NanoID suits short links and compact keys; a standard UUID is better when interoperability with other systems matters.', ja: '短いリンクや小さなキーにはNanoID、他システムとの互換性が重要なら標準UUIDが適しています。', zh: '短链接和紧凑键适合用 NanoID；与其他系统的互通更重要时，标准 UUID 更合适。',
+        },
+      },
+      {
+        q: { ko: '생성한 ID가 절대 안 겹치나요?', en: 'Are generated IDs guaranteed unique?', ja: '生成したIDは絶対に重複しませんか？', zh: '生成的 ID 一定不会重复吗？' },
+        a: {
+          ko: '충분한 길이라면 충돌 확률이 극히 낮지만 수학적으로 0은 아닙니다. 길이를 넉넉히 잡으세요.',
+          en: 'With enough length the collision odds are extremely low, though never mathematically zero. Pick a generous length.', ja: '十分な長さなら衝突確率は極めて低いですが、数学的にゼロではありません。長さは余裕をもって設定しましょう。', zh: '长度足够时冲突概率极低，但在数学上并非为零。请把长度设得宽裕一些。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['짧은 고유 ID', 'nanoid 생성', 'uuid 만들기', 'uuid 검증', 'db 키 생성'],
+      en: ['short unique id', 'generate nanoid', 'create uuid', 'validate uuid', 'db key generator'], ja: ['短い 一意 ID', 'nanoid 生成', 'uuid 作成', 'uuid 検証', 'DB キー 生成'], zh: ['短 唯一 ID', 'nanoid 生成', '创建 uuid', '校验 uuid', '数据库 键 生成'],
+    },
+  },
+  {
+    slug: 'verify-cards-and-barcodes',
+    category: 'security',
+    title: { ko: '카드번호·바코드 형식 검증하기', en: 'Verify Card Numbers and Barcodes', ja: 'カード番号・バーコードの形式を検証', zh: '校验卡号和条形码格式' },
+    h1: { ko: '카드번호·바코드 형식 검증하기', en: 'Verify card numbers and barcodes', ja: 'カード番号・バーコードの形式を検証', zh: '校验卡号和条形码格式' },
+    description: {
+      ko: '입력한 카드번호의 브랜드를 형식으로 판별하고 체크섬(Luhn)으로 오타를 잡고, EAN·바코드 숫자의 체크 자릿수까지 검증하세요. 발급·결제 보증이 아닌 형식 확인용입니다.',
+      en: 'Detect a card brand by its number pattern, catch typos with the Luhn checksum, and verify an EAN/barcode check digit. This checks format only — it is not an issuance or payment guarantee.', ja: '入力したカード番号のブランドを形式で判別し、チェックサム(Luhn)で打ち間違いを検出し、EAN・バーコード数字のチェックディジットまで検証します。発行・決済の保証ではなく、形式確認用です。', zh: '通过号码格式判别卡品牌，用校验和(Luhn)发现录入错误，并校验 EAN／条形码数字的校验位。仅做格式检查，并非发卡或支付保证。',
+    },
+    intro: {
+      ko: '결제 폼이나 정산 데이터에서 카드번호·바코드 입력 오류는 흔합니다. 여기서는 카드번호의 앞자리(BIN)로 브랜드를 추정하고, Luhn 체크섬으로 한 자리 오타를 잡으며, EAN-13 같은 바코드의 체크 자릿수를 검증합니다. 이는 어디까지나 형식 검사로, 실제 카드가 발급·승인되었는지를 보증하지 않습니다. 모든 검사는 브라우저에서 처리돼 번호가 외부로 전송되지 않습니다.',
+      en: 'Typos in card numbers and barcodes are common in payment forms and reconciliation data. Here you infer the brand from the leading digits (BIN), catch single-digit typos with the Luhn checksum, and verify the check digit of barcodes like EAN-13. This is strictly a format check — it does not guarantee a card is issued or approved. Everything runs in your browser, so numbers are never sent away.', ja: '決済フォームや精算データでは、カード番号・バーコードの入力ミスがよく起こります。ここでは先頭桁(BIN)からブランドを推定し、Luhnチェックサムで1桁の打ち間違いを検出し、EAN-13などのチェックディジットを検証します。これはあくまで形式検査で、カードが実際に発行・承認されたことを保証しません。すべてブラウザ内で処理され、番号が外部に送られることはありません。', zh: '在支付表单或对账数据中，卡号和条形码的录入错误很常见。这里通过前几位(BIN)推断品牌，用 Luhn 校验和发现单个数字录入错误，并校验 EAN-13 等条形码的校验位。这仅是格式检查，并不保证卡片已发行或获批。所有检查都在浏览器中完成，号码不会被发送到外部。',
+    },
+    steps: [
+      {
+        href: '/tools/security/cc-type',
+        name: { ko: '카드 브랜드 판별', en: 'Detect the card brand', ja: 'カードブランドを判別', zh: '判别卡品牌' },
+        text: {
+          ko: '앞자리 패턴(BIN)으로 Visa·Mastercard 등 브랜드를 형식 추정합니다.',
+          en: 'Infer the brand (Visa, Mastercard, …) from the leading BIN pattern.', ja: '先頭パターン(BIN)からVisa・Mastercardなどのブランドを形式推定します。', zh: '根据前缀(BIN)推断 Visa、Mastercard 等品牌。',
+        },
+      },
+      {
+        href: '/tools/security/cc-validate',
+        name: { ko: 'Luhn 체크섬 검증', en: 'Validate the Luhn checksum', ja: 'Luhnチェックサムを検証', zh: '校验 Luhn 校验和' },
+        text: {
+          ko: '체크섬으로 한 자리 입력 오타를 걸러냅니다(발급 보증 아님).',
+          en: 'Use the checksum to filter single-digit typos (not an issuance guarantee).', ja: 'チェックサムで1桁の入力ミスを検出します(発行保証ではありません)。', zh: '用校验和过滤单个数字录入错误(非发卡保证)。',
+        },
+      },
+      {
+        href: '/tools/security/ean',
+        name: { ko: 'EAN·바코드 체크 자릿수', en: 'EAN / barcode check digit', ja: 'EAN・バーコードのチェックディジット', zh: 'EAN／条形码校验位' },
+        text: {
+          ko: 'EAN-13 등 바코드 숫자의 체크 자릿수가 맞는지 검증합니다.',
+          en: 'Verify the check digit of barcode numbers like EAN-13.', ja: 'EAN-13などバーコード数字のチェックディジットを検証します。', zh: '校验 EAN-13 等条形码数字的校验位是否正确。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '검증을 통과하면 결제가 되나요?', en: 'Does passing validation mean payment will work?', ja: '検証を通れば決済できますか？', zh: '通过校验就能完成支付吗？' },
+        a: {
+          ko: '아니요. 형식·체크섬만 확인할 뿐, 실제 발급·잔액·승인 여부와는 무관합니다.',
+          en: 'No. It only checks format and checksum — it says nothing about issuance, balance or approval.', ja: 'いいえ。形式・チェックサムのみを確認するもので、発行・残高・承認とは無関係です。', zh: '不能。它只检查格式和校验和，与是否发卡、余额或获批无关。',
+        },
+      },
+      {
+        q: { ko: '입력한 카드번호가 서버로 가나요?', en: 'Is the card number sent to a server?', ja: 'カード番号はサーバーに送られますか？', zh: '卡号会被发送到服务器吗？' },
+        a: {
+          ko: '아니요. 모든 검사는 브라우저 안에서 끝나 번호가 기기를 벗어나지 않습니다.',
+          en: 'No. All checks happen in your browser and the number never leaves your device.', ja: 'いいえ。すべての検査はブラウザ内で完結し、番号が端末の外に出ることはありません。', zh: '不会。所有检查都在浏览器中完成，号码不会离开您的设备。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['카드번호 검증', '카드 브랜드 판별', 'luhn 체크', 'ean 바코드 검증', '체크섬 확인'],
+      en: ['validate card number', 'detect card brand', 'luhn check', 'ean barcode validate', 'checksum check'], ja: ['カード番号 検証', 'カード ブランド 判別', 'luhn チェック', 'ean バーコード 検証', 'チェックサム 確認'], zh: ['校验 卡号', '判别 卡品牌', 'luhn 校验', 'ean 条形码 校验', '校验和 检查'],
+    },
+  },
+  {
+    slug: 'build-css-shapes-without-images',
+    category: 'dev',
+    title: { ko: '이미지 없이 CSS로 도형·레이아웃 만들기', en: 'Build CSS Shapes and Layouts Without Images', ja: '画像なしでCSSの図形・レイアウトを作る', zh: '不用图片用 CSS 制作图形和布局' },
+    h1: { ko: '이미지 없이 CSS로 도형·레이아웃 만들기', en: 'Build CSS shapes and layouts without images', ja: '画像なしでCSSの図形・レイアウトを作る', zh: '不用图片用 CSS 制作图形和布局' },
+    description: {
+      ko: 'border 트릭으로 삼각형을, grid로 반응형 레이아웃을, text-shadow로 글자 효과를 이미지 없이 순수 CSS로 만드세요. 코드를 복사해 바로 붙여넣을 수 있습니다.',
+      en: 'Make triangles with the border trick, responsive layouts with grid, and text effects with text-shadow — pure CSS, no images. Copy the code and paste it straight in.', ja: 'borderトリックで三角形、gridでレスポンシブレイアウト、text-shadowで文字効果を、画像なしの純粋なCSSで作れます。コードをコピーしてそのまま貼り付けられます。', zh: '用 border 技巧做三角形、用 grid 做响应式布局、用 text-shadow 做文字效果，全是纯 CSS、不用图片。复制代码即可直接粘贴使用。',
+    },
+    intro: {
+      ko: '아이콘이나 장식 도형 때문에 이미지 파일을 늘리면 로딩이 느려집니다. CSS만으로 삼각형·배지·말풍선 꼬리 같은 도형을 만들면 가볍고 색·크기도 자유롭게 바꿀 수 있습니다. 여기서 border 트릭으로 삼각형을 뽑고, grid 템플릿으로 반응형 레이아웃 코드를 짜고, text-shadow로 입체·네온 글자 효과를 만들어 코드를 복사하세요. 생성된 CSS는 그대로 프로젝트에 붙여넣으면 됩니다.',
+      en: 'Adding image files just for icons or decorative shapes slows down loading. Pure-CSS shapes — triangles, badges, speech-bubble tails — stay lightweight and let you recolor and resize freely. Here you make a triangle with the border trick, build responsive layout code with a grid template, and craft 3D or neon text with text-shadow, then copy the code. The generated CSS pastes straight into your project.', ja: 'アイコンや装飾図形のために画像ファイルを増やすと読み込みが遅くなります。CSSだけで三角形・バッジ・吹き出しのしっぽなどを作れば軽量で、色やサイズも自由に変えられます。ここではborderトリックで三角形を作り、gridテンプレートでレスポンシブなレイアウトコードを組み、text-shadowで立体・ネオンの文字効果を作ってコードをコピーします。生成されたCSSはそのままプロジェクトに貼り付けられます。', zh: '仅为图标或装饰图形而增加图片文件会拖慢加载。纯 CSS 图形——三角形、徽章、气泡尾巴——既轻量又能自由换色和改尺寸。这里用 border 技巧做三角形，用 grid 模板写响应式布局代码，用 text-shadow 制作立体或霓虹文字效果，然后复制代码。生成的 CSS 可直接粘贴到项目中。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/css-triangle',
+        name: { ko: 'CSS 삼각형 만들기', en: 'Make a CSS triangle', ja: 'CSS三角形を作る', zh: '制作 CSS 三角形' },
+        text: {
+          ko: 'border 트릭으로 방향·크기·색을 정해 삼각형 코드를 뽑습니다.',
+          en: 'Set direction, size and color to generate triangle code with the border trick.', ja: 'borderトリックで向き・サイズ・色を決め、三角形コードを生成します。', zh: '用 border 技巧设定方向、大小和颜色，生成三角形代码。',
+        },
+      },
+      {
+        href: '/tools/dev/css-grid',
+        name: { ko: 'Grid 레이아웃 코드', en: 'Grid layout code', ja: 'Gridレイアウトコード', zh: 'Grid 布局代码' },
+        text: {
+          ko: '행·열 템플릿을 시각적으로 정해 반응형 grid 코드를 만듭니다.',
+          en: 'Define row/column templates visually to build responsive grid code.', ja: '行・列テンプレートを視覚的に決めて、レスポンシブなgridコードを作ります。', zh: '可视化定义行列模板，生成响应式 grid 代码。',
+        },
+      },
+      {
+        href: '/tools/dev/text-shadow',
+        name: { ko: 'text-shadow 글자 효과', en: 'text-shadow effects', ja: 'text-shadow文字効果', zh: 'text-shadow 文字效果' },
+        text: {
+          ko: '오프셋·번짐·색을 조절해 입체·네온 글자 그림자를 만듭니다.',
+          en: 'Tune offset, blur and color to craft 3D or neon text shadows.', ja: 'オフセット・ぼかし・色を調整して立体・ネオンの文字影を作ります。', zh: '调整偏移、模糊和颜色，制作立体或霓虹文字阴影。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: 'CSS 삼각형은 왜 border로 만드나요?', en: 'Why are CSS triangles made with borders?', ja: 'CSS三角形はなぜborderで作るの？', zh: '为什么 CSS 三角形用 border 做？' },
+        a: {
+          ko: '폭 0인 요소의 두꺼운 테두리가 대각선으로 만나는 성질을 이용해 한 변만 색을 줘 삼각형을 만듭니다.',
+          en: 'Thick borders on a zero-size box meet diagonally; coloring just one side leaves a triangle.', ja: 'サイズ0の要素の太いborderが対角線で接する性質を使い、1辺だけ色を付けて三角形にします。', zh: '尺寸为 0 的元素的粗边框在对角线相接，只给一条边上色即可形成三角形。',
+        },
+      },
+      {
+        q: { ko: '생성한 코드를 바로 쓸 수 있나요?', en: 'Can I use the generated code directly?', ja: '生成したコードをそのまま使える？', zh: '生成的代码能直接用吗？' },
+        a: {
+          ko: '네. 출력된 CSS를 복사해 스타일시트나 인라인 스타일에 그대로 붙여넣으면 됩니다.',
+          en: 'Yes. Copy the output CSS and paste it into your stylesheet or inline style as-is.', ja: 'はい。出力されたCSSをコピーして、スタイルシートやインラインスタイルにそのまま貼り付けられます。', zh: '可以。复制输出的 CSS，原样粘贴到样式表或行内样式中即可。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['css 삼각형', 'css grid 레이아웃', 'text-shadow 효과', '이미지 없는 도형', 'css 도형 생성'],
+      en: ['css triangle', 'css grid layout', 'text-shadow effect', 'shapes without images', 'css shape generator'], ja: ['css 三角形', 'css grid レイアウト', 'text-shadow 効果', '画像なし 図形', 'css 図形 生成'], zh: ['css 三角形', 'css grid 布局', 'text-shadow 效果', '无图片 图形', 'css 图形 生成'],
+    },
+  },
+  {
+    slug: 'convert-html-to-markdown-docs',
+    category: 'docs',
+    title: { ko: 'HTML을 Markdown 문서로 변환·정리하기', en: 'Convert HTML into Clean Markdown Docs', ja: 'HTMLをMarkdown文書に変換・整理', zh: '把 HTML 转换并整理成 Markdown 文档' },
+    h1: { ko: 'HTML을 Markdown 문서로 변환·정리하기', en: 'Convert HTML into clean Markdown docs', ja: 'HTMLをMarkdown文書に変換・整理', zh: '把 HTML 转换并整理成 Markdown 文档' },
+    description: {
+      ko: '웹페이지·리치텍스트 HTML을 깔끔한 Markdown으로 바꾸고, 제목으로 목차(TOC)를 만들고, 필요하면 순수 텍스트로 뽑아내세요. 전부 브라우저에서.',
+      en: 'Turn web-page or rich-text HTML into clean Markdown, build a table of contents from the headings, and strip it down to plain text when needed — all in your browser.', ja: 'WebページやリッチテキストのHTMLをきれいなMarkdownに変換し、見出しから目次(TOC)を作り、必要なら純粋なテキストに抽出できます。すべてブラウザで。', zh: '把网页或富文本 HTML 转换为干净的 Markdown，从标题生成目录(TOC)，需要时再提取为纯文本。全部在浏览器中完成。',
+    },
+    intro: {
+      ko: '블로그·위키·README로 옮길 때 HTML을 Markdown으로 바꾸면 버전 관리도 쉽고 편집도 가볍습니다. 여기서 HTML을 Markdown으로 변환한 뒤, 제목 구조에서 자동으로 목차를 만들어 긴 문서의 탐색을 돕고, 서식이 필요 없을 땐 순수 텍스트로 추출하세요. 붙여넣은 내용은 브라우저에서만 처리됩니다.',
+      en: 'When moving content into a blog, wiki or README, converting HTML to Markdown makes it easy to version and light to edit. Convert HTML to Markdown here, then auto-build a table of contents from the heading structure to help navigate long documents, and extract plain text when you do not need formatting. Whatever you paste is processed only in your browser.', ja: 'ブログ・Wiki・READMEに移す際、HTMLをMarkdownに変換するとバージョン管理が容易で編集も軽くなります。ここでHTMLをMarkdownに変換し、見出し構造から目次を自動生成して長い文書のナビゲーションを助け、書式が不要なときは純粋なテキストとして抽出します。貼り付けた内容はブラウザ内でのみ処理されます。', zh: '把内容迁移到博客、Wiki 或 README 时，将 HTML 转为 Markdown 便于版本管理、编辑也更轻便。这里先把 HTML 转为 Markdown，再从标题结构自动生成目录，帮助浏览长文档；不需要格式时再提取为纯文本。粘贴的内容只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/docs/html-to-markdown',
+        name: { ko: 'HTML → Markdown 변환', en: 'HTML → Markdown', ja: 'HTML → Markdown 変換', zh: 'HTML → Markdown 转换' },
+        text: {
+          ko: 'HTML을 붙여넣어 제목·목록·링크를 Markdown 문법으로 변환합니다.',
+          en: 'Paste HTML to convert headings, lists and links into Markdown syntax.', ja: 'HTMLを貼り付けて、見出し・リスト・リンクをMarkdown記法に変換します。', zh: '粘贴 HTML，把标题、列表和链接转换为 Markdown 语法。',
+        },
+      },
+      {
+        href: '/tools/docs/markdown-toc',
+        name: { ko: '목차(TOC) 생성', en: 'Generate a table of contents', ja: '目次(TOC)を生成', zh: '生成目录(TOC)' },
+        text: {
+          ko: '변환된 Markdown 제목에서 앵커 링크 목차를 자동 생성합니다.',
+          en: 'Auto-generate an anchor-linked TOC from the Markdown headings.', ja: '変換したMarkdownの見出しからアンカーリンク付き目次を自動生成します。', zh: '从转换后的 Markdown 标题自动生成带锚点链接的目录。',
+        },
+      },
+      {
+        href: '/tools/docs/markdown-to-text',
+        name: { ko: '순수 텍스트 추출', en: 'Extract plain text', ja: '純粋なテキストを抽出', zh: '提取纯文本' },
+        text: {
+          ko: '서식이 필요 없으면 Markdown에서 본문 텍스트만 뽑습니다.',
+          en: 'When you do not need formatting, pull just the body text out of Markdown.', ja: '書式が不要なら、Markdownから本文テキストだけを抽出します。', zh: '不需要格式时，从 Markdown 中只提取正文文本。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '복잡한 HTML도 변환되나요?', en: 'Does it convert complex HTML?', ja: '複雑なHTMLも変換できますか？', zh: '复杂的 HTML 也能转换吗？' },
+        a: {
+          ko: '제목·목록·링크·강조 등 일반 구조는 잘 변환됩니다. 표·스크립트 같은 특수 요소는 단순화될 수 있습니다.',
+          en: 'Common structures like headings, lists, links and emphasis convert well; special elements like tables or scripts may be simplified.', ja: '見出し・リスト・リンク・強調などの一般的な構造はうまく変換されます。表やスクリプトなど特殊な要素は簡略化される場合があります。', zh: '标题、列表、链接、强调等常见结构转换良好；表格、脚本等特殊元素可能被简化。',
+        },
+      },
+      {
+        q: { ko: '목차 링크는 어떻게 동작하나요?', en: 'How do the TOC links work?', ja: '目次のリンクはどう動く？', zh: '目录链接是怎么工作的？' },
+        a: {
+          ko: '각 제목 텍스트를 앵커(slug)로 변환해 같은 문서 안의 해당 위치로 이동하도록 연결합니다.',
+          en: 'Each heading is turned into an anchor slug that links to that spot within the same document.', ja: '各見出しテキストをアンカー(slug)に変換し、同じ文書内の該当箇所へ移動するよう連結します。', zh: '把每个标题文本转为锚点(slug)，链接到同一文档中的对应位置。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['html markdown 변환', '마크다운 목차 생성', 'markdown 텍스트 추출', 'readme 작성', 'html to md'],
+      en: ['html to markdown', 'markdown toc generator', 'markdown to plain text', 'write readme', 'convert html md'], ja: ['html markdown 変換', 'markdown 目次 生成', 'markdown テキスト 抽出', 'readme 作成', 'html to md'], zh: ['html markdown 转换', 'markdown 目录 生成', 'markdown 提取文本', '编写 readme', 'html to md'],
+    },
+  },
+  {
+    slug: 'clean-and-analyze-a-word-list',
+    category: 'text',
+    title: { ko: '단어 목록 정리·빈도 분석하기', en: 'Clean and Analyze a Word List', ja: '単語リストの整理・頻度分析', zh: '清理并分析词语列表' },
+    h1: { ko: '단어 목록 정리·빈도 분석하기', en: 'Clean and analyze a word list', ja: '単語リストの整理・頻度分析', zh: '清理并分析词语列表' },
+    description: {
+      ko: '중복 단어를 제거해 목록을 깔끔히 만들고, 글자·단어 빈도를 세어 어떤 표현이 자주 쓰였는지 한눈에 파악하세요. 전부 브라우저에서.',
+      en: 'Remove duplicate words to tidy a list, then count letter and word frequencies to see at a glance which terms recur — all in your browser.', ja: '重複した単語を取り除いてリストを整え、文字・単語の頻度を数えてどの表現がよく使われたか一目で把握できます。すべてブラウザで。', zh: '去除重复词语让列表整洁，再统计字母和词频，一眼看出哪些表达反复出现。全部在浏览器中完成。',
+    },
+    intro: {
+      ko: '키워드 목록, 설문 응답, 글 원고를 다룰 때 먼저 중복을 정리하고 자주 쓰인 표현을 파악하면 분석이 쉬워집니다. 여기서 중복 단어를 제거해 고유 목록을 만들고, 글자 빈도로 패턴을, 단어 빈도로 핵심 키워드를 세어 보세요. 텍스트는 브라우저에서만 처리됩니다.',
+      en: 'With keyword lists, survey answers or article drafts, deduping first and spotting recurring terms makes analysis easier. Here you remove duplicate words to get a unique list, then count letter frequency for patterns and word frequency for the key terms. Your text is processed only in your browser.', ja: 'キーワードリスト、アンケート回答、原稿を扱う際は、まず重複を整理しよく使われた表現を把握すると分析が楽になります。ここで重複単語を除いて一意のリストを作り、文字頻度でパターンを、単語頻度で主要キーワードを数えてみましょう。テキストはブラウザ内でのみ処理されます。', zh: '处理关键词列表、问卷回答或文章草稿时，先去重并找出反复出现的表达会让分析更轻松。这里先去除重复词语得到唯一列表，再用字母频率看规律、用词频找核心关键词。文本只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/text/remove-duplicate-words',
+        name: { ko: '중복 단어 제거', en: 'Remove duplicate words', ja: '重複単語を削除', zh: '去除重复词语' },
+        text: {
+          ko: '목록에서 같은 단어를 한 번만 남겨 고유 목록을 만듭니다.',
+          en: 'Keep each word once to turn the list into a unique set.', ja: 'リストから同じ単語を1回だけ残し、一意のリストにします。', zh: '让每个词语只保留一次，得到唯一列表。',
+        },
+      },
+      {
+        href: '/tools/text/letter-frequency',
+        name: { ko: '글자 빈도 세기', en: 'Count letter frequency', ja: '文字頻度を数える', zh: '统计字母频率' },
+        text: {
+          ko: '각 글자가 몇 번 등장했는지 세어 패턴을 봅니다.',
+          en: 'Count how often each letter appears to reveal patterns.', ja: '各文字の出現回数を数えてパターンを見ます。', zh: '统计每个字母出现的次数，发现规律。',
+        },
+      },
+      {
+        href: '/tools/text/word-frequency',
+        name: { ko: '단어 빈도 세기', en: 'Count word frequency', ja: '単語頻度を数える', zh: '统计词频' },
+        text: {
+          ko: '단어별 등장 횟수로 핵심 키워드를 가려냅니다.',
+          en: 'Rank words by occurrence to surface the key terms.', ja: '単語ごとの出現回数で主要キーワードを抽出します。', zh: '按出现次数排序词语，找出核心关键词。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '대소문자가 다르면 다른 단어로 세나요?', en: 'Do different cases count as different words?', ja: '大文字小文字が違うと別の単語として数えますか？', zh: '大小写不同会算作不同的词吗？' },
+        a: {
+          ko: '도구 설정에 따라 다릅니다. 대소문자를 무시하면 같은 단어로, 구분하면 별개로 셉니다.',
+          en: 'It depends on the option. Ignoring case treats them as the same word; case-sensitive counts them separately.', ja: 'ツールの設定によります。大文字小文字を無視すれば同じ単語、区別すれば別々に数えます。', zh: '取决于设置。忽略大小写时算同一个词，区分时则分别计数。',
+        },
+      },
+      {
+        q: { ko: '아주 긴 텍스트도 처리되나요?', en: 'Can it handle very long text?', ja: '非常に長いテキストも処理できますか？', zh: '能处理很长的文本吗？' },
+        a: {
+          ko: '브라우저 메모리 범위 안에서 처리됩니다. 너무 길면 나눠서 분석하는 편이 안정적입니다.',
+          en: 'It works within your browser memory; for very long input, analyzing in chunks is more stable.', ja: 'ブラウザのメモリ範囲内で処理されます。長すぎる場合は分割して分析する方が安定します。', zh: '在浏览器内存范围内处理；文本过长时分段分析更稳定。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['중복 단어 제거', '단어 빈도 분석', '글자 빈도', '키워드 빈도', '텍스트 정리'],
+      en: ['remove duplicate words', 'word frequency', 'letter frequency', 'keyword count', 'clean word list'], ja: ['重複単語 削除', '単語 頻度 分析', '文字 頻度', 'キーワード 頻度', 'テキスト 整理'], zh: ['去除 重复词', '词频 分析', '字母 频率', '关键词 频次', '清理 词语'],
+    },
+  },
+  {
+    slug: 'count-business-days-between-dates',
+    category: 'util',
+    title: { ko: '두 날짜 사이 영업일 계산하기', en: 'Count Business Days Between Dates', ja: '2つの日付の間の営業日を計算', zh: '计算两个日期之间的工作日' },
+    h1: { ko: '두 날짜 사이 영업일 계산하기', en: 'Count business days between dates', ja: '2つの日付の間の営業日を計算', zh: '计算两个日期之间的工作日' },
+    description: {
+      ko: '주말을 뺀 영업일 수를 계산하고, 특정 날짜의 주차(ISO 주 번호)를 확인하고, 두 날짜 사이의 일수 차이까지 한 흐름으로 구하세요.',
+      en: 'Count business days excluding weekends, find a date’s ISO week number, and get the day difference between two dates — all in one flow.', ja: '週末を除いた営業日数を計算し、特定の日付の週番号(ISO週)を確認し、2つの日付の間の日数差まで一連の流れで求められます。', zh: '计算不含周末的工作日数、查看某个日期的周数(ISO 周)、并求出两个日期之间的天数差，一气呵成。',
+    },
+    intro: {
+      ko: '납기·정산·근무일 산정에는 단순한 일수가 아니라 주말을 뺀 영업일이 필요할 때가 많습니다. 여기서 두 날짜 사이의 영업일을 계산하고, 일정 보고에 쓰는 주차(ISO 주 번호)를 확인하고, 전체 일수 차이까지 함께 구하세요. 공휴일은 도구 옵션에 따라 반영 여부가 달라질 수 있습니다. 모든 계산은 브라우저에서 처리됩니다.',
+      en: 'For deadlines, billing or workday counts you often need business days excluding weekends, not just raw days. Count business days between two dates here, check the ISO week number used in schedule reports, and get the total day difference too. Whether holidays are excluded depends on the tool’s options. Every calculation runs in your browser.', ja: '納期・精算・勤務日の算定には、単純な日数ではなく週末を除いた営業日が必要なことが多いです。ここで2つの日付の間の営業日を計算し、日程報告に使う週番号(ISO週)を確認し、全体の日数差も求めましょう。祝日が反映されるかはツールのオプションによって異なる場合があります。すべての計算はブラウザ内で処理されます。', zh: '在交期、对账或工作日核算中，往往需要不含周末的工作日，而不仅是单纯的天数。这里计算两个日期之间的工作日，查看用于排期报告的周数(ISO 周)，并求出总天数差。是否排除节假日取决于工具选项。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/util/business-days',
+        name: { ko: '영업일 수 계산', en: 'Count business days', ja: '営業日数を計算', zh: '计算工作日数' },
+        text: {
+          ko: '시작·종료 날짜를 넣어 주말을 뺀 영업일 수를 구합니다.',
+          en: 'Enter start and end dates to get the count of weekdays excluding weekends.', ja: '開始・終了日を入れて、週末を除いた営業日数を求めます。', zh: '输入起止日期，求出不含周末的工作日数。',
+        },
+      },
+      {
+        href: '/tools/util/week-number',
+        name: { ko: '주차(ISO) 확인', en: 'Check the ISO week number', ja: '週番号(ISO)を確認', zh: '查看周数(ISO)' },
+        text: {
+          ko: '특정 날짜가 그 해 몇 번째 주인지(ISO 8601) 확인합니다.',
+          en: 'Find which ISO 8601 week of the year a given date falls in.', ja: '特定の日付がその年の何週目か(ISO 8601)を確認します。', zh: '查看某个日期是当年的第几周(ISO 8601)。',
+        },
+      },
+      {
+        href: '/tools/util/date-diff',
+        name: { ko: '일수 차이 계산', en: 'Compute the day difference', ja: '日数差を計算', zh: '计算天数差' },
+        text: {
+          ko: '두 날짜의 전체 일수 차이를 함께 구합니다.',
+          en: 'Also compute the total number of days between the two dates.', ja: '2つの日付の全体の日数差も求めます。', zh: '同时求出两个日期的总天数差。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '공휴일도 빼고 계산되나요?', en: 'Are public holidays excluded too?', ja: '祝日も除いて計算されますか？', zh: '会同时排除节假日吗？' },
+        a: {
+          ko: '기본은 주말(토·일)만 제외합니다. 공휴일 반영은 도구 옵션이 있을 때만 적용되니 설정을 확인하세요.',
+          en: 'By default only weekends (Sat/Sun) are excluded; holidays are applied only if the tool offers that option, so check the settings.', ja: '既定では週末(土・日)のみ除外します。祝日の反映はツールにオプションがある場合のみ適用されるため、設定を確認してください。', zh: '默认仅排除周末(周六、周日);只有在工具提供选项时才会排除节假日，请查看设置。',
+        },
+      },
+      {
+        q: { ko: '시작일과 종료일도 포함되나요?', en: 'Are the start and end dates included?', ja: '開始日と終了日も含まれますか？', zh: '起止日期会被计入吗？' },
+        a: {
+          ko: '포함 여부는 도구 설정에 따라 다릅니다. 경계일 포함/제외 옵션을 확인하면 정확합니다.',
+          en: 'Inclusion depends on the tool’s setting; check the inclusive/exclusive boundary option for accuracy.', ja: '含めるかはツールの設定によります。境界日の包含/除外オプションを確認すると正確です。', zh: '是否计入取决于工具设置;查看边界日的包含/排除选项以确保准确。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['영업일 계산', '주말 제외 일수', 'iso 주차', '날짜 차이', '근무일 수'],
+      en: ['business days calculator', 'weekdays between dates', 'iso week number', 'date difference', 'workday count'], ja: ['営業日 計算', '週末除く 日数', 'iso 週番号', '日付 差', '勤務日 数'], zh: ['工作日 计算', '排除周末 天数', 'iso 周数', '日期 差', '工作日 数'],
+    },
+  },
+  {
+    slug: 'convert-recipe-measurements',
+    category: 'util',
+    title: { ko: '레시피 계량 단위 변환하기', en: 'Convert Recipe Measurements', ja: 'レシピの計量単位を変換', zh: '换算食谱的计量单位' },
+    h1: { ko: '레시피 계량 단위 변환하기', en: 'Convert recipe measurements', ja: 'レシピの計量単位を変換', zh: '换算食谱的计量单位' },
+    description: {
+      ko: '컵·테이블스푼·온스 같은 요리 계량을 ml·g로 바꾸고, 그 밖의 길이·무게·온도 단위도 함께 변환하세요. 전부 브라우저에서.',
+      en: 'Turn cooking measures like cups, tablespoons and ounces into ml/g, and convert other length, weight and temperature units too — all in your browser.', ja: 'カップ・大さじ・オンスといった料理の計量をml・gに変換し、その他の長さ・重さ・温度の単位もまとめて変換できます。すべてブラウザで。', zh: '把杯、汤匙、盎司等烹饪计量换算为毫升／克，也能换算其他长度、重量、温度单位。全部在浏览器中完成。',
+    },
+    intro: {
+      ko: '해외 레시피를 따라 할 때 컵·스푼·온스 단위는 그램·밀리리터로 바꿔야 정확히 만들 수 있습니다. 여기서 요리 계량 변환으로 컵·테이블스푼·온스를 ml·g로 바꾸고, 오븐 온도(℉↔℃)나 길이·무게 같은 일반 단위는 단위 변환기로 함께 처리하세요. 계량 변환은 재료 밀도에 따라 근사값일 수 있으니 참고용으로 보시면 좋습니다.',
+      en: 'When following a foreign recipe, cups, spoons and ounces need to become grams and milliliters to get it right. Use the cooking converter to turn cups, tablespoons and ounces into ml/g, and handle oven temperature (°F↔°C) or general length and weight with the unit converter. Volume-to-weight conversions can be approximate depending on ingredient density, so treat them as a guide.', ja: '海外のレシピに従う際、カップ・スプーン・オンスの単位はグラム・ミリリットルに変換しないと正確に作れません。ここでは料理計量変換でカップ・大さじ・オンスをml・gに変え、オーブン温度(℉↔℃)や長さ・重さなどの一般単位は単位変換器で処理しましょう。容量から重量への変換は材料の密度により近似値になることがあるため、参考としてご利用ください。', zh: '照着外国食谱做时，杯、匙、盎司需要换算成克和毫升才能做得准确。用烹饪换算把杯、汤匙、盎司换为毫升／克，用单位换算器处理烤箱温度(℉↔℃)或长度、重量等通用单位。容量到重量的换算因食材密度可能是近似值，建议作为参考。',
+    },
+    steps: [
+      {
+        href: '/tools/util/cooking',
+        name: { ko: '요리 계량 변환', en: 'Convert cooking measures', ja: '料理の計量を変換', zh: '换算烹饪计量' },
+        text: {
+          ko: '컵·테이블스푼·티스푼·온스를 ml·g로 변환합니다(근사값).',
+          en: 'Convert cups, tablespoons, teaspoons and ounces into ml/g (approximate).', ja: 'カップ・大さじ・小さじ・オンスをml・gに変換します(近似値)。', zh: '把杯、汤匙、茶匙、盎司换算为毫升／克(近似值)。',
+        },
+      },
+      {
+        href: '/tools/util/unit',
+        name: { ko: '일반 단위 변환', en: 'Convert general units', ja: '一般単位を変換', zh: '换算通用单位' },
+        text: {
+          ko: '온도·길이·무게 등 그 밖의 단위를 함께 변환합니다.',
+          en: 'Convert other units like temperature, length and weight too.', ja: '温度・長さ・重さなど、その他の単位もまとめて変換します。', zh: '同时换算温度、长度、重量等其他单位。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '컵을 g으로 바꾼 값이 정확한가요?', en: 'Is the cup-to-gram value exact?', ja: 'カップをgに変えた値は正確ですか？', zh: '把杯换算成克的值准确吗？' },
+        a: {
+          ko: '컵은 부피라 재료 밀도(밀가루·설탕·물)에 따라 무게가 달라집니다. 표시값은 일반 기준의 근사치입니다.',
+          en: 'A cup is a volume, so the weight varies by ingredient density (flour, sugar, water). The shown value is an approximation based on common references.', ja: 'カップは体積なので、材料の密度(小麦粉・砂糖・水)によって重さが変わります。表示値は一般的な基準に基づく近似値です。', zh: '杯是体积，重量会因食材密度(面粉、糖、水)而不同。显示值是基于常见参考的近似值。',
+        },
+      },
+      {
+        q: { ko: '오븐 온도(℉↔℃)도 바꿀 수 있나요?', en: 'Can I convert oven temperature (°F↔°C)?', ja: 'オーブン温度(℉↔℃)も変換できますか？', zh: '能换算烤箱温度(℉↔℃)吗？' },
+        a: {
+          ko: '네. 단위 변환기의 온도 항목에서 화씨와 섭씨를 서로 바꿀 수 있습니다.',
+          en: 'Yes. Use the temperature category in the unit converter to switch between Fahrenheit and Celsius.', ja: 'はい。単位変換器の温度項目で華氏と摂氏を相互に変換できます。', zh: '可以。在单位换算器的温度类别中可在华氏和摄氏之间互换。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['레시피 단위 변환', '컵 ml 변환', '테이블스푼 g', '오븐 온도 변환', '요리 계량'],
+      en: ['recipe unit converter', 'cups to ml', 'tablespoon to grams', 'oven temperature convert', 'cooking measures'], ja: ['レシピ 単位 変換', 'カップ ml 変換', '大さじ g', 'オーブン 温度 変換', '料理 計量'], zh: ['食谱 单位 换算', '杯 毫升 换算', '汤匙 克', '烤箱 温度 换算', '烹饪 计量'],
+    },
+  },
+  {
+    slug: 'estimate-daily-calorie-needs',
+    category: 'util',
+    title: { ko: '하루 칼로리 필요량 추정하기', en: 'Estimate Your Daily Calorie Needs', ja: '1日の必要カロリーを推定', zh: '估算每日热量需求' },
+    h1: { ko: '하루 칼로리 필요량 추정하기', en: 'Estimate your daily calorie needs', ja: '1日の必要カロリーを推定', zh: '估算每日热量需求' },
+    description: {
+      ko: '기초대사량(BMR)으로 하루 칼로리를 추정하고, BMI와 적정 체중 범위까지 함께 확인하세요. 의료 진단이 아닌 일반 참고용 추정치입니다.',
+      en: 'Estimate daily calories from your BMR, and check your BMI and a healthy weight range alongside. These are general estimates for reference, not medical advice.', ja: '基礎代謝量(BMR)から1日のカロリーを推定し、BMIと適正体重の範囲も合わせて確認できます。医療診断ではなく一般的な参考用の推定値です。', zh: '根据基础代谢率(BMR)估算每日热量，并一并查看 BMI 和健康体重范围。这些是供参考的一般估算值，并非医疗诊断。',
+    },
+    intro: {
+      ko: '식단·운동 계획을 짤 때 하루에 필요한 대략적인 칼로리를 알면 기준이 생깁니다. 여기서 기초대사량(BMR)을 계산해 활동량을 반영한 칼로리 필요량을 추정하고, BMI와 적정 체중 범위로 현재 상태를 가늠하세요. 이 값들은 표준 공식에 기반한 추정치이며 개인차가 큽니다. 의료적 판단이 필요하면 전문가와 상담하세요. 모든 계산은 브라우저에서 처리됩니다.',
+      en: 'When planning meals or workouts, knowing roughly how many calories you need per day gives you a baseline. Calculate your BMR here to estimate calorie needs that factor in activity, and gauge your status with BMI and a healthy weight range. These are estimates from standard formulas and vary a lot between individuals. For medical decisions, consult a professional. Every calculation runs in your browser.', ja: '食事・運動の計画を立てる際、1日に必要なおおよそのカロリーが分かると基準ができます。ここで基礎代謝量(BMR)を計算して活動量を反映したカロリー必要量を推定し、BMIと適正体重の範囲で現在の状態を把握しましょう。これらは標準的な公式に基づく推定値で、個人差が大きいです。医療的な判断が必要な場合は専門家に相談してください。すべての計算はブラウザ内で処理されます。', zh: '在制定饮食或运动计划时，大致了解每天需要多少热量能给你一个基准。这里计算基础代谢率(BMR)以估算考虑了活动量的热量需求，并用 BMI 和健康体重范围评估现状。这些是基于标准公式的估算值，个体差异较大。如需医疗判断请咨询专业人士。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/util/bmr',
+        name: { ko: '기초대사량(BMR) 계산', en: 'Calculate BMR', ja: '基礎代謝量(BMR)を計算', zh: '计算基础代谢率(BMR)' },
+        text: {
+          ko: '키·체중·나이·성별로 BMR을 구하고 활동량으로 칼로리를 추정합니다.',
+          en: 'Compute BMR from height, weight, age and sex, then estimate calories by activity level.', ja: '身長・体重・年齢・性別からBMRを求め、活動量でカロリーを推定します。', zh: '根据身高、体重、年龄和性别求 BMR，再按活动量估算热量。',
+        },
+      },
+      {
+        href: '/tools/util/bmi',
+        name: { ko: 'BMI 확인', en: 'Check BMI', ja: 'BMIを確認', zh: '查看 BMI' },
+        text: {
+          ko: '체질량지수(BMI)로 현재 체중 구간을 가늠합니다.',
+          en: 'Gauge your weight category with the body mass index (BMI).', ja: '体格指数(BMI)で現在の体重区分を把握します。', zh: '用身体质量指数(BMI)评估当前体重区间。',
+        },
+      },
+      {
+        href: '/tools/util/ideal-weight',
+        name: { ko: '적정 체중 범위', en: 'Healthy weight range', ja: '適正体重の範囲', zh: '健康体重范围' },
+        text: {
+          ko: '키 기준의 적정 체중 범위를 참고값으로 확인합니다.',
+          en: 'Check a healthy weight range for your height as a reference.', ja: '身長を基準とした適正体重の範囲を参考値として確認します。', zh: '查看基于身高的健康体重范围作为参考。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '이 칼로리 값을 그대로 따라도 되나요?', en: 'Can I follow this calorie figure as-is?', ja: 'このカロリー値をそのまま守ってよい？', zh: '可以直接照这个热量值来吗？' },
+        a: {
+          ko: '표준 공식 기반의 추정치라 개인차가 큽니다. 참고로 삼되 식단·건강 결정은 전문가 상담을 권합니다.',
+          en: 'It is an estimate from standard formulas with wide individual variation. Use it as a reference and consult a professional for diet or health decisions.', ja: '標準的な公式に基づく推定値で個人差が大きいです。参考にとどめ、食事・健康の判断は専門家への相談をおすすめします。', zh: '这是基于标准公式的估算值，个体差异很大。请仅作参考，饮食或健康决定建议咨询专业人士。',
+        },
+      },
+      {
+        q: { ko: 'BMI가 정상이면 건강하다는 뜻인가요?', en: 'Does a normal BMI mean I’m healthy?', ja: 'BMIが正常なら健康ということ？', zh: 'BMI 正常就代表健康吗？' },
+        a: {
+          ko: 'BMI는 키·체중만 본 단순 지표라 근육량·체지방 분포는 반영하지 못합니다. 하나의 참고 지표로만 보세요.',
+          en: 'BMI is a simple measure of height and weight only and ignores muscle mass or fat distribution. Treat it as just one reference indicator.', ja: 'BMIは身長・体重のみの単純な指標で、筋肉量や体脂肪の分布は反映しません。あくまで一つの参考指標として見てください。', zh: 'BMI 只看身高和体重，无法反映肌肉量或脂肪分布。请仅将其视为一个参考指标。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['하루 칼로리 추정', '기초대사량 계산', 'bmr 계산기', 'bmi 확인', '적정 체중'],
+      en: ['daily calorie estimate', 'bmr calculator', 'tdee estimate', 'check bmi', 'healthy weight'], ja: ['1日 カロリー 推定', '基礎代謝量 計算', 'bmr 計算', 'bmi 確認', '適正体重'], zh: ['每日 热量 估算', '基础代谢率 计算', 'bmr 计算器', '查看 bmi', '健康体重'],
+    },
+  },
+  {
+    slug: 'make-catchy-social-media-text',
+    category: 'text',
+    title: { ko: '눈에 띄는 SNS 텍스트 만들기', en: 'Make Catchy Social Media Text', ja: '目を引くSNSテキストを作る', zh: '制作吸睛的社交媒体文字' },
+    h1: { ko: '눈에 띄는 SNS 텍스트 만들기', en: 'Make catchy social media text', ja: '目を引くSNSテキストを作る', zh: '制作吸睛的社交媒体文字' },
+    description: {
+      ko: '키워드로 해시태그를 뽑고, 리트스피크나 유니코드 멋진 글꼴로 변형해 SNS 게시물·프로필을 눈에 띄게 꾸미세요. 재미·꾸미기용입니다.',
+      en: 'Generate hashtags from keywords, then restyle text with leetspeak or fancy Unicode fonts to make posts and bios pop. For fun and styling.', ja: 'キーワードからハッシュタグを生成し、リートスピークやUnicodeのおしゃれフォントに変形して、SNS投稿・プロフィールを目立たせます。遊び・装飾用です。', zh: '从关键词生成话题标签，再用火星文或 Unicode 花式字体改造文字，让帖子和简介更吸睛。供娱乐和美化使用。',
+    },
+    intro: {
+      ko: 'SNS에서는 같은 내용도 어떻게 꾸미느냐에 따라 눈길이 달라집니다. 여기서 게시물 키워드로 어울리는 해시태그를 뽑고, 리트스피크(예: leet→l337)나 유니코드 멋진 글꼴로 프로필·캡션을 변형해 보세요. 이 도구들은 표현을 꾸미는 재미용이며, 일부 멋진 글꼴은 화면 읽기 도구에서 그대로 읽히지 않을 수 있으니 접근성이 중요한 곳에서는 주의하세요. 텍스트는 브라우저에서만 처리됩니다.',
+      en: 'On social media, the same message lands differently depending on how it’s styled. Here you generate fitting hashtags from your post keywords, and restyle bios or captions with leetspeak (e.g. leet→l337) or fancy Unicode fonts. These are for stylistic fun, and some fancy fonts may not read correctly in screen readers, so be careful where accessibility matters. Text is processed only in your browser.', ja: 'SNSでは同じ内容でも装飾の仕方で印象が変わります。ここでは投稿のキーワードから合うハッシュタグを生成し、リートスピーク(例: leet→l337)やUnicodeのおしゃれフォントでプロフィール・キャプションを変形しましょう。これらは表現を飾る遊び用で、一部のおしゃれフォントはスクリーンリーダーで正しく読まれないことがあるため、アクセシビリティが重要な場では注意してください。テキストはブラウザ内でのみ処理されます。', zh: '在社交媒体上，同样的内容因装饰方式不同而效果各异。这里从帖子关键词生成合适的话题标签，并用火星文(如 leet→l337)或 Unicode 花式字体改造简介或文案。这些供风格化娱乐使用，部分花式字体在屏幕阅读器中可能无法正确朗读，注重无障碍的场合请谨慎使用。文本只在浏览器中处理。',
+    },
+    steps: [
+      {
+        href: '/tools/text/hashtag',
+        name: { ko: '해시태그 생성', en: 'Generate hashtags', ja: 'ハッシュタグを生成', zh: '生成话题标签' },
+        text: {
+          ko: '키워드를 넣어 게시물에 어울리는 해시태그 목록을 만듭니다.',
+          en: 'Enter keywords to build a list of fitting hashtags for your post.', ja: 'キーワードを入れて、投稿に合うハッシュタグのリストを作ります。', zh: '输入关键词，生成适合帖子的话题标签列表。',
+        },
+      },
+      {
+        href: '/tools/text/leetspeak',
+        name: { ko: '리트스피크 변환', en: 'Leetspeak transform', ja: 'リートスピーク変換', zh: '火星文转换' },
+        text: {
+          ko: '글자를 숫자·기호로 바꾸는 리트스피크로 변형합니다(양방향).',
+          en: 'Restyle text into leetspeak by swapping letters for numbers/symbols (both ways).', ja: '文字を数字・記号に置き換えるリートスピークに変形します(双方向)。', zh: '把字母替换成数字／符号，转换为火星文(双向)。',
+        },
+      },
+      {
+        href: '/tools/text/fancy',
+        name: { ko: '멋진 유니코드 글꼴', en: 'Fancy Unicode fonts', ja: 'おしゃれUnicodeフォント', zh: '花式 Unicode 字体' },
+        text: {
+          ko: '굵게·필기체 등 유니코드 글꼴로 프로필·캡션을 꾸밉니다.',
+          en: 'Dress up bios and captions with bold, script and other Unicode fonts.', ja: '太字・筆記体などのUnicodeフォントでプロフィール・キャプションを飾ります。', zh: '用粗体、手写体等 Unicode 字体美化简介和文案。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '멋진 글꼴이 모든 곳에서 똑같이 보이나요?', en: 'Do fancy fonts look the same everywhere?', ja: 'おしゃれフォントはどこでも同じに見えますか？', zh: '花式字体在所有地方都一样吗？' },
+        a: {
+          ko: '유니코드 글자라 대부분 플랫폼에서 보이지만, 일부 글꼴은 기기·앱에 따라 깨지거나 읽기 도구에서 다르게 읽힐 수 있습니다.',
+          en: 'They are Unicode characters, so they show on most platforms, but some fonts may break on certain devices/apps or read differently in screen readers.', ja: 'Unicode文字なのでほとんどのプラットフォームで表示されますが、一部のフォントは端末・アプリにより崩れたり、読み上げで異なって読まれることがあります。', zh: '它们是 Unicode 字符，大多数平台都能显示，但部分字体在某些设备／应用上可能错乱，或在朗读工具中读法不同。',
+        },
+      },
+      {
+        q: { ko: '해시태그는 자동으로 인기 태그를 보장하나요?', en: 'Do the hashtags guarantee popular tags?', ja: 'ハッシュタグは人気タグを保証しますか？', zh: '生成的标签能保证是热门标签吗？' },
+        a: {
+          ko: '아니요. 입력 키워드를 바탕으로 후보를 제안할 뿐, 실시간 인기·도달을 보장하지는 않습니다.',
+          en: 'No. It suggests candidates from your keywords but does not guarantee real-time popularity or reach.', ja: 'いいえ。入力キーワードを基に候補を提案するもので、リアルタイムの人気・リーチを保証しません。', zh: '不能。它只根据输入关键词建议候选标签，不保证实时热度或触达。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['해시태그 생성', '리트스피크 변환', '멋진 글꼴', 'sns 텍스트 꾸미기', '인스타 프로필 글꼴'],
+      en: ['hashtag generator', 'leetspeak converter', 'fancy font text', 'social media text', 'instagram bio font'], ja: ['ハッシュタグ 生成', 'リートスピーク 変換', 'おしゃれ フォント', 'sns テキスト 装飾', 'インスタ プロフィール フォント'], zh: ['话题标签 生成', '火星文 转换', '花式 字体', '社交媒体 文字', 'ins 简介 字体'],
+    },
+  },
+  {
+    slug: 'create-retro-glitch-art',
+    category: 'image',
+    title: { ko: '레트로 글리치 아트 만들기', en: 'Create Retro Glitch Art', ja: 'レトロなグリッチアートを作る', zh: '制作复古故障艺术' },
+    h1: { ko: '레트로 글리치 아트 만들기', en: 'Create retro glitch art', ja: 'レトロなグリッチアートを作る', zh: '制作复古故障艺术' },
+    description: {
+      ko: 'RGB 시프트·스캔라인 글리치, 색 단순화(포스터화), 두 색 듀오톤을 겹쳐 레트로·사이버펑크 느낌의 이미지를 만드세요. 업로드 없이 브라우저에서.',
+      en: 'Stack RGB-shift/scanline glitch, color quantization (posterize) and two-tone duotone to give images a retro, cyberpunk feel — in your browser, no upload.', ja: 'RGBシフト・走査線グリッチ、色の単純化(ポスタライズ)、2色デュオトーンを重ねて、レトロ・サイバーパンク風の画像を作れます。アップロードなしでブラウザで。', zh: '叠加 RGB 偏移／扫描线故障、色彩简化(色调分离)和双色调，营造复古、赛博朋克风格的图像。无需上传，在浏览器中完成。',
+    },
+    intro: {
+      ko: '깨진 신호 같은 글리치 효과는 앨범 커버나 SNS 썸네일에 강한 인상을 줍니다. 여기서 RGB 채널을 어긋내고 스캔라인을 넣는 글리치로 디지털 손상 느낌을 만들고, 포스터화로 색 단계를 줄여 복고 포스터처럼 단순화하고, 듀오톤으로 두 가지 색만 남겨 통일감 있는 분위기를 더하세요. 효과를 차례로 겹치면 더 강한 사이버펑크 룩이 됩니다. 이미지는 브라우저를 벗어나지 않습니다.',
+      en: 'Glitch effects that look like a broken signal make a strong impression on album covers or social thumbnails. Here you create digital-damage vibes by shifting RGB channels and adding scanlines, simplify into a retro-poster look by reducing color steps with posterize, and add a unified mood by keeping just two colors with duotone. Stack the effects in sequence for an even stronger cyberpunk look. Images never leave your browser.', ja: '壊れた信号のようなグリッチ効果は、アルバムカバーやSNSサムネイルに強い印象を与えます。ここではRGBチャンネルをずらし走査線を入れるグリッチでデジタル損傷の雰囲気を作り、ポスタライズで色の段階を減らしてレトロポスター風に単純化し、デュオトーンで2色だけを残して統一感を加えましょう。効果を順に重ねるとより強いサイバーパンクなルックになります。画像はブラウザの外に出ません。', zh: '像信号损坏一样的故障效果会给专辑封面或社交缩略图带来强烈印象。这里通过偏移 RGB 通道并加入扫描线营造数字损坏氛围，用色调分离减少色阶简化成复古海报风格，用双色调只保留两种颜色增添统一氛围。依次叠加这些效果可获得更强的赛博朋克风格。图像不会离开浏览器。',
+    },
+    steps: [
+      {
+        href: '/tools/image/glitch',
+        name: { ko: '글리치 효과', en: 'Glitch effect', ja: 'グリッチ効果', zh: '故障效果' },
+        text: {
+          ko: 'RGB 채널 시프트·스캔라인으로 디지털 손상 느낌을 만듭니다.',
+          en: 'Create a digital-damage look with RGB channel shift and scanlines.', ja: 'RGBチャンネルシフト・走査線でデジタル損傷の雰囲気を作ります。', zh: '用 RGB 通道偏移和扫描线营造数字损坏感。',
+        },
+      },
+      {
+        href: '/tools/image/posterize',
+        name: { ko: '포스터화(색 단순화)', en: 'Posterize (color quantize)', ja: 'ポスタライズ(色の単純化)', zh: '色调分离(简化色彩)' },
+        text: {
+          ko: '색 단계를 줄여 복고 포스터 같은 단순한 색감으로 만듭니다.',
+          en: 'Reduce color steps for a simplified, retro-poster palette.', ja: '色の段階を減らして、レトロポスターのような単純な色合いにします。', zh: '减少色阶，得到简化的复古海报色调。',
+        },
+      },
+      {
+        href: '/tools/image/duotone',
+        name: { ko: '듀오톤(두 색)', en: 'Duotone (two colors)', ja: 'デュオトーン(2色)', zh: '双色调(两种颜色)' },
+        text: {
+          ko: '두 가지 색만 남겨 통일감 있는 분위기를 더합니다.',
+          en: 'Keep just two colors to add a unified, stylish mood.', ja: '2色だけを残して統一感のある雰囲気を加えます。', zh: '只保留两种颜色，增添统一的风格氛围。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '효과를 여러 개 겹칠 수 있나요?', en: 'Can I stack multiple effects?', ja: '複数の効果を重ねられますか？', zh: '可以叠加多个效果吗？' },
+        a: {
+          ko: '네. 한 효과의 결과물을 내려받아 다음 도구에 다시 올리면 글리치→포스터화→듀오톤처럼 차례로 쌓을 수 있습니다.',
+          en: 'Yes. Download the result of one effect and feed it into the next to stack glitch → posterize → duotone in sequence.', ja: 'はい。ある効果の結果をダウンロードして次のツールに入れれば、グリッチ→ポスタライズ→デュオトーンと順に重ねられます。', zh: '可以。把一个效果的结果下载后再上传到下一个工具，即可按故障→色调分离→双色调依次叠加。',
+        },
+      },
+      {
+        q: { ko: '원본 이미지가 손상되나요?', en: 'Does it damage the original image?', ja: '元の画像が壊れますか？', zh: '会损坏原始图像吗？' },
+        a: {
+          ko: '아니요. 효과는 새 이미지로 내보내며, 원본 파일은 그대로 남습니다.',
+          en: 'No. Effects export as a new image and your original file stays untouched.', ja: 'いいえ。効果は新しい画像として書き出され、元のファイルはそのまま残ります。', zh: '不会。效果会导出为新图像，原始文件保持不变。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['글리치 효과', '레트로 이미지 필터', '포스터화 효과', '듀오톤 만들기', '사이버펑크 사진'],
+      en: ['glitch effect', 'retro image filter', 'posterize effect', 'duotone maker', 'cyberpunk photo'], ja: ['グリッチ 効果', 'レトロ 画像 フィルター', 'ポスタライズ 効果', 'デュオトーン 作成', 'サイバーパンク 写真'], zh: ['故障 效果', '复古 图像 滤镜', '色调分离 效果', '双色调 制作', '赛博朋克 照片'],
+    },
+  },
+  {
+    slug: 'play-focus-background-noise',
+    category: 'audio',
+    title: { ko: '집중용 배경 소음 만들기', en: 'Play Focus Background Noise', ja: '集中用の背景ノイズを流す', zh: '播放专注用背景白噪声' },
+    h1: { ko: '집중용 배경 소음 만들기', en: 'Play focus background noise', ja: '集中用の背景ノイズを流す', zh: '播放专注用背景白噪声' },
+    description: {
+      ko: '화이트·핑크·브라운 노이즈를 브라우저에서 바로 재생해 집중·수면 배경음으로 쓰고, 연습용 메트로놈과 BPM 탭으로 리듬도 잡으세요.',
+      en: 'Play white, pink and brown noise right in your browser as a focus or sleep background, and keep a beat with a practice metronome and BPM tapper.', ja: 'ホワイト・ピンク・ブラウンノイズをブラウザで再生して集中・睡眠の背景音に使い、練習用メトロノームとBPMタップでリズムもとれます。', zh: '在浏览器中直接播放白噪声、粉噪声、棕噪声作为专注或睡眠背景音，并用练习节拍器和 BPM 点击保持节奏。',
+    },
+    intro: {
+      ko: '주변이 시끄럽거나 너무 조용해 집중이 안 될 때, 균일한 배경 소음이 도움이 됩니다. 여기서 화이트·핑크·브라운 노이즈를 브라우저에서 바로 생성·재생해 집중·수면·이명 완화의 배경음으로 쓰세요. 악기 연습이나 운동 리듬이 필요하면 메트로놈으로 일정한 박자를 내고, 좋아하는 곡의 BPM을 알고 싶을 땐 박자에 맞춰 두드리는 BPM 탭으로 측정할 수 있습니다. 소리는 기기에서 생성되며 파일 업로드가 필요 없습니다.',
+      en: 'When it’s too noisy or too quiet to focus, steady background noise helps. Generate and play white, pink and brown noise right in your browser as a background for focus, sleep or tinnitus relief. For instrument practice or workout rhythm, keep a steady beat with the metronome, and to find a song’s BPM, tap along with the BPM tapper. Sound is generated on your device — no file upload needed.', ja: '周りがうるさい、または静かすぎて集中できないとき、均一な背景ノイズが役立ちます。ここでホワイト・ピンク・ブラウンノイズをブラウザで生成・再生し、集中・睡眠・耳鳴り緩和の背景音に使いましょう。楽器練習や運動のリズムが必要ならメトロノームで一定の拍子をとり、好きな曲のBPMを知りたいときは拍に合わせて叩くBPMタップで測定できます。音は端末で生成され、ファイルのアップロードは不要です。', zh: '当周围太吵或太安静而无法专注时，均匀的背景噪声会有帮助。这里在浏览器中生成并播放白噪声、粉噪声、棕噪声，作为专注、睡眠或缓解耳鸣的背景音。需要乐器练习或运动节奏时，用节拍器保持稳定节拍;想知道某首歌的 BPM 时，跟着拍子敲击 BPM 点击即可测量。声音在设备上生成，无需上传文件。',
+    },
+    steps: [
+      {
+        href: '/tools/audio/noise',
+        name: { ko: '노이즈 재생', en: 'Play noise', ja: 'ノイズを再生', zh: '播放噪声' },
+        text: {
+          ko: '화이트·핑크·브라운 노이즈를 골라 집중·수면 배경음으로 재생합니다.',
+          en: 'Pick white, pink or brown noise and play it as a focus/sleep background.', ja: 'ホワイト・ピンク・ブラウンノイズを選び、集中・睡眠の背景音として再生します。', zh: '选择白、粉、棕噪声，作为专注／睡眠背景音播放。',
+        },
+      },
+      {
+        href: '/tools/audio/metronome',
+        name: { ko: '메트로놈', en: 'Metronome', ja: 'メトロノーム', zh: '节拍器' },
+        text: {
+          ko: 'BPM과 박자를 정해 일정한 클릭음으로 리듬을 잡습니다.',
+          en: 'Set BPM and time signature to keep rhythm with a steady click.', ja: 'BPMと拍子を決めて、一定のクリック音でリズムをとります。', zh: '设定 BPM 和拍号，用稳定的咔嗒声保持节奏。',
+        },
+      },
+      {
+        href: '/tools/audio/bpm-tap',
+        name: { ko: 'BPM 탭', en: 'BPM tap', ja: 'BPMタップ', zh: 'BPM 点击' },
+        text: {
+          ko: '곡 박자에 맞춰 두드려 곡의 BPM을 측정합니다.',
+          en: 'Tap along to a song’s beat to measure its BPM.', ja: '曲の拍に合わせて叩き、曲のBPMを測定します。', zh: '跟着歌曲拍子敲击，测量歌曲的 BPM。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '소리를 파일로 저장할 수 있나요?', en: 'Can I save the sound as a file?', ja: '音をファイルとして保存できますか？', zh: '可以把声音保存为文件吗？' },
+        a: {
+          ko: '노이즈는 실시간으로 생성·재생됩니다. 도구에 내보내기 옵션이 있으면 WAV 등으로 저장할 수 있습니다.',
+          en: 'Noise is generated and played in real time; if the tool offers an export option you can save it as WAV or similar.', ja: 'ノイズはリアルタイムで生成・再生されます。ツールにエクスポート機能があればWAVなどで保存できます。', zh: '噪声是实时生成并播放的;若工具提供导出选项，可保存为 WAV 等格式。',
+        },
+      },
+      {
+        q: { ko: '재생하려면 먼저 클릭해야 하나요?', en: 'Do I need to click first to play?', ja: '再生するにはまずクリックが必要ですか？', zh: '播放前需要先点击吗？' },
+        a: {
+          ko: '네. 브라우저 정책상 소리는 사용자가 재생 버튼을 누른 뒤에 시작됩니다.',
+          en: 'Yes. Due to browser policy, sound starts only after you press play.', ja: 'はい。ブラウザのポリシー上、音はユーザーが再生ボタンを押した後に開始します。', zh: '需要。出于浏览器策略，声音只在你按下播放后才开始。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['백색소음 재생', '집중 배경음', '핑크 노이즈', '메트로놈', 'bpm 측정'],
+      en: ['white noise player', 'focus background sound', 'pink noise', 'metronome', 'bpm tapper'], ja: ['ホワイトノイズ 再生', '集中 背景音', 'ピンクノイズ', 'メトロノーム', 'bpm 測定'], zh: ['白噪声 播放', '专注 背景音', '粉噪声', '节拍器', 'bpm 测量'],
+    },
+  },
 ];
 
 export const USE_CASE_SLUGS: string[] = USE_CASES.map((u) => u.slug);

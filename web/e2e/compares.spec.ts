@@ -30,6 +30,15 @@ const CASES: Array<{ slug: string; prefix: string; a: string; b: string }> = [
   { slug: 'csv-to-sql-vs-csv-to-html', prefix: '', a: 'csv-to-sql', b: 'csv-to-html' },
   { slug: 'regex-escape-vs-string-escape', prefix: '/en', a: 'regex-escape', b: 'string-escape' },
   { slug: 'bpm-tap-vs-metronome', prefix: '', a: 'bpm-tap', b: 'metronome' },
+  // 라운드B — 팩6 비교 8종 (로케일 프리픽스 → 도구 링크 suffix = registry id, /{loc}/tools/{id})
+  { slug: 'nanoid-vs-uuid', prefix: '/en', a: 'nanoid-gen', b: 'uuid-gen' },
+  { slug: 'base58-vs-base64', prefix: '/ja', a: 'base58', b: 'base64' },
+  { slug: 'text-shadow-vs-box-shadow', prefix: '/zh', a: 'text-shadow', b: 'box-shadow' },
+  { slug: 'card-type-vs-card-validate', prefix: '/en', a: 'credit-card-type', b: 'cc-validate' },
+  { slug: 'ean-vs-isbn', prefix: '/ja', a: 'ean-validate', b: 'isbn-validate' },
+  { slug: 'posterize-vs-threshold', prefix: '/zh', a: 'image-posterize', b: 'image-threshold' },
+  { slug: 'random-words-vs-lorem', prefix: '/en', a: 'random-words', b: 'lorem-ipsum' },
+  { slug: 'business-days-vs-date-diff', prefix: '/ja', a: 'business-days', b: 'date-diff' },
 ];
 
 test.describe('비교 — 신규 10종 렌더 + 양쪽 도구 링크', () => {

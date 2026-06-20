@@ -53,14 +53,14 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'cron-explainer': ['crontab-builder', 'timestamp-converter', 'regex-tester', 'chmod-calc'],
   'chmod-calc': ['cron-explainer', 'subnet-calc', 'file-hash', 'base64'],
   'lorem-ipsum': ['lorem-ko', 'text-count', 'text-case', 'slugify'],
-  'uuid-gen': ['password-gen', 'uuid-namespace', 'totp', 'json-format'],
+  'uuid-gen': ['password-gen', 'uuid-namespace', 'totp', 'json-format', 'nanoid-gen', 'uuid-validate'],
   'password-gen': ['uuid-gen', 'diceware', 'password-strength', 'totp'],
 
   // ── 텍스트 ──
   'text-diff': ['text-count', 'text-case', 'regex-tester', 'remove-accents'],
   'text-count': ['readability-score', 'text-diff', 'word-frequency', 'count-occurrences'],
   'text-case': ['code-case', 'slugify', 'text-count', 'remove-accents'],
-  'regex-tester': ['regex-escape', 'text-diff', 'text-case', 'json-format'],
+  'regex-tester': ['regex-escape', 'text-diff', 'text-case', 'json-format', 'regex-cheatsheet'],
   'remove-accents': ['slugify', 'text-case', 'text-count', 'html-entities'],
   slugify: ['remove-accents', 'text-case', 'code-case', 'lorem-ipsum'],
   'html-entities': ['url-encoder', 'base64', 'json-escape', 'text-case'],
@@ -105,7 +105,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'json-to-ts': ['json-to-go', 'json-to-python', 'json-format', 'mock-data'],
   'css-gradient': ['box-shadow', 'color-converter', 'color-name', 'css-units'],
   'color-contrast': ['color-converter', 'color-name', 'css-gradient', 'css-units'],
-  'box-shadow': ['css-gradient', 'css-units', 'color-converter', 'cubic-bezier'],
+  'box-shadow': ['css-gradient', 'css-units', 'color-converter', 'cubic-bezier', 'text-shadow'],
   'base-converter': ['color-converter', 'chmod-calc', 'subnet-calc', 'json-format'],
 
   // ── 유틸/텍스트(변환·재미) ──
@@ -123,11 +123,11 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'json-xml': ['json-format', 'yaml-json', 'csv-json', 'xml-format'],
 
   // ── 라운드5: 계산/유틸 ──
-  'bmi-calc': ['ideal-weight', 'tdee', 'loan-calc', 'unit-converter'],
+  'bmi-calc': ['ideal-weight', 'tdee', 'loan-calc', 'unit-converter', 'bmr-calculator'],
   'loan-calc': ['compound-interest', 'percentage', 'discount', 'bmi-calc'],
   discount: ['percentage', 'tip-calc', 'vat-calc', 'loan-calc'],
   timezone: ['timestamp-converter', 'date-diff', 'unit-converter', 'cron-explainer'],
-  'date-diff': ['date-add', 'timezone', 'timestamp-converter', 'age-calc'],
+  'date-diff': ['date-add', 'timezone', 'timestamp-converter', 'age-calc', 'business-days', 'week-number'],
   'aspect-ratio': ['image-resize', 'unit-converter', 'image-crop', 'percentage'],
 
   // ── 라운드5: 보안 ──
@@ -173,7 +173,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'iban-validator': ['cc-validate', 'luhn-generator', 'checksum-verify', 'random-bytes'],
   'luhn-generator': ['cc-validate', 'iban-validator', 'random-pin', 'random-bytes'],
   'random-pin': ['password-gen', 'random-bytes', 'luhn-generator', 'diceware'],
-  'cc-validate': ['luhn-generator', 'iban-validator', 'checksum-verify', 'base32'],
+  'cc-validate': ['luhn-generator', 'iban-validator', 'checksum-verify', 'base32', 'credit-card-type', 'ean-validate'],
   // 이미지: 필터/효과
   'image-sepia': ['image-black-white', 'image-duotone', 'image-tint', 'image-filters'],
   'image-vignette': ['image-blur', 'image-sepia', 'image-filters', 'image-border'],
@@ -226,6 +226,45 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'image-threshold': ['image-black-white', 'image-duotone', 'image-filters', 'image-pixelate'],
   // 오디오
   'bpm-tap': ['metronome', 'tone-gen', 'audio-speed', 'audio-waveform'],
+
+  // ── 팩6: 신규 30종 워크플로 클러스터 ──
+  // 개발: 인코딩/CSS/식별자/검증/문자열
+  base58: ['base64', 'base-converter', 'url-encoder', 'hash-identifier'],
+  'css-grid': ['css-clamp', 'box-shadow', 'css-gradient', 'cubic-bezier'],
+  'css-triangle': ['css-grid', 'box-shadow', 'css-gradient', 'text-shadow'],
+  'text-shadow': ['box-shadow', 'css-gradient', 'css-triangle', 'color-converter'],
+  'uuid-validate': ['uuid-gen', 'nanoid-gen', 'hash-identifier', 'jwt-decoder'],
+  'nanoid-gen': ['uuid-gen', 'uuid-validate', 'password-gen', 'random-pin'],
+  'email-validator': ['url-parser', 'regex-tester', 'slugify', 'json-schema'],
+  'regex-cheatsheet': ['regex-tester', 'regex-escape', 'string-escape', 'mock-data'],
+  // 텍스트: 생성/분석/스타일/정리
+  'random-words': ['lorem-ipsum', 'random-letter', 'list-shuffle', 'mock-data'],
+  'hashtag-generator': ['slugify', 'remove-emoji', 'text-case', 'word-frequency'],
+  leetspeak: ['caesar-cipher', 'morse-code', 'fancy-text', 'upside-down'],
+  'remove-duplicate-words': ['dedupe-lines', 'word-frequency', 'text-count', 'remove-emoji'],
+  'letter-frequency': ['word-frequency', 'text-count', 'count-occurrences', 'caesar-cipher'],
+  // 유틸: 날짜/건강/요리/운세/랜덤/치수
+  'age-difference': ['age-calc', 'date-diff', 'dday', 'business-days'],
+  'bmr-calculator': ['bmi-calc', 'tdee', 'ideal-weight', 'unit-converter'],
+  'business-days': ['date-diff', 'date-add', 'age-difference', 'week-number'],
+  'cooking-converter': ['unit-converter', 'unit-price', 'percentage', 'ratio-calc'],
+  'dog-age-calc': ['age-calc', 'age-difference', 'zodiac', 'love-calculator'],
+  'love-calculator': ['zodiac', 'numerology', 'magic-8-ball', 'dog-age-calc'],
+  'random-letter': ['random-words', 'random-number', 'dice-roller', 'decision-wheel'],
+  'shoe-size-converter': ['unit-converter', 'ideal-weight', 'cooking-converter', 'aspect-ratio'],
+  'week-number': ['date-diff', 'business-days', 'age-calc', 'world-clock'],
+  // 보안: 카드/체크섬/네트워크
+  'credit-card-type': ['cc-validate', 'luhn-generator', 'iban-validator', 'ean-validate'],
+  'ean-validate': ['isbn-validate', 'cc-validate', 'luhn-generator', 'checksum-verify'],
+  'mac-address': ['subnet-calc', 'user-agent-parser', 'hash-identifier', 'random-bytes'],
+  // 문서: 표/마크다운 변환
+  'tsv-to-csv': ['csv-to-html', 'csv-json', 'csv-to-sql', 'markdown-table-gen'],
+  'html-to-markdown': ['markdown-to-text', 'md-html', 'markdown-toc', 'html-format'],
+  // 이미지: 효과
+  'image-posterize': ['image-threshold', 'image-black-white', 'image-duotone', 'image-filters'],
+  'image-glitch': ['image-noise', 'image-duotone', 'image-pixelate', 'image-filters'],
+  // 오디오: 신호 생성
+  'noise-generator': ['tone-gen', 'metronome', 'bpm-tap', 'audio-normalize'],
 };
 
 /**

@@ -186,6 +186,10 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     { guide: 'isbn-validate', prefix: '', expectLinks: ['cc-validate', 'iban-validator', 'luhn-generator'] },
     { guide: 'ovulation-calc', prefix: '', expectLinks: ['pregnancy-due-date', 'date-add', 'dday'] },
     { guide: 'image-threshold', prefix: '/en', expectLinks: ['image-black-white', 'image-duotone', 'image-filters'] },
+    // 라운드B — 팩6 클러스터
+    { guide: 'base58', prefix: '', expectLinks: ['base64', 'base-converter', 'url-encoder'] },
+    { guide: 'bmr-calculator', prefix: '', expectLinks: ['bmi-calc', 'tdee', 'ideal-weight'] },
+    { guide: 'credit-card-type', prefix: '/en', expectLinks: ['cc-validate', 'luhn-generator', 'ean-validate'] },
   ];
 
   for (const { guide, prefix, expectLinks } of CLUSTERS) {
