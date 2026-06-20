@@ -50,17 +50,17 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'code-case': ['text-case', 'slugify', 'json-to-go', 'css-units'],
   'http-status': ['user-agent-parser', 'url-encoder', 'curl-to-code', 'json-format'],
   'timestamp-converter': ['cron-explainer', 'date-diff', 'timezone', 'age-calc'],
-  'cron-explainer': ['crontab-builder', 'timestamp-converter', 'regex-tester', 'chmod-calc'],
+  'cron-explainer': ['crontab-builder', 'timestamp-converter', 'regex-tester', 'chmod-calc', 'cron-next-runs'],
   'chmod-calc': ['cron-explainer', 'subnet-calc', 'file-hash', 'base64'],
   'lorem-ipsum': ['lorem-ko', 'text-count', 'text-case', 'slugify'],
   'uuid-gen': ['password-gen', 'uuid-namespace', 'totp', 'json-format', 'nanoid-gen', 'uuid-validate'],
-  'password-gen': ['uuid-gen', 'diceware', 'password-strength', 'totp'],
+  'password-gen': ['uuid-gen', 'diceware', 'password-strength', 'totp', 'passphrase-gen'],
 
   // ── 텍스트 ──
   'text-diff': ['text-count', 'text-case', 'regex-tester', 'remove-accents'],
   'text-count': ['readability-score', 'text-diff', 'word-frequency', 'count-occurrences'],
   'text-case': ['code-case', 'slugify', 'text-count', 'remove-accents'],
-  'regex-tester': ['regex-escape', 'text-diff', 'text-case', 'json-format', 'regex-cheatsheet'],
+  'regex-tester': ['regex-escape', 'text-diff', 'text-case', 'json-format', 'regex-cheatsheet', 'regex-extract'],
   'remove-accents': ['slugify', 'text-case', 'text-count', 'html-entities'],
   slugify: ['remove-accents', 'text-case', 'code-case', 'lorem-ipsum'],
   'html-entities': ['url-encoder', 'base64', 'json-escape', 'text-case'],
@@ -102,7 +102,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'meme-gen': ['image-watermark', 'image-crop', 'image-resize', 'fancy-text'],
 
   // ── 개발: CSS/색상/타입 ──
-  'json-to-ts': ['json-to-go', 'json-to-python', 'json-format', 'mock-data'],
+  'json-to-ts': ['json-to-go', 'json-to-python', 'json-format', 'mock-data', 'json-to-jsdoc'],
   'css-gradient': ['box-shadow', 'color-converter', 'color-name', 'css-units'],
   'color-contrast': ['color-converter', 'color-name', 'css-gradient', 'css-units'],
   'box-shadow': ['css-gradient', 'css-units', 'color-converter', 'cubic-bezier', 'text-shadow'],
@@ -151,7 +151,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'string-escape': ['url-encoder', 'html-entities', 'base64', 'json-escape'],
   'unicode-lookup': ['ascii-table', 'string-escape', 'html-entities', 'text-count'],
   'crontab-builder': ['cron-explainer', 'timestamp-converter', 'timezone', 'chmod-calc'],
-  'tailwind-shades': ['css-clamp', 'color-converter', 'color-name', 'css-gradient'],
+  'tailwind-shades': ['css-clamp', 'color-converter', 'color-name', 'css-gradient', 'color-shades'],
   // 텍스트: 분석/리스트/유니코드 스타일
   'readability-score': ['text-count', 'word-frequency', 'syllable-counter', 'markdown-stats'],
   'sort-numbers': ['text-sort', 'dedupe-lines', 'list-shuffle', 'number-to-words'],
@@ -265,6 +265,46 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'image-glitch': ['image-noise', 'image-duotone', 'image-pixelate', 'image-filters'],
   // 오디오: 신호 생성
   'noise-generator': ['tone-gen', 'metronome', 'bpm-tap', 'audio-normalize'],
+
+  // ── 팩7: 신규 30종 워크플로 클러스터 ──
+  // 개발: 시간/HTTP/정규식/타입/SQL/색상/CSS/환경변수
+  'cron-next-runs': ['cron-explainer', 'crontab-builder', 'timezone', 'world-clock'],
+  'http-header-analyzer': ['http-status', 'user-agent-parser', 'url-parser', 'meta-tags'],
+  'regex-extract': ['regex-tester', 'regex-escape', 'regex-cheatsheet', 'string-escape'],
+  'json-to-jsdoc': ['json-to-ts', 'json-to-go', 'json-to-python', 'json-schema'],
+  'sql-where-builder': ['sql-in-clause', 'sql-format', 'csv-to-sql', 'json-format'],
+  'color-shades': ['tailwind-shades', 'color-mix', 'color-converter', 'color-name'],
+  'css-keyframes': ['cubic-bezier', 'css-gradient', 'css-clamp', 'box-shadow'],
+  'json-to-env': ['dotenv-json', 'json-flatten', 'yaml-json', 'json-format'],
+  // 유틸: 단위/데이터크기/세금/전송/프레임/화각/전기
+  'angle-converter': ['unit-converter', 'data-size-converter', 'aspect-ratio', 'percentage'],
+  'data-size-converter': ['unit-converter', 'download-time-calc', 'angle-converter', 'number-to-words'],
+  'tax-bracket-calc': ['vat-calc', 'loan-calc', 'discount', 'percentage'],
+  'download-time-calc': ['data-size-converter', 'unit-converter', 'frame-time-calc', 'percentage'],
+  'frame-time-calc': ['time-duration', 'timestamp-converter', 'aspect-ratio', 'fov-calc'],
+  'fov-calc': ['aspect-ratio', 'angle-converter', 'frame-time-calc', 'unit-converter'],
+  'ohms-law-calc': ['resistor-color-code', 'unit-converter', 'scientific-calc', 'percentage'],
+  'resistor-color-code': ['ohms-law-calc', 'base-converter', 'unit-converter', 'color-name'],
+  'random-date': ['random-number', 'random-letter', 'random-pick', 'date-diff'],
+  // 텍스트: 중복/통계/추출/정렬표/접두접미
+  'duplicate-lines': ['dedupe-lines', 'remove-duplicate-words', 'count-occurrences', 'word-frequency'],
+  'text-stats-table': ['text-count', 'word-frequency', 'markdown-stats', 'letter-frequency'],
+  'number-extract': ['extract-emails', 'extract-urls', 'remove-numbers', 'text-count'],
+  'text-to-columns': ['column-extract', 'csv-viewer', 'wrap-text', 'text-stats-table'],
+  'prefix-suffix-lines': ['line-numbers', 'text-replace', 'wrap-text', 'dedupe-lines'],
+  // 보안: 체크섬 해시/패스프레이즈
+  'crc32-hash': ['adler32-hash', 'text-hash', 'checksum-verify', 'file-hash'],
+  'adler32-hash': ['crc32-hash', 'text-hash', 'checksum-verify', 'file-hash'],
+  'passphrase-gen': ['password-gen', 'diceware', 'password-strength', 'random-pin'],
+  'text-hash': ['crc32-hash', 'adler32-hash', 'hash-identifier', 'checksum-verify'],
+  // 문서: 표/데이터 변환
+  'csv-to-yaml': ['csv-json', 'yaml-json', 'csv-to-html', 'csv-to-sql'],
+  'json-to-toml': ['toml-json', 'yaml-json', 'json-format', 'json-to-ts'],
+  // 이미지: 효과
+  'image-ascii-braille': ['image-ascii-art', 'image-pixelate', 'image-black-white', 'image-filters'],
+  'image-mirror-tile': ['image-flip', 'image-collage', 'image-rotate', 'image-filters'],
+  // 오디오: 신호 생성
+  'binaural-tone-gen': ['tone-gen', 'noise-generator', 'metronome', 'bpm-tap'],
 };
 
 /**

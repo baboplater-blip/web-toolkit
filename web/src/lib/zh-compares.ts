@@ -2038,6 +2038,404 @@ export const COMPARES_ZH: Compare[] = [
     ],
     keywords: ['工作日 vs 日期差', '工作日 计算器', '两个日期之间 天数', '跳过 周末'],
   },
+  {
+    slug: 'crc32-vs-adler32',
+    category: 'security',
+    title: 'CRC32 vs Adler-32 — 错误检测该用哪种校验和?',
+    h1: 'CRC32 vs Adler-32',
+    description:
+      'CRC32 能发现更多错误但稍慢;Adler-32 更快,但对短数据较弱。两者都用于检测意外损坏 — 免费,在浏览器中完成。',
+    intro:
+      'CRC32 和 Adler-32 都是为检测数据意外损坏而设计的 32 位校验和 — 翻转的比特、被截断的下载、出错的传输。两者都不是加密哈希:它们发现的是意外改动而非蓄意篡改,因此都不要用来证明真实性。CRC32 使用多项式除法,能捕捉更广的错误模式;Adler-32 用两个累加和来汇总字节,计算更快但更弱,尤其在极短的输入上。',
+    options: [
+      {
+        label: 'CRC32',
+        toolId: 'crc32-hash',
+        best: '需要更强检测能力的通用完整性校验。',
+        pros: [
+          '能捕捉更多错误模式,包括许多突发错误',
+          '广泛用于 ZIP、PNG、以太网和 gzip',
+          '即便在短输入上也可靠',
+        ],
+        cons: [
+          '计算上比 Adler-32 稍慢',
+          '非加密 — 只检测意外,不检测篡改',
+        ],
+      },
+      {
+        label: 'Adler-32',
+        toolId: 'adler32-hash',
+        best: '对较大数据块进行速度敏感的校验。',
+        pros: [
+          '计算上比 CRC32 更快',
+          '简单的累加和设计,用于 zlib',
+          '适合校验较长的数据流',
+        ],
+        cons: [
+          '对很短的消息较弱 — 起始和的混合不充分',
+          '比 CRC32 漏掉更多错误模式;非加密',
+        ],
+      },
+    ],
+    verdict:
+      '想要可靠的完整性校验 — 尤其是短数据 — 就选 CRC32;它在 ZIP、PNG 等格式中作为默认是有道理的。只有当你校验较大数据块且原始速度比捕捉每一种错误模式更重要时,才选 Adler-32。无论哪种,它们检测的都是意外损坏而非恶意改动:若需要真实性,请用加密哈希。两者都完全在浏览器中运行。',
+    faqs: [
+      {
+        q: 'CRC32 和 Adler-32 哪个更安全?',
+        a: '在加密意义上两者都不安全,都只能检测意外损坏。要抵御篡改,你需要 SHA-256 这样的加密哈希,而不是校验和。',
+      },
+      {
+        q: '为什么 Adler-32 对短输入较弱?',
+        a: 'Adler-32 维护两个累加和;只有几个字节时第二个和几乎没有充分混合,因此不同的短输入更容易碰撞。CRC32 即便在短数据上也保持可靠。',
+      },
+    ],
+    keywords: ['crc32 vs adler32', '校验和 比较', '错误检测 校验和', 'crc32 还是 adler-32'],
+  },
+  {
+    slug: 'passphrase-vs-password',
+    category: 'security',
+    title: 'Passphrase vs Password — 你该生成哪一种?',
+    h1: 'Passphrase vs Password',
+    description:
+      'passphrase(口令短语)把多个随机单词串起来便于记忆;password(密码)是一小段密集的随机字符。如何选择 — 免费,在浏览器中完成。',
+    intro:
+      'passphrase 把多个随机挑选的单词连起来(correct-horse-battery-staple),更容易记忆和输入;password 则把随机性压缩进一小段混合字符里。随机生成时两者都可以很强 — 强度来自真正的熵,而不是把 "a" 换成 "@"。无论用哪种,都不要在不同站点间重复使用。两者都在你的浏览器本地生成,绝不会被传输。',
+    options: [
+      {
+        label: 'Passphrase',
+        toolId: 'passphrase-gen',
+        best: '必须靠记忆并手动输入的秘密 — 设备登录或密码管理器的主密码。',
+        pros: [
+          '比随机字符远更易记忆和输入',
+          '使用足够多的随机单词时很强',
+          '在手机键盘上更少出错',
+        ],
+        cons: [
+          '输入更长,可能超过较短的长度限制',
+          '有些站点拒绝空格或过长的输入',
+        ],
+      },
+      {
+        label: 'Password',
+        toolId: 'password-gen',
+        best: '存在密码管理器、从不手动输入的每站点登录。',
+        pros: [
+          '在紧凑长度里压入密集的随机性',
+          '符合严格的长度与字符类别规则',
+          '当管理器为你自动填充时最理想',
+        ],
+        cons: [
+          '难以记忆或准确输入',
+          '在手机键盘上容易按错',
+        ],
+      },
+    ],
+    verdict:
+      '对你真正必须记住并手动输入的少数秘密(如电脑登录或密码管理器的主密码),选 passphrase。其余一切交由管理器存储和填充的,用随机字符 password。每一个都要够长、随机生成,且绝不在两个站点重复使用同一个秘密。两者都在你的浏览器中生成,并停留在那里。',
+    faqs: [
+      {
+        q: 'passphrase 比 password 更安全吗?',
+        a: '不一定 — 安全取决于随机性和长度,而非风格。一个又长又随机生成的 passphrase 和一个又长又随机的 password 可以同样强;两者中任何一个太短都很弱。',
+      },
+      {
+        q: '我可以在多个站点重复使用一个强 passphrase 吗?',
+        a: '不可以。重复使用才是真正的风险:一旦某个站点被攻破,所有共用该秘密的账户都会暴露。请为每个站点生成唯一的秘密,并存入密码管理器。',
+      },
+    ],
+    keywords: ['passphrase vs password', '随机 口令短语 生成器', '强密码', '基于单词的 密码'],
+  },
+  {
+    slug: 'jsdoc-vs-typescript-types',
+    category: 'dev',
+    title: 'JSON 转 JSDoc vs JSON 转 TypeScript — 该输出哪种类型?',
+    h1: 'JSON 转 JSDoc vs JSON 转 TypeScript',
+    description:
+      '从你的 JSON 生成 JSDoc @typedef 注释,无需构建步骤即可为纯 JavaScript 添加类型;或生成 TypeScript 接口 — 免费,在浏览器中完成。',
+    intro:
+      '两个工具都从示例 JSON 推断结构,但产出不同的目标。JSON 转 JSDoc 生成 @typedef 注释,你把它放进纯 JavaScript — 编辑器据此提供自动补全和类型检查,无需任何编译器或构建步骤。JSON 转 TypeScript 为 TypeScript 代码库生成 interface 声明,由编译器强制约束。相同的推断,两种消费方式:文档注释,还是真正的 .ts 类型。',
+    options: [
+      {
+        label: 'JSON 转 JSDoc',
+        toolId: 'json-to-jsdoc',
+        best: '不引入 TypeScript 或构建步骤,为纯 JavaScript 添加类型。',
+        pros: [
+          '在纯 .js 文件中可用 — 无需编译器',
+          '编辑器用 @typedef 提供自动补全和提示',
+          '易于点缀到已有的 JS 项目中',
+        ],
+        cons: [
+          '没有编译期强制 — 检查仅限编辑器',
+          '对深层嵌套结构,注释会很冗长',
+        ],
+      },
+      {
+        label: 'JSON 转 TypeScript',
+        toolId: 'json-to-ts',
+        best: '为 TypeScript 代码库添加真正的 interface 类型。',
+        pros: [
+          '生成由 TypeScript 编译器强制的接口',
+          '对嵌套和可选字段语法更简洁',
+          '与代码库其余的 .ts 类型集成',
+        ],
+        cons: [
+          '需要 TypeScript 配置和构建步骤',
+          '对一个小的纯 JavaScript 文件来说大材小用',
+        ],
+      },
+    ],
+    verdict:
+      '在不想要构建步骤的纯 JavaScript 项目里,生成 JSDoc @typedef 注释 — 你的编辑器免费获得自动补全和温和的检查。如果你已经在用 TypeScript,就生成 interface,让编译器在整个代码中强制结构。两者从相同的 JSON 示例出发,因此项目采用 TypeScript 时你可以切换输出。一切都在你的浏览器中运行。',
+    faqs: [
+      {
+        q: 'JSDoc 能提供和 TypeScript 一样的检查吗?',
+        a: '它可以驱动编辑器的自动补全和警告(tsc 也能通过 JSDoc 对 JS 做类型检查),但真正的 TypeScript 配置会在构建期更严格地强制类型。当你想要类型却不想引入编译器时,JSDoc 最出彩。',
+      },
+      {
+        q: '我以后能把 JSDoc 输出转成 TypeScript 吗?',
+        a: '可以。当项目采用 TypeScript 时,把相同的 JSON 再跑一遍 TypeScript 生成器即可得到接口 — 推断出的结构是一样的。',
+      },
+    ],
+    keywords: ['jsdoc vs typescript 类型', 'json 转 typedef', 'json 转 接口', '不用构建 为 javascript 加类型'],
+  },
+  {
+    slug: 'css-keyframes-vs-cubic-bezier',
+    category: 'dev',
+    title: 'CSS Keyframes vs Cubic-Bezier — 是动画还是缓动?',
+    h1: 'CSS Keyframes vs Cubic-Bezier',
+    description:
+      'keyframes 定义完整的多步 @keyframes 动画;cubic-bezier 塑造单次过渡的缓动曲线。你需要哪个 — 免费,在浏览器中完成。',
+    intro:
+      '这两个工具位于 CSS 运动的两个不同层面。keyframes 生成器构建完整的 @keyframes 规则 — 一段动画中"什么在变、何时变"的多步序列。cubic-bezier 工具构建单个计时函数:控制某个值在其时长内如何加速和减速的缓动曲线。keyframes 描述整段旅程;cubic-bezier 描述其中一段的节奏。',
+    options: [
+      {
+        label: 'CSS Keyframes',
+        toolId: 'css-keyframes',
+        best: '多步动画 — 循环、序列,以及超出简单 A 到 B 的一切。',
+        pros: [
+          '用百分比关键帧定义多个步骤',
+          '驱动循环和复杂动画',
+          '输出可直接粘贴的 @keyframes 规则',
+        ],
+        cons: ['对单次、简单的过渡而言过于复杂'],
+      },
+      {
+        label: 'Cubic-Bezier',
+        toolId: 'cubic-bezier',
+        best: '调校一次过渡或动画的缓动曲线。',
+        pros: [
+          '精确塑造加速与减速',
+          '可直接替换 ease、ease-in-out 等',
+          '同时适用于过渡和关键帧动画',
+        ],
+        cons: ['只控制节奏 — 无法定义步骤本身'],
+      },
+    ],
+    verdict:
+      '当运动包含多个阶段或循环时,用 keyframes 生成器 — 那条规则定义每一步发生什么。当你满足于简单的从头到尾的变化、但想让它感觉对味时,用 cubic-bezier 来调缓动。两者互补:为序列构建 @keyframes,再应用 cubic-bezier 计时函数来控制它如何缓动。两者都在你的浏览器中运行。',
+    faqs: [
+      {
+        q: '如果我只有一个 hover 过渡,还需要 keyframes 吗?',
+        a: '不需要。单次状态变化是 CSS 过渡,通常一个 cubic-bezier 缓动就够了。当运动有多个步骤或会重复时,才用 @keyframes。',
+      },
+      {
+        q: '我可以在关键帧动画里用 cubic-bezier 曲线吗?',
+        a: '可以。把 animation-timing-function 设为你的 cubic-bezier 值,关键帧动画就会按你想要的方式缓动。两者协同工作。',
+      },
+    ],
+    keywords: ['css keyframes vs cubic-bezier', 'css 动画 缓动', 'keyframes 生成器', '计时函数'],
+  },
+  {
+    slug: 'color-shades-vs-tailwind-shades',
+    category: 'dev',
+    title: 'Color Shades vs Tailwind Shades — 自由色阶还是命名刻度?',
+    h1: 'Color Shades vs Tailwind Shades',
+    description:
+      'Color Shades 从任意颜色构建自由的明度色阶;Tailwind Shades 把它映射到 50–950 刻度。你需要哪种调色板 — 免费,在浏览器中完成。',
+    intro:
+      '两个工具都从一种颜色派生出更亮和更暗的变体,但面向不同的工作流。color-shades 工具构建自由的明度色阶 — 你选择步数和分布方式,没有固定命名。tailwind-shades 工具把你的颜色拟合到 Tailwind CSS 命名的 50–950 刻度,因此输出能作为带编号的令牌直接放进 Tailwind 主题。一个给你灵活的渐变;另一个给你可直接用于 Tailwind 的步级。',
+    options: [
+      {
+        label: 'Color Shades',
+        toolId: 'color-shades',
+        best: '为任意设计系统或一次性调色板构建自定义明度色阶。',
+        pros: [
+          '任意步数,由你来设定间距',
+          '不绑定任何框架的命名',
+          '适合手工构建或非 Tailwind 的调色板',
+        ],
+        cons: ['步级不与 Tailwind 的 50–950 令牌对齐'],
+      },
+      {
+        label: 'Tailwind Shades',
+        toolId: 'tailwind-shades',
+        best: '为 Tailwind 主题生成某颜色的 50–950 步级。',
+        pros: [
+          '输出命名的 50、100 … 950 刻度',
+          '可直接粘贴进 Tailwind 配置',
+          '与 Tailwind 默认调色板结构一致',
+        ],
+        cons: ['锁定在 50–950 布局 — 对其他系统较不灵活'],
+      },
+    ],
+    verdict:
+      '如果你在为 Tailwind 项目做主题,用 Tailwind Shades,这样输出能映射到你的类名本就期望的 50–950 令牌。对任何其他设计系统,或当你想完全控制步数和间距时,用 Color Shades 生成自由的明度色阶。两者都从单一颜色出发,并完全在你的浏览器中运行。',
+    faqs: [
+      {
+        q: 'Tailwind 项目该用哪一个?',
+        a: 'Tailwind Shades — 它生成与 Tailwind 调色板结构匹配的命名 50 到 950 步级,因此能直接套进你的配置和工具类。',
+      },
+      {
+        q: 'Color Shades 能生成超过 11 个步级吗?',
+        a: '可以。color-shades 色阶让你选择步数和间距方式,当固定的 Tailwind 50–950 布局不适合你的系统时很方便。',
+      },
+    ],
+    keywords: ['color shades vs tailwind shades', '调色板 生成器', 'tailwind 50-950', '明度 色阶'],
+  },
+  {
+    slug: 'cron-next-runs-vs-cron-explainer',
+    category: 'dev',
+    title: 'Cron Next Runs vs Cron Explainer — 何时还是什么?',
+    h1: 'Cron Next Runs vs Cron Explainer',
+    description:
+      'Cron Next Runs 列出某计划接下来的运行日期时间;Cron Explainer 用通俗语言描述它。你需要哪个 — 免费,在浏览器中完成。',
+    intro:
+      '两个工具读取同一个 cron 表达式,却回答不同的问题。Cron Next Runs 计算实际的下一批触发时间 — 该计划接下来会触发的几个日期时间 — 让你一眼确认时机。Cron Explainer 把五个字段翻译成一句通俗语言,描述其模式。一个告诉你它下次何时运行;另一个告诉你这个计划是什么意思。',
+    options: [
+      {
+        label: 'Cron Next Runs',
+        toolId: 'cron-next-runs',
+        best: '确认某计划下次究竟何时触发。',
+        pros: [
+          '列出具体的下次运行日期时间',
+          '捕捉诸如日与星期奇特组合的意外',
+          '部署前用来核对时机很合适',
+        ],
+        cons: ['不会用文字描述模式'],
+      },
+      {
+        label: 'Cron Explainer',
+        toolId: 'cron-explainer',
+        best: '理解一个陌生的 cron 表达式是什么意思。',
+        pros: [
+          '把五个字段变成一句通俗语言',
+          '帮助发现模式中的逻辑错误',
+          '便于在文档或代码评审中分享',
+        ],
+        cons: ['不会显示实际的下次运行时间'],
+      },
+    ],
+    verdict:
+      '用 Cron Next Runs 来核实真实的触发时间 — 这是发现某计划没有按预期触发的最快方式。当你在阅读别人的表达式、需要用文字理解模式时,用 Cron Explainer。它们天然成对:读说明确认意图,再查下次运行确认时机。两者都在你的浏览器中运行。',
+    faqs: [
+      {
+        q: '当日和星期同时设定时,为什么下次运行让我意外?',
+        a: '在标准 cron 中,当两个字段都被限定时,只要其一匹配计划就会触发(OR 逻辑),这可能意味着比预期更多的运行。列出下次运行能让这种行为一目了然。',
+      },
+      {
+        q: '我该先读说明还是先看下次运行?',
+        a: '先读说明,确认计划是你想要的意思,再查下次运行确认实际时机。两者并用能同时发现逻辑和时机上的错误。',
+      },
+    ],
+    keywords: ['cron next runs vs cron explainer', '下次 cron 运行时间', '解释 cron 表达式', 'cron 计划'],
+  },
+  {
+    slug: 'csv-to-yaml-vs-csv-to-json',
+    category: 'docs',
+    title: 'CSV 转 YAML vs CSV 转 JSON — 该用哪种输出格式?',
+    h1: 'CSV 转 YAML vs CSV 转 JSON',
+    description:
+      'CSV 转 YAML 产出对人友好的配置风格;CSV 转 JSON 产出供 API 和代码使用的紧凑数据。选对目标 — 免费,在浏览器中完成。',
+    intro:
+      '两个工具都把 CSV 的行变成结构化记录,但产出不同的格式。CSV 转 YAML 输出基于缩进的 YAML,阅读清晰,适合配置文件和人工审阅。CSV 转 JSON 输出 JSON — API 和大多数编程语言的通用语 — 并且也能把 JSON 转回 CSV。相同的行,两个去处:可读的配置,还是交换用的数据。',
+    options: [
+      {
+        label: 'CSV 转 YAML',
+        toolId: 'csv-to-yaml',
+        best: '把电子表格变成可读的配置或种子数据。',
+        pros: [
+          '基于缩进的输出,易读易改',
+          '天然契合配置文件和测试夹具',
+          '从单元格值推断简单类型',
+        ],
+        cons: [
+          '对缩进敏感 — 手动容易改坏',
+          '在 API 场景下不如 JSON 通用',
+        ],
+      },
+      {
+        label: 'CSV 转 JSON',
+        toolId: 'csv-json',
+        best: '为 API、代码和工具产出数据 — 并能转回。',
+        pros: [
+          'JSON 被 API 和各种语言处处使用',
+          '在 CSV 与 JSON 之间双向转换',
+          '对机器而言紧凑且无歧义',
+        ],
+        cons: ['括号和引号读起来比 YAML 更杂'],
+      },
+    ],
+    verdict:
+      '需要程序、API 或库要消费的数据 — 或想回环转回 CSV?用 CSV 转 JSON。要产出配置文件、夹具,或任何由人阅读和手改的内容?用 CSV 转 YAML,它基于缩进的布局更清爽。两者都在你的浏览器中解析同一份 CSV,因此你可以先试一个,若另一个更易读就切换。',
+    faqs: [
+      {
+        q: '哪种格式更便于人阅读?',
+        a: 'YAML 通常更悦目,因为用缩进而非括号和引号,这也是它在配置中流行的原因。JSON 对机器和 API 更通用。',
+      },
+      {
+        q: '我可以把 JSON 转回 CSV 吗?',
+        a: '可以 — CSV/JSON 工具支持双向,因此你能把 JSON 记录展平回 CSV 行。YAML 工具专注于 CSV 转 YAML 这一方向。',
+      },
+    ],
+    keywords: ['csv 转 yaml vs csv 转 json', '转换 csv', 'csv yaml json', '电子表格 转 配置'],
+    relatedConverts: ['csv-to-json', 'json-to-csv'],
+  },
+  {
+    slug: 'data-size-si-vs-iec',
+    category: 'util',
+    title: '数据大小(SI vs IEC) vs 单位换算器 — 字节还是通用单位?',
+    h1: '数据大小(SI vs IEC) vs 单位换算器',
+    description:
+      '数据大小换算器同时按 SI(1000)和 IEC(1024)处理字节;单位换算器涵盖长度、重量等通用度量 — 免费,在浏览器中完成。',
+    intro:
+      '这两个工具都在单位之间换算,但覆盖不同领域。数据大小换算器专为数字存储而建,同时显示 SI 定义(1 kB = 1000 字节,用于硬盘包装)和 IEC 定义(1 KiB = 1024 字节,操作系统常用的计数方式),让你看清为什么一块"1 TB"硬盘报告的容量更少。通用单位换算器处理日常物理度量 — 长度、重量、温度、体积等等 — 但不涉及 1000 对 1024 的字节细节。',
+    options: [
+      {
+        label: '数据大小换算器',
+        toolId: 'data-size-converter',
+        best: '在明确区分 SI 与 IEC 的前提下换算字节和比特。',
+        pros: [
+          '并排显示 SI(1000)和 IEC(1024)的结果',
+          '解释"1 TB 硬盘显示更少"的差异',
+          '涵盖字节、KB/KiB、MB/MiB、GB/GiB 及以上',
+        ],
+        cons: ['仅限数字存储单位,不含物理度量'],
+      },
+      {
+        label: '单位换算器',
+        toolId: 'unit-converter',
+        best: '长度、重量、温度和体积的日常换算。',
+        pros: [
+          '在一处涵盖多个物理类别',
+          '便于烹饪、出行和一般计算',
+          '简单、快速,结果可复制',
+        ],
+        cons: ['不建模 SI 与 IEC 的字节区别'],
+      },
+    ],
+    verdict:
+      '换算数据大小 — 并想理解为什么 1000 对 1024 会让硬盘看起来比标称更小?用数据大小换算器,它同时显示 SI 和 IEC 结果。对长度、重量、温度或体积等日常物理度量,用通用单位换算器。两者覆盖不同领域,按你要测量的东西来选。两者都在你的浏览器中运行。',
+    faqs: [
+      {
+        q: '为什么数据大小换算器显示两个不同的数字?',
+        a: '它同时显示两种约定:SI 把 1 kB 算作 1000 字节(用于存储包装),而 IEC 把 1 KiB 算作 1024 字节(操作系统常用的报告方式)。看到两者就能解释新硬盘上看似缺失的容量。',
+      },
+      {
+        q: '通用单位换算器能处理千兆字节吗?',
+        a: '对带有 1000 对 1024 细节的数字存储,请用数据大小换算器。通用单位换算器专注于长度、重量、温度和体积等物理度量。',
+      },
+    ],
+    keywords: ['数据大小 si vs iec', '1000 vs 1024 字节', 'gb vs gib', '数据大小 换算器'],
+  },
 ];
 
 export function getCompareZh(slug: string): Compare | undefined {

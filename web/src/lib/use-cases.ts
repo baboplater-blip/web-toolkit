@@ -3330,6 +3330,666 @@ export const USE_CASES: UseCase[] = [
       en: ['white noise player', 'focus background sound', 'pink noise', 'metronome', 'bpm tapper'], ja: ['ホワイトノイズ 再生', '集中 背景音', 'ピンクノイズ', 'メトロノーム', 'bpm 測定'], zh: ['白噪声 播放', '专注 背景音', '粉噪声', '节拍器', 'bpm 测量'],
     },
   },
+  {
+    slug: 'preview-cron-schedule',
+    category: 'dev',
+    title: { ko: 'cron 표현식 다음 실행 시각 미리보기', en: 'Preview When a Cron Schedule Runs', ja: 'cron式の次回実行時刻をプレビュー', zh: '预览 cron 计划的下次执行时间' },
+    h1: { ko: 'cron 스케줄 미리 확인하기', en: 'Preview a cron schedule', ja: 'cronスケジュールを事前に確認', zh: '提前确认 cron 计划' },
+    description: {
+      ko: 'cron 표현식이 언제 실행되는지 다음 실행 시각으로 확인하고, 사람이 읽는 설명으로 해석하세요. 새 스케줄도 폼으로 만들 수 있습니다.',
+      en: 'See exactly when a cron expression fires with a list of upcoming run times, read a plain-language explanation, and build new schedules from a form.', ja: 'cron式がいつ実行されるかを次回実行時刻の一覧で確認し、人が読める説明で解釈。新しいスケジュールはフォームから作成できます。', zh: '通过下次执行时间列表查看 cron 表达式何时触发，用通俗说明理解它，并用表单创建新计划。',
+    },
+    intro: {
+      ko: 'cron 표현식은 다섯 자리(분·시·일·월·요일)만으로 일정을 정의해 직접 읽기 어렵습니다. 다음 실행 시각을 여러 개 나열해 의도한 주기인지 눈으로 확인하고, 한국어 설명으로 각 필드의 의미를 파악한 뒤, 새 스케줄이 필요하면 폼으로 안전하게 만들 수 있습니다. 모든 계산은 브라우저에서 처리됩니다.',
+      en: 'A cron expression packs a whole schedule into five fields (minute, hour, day, month, weekday), which is hard to read directly. List several upcoming run times to confirm the cadence is what you intended, read a plain-language explanation of each field, then build a new schedule from a form if you need one. All of it runs in your browser.', ja: 'cron式は5つのフィールド(分・時・日・月・曜日)だけで予定を定義するため、そのまま読むのは困難です。次回実行時刻を複数並べて意図した周期かを目で確認し、説明で各フィールドの意味を把握し、新しいスケジュールが必要ならフォームで作成できます。計算はすべてブラウザ内で行われます。', zh: 'cron 表达式仅用五个字段(分、时、日、月、星期)定义计划，直接阅读并不容易。列出多个下次执行时间确认周期是否符合预期，通过说明理解每个字段的含义，需要时再用表单创建新计划。所有计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/cron-next-runs',
+        name: { ko: '다음 실행 시각 N회 확인', en: 'List the next N run times', ja: '次回実行時刻をN回表示', zh: '列出接下来的 N 次执行时间' },
+        text: {
+          ko: 'cron 표현식을 입력하면 다음에 실행될 일시를 여러 개 보여줘 주기가 맞는지 확인합니다.',
+          en: 'Enter the cron expression to see several upcoming run dates and confirm the cadence is right.', ja: 'cron式を入力すると、次に実行される日時を複数表示し、周期が正しいか確認できます。', zh: '输入 cron 表达式即可看到接下来的多个执行日期，确认周期是否正确。',
+        },
+      },
+      {
+        href: '/tools/dev/cron',
+        name: { ko: '사람이 읽는 설명으로 해석', en: 'Read a plain-language explanation', ja: '人が読める説明で解釈', zh: '用通俗说明解读' },
+        text: {
+          ko: '같은 표현식을 "매일 0시 0분"처럼 풀어 각 필드가 무엇을 뜻하는지 확인합니다.',
+          en: 'Decode the same expression into wording like “at 00:00 every day” to see what each field means.', ja: '同じ式を「毎日0時0分」のように展開し、各フィールドの意味を確認します。', zh: '把同一表达式展开为「每天 0 点 0 分」之类的说法，了解每个字段的含义。',
+        },
+      },
+      {
+        href: '/tools/dev/crontab-builder',
+        name: { ko: '폼으로 새 스케줄 만들기', en: 'Build a new schedule from a form', ja: 'フォームで新しいスケジュールを作成', zh: '用表单创建新计划' },
+        text: {
+          ko: '분·시·요일을 폼에서 골라 오타 없이 올바른 cron 표현식을 생성합니다.',
+          en: 'Pick minute, hour and weekday in a form to generate a correct cron expression without typos.', ja: '分・時・曜日をフォームで選び、タイプミスなく正しいcron式を生成します。', zh: '在表单中选择分、时、星期，无拼写错误地生成正确的 cron 表达式。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '다음 실행 시각은 어느 시간대 기준인가요?', en: 'Which time zone are the run times in?', ja: '次回実行時刻はどのタイムゾーン基準ですか？', zh: '执行时间以哪个时区为准？' },
+        a: {
+          ko: '미리보기는 브라우저의 로컬 시간대로 표시됩니다. 서버의 cron은 보통 서버 시간대(흔히 UTC)로 동작하니 배포 환경의 시간대를 함께 확인하세요.',
+          en: 'The preview uses your browser’s local time zone. Server cron usually runs in the server’s time zone (often UTC), so check your deployment’s zone too.', ja: 'プレビューはブラウザのローカルタイムゾーンで表示されます。サーバーのcronは通常サーバーのタイムゾーン(多くはUTC)で動くため、デプロイ環境のゾーンも確認してください。', zh: '预览使用浏览器的本地时区。服务器 cron 通常按服务器时区(常为 UTC)运行，因此也请确认部署环境的时区。',
+        },
+      },
+      {
+        q: { ko: '요일과 일자를 동시에 지정하면 어떻게 되나요?', en: 'What happens if I set both day-of-month and weekday?', ja: '日と曜日を同時に指定するとどうなりますか？', zh: '同时指定日和星期会怎样？' },
+        a: {
+          ko: '표준 cron에서는 둘 다 지정하면 OR로 결합돼 둘 중 하나만 맞아도 실행됩니다. 다음 실행 시각 목록으로 의도한 동작인지 확인하세요.',
+          en: 'In standard cron, setting both joins them with OR, so it runs when either matches. Use the upcoming run list to confirm it behaves as intended.', ja: '標準cronでは両方指定するとORで結合され、どちらか一方が一致すれば実行されます。次回実行時刻の一覧で意図どおりか確認してください。', zh: '在标准 cron 中，两者都指定时按 OR 结合，任一匹配即执行。请用下次执行时间列表确认是否符合预期。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['cron 다음 실행', 'cron 표현식 해석', 'crontab 생성', 'cron 미리보기'],
+      en: ['cron next run', 'cron expression explained', 'crontab generator', 'cron preview'], ja: ['cron 次回実行', 'cron式 解説', 'crontab 生成', 'cron プレビュー'], zh: ['cron 下次执行', 'cron 表达式 解释', 'crontab 生成', 'cron 预览'],
+    },
+  },
+  {
+    slug: 'audit-http-response-headers',
+    category: 'dev',
+    title: { ko: 'HTTP 응답 헤더 점검하기', en: 'Audit HTTP Response Headers', ja: 'HTTPレスポンスヘッダーを点検', zh: '审查 HTTP 响应头' },
+    h1: { ko: 'HTTP 응답 헤더 점검', en: 'Audit HTTP response headers', ja: 'HTTPレスポンスヘッダーの点検', zh: '审查 HTTP 响应头' },
+    description: {
+      ko: '응답 헤더를 붙여넣어 보안·캐시·CORS 항목으로 분류하고 누락된 헤더를 점검하세요. 상태 코드 의미와 User-Agent까지 함께 해석합니다.',
+      en: 'Paste your response headers to sort them into security, cache and CORS groups and spot what’s missing. Decode status codes and User-Agent strings too.', ja: 'レスポンスヘッダーを貼り付けてセキュリティ・キャッシュ・CORS別に分類し、不足ヘッダーを点検。ステータスコードの意味やUser-Agentも併せて解釈します。', zh: '粘贴响应头，按安全、缓存、CORS 分类并检查缺失项。同时解读状态码含义和 User-Agent。',
+    },
+    intro: {
+      ko: '응답 헤더는 보안·캐시·콘텐츠 협상 등 많은 정보를 담지만 한눈에 분류하기 어렵습니다. 헤더 묶음을 붙여넣어 종류별로 정리하고 권장 보안 헤더 누락 여부를 점검한 뒤, 함께 받은 상태 코드와 User-Agent의 의미까지 해석할 수 있습니다. 입력은 브라우저를 벗어나지 않습니다.',
+      en: 'Response headers carry a lot — security, caching, content negotiation — but are hard to scan at a glance. Paste a block of headers to group them by purpose and check for missing recommended security headers, then decode the status code and User-Agent you got alongside them. Your input never leaves the browser.', ja: 'レスポンスヘッダーはセキュリティ・キャッシュ・コンテンツネゴシエーションなど多くの情報を含みますが、一目で分類するのは困難です。ヘッダーの塊を貼り付けて種類別に整理し、推奨セキュリティヘッダーの欠落を点検し、併せて受け取ったステータスコードやUser-Agentの意味も解釈できます。入力はブラウザの外に出ません。', zh: '响应头包含安全、缓存、内容协商等大量信息，但难以一目了然地分类。粘贴一组响应头按用途归类，检查是否缺少推荐的安全头，再解读随之而来的状态码和 User-Agent。输入不会离开浏览器。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/http-header-analyzer',
+        name: { ko: '헤더 분류 + 누락 점검', en: 'Classify headers + flag gaps', ja: 'ヘッダー分類+欠落点検', zh: '分类响应头 + 检查缺失' },
+        text: {
+          ko: '응답 헤더를 붙여넣으면 보안·캐시·CORS로 분류하고 권장 보안 헤더 누락을 알려줍니다.',
+          en: 'Paste the response headers to sort them into security/cache/CORS and surface missing recommended security headers.', ja: 'レスポンスヘッダーを貼り付けると、セキュリティ・キャッシュ・CORSに分類し、推奨セキュリティヘッダーの欠落を知らせます。', zh: '粘贴响应头后，按安全／缓存／CORS 分类，并提示缺少的推荐安全头。',
+        },
+      },
+      {
+        href: '/tools/dev/http-status',
+        name: { ko: '상태 코드 의미 확인', en: 'Look up the status code', ja: 'ステータスコードの意味を確認', zh: '查询状态码含义' },
+        text: {
+          ko: '응답의 상태 코드(예: 301·403·503)가 무엇을 뜻하는지 확인합니다.',
+          en: 'Check what the response’s status code (e.g. 301, 403, 503) actually means.', ja: 'レスポンスのステータスコード(例: 301・403・503)が何を意味するか確認します。', zh: '查看响应状态码(如 301、403、503)的实际含义。',
+        },
+      },
+      {
+        href: '/tools/dev/user-agent-parser',
+        name: { ko: 'User-Agent 분석', en: 'Parse the User-Agent', ja: 'User-Agentを解析', zh: '解析 User-Agent' },
+        text: {
+          ko: '요청에 실린 User-Agent를 브라우저·OS·기기로 분해해 클라이언트를 파악합니다.',
+          en: 'Break down the request’s User-Agent into browser, OS and device to identify the client.', ja: 'リクエストのUser-Agentをブラウザ・OS・端末に分解し、クライアントを把握します。', zh: '把请求中的 User-Agent 拆分为浏览器、操作系统和设备，识别客户端。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '점검 결과로 보안이 보장되나요?', en: 'Does this guarantee my site is secure?', ja: 'この点検でセキュリティは保証されますか？', zh: '这次检查能保证安全吗？' },
+        a: {
+          ko: '아니요. 권장 헤더 누락을 알려주는 보조 점검일 뿐, 전체 보안 진단을 대신하지 않습니다. 실제 적용은 서버 설정에서 확인하세요.',
+          en: 'No. It’s a helper that flags missing recommended headers, not a full security audit. Verify the actual settings on your server.', ja: 'いいえ。推奨ヘッダーの欠落を知らせる補助的な点検であり、完全なセキュリティ診断の代わりにはなりません。実際の適用はサーバー設定で確認してください。', zh: '不能。它只是提示缺失推荐头的辅助检查，不能替代完整的安全审计。请在服务器配置中确认实际设置。',
+        },
+      },
+      {
+        q: { ko: '헤더를 어떻게 가져오나요?', en: 'How do I get the headers?', ja: 'ヘッダーはどう取得しますか？', zh: '怎么获取响应头？' },
+        a: {
+          ko: '브라우저 개발자도구의 네트워크 탭이나 curl -I 출력에서 응답 헤더를 복사해 붙여넣으면 됩니다.',
+          en: 'Copy the response headers from your browser DevTools Network tab or from `curl -I` output and paste them in.', ja: 'ブラウザの開発者ツールのネットワークタブや`curl -I`の出力からレスポンスヘッダーをコピーして貼り付けてください。', zh: '从浏览器开发者工具的网络选项卡或 `curl -I` 输出复制响应头并粘贴即可。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['http 헤더 분석', '보안 헤더 점검', '응답 헤더 분류', 'http 상태 코드'],
+      en: ['http header analyzer', 'security headers check', 'response header audit', 'http status code'], ja: ['http ヘッダー 解析', 'セキュリティヘッダー 点検', 'レスポンスヘッダー 分類', 'http ステータスコード'], zh: ['http 头分析', '安全头检查', '响应头审查', 'http 状态码'],
+    },
+  },
+  {
+    slug: 'generate-types-from-json-api',
+    category: 'dev',
+    title: { ko: 'JSON API 응답으로 타입 만들기', en: 'Generate Types from a JSON API Response', ja: 'JSON APIレスポンスから型を生成', zh: '从 JSON API 响应生成类型' },
+    h1: { ko: 'JSON으로 타입 생성하기', en: 'Generate types from JSON', ja: 'JSONから型を生成', zh: '从 JSON 生成类型' },
+    description: {
+      ko: 'API가 돌려준 JSON을 붙여넣어 JSDoc·TypeScript 타입을 만들고, 런타임 검증용 JSON 스키마까지 한 번에 뽑으세요. 데이터는 업로드되지 않습니다.',
+      en: 'Paste a JSON response from your API to generate JSDoc and TypeScript types, plus a JSON Schema for runtime validation. Your data is never uploaded.', ja: 'APIが返したJSONを貼り付けてJSDoc・TypeScript型を生成し、ランタイム検証用のJSONスキーマまで一度に作成。データはアップロードされません。', zh: '粘贴 API 返回的 JSON，生成 JSDoc、TypeScript 类型，以及用于运行时校验的 JSON Schema。数据不会被上传。',
+    },
+    intro: {
+      ko: 'API 응답 형태를 손으로 타입으로 옮기면 오타와 누락이 생기기 쉽습니다. 실제 JSON을 붙여넣어 JSDoc 주석이나 TypeScript 인터페이스로 자동 추론하고, 런타임에서 형식을 검증하고 싶으면 JSON 스키마까지 함께 뽑아낼 수 있습니다. 모든 추론은 브라우저에서 처리돼 데이터가 서버로 가지 않습니다.',
+      en: 'Translating an API response into types by hand invites typos and gaps. Paste real JSON to infer JSDoc comments or TypeScript interfaces automatically, and if you want runtime checks, derive a JSON Schema from the same data. Every inference runs in your browser, so your data never reaches a server.', ja: 'APIレスポンスを手で型に書き写すと、タイプミスや漏れが起きがちです。実際のJSONを貼り付けてJSDocコメントやTypeScriptインターフェースを自動推論し、ランタイムで形式を検証したい場合はJSONスキーマも同じデータから生成できます。推論はすべてブラウザ内で行われ、データがサーバーに送られることはありません。', zh: '手动把 API 响应转成类型容易出现拼写错误和遗漏。粘贴真实 JSON 自动推断 JSDoc 注释或 TypeScript 接口，若需运行时校验，还能从同一数据生成 JSON Schema。所有推断都在浏览器中完成，数据不会发送到服务器。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/json-to-ts',
+        name: { ko: 'TypeScript 인터페이스 생성', en: 'Generate TypeScript interfaces', ja: 'TypeScriptインターフェースを生成', zh: '生成 TypeScript 接口' },
+        text: {
+          ko: 'JSON을 붙여넣어 중첩 구조까지 추론한 TypeScript 타입을 받습니다.',
+          en: 'Paste JSON to get TypeScript types inferred down through nested structures.', ja: 'JSONを貼り付けて、ネスト構造まで推論したTypeScript型を取得します。', zh: '粘贴 JSON，获得连嵌套结构都推断好的 TypeScript 类型。',
+        },
+      },
+      {
+        href: '/tools/dev/json-to-jsdoc',
+        name: { ko: 'JSDoc @typedef 생성', en: 'Generate JSDoc @typedef', ja: 'JSDoc @typedefを生成', zh: '生成 JSDoc @typedef' },
+        text: {
+          ko: 'TypeScript 없이 순수 JS를 쓴다면 같은 JSON으로 JSDoc @typedef를 만듭니다.',
+          en: 'Working in plain JS without TypeScript? Turn the same JSON into JSDoc @typedef blocks.', ja: 'TypeScriptなしの素のJSなら、同じJSONからJSDoc @typedefを作成します。', zh: '若使用不带 TypeScript 的纯 JS，可用同一 JSON 生成 JSDoc @typedef。',
+        },
+      },
+      {
+        href: '/tools/dev/json-schema',
+        name: { ko: '런타임 검증용 JSON 스키마', en: 'JSON Schema for runtime validation', ja: 'ランタイム検証用JSONスキーマ', zh: '用于运行时校验的 JSON Schema' },
+        text: {
+          ko: '컴파일 타입과 별개로, 입력 데이터를 실행 중에 검증할 JSON 스키마를 추론합니다.',
+          en: 'Beyond compile-time types, infer a JSON Schema to validate incoming data at runtime.', ja: 'コンパイル時の型とは別に、入力データを実行中に検証するJSONスキーマを推論します。', zh: '除编译期类型外，推断一份 JSON Schema 以在运行时校验输入数据。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '추론된 타입을 그대로 써도 되나요?', en: 'Can I use the inferred types as-is?', ja: '推論された型をそのまま使えますか？', zh: '推断出的类型可以直接使用吗？' },
+        a: {
+          ko: '대부분 좋은 출발점이지만, 한 샘플만으로는 선택 필드나 null 가능성을 모를 수 있습니다. 여러 응답을 보며 옵셔널·유니온을 보정하세요.',
+          en: 'They’re a solid starting point, but a single sample can’t reveal optional fields or nullable values. Review several responses and adjust optionals and unions.', ja: '多くの場合よい出発点ですが、1つのサンプルだけでは省略可能フィールドやnullの可能性が分かりません。複数のレスポンスを見てオプショナルやユニオンを補正してください。', zh: '它们是不错的起点，但单个样本无法揭示可选字段或可空值。请查看多个响应并调整可选项和联合类型。',
+        },
+      },
+      {
+        q: { ko: 'JSON 스키마와 TypeScript 타입은 무엇이 다른가요?', en: 'How is JSON Schema different from a TypeScript type?', ja: 'JSONスキーマとTypeScript型は何が違いますか？', zh: 'JSON Schema 和 TypeScript 类型有什么区别？' },
+        a: {
+          ko: 'TypeScript 타입은 컴파일 시 검사돼 빌드 후 사라지고, JSON 스키마는 실행 중에 실제 데이터를 검증합니다. 외부 입력은 둘을 함께 쓰는 게 안전합니다.',
+          en: 'TypeScript types are checked at compile time and vanish after the build; JSON Schema validates real data at runtime. For external input, using both is safest.', ja: 'TypeScript型はコンパイル時に検査されビルド後に消えますが、JSONスキーマは実行中に実データを検証します。外部入力には両方併用が安全です。', zh: 'TypeScript 类型在编译期检查、构建后消失；JSON Schema 在运行时校验真实数据。对外部输入，两者并用最稳妥。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['json 타입 생성', 'json to typescript', 'json 스키마 생성', 'jsdoc 타입'],
+      en: ['json to types', 'json to typescript', 'json schema generator', 'jsdoc typedef'], ja: ['json 型 生成', 'json typescript 変換', 'json スキーマ 生成', 'jsdoc 型'], zh: ['json 生成类型', 'json 转 typescript', 'json schema 生成', 'jsdoc 类型'],
+    },
+  },
+  {
+    slug: 'build-css-animation',
+    category: 'dev',
+    title: { ko: 'CSS 애니메이션 만들기', en: 'Build a CSS Animation', ja: 'CSSアニメーションを作る', zh: '制作 CSS 动画' },
+    h1: { ko: 'CSS 애니메이션 만들기', en: 'Build a CSS animation', ja: 'CSSアニメーションを作成', zh: '制作 CSS 动画' },
+    description: {
+      ko: '@keyframes로 동작을 정의하고 cubic-bezier로 가속 곡선을 다듬은 뒤, 움직이는 그래디언트 배경까지 코드로 뽑으세요. 모두 브라우저에서 무료로.',
+      en: 'Define motion with @keyframes, fine-tune the easing curve with cubic-bezier, and generate an animated gradient background — all as copyable CSS, free in your browser.', ja: '@keyframesで動きを定義し、cubic-bezierで加速カーブを調整し、動くグラデーション背景までコードで生成。すべてブラウザで無料。', zh: '用 @keyframes 定义动作，用 cubic-bezier 调整缓动曲线，再生成可动的渐变背景——全部输出为可复制的 CSS，浏览器中免费完成。',
+    },
+    intro: {
+      ko: 'CSS 애니메이션은 키프레임으로 "무엇이 변하는지"를, 이징 곡선으로 "어떻게 변하는지"를 정의합니다. @keyframes로 시작·끝 상태를 만들고 cubic-bezier로 자연스러운 가감속을 잡은 뒤, 배경에 움직임을 더하고 싶다면 그래디언트 코드까지 함께 뽑을 수 있습니다. 모든 결과는 복사해 바로 쓰는 CSS입니다.',
+      en: 'A CSS animation defines what changes through keyframes and how it changes through an easing curve. Build start and end states with @keyframes, dial in natural acceleration with cubic-bezier, and if you want motion in the background, generate gradient CSS too. Everything comes out as copy-and-paste CSS.', ja: 'CSSアニメーションはキーフレームで「何が変わるか」を、イージングカーブで「どう変わるか」を定義します。@keyframesで開始・終了状態を作り、cubic-bezierで自然な加減速を整え、背景に動きを加えたければグラデーションのコードも生成できます。結果はすべてコピーしてすぐ使えるCSSです。', zh: 'CSS 动画用关键帧定义「变什么」，用缓动曲线定义「怎么变」。用 @keyframes 创建起止状态，用 cubic-bezier 调出自然的加减速，若想给背景加上动感，还能生成渐变 CSS。所有结果都是可直接复制使用的 CSS。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/css-keyframes',
+        name: { ko: '@keyframes로 동작 정의', en: 'Define motion with @keyframes', ja: '@keyframesで動きを定義', zh: '用 @keyframes 定义动作' },
+        text: {
+          ko: '시작·중간·끝 상태를 지정해 페이드·이동·회전 같은 @keyframes 코드를 생성합니다.',
+          en: 'Set start, middle and end states to generate @keyframes for fades, moves or rotations.', ja: '開始・中間・終了の状態を指定し、フェード・移動・回転などの@keyframesコードを生成します。', zh: '指定起始、中间和结束状态，生成淡入、移动、旋转等的 @keyframes 代码。',
+        },
+      },
+      {
+        href: '/tools/dev/cubic-bezier',
+        name: { ko: '이징 곡선 다듬기', en: 'Tune the easing curve', ja: 'イージングカーブを調整', zh: '调整缓动曲线' },
+        text: {
+          ko: 'cubic-bezier 값을 시각적으로 조절해 자연스러운 가감속 곡선을 만듭니다.',
+          en: 'Adjust the cubic-bezier handles visually to craft a natural acceleration curve.', ja: 'cubic-bezierの値を視覚的に調整し、自然な加減速カーブを作ります。', zh: '可视化调整 cubic-bezier 控制点，打造自然的加减速曲线。',
+        },
+      },
+      {
+        href: '/tools/dev/css-gradient',
+        name: { ko: '그래디언트 배경 추가', en: 'Add a gradient background', ja: 'グラデーション背景を追加', zh: '添加渐变背景' },
+        text: {
+          ko: '움직이는 요소 뒤에 깔 그래디언트 배경 CSS를 만들어 함께 사용합니다.',
+          en: 'Generate gradient-background CSS to sit behind your animated element.', ja: '動く要素の背後に敷くグラデーション背景CSSを作成して併用します。', zh: '生成可铺在动画元素背后的渐变背景 CSS，配合使用。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: 'transition과 @keyframes는 무엇이 다른가요?', en: 'What’s the difference between transition and @keyframes?', ja: 'transitionと@keyframesの違いは？', zh: 'transition 和 @keyframes 有什么区别？' },
+        a: {
+          ko: 'transition은 한 상태에서 다른 상태로의 단순한 변화에 적합하고, @keyframes는 여러 중간 단계가 있는 반복·복합 애니메이션에 적합합니다.',
+          en: 'A transition suits a simple change between two states, while @keyframes suits repeating or multi-step animations with intermediate stages.', ja: 'transitionは2つの状態間の単純な変化に、@keyframesは中間段階のある反復・複合アニメーションに適します。', zh: 'transition 适合两个状态之间的简单变化，@keyframes 适合带中间阶段的重复或多步动画。',
+        },
+      },
+      {
+        q: { ko: '성능을 위해 무엇을 애니메이션해야 하나요?', en: 'What should I animate for performance?', ja: 'パフォーマンスのために何をアニメーションすべきですか？', zh: '为了性能应该对什么做动画？' },
+        a: {
+          ko: 'transform과 opacity는 보통 GPU 합성으로 부드럽게 처리됩니다. width·top 같은 레이아웃 속성은 리플로우를 일으켜 끊길 수 있으니 가능하면 transform을 쓰세요.',
+          en: 'transform and opacity are usually composited smoothly on the GPU. Layout properties like width or top trigger reflow and can stutter, so prefer transform when you can.', ja: 'transformとopacityは通常GPU合成で滑らかに処理されます。widthやtopなどのレイアウト系プロパティはリフローを起こしカクつくことがあるため、可能ならtransformを使ってください。', zh: 'transform 和 opacity 通常由 GPU 合成处理，较为流畅。width、top 等布局属性会触发回流可能卡顿，能用 transform 就尽量用。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['css 애니메이션', 'keyframes 생성', 'cubic-bezier 이징', 'css 그래디언트'],
+      en: ['css animation', 'keyframes generator', 'cubic-bezier easing', 'css gradient'], ja: ['css アニメーション', 'keyframes 生成', 'cubic-bezier イージング', 'css グラデーション'], zh: ['css 动画', 'keyframes 生成', 'cubic-bezier 缓动', 'css 渐变'],
+    },
+  },
+  {
+    slug: 'design-a-color-palette',
+    category: 'dev',
+    title: { ko: 'UI 색상 팔레트 설계하기', en: 'Design a Color Palette', ja: 'カラーパレットを設計', zh: '设计配色方案' },
+    h1: { ko: '색상 팔레트 설계', en: 'Design a color palette', ja: 'カラーパレットを設計', zh: '设计配色方案' },
+    description: {
+      ko: '기준 색에서 명도 단계를 만들고 두 색을 섞어 중간색을 찾은 뒤, Tailwind의 50~950 단계로 정리하세요. 디자인 토큰을 코드로 바로 받습니다.',
+      en: 'Build lightness steps from a base color, blend two colors to find a midpoint, then organize everything into Tailwind 50–950 steps you can copy as design tokens.', ja: 'ベース色から明度の段階を作り、2色を混ぜて中間色を見つけ、Tailwindの50〜950段階に整理。デザイントークンをコードで受け取れます。', zh: '从基准色生成明度梯度，混合两色找出中间色，再整理成 Tailwind 的 50–950 梯度，作为设计令牌直接复制。',
+    },
+    intro: {
+      ko: '좋은 팔레트는 하나의 기준 색에서 일관된 명도 단계를 뽑는 데서 시작합니다. 기준 색의 밝기 램프를 만들고, 두 색을 섞어 필요한 중간색을 찾은 뒤, 실무에서 바로 쓰도록 Tailwind 50~950 스케일로 정리할 수 있습니다. 모든 색 계산은 브라우저에서 처리됩니다.',
+      en: 'A good palette starts by pulling consistent lightness steps from one base color. Build a brightness ramp from your base, blend two colors to find any midpoints you need, then organize it into a Tailwind 50–950 scale ready to drop into your project. All color math runs in your browser.', ja: 'よいパレットは1つのベース色から一貫した明度段階を取り出すことから始まります。ベース色の明るさのランプを作り、2色を混ぜて必要な中間色を見つけ、実務ですぐ使えるようTailwind 50〜950スケールに整理できます。色の計算はすべてブラウザ内で行われます。', zh: '好的配色从基准色提取一致的明度梯度开始。先生成基准色的亮度梯度，再混合两色找出所需中间色，最后整理成可直接用于项目的 Tailwind 50–950 比例。所有色彩计算都在浏览器中完成。',
+    },
+    steps: [
+      {
+        href: '/tools/dev/color-shades',
+        name: { ko: '명도 단계 만들기', en: 'Build lightness shades', ja: '明度の段階を作る', zh: '生成明度梯度' },
+        text: {
+          ko: '기준 색을 입력해 더 밝은·어두운 명도 단계를 한 줄로 생성합니다.',
+          en: 'Enter a base color to generate a row of lighter and darker shades.', ja: 'ベース色を入力し、明るい・暗い明度の段階を一列で生成します。', zh: '输入基准色，生成一排更亮和更暗的明度梯度。',
+        },
+      },
+      {
+        href: '/tools/dev/color-mix',
+        name: { ko: '두 색 섞어 중간색 찾기', en: 'Mix two colors for a midpoint', ja: '2色を混ぜて中間色を見つける', zh: '混合两色得到中间色' },
+        text: {
+          ko: '두 색을 비율로 섞어 강조색이나 경계색으로 쓸 중간색을 만듭니다.',
+          en: 'Blend two colors by ratio to create a midpoint for accents or borders.', ja: '2色を比率で混ぜ、アクセントや境界に使う中間色を作ります。', zh: '按比例混合两色，得到可用作强调或边框的中间色。',
+        },
+      },
+      {
+        href: '/tools/dev/tailwind-shades',
+        name: { ko: 'Tailwind 50~950으로 정리', en: 'Organize into Tailwind 50–950', ja: 'Tailwind 50〜950に整理', zh: '整理为 Tailwind 50–950' },
+        text: {
+          ko: '정한 색을 Tailwind의 50~950 스케일로 펼쳐 디자인 토큰으로 받습니다.',
+          en: 'Expand your chosen color into Tailwind’s 50–950 scale as ready design tokens.', ja: '決めた色をTailwindの50〜950スケールに展開し、デザイントークンとして受け取ります。', zh: '把选定的颜色展开为 Tailwind 的 50–950 比例，作为现成的设计令牌。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '명도 단계를 몇 개로 잡는 게 좋나요?', en: 'How many shade steps should I use?', ja: '明度段階はいくつにするのがよいですか？', zh: '明度梯度用几级比较好？' },
+        a: {
+          ko: 'Tailwind 관례인 50~950(11단계)이 배경·텍스트·테두리·상태색을 두루 덮어 실무에 무난합니다. 더 단순한 UI라면 5~7단계로 줄여도 됩니다.',
+          en: 'Tailwind’s 50–950 (11 steps) covers backgrounds, text, borders and states well for most work. For simpler UIs, 5–7 steps are fine.', ja: 'Tailwind慣例の50〜950(11段階)は背景・テキスト・境界・状態色を広くカバーし実務に無難です。シンプルなUIなら5〜7段階でも構いません。', zh: 'Tailwind 惯例的 50–950(11 级)能涵盖背景、文字、边框和状态色，适合多数场景。更简单的 UI 用 5–7 级也可以。',
+        },
+      },
+      {
+        q: { ko: '대비(접근성)는 어떻게 확인하나요?', en: 'How do I check contrast for accessibility?', ja: 'コントラスト(アクセシビリティ)はどう確認しますか？', zh: '如何检查对比度(可访问性)？' },
+        a: {
+          ko: '텍스트와 배경 색 조합은 별도 대비 검사 도구로 WCAG AA(4.5:1) 기준을 만족하는지 확인하세요. 팔레트 생성만으로는 가독성이 보장되지 않습니다.',
+          en: 'Check text-and-background pairings against WCAG AA (4.5:1) with a dedicated contrast tool. Generating a palette alone doesn’t guarantee readability.', ja: 'テキストと背景の組み合わせは、専用のコントラスト検査ツールでWCAG AA(4.5:1)を満たすか確認してください。パレット生成だけでは可読性は保証されません。', zh: '用专门的对比度工具检查文字与背景的搭配是否满足 WCAG AA(4.5:1)。仅生成配色并不能保证可读性。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['색상 팔레트 만들기', '명도 단계 생성', '색 섞기', 'tailwind 색상'],
+      en: ['color palette generator', 'color shades', 'mix colors', 'tailwind colors'], ja: ['カラーパレット 作成', '明度 段階 生成', '色 混ぜる', 'tailwind カラー'], zh: ['配色方案 制作', '明度 梯度 生成', '混合 颜色', 'tailwind 配色'],
+    },
+  },
+  {
+    slug: 'verify-file-checksums',
+    category: 'security',
+    title: { ko: '파일 체크섬으로 무결성 확인', en: 'Verify File Checksums', ja: 'ファイルのチェックサムで整合性を確認', zh: '用校验和验证文件完整性' },
+    h1: { ko: '파일 체크섬 확인', en: 'Verify file checksums', ja: 'ファイルのチェックサムを確認', zh: '验证文件校验和' },
+    description: {
+      ko: 'CRC32·Adler-32 체크섬을 계산하고 제공된 값과 대조해 파일이 손상·변조되지 않았는지 확인하세요. 파일은 업로드되지 않습니다.',
+      en: 'Compute CRC32 and Adler-32 checksums and compare them against a provided value to confirm a file isn’t corrupted or altered. Files are never uploaded.', ja: 'CRC32・Adler-32チェックサムを計算し、提供された値と照合してファイルが破損・改変されていないか確認。ファイルはアップロードされません。', zh: '计算 CRC32、Adler-32 校验和并与给定值比对，确认文件未损坏或被篡改。文件不会被上传。',
+    },
+    intro: {
+      ko: '다운로드한 파일이 전송 중 깨지지 않았는지, 같은 파일이 맞는지 확인할 때 체크섬을 씁니다. CRC32나 Adler-32 값을 계산해 배포처가 공개한 값과 한 글자라도 다른지 대조하면 됩니다. 모든 계산은 브라우저에서 처리돼 파일이 기기를 벗어나지 않습니다. 체크섬은 오류 검출용이며 암호학적 보안용은 아닙니다.',
+      en: 'Checksums let you confirm a downloaded file wasn’t mangled in transit and is the file you expected. Compute a CRC32 or Adler-32 value and compare it character-for-character against the one the source published. Everything runs in your browser, so the file never leaves your device. Note that these are error-detection checksums, not cryptographic security.', ja: 'ダウンロードしたファイルが転送中に壊れていないか、同じファイルかを確認するときにチェックサムを使います。CRC32やAdler-32の値を計算し、配布元が公開した値と1文字でも違うか照合します。計算はすべてブラウザ内で行われ、ファイルが端末を出ることはありません。チェックサムは誤り検出用であり、暗号学的なセキュリティ用途ではありません。', zh: '当你想确认下载的文件在传输中未损坏、是否为同一文件时，可使用校验和。计算 CRC32 或 Adler-32 值，与来源公布的值逐字符比对即可。所有计算都在浏览器中完成，文件不会离开设备。注意校验和用于错误检测，并非加密安全用途。',
+    },
+    steps: [
+      {
+        href: '/tools/security/crc32-hash',
+        name: { ko: 'CRC32 계산', en: 'Compute CRC32', ja: 'CRC32を計算', zh: '计算 CRC32' },
+        text: {
+          ko: '파일이나 텍스트의 CRC32 값을 계산합니다. 배포처가 CRC32를 줬다면 이걸로 대조합니다.',
+          en: 'Compute the CRC32 of a file or text. If the source published a CRC32, compare against this.', ja: 'ファイルやテキストのCRC32値を計算します。配布元がCRC32を公開していれば、これで照合します。', zh: '计算文件或文本的 CRC32 值。若来源公布了 CRC32，就用它比对。',
+        },
+      },
+      {
+        href: '/tools/security/adler32-hash',
+        name: { ko: 'Adler-32 계산', en: 'Compute Adler-32', ja: 'Adler-32を計算', zh: '计算 Adler-32' },
+        text: {
+          ko: 'zlib 계열에서 쓰는 Adler-32 값이 필요하면 같은 입력으로 계산합니다.',
+          en: 'Need the Adler-32 value used in zlib-family formats? Compute it from the same input.', ja: 'zlib系で使うAdler-32値が必要なら、同じ入力で計算します。', zh: '若需要 zlib 系格式使用的 Adler-32 值，用相同输入计算即可。',
+        },
+      },
+      {
+        href: '/tools/security/checksum-verify',
+        name: { ko: '제공된 값과 대조', en: 'Compare against the given value', ja: '提供された値と照合', zh: '与给定值比对' },
+        text: {
+          ko: '계산값과 배포처가 알려준 기대값을 붙여넣어 일치하는지 한 번에 확인합니다.',
+          en: 'Paste the computed value and the expected one to check whether they match in one go.', ja: '計算値と配布元が示した期待値を貼り付け、一致するか一度に確認します。', zh: '粘贴计算值与来源给出的期望值，一次性确认是否一致。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '체크섬으로 변조를 막을 수 있나요?', en: 'Can a checksum protect against tampering?', ja: 'チェックサムで改ざんを防げますか？', zh: '校验和能防止篡改吗？' },
+        a: {
+          ko: 'CRC32·Adler-32는 우연한 손상을 잡는 오류 검출용입니다. 악의적 변조 방지가 목적이라면 SHA-256 같은 암호학적 해시를 쓰세요.',
+          en: 'CRC32 and Adler-32 are error-detection checks for accidental corruption. To guard against malicious tampering, use a cryptographic hash like SHA-256.', ja: 'CRC32・Adler-32は偶発的な破損を検出する誤り検出用です。悪意ある改ざん防止が目的ならSHA-256などの暗号学的ハッシュを使ってください。', zh: 'CRC32、Adler-32 用于检测意外损坏的错误检测。若要防范恶意篡改，请使用 SHA-256 等加密哈希。',
+        },
+      },
+      {
+        q: { ko: '값이 다르면 무엇을 해야 하나요?', en: 'What should I do if the values differ?', ja: '値が違ったらどうすればよいですか？', zh: '如果值不一致该怎么办？' },
+        a: {
+          ko: '한 글자라도 다르면 파일이 손상됐거나 다른 파일입니다. 다시 내려받아 재계산하고, 계속 다르면 배포처의 값을 확인하세요.',
+          en: 'Even a single different character means the file is corrupted or different. Re-download and recompute; if it still differs, double-check the source’s value.', ja: '1文字でも違えばファイルが破損しているか別物です。再ダウンロードして計算し直し、それでも違えば配布元の値を確認してください。', zh: '哪怕只有一个字符不同，也说明文件已损坏或是另一个文件。请重新下载并重算；若仍不一致，请再核对来源的值。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['파일 체크섬 확인', 'crc32 계산', 'adler32', '무결성 검증'],
+      en: ['verify file checksum', 'crc32 calculator', 'adler32', 'integrity check'], ja: ['ファイル チェックサム 確認', 'crc32 計算', 'adler32', '整合性 検証'], zh: ['文件 校验和 验证', 'crc32 计算', 'adler32', '完整性 校验'],
+    },
+  },
+  {
+    slug: 'create-a-strong-passphrase',
+    category: 'security',
+    title: { ko: '강력한 패스프레이즈 만들기', en: 'Create a Strong Passphrase', ja: '強力なパスフレーズを作る', zh: '创建强口令短语' },
+    h1: { ko: '강력한 패스프레이즈 만들기', en: 'Create a strong passphrase', ja: '強力なパスフレーズを作成', zh: '创建强口令短语' },
+    description: {
+      ko: '외우기 쉬운 단어 조합 패스프레이즈를 생성하고 강도를 확인하세요. 임의 문자 비밀번호가 필요하면 함께 만들 수 있습니다. 전부 브라우저에서만.',
+      en: 'Generate a memorable word-based passphrase and check its strength. Need a random-character password instead? Make one alongside. All in your browser only.', ja: '覚えやすい単語の組み合わせのパスフレーズを生成し、強度を確認。ランダム文字のパスワードが必要なら併せて作成できます。すべてブラウザ内のみで。', zh: '生成易记的单词组合口令短语并检查强度。若需随机字符密码，也可一并生成。全部仅在浏览器中完成。',
+    },
+    intro: {
+      ko: '여러 단어를 이어 붙인 패스프레이즈는 충분히 길면 외우기 쉬우면서도 추측하기 어렵습니다. 단어 조합으로 패스프레이즈를 만들고 강도(엔트로피)를 확인한 뒤, 임의 문자 비밀번호가 필요한 곳에는 별도로 생성할 수 있습니다. 생성에는 암호학적 난수가 쓰이고 모든 과정이 브라우저에서만 일어나 어디로도 전송되지 않습니다. 같은 패스프레이즈를 여러 곳에 재사용하지 마세요.',
+      en: 'A passphrase made of several joined words is easy to remember yet hard to guess when it’s long enough. Build one from word combinations, check its strength (entropy), and where a random-character password is required, generate that separately. Generation uses cryptographic randomness and happens only in your browser, so nothing is transmitted anywhere. Never reuse the same passphrase across sites.', ja: '複数の単語をつないだパスフレーズは、十分に長ければ覚えやすく推測されにくいです。単語の組み合わせでパスフレーズを作り、強度(エントロピー)を確認し、ランダム文字のパスワードが必要な場所には別途生成できます。生成には暗号学的乱数が使われ、すべてブラウザ内のみで行われるためどこにも送信されません。同じパスフレーズを複数のサイトで使い回さないでください。', zh: '由多个单词拼接的口令短语只要足够长，就既易记又难以猜测。用单词组合生成口令短语，检查其强度(熵)，需要随机字符密码的地方再单独生成。生成使用加密随机数，且全过程仅在浏览器中进行，不会发送到任何地方。请勿在多个网站重复使用同一口令短语。',
+    },
+    steps: [
+      {
+        href: '/tools/security/passphrase-gen',
+        name: { ko: '단어 조합 패스프레이즈 생성', en: 'Generate a word-based passphrase', ja: '単語の組み合わせパスフレーズを生成', zh: '生成单词组合口令短语' },
+        text: {
+          ko: '단어 수를 정해 외우기 쉬운 패스프레이즈를 암호학적 난수로 생성합니다.',
+          en: 'Choose a word count to generate a memorable passphrase using cryptographic randomness.', ja: '単語数を決め、覚えやすいパスフレーズを暗号学的乱数で生成します。', zh: '设定单词数量，用加密随机数生成易记的口令短语。',
+        },
+      },
+      {
+        href: '/tools/security/password-strength',
+        name: { ko: '강도 확인', en: 'Check the strength', ja: '強度を確認', zh: '检查强度' },
+        text: {
+          ko: '만든 패스프레이즈의 엔트로피와 예상 강도를 확인해 충분히 안전한지 봅니다.',
+          en: 'Check the entropy and estimated strength of your passphrase to see if it’s strong enough.', ja: '作ったパスフレーズのエントロピーと推定強度を確認し、十分安全か見ます。', zh: '检查所生成口令短语的熵和预估强度，看是否足够安全。',
+        },
+      },
+      {
+        href: '/tools/dev/password',
+        name: { ko: '임의 문자 비밀번호(필요 시)', en: 'Random-character password (if needed)', ja: 'ランダム文字パスワード(必要時)', zh: '随机字符密码(如需)' },
+        text: {
+          ko: '문자·숫자·기호 비밀번호를 요구하는 곳에는 임의 문자 비밀번호를 별도로 만듭니다.',
+          en: 'Where a site requires letters/digits/symbols, generate a random-character password separately.', ja: '文字・数字・記号を要求する場所には、ランダム文字パスワードを別途作成します。', zh: '对要求字母／数字／符号的网站，另行生成随机字符密码。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '패스프레이즈가 임의 비밀번호보다 안전한가요?', en: 'Is a passphrase safer than a random password?', ja: 'パスフレーズはランダムパスワードより安全ですか？', zh: '口令短语比随机密码更安全吗？' },
+        a: {
+          ko: '충분히 많은 단어(예: 5~6개)를 쓰면 엔트로피가 높아 안전하면서도 외우기 쉽습니다. 단어 수가 적으면 오히려 약하니 강도 확인으로 보완하세요.',
+          en: 'With enough words (say 5–6), the entropy is high — strong yet memorable. Too few words is weak, so confirm with the strength check.', ja: '十分な数の単語(例: 5〜6個)を使えばエントロピーが高く、安全かつ覚えやすいです。単語数が少ないと弱いため、強度確認で補ってください。', zh: '用足够多的单词(如 5–6 个)时熵较高，既安全又易记。单词太少则较弱，请用强度检查加以确认。',
+        },
+      },
+      {
+        q: { ko: '생성된 값이 서버로 전송되나요?', en: 'Is the generated value sent to a server?', ja: '生成された値はサーバーに送信されますか？', zh: '生成的值会发送到服务器吗？' },
+        a: {
+          ko: '아니요. 모든 생성과 검사가 브라우저 안에서 끝나며 어떤 값도 전송·저장되지 않습니다. 같은 값을 여러 사이트에 재사용하지 마세요.',
+          en: 'No. All generation and checking happen in your browser; no value is transmitted or stored. Don’t reuse the same value across sites.', ja: 'いいえ。生成と検査はすべてブラウザ内で完結し、いかなる値も送信・保存されません。同じ値を複数サイトで使い回さないでください。', zh: '不会。所有生成与检查都在浏览器中完成，任何值都不会被发送或存储。请勿在多个网站重复使用同一值。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['패스프레이즈 생성', '강한 비밀번호', '단어 비밀번호', '비밀번호 강도'],
+      en: ['passphrase generator', 'strong password', 'diceware passphrase', 'password strength'], ja: ['パスフレーズ 生成', '強い パスワード', '単語 パスワード', 'パスワード 強度'], zh: ['口令短语 生成', '强密码', '单词 密码', '密码 强度'],
+    },
+  },
+  {
+    slug: 'convert-config-data-formats',
+    category: 'docs',
+    title: { ko: '설정·데이터 포맷 변환하기', en: 'Convert Config & Data Formats', ja: '設定・データ形式を変換', zh: '转换配置与数据格式' },
+    h1: { ko: '설정·데이터 포맷 변환', en: 'Convert config & data formats', ja: '設定・データ形式を変換', zh: '转换配置与数据格式' },
+    description: {
+      ko: 'CSV를 YAML로, JSON을 TOML로, JSON을 .env로 변환하세요. 도구별 설정 파일을 서로 옮길 때 업로드 없이 브라우저에서 처리합니다.',
+      en: 'Convert CSV to YAML, JSON to TOML and JSON to .env. Move config between tooling formats right in your browser, with no upload.', ja: 'CSVをYAMLに、JSONをTOMLに、JSONを.envに変換。ツールごとの設定ファイルを相互に移す際、アップロードなしでブラウザで処理します。', zh: '把 CSV 转 YAML、JSON 转 TOML、JSON 转 .env。在工具间迁移配置时，无需上传，直接在浏览器中处理。',
+    },
+    intro: {
+      ko: '도구마다 선호하는 설정 포맷이 달라서 같은 데이터를 형식만 바꿔 옮길 일이 잦습니다. 표 형태 데이터는 CSV에서 YAML로, 구조화된 설정은 JSON에서 TOML로, 환경 변수는 JSON에서 .env로 변환할 수 있습니다. 변환은 모두 브라우저에서 처리돼 파일이 서버로 전송되지 않습니다.',
+      en: 'Different tools prefer different config formats, so you often need to move the same data by changing only its shape. Convert tabular data from CSV to YAML, structured config from JSON to TOML, and environment variables from JSON to .env. Every conversion runs in your browser, so files are never sent to a server.', ja: 'ツールごとに好む設定形式が異なるため、同じデータを形式だけ変えて移すことがよくあります。表形式データはCSVからYAMLへ、構造化された設定はJSONからTOMLへ、環境変数はJSONから.envへ変換できます。変換はすべてブラウザ内で行われ、ファイルがサーバーに送られることはありません。', zh: '不同工具偏好不同的配置格式，因此常需仅改变形态来迁移同一数据。可把表格数据从 CSV 转 YAML，把结构化配置从 JSON 转 TOML，把环境变量从 JSON 转 .env。所有转换都在浏览器中完成，文件不会发送到服务器。',
+    },
+    steps: [
+      {
+        href: '/tools/docs/csv-to-yaml',
+        name: { ko: 'CSV → YAML', en: 'CSV → YAML', ja: 'CSV → YAML', zh: 'CSV → YAML' },
+        text: {
+          ko: '표 형태 CSV를 읽어 타입을 추론하고 YAML 구조로 변환합니다.',
+          en: 'Read tabular CSV, infer types and convert it into a YAML structure.', ja: '表形式のCSVを読み込み、型を推論してYAML構造に変換します。', zh: '读取表格 CSV，推断类型并转换为 YAML 结构。',
+        },
+      },
+      {
+        href: '/tools/docs/json-to-toml',
+        name: { ko: 'JSON → TOML', en: 'JSON → TOML', ja: 'JSON → TOML', zh: 'JSON → TOML' },
+        text: {
+          ko: '중첩 객체와 배열을 TOML의 테이블·배열-오브-테이블 형식으로 옮깁니다.',
+          en: 'Move nested objects and arrays into TOML tables and arrays-of-tables.', ja: 'ネストしたオブジェクトと配列をTOMLのテーブル・配列オブテーブル形式に移します。', zh: '把嵌套对象和数组转为 TOML 的表与表数组形式。',
+        },
+      },
+      {
+        href: '/tools/dev/json-to-env',
+        name: { ko: 'JSON → .env', en: 'JSON → .env', ja: 'JSON → .env', zh: 'JSON → .env' },
+        text: {
+          ko: '중첩 JSON을 평탄화해 KEY=value 형태의 .env 파일로 만듭니다.',
+          en: 'Flatten nested JSON into a KEY=value .env file.', ja: 'ネストしたJSONを平坦化し、KEY=value形式の.envファイルにします。', zh: '把嵌套 JSON 平铺为 KEY=value 形式的 .env 文件。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '중첩 구조는 어떻게 평탄화되나요?', en: 'How is nested structure flattened?', ja: 'ネスト構造はどう平坦化されますか？', zh: '嵌套结构如何被平铺？' },
+        a: {
+          ko: '.env는 평면 키-값만 담으므로 중첩 객체는 보통 점·밑줄로 키를 이어 붙여 평탄화됩니다. 변환 후 키 이름이 의도와 맞는지 확인하세요.',
+          en: 'Since .env holds only flat key-value pairs, nested objects are flattened by joining keys with dots or underscores. After converting, verify the key names match your intent.', ja: '.envは平坦なキー値のみを持つため、ネストしたオブジェクトは通常ドットやアンダースコアでキーをつないで平坦化されます。変換後、キー名が意図どおりか確認してください。', zh: '由于 .env 只存放平铺的键值对，嵌套对象通常通过点或下划线连接键名进行平铺。转换后请确认键名是否符合预期。',
+        },
+      },
+      {
+        q: { ko: '데이터 타입은 보존되나요?', en: 'Are data types preserved?', ja: 'データ型は保持されますか？', zh: '数据类型会被保留吗？' },
+        a: {
+          ko: 'CSV는 모든 값이 문자열이라 변환 시 숫자·불리언을 추론합니다. .env는 본질적으로 문자열이므로 받는 쪽에서 형변환이 필요할 수 있습니다.',
+          en: 'CSV stores everything as text, so conversion infers numbers and booleans; .env is inherently string-based, so the consumer may need to cast values.', ja: 'CSVはすべての値が文字列のため、変換時に数値や真偽値を推論します。.envは本質的に文字列なので、受け取る側で型変換が必要な場合があります。', zh: 'CSV 中所有值都是文本，转换时会推断数字和布尔值；.env 本质上是字符串，接收方可能需要进行类型转换。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['csv yaml 변환', 'json toml 변환', 'json env 변환', '설정 파일 변환'],
+      en: ['csv to yaml', 'json to toml', 'json to env', 'config format converter'], ja: ['csv yaml 変換', 'json toml 変換', 'json env 変換', '設定ファイル 変換'], zh: ['csv 转 yaml', 'json 转 toml', 'json 转 env', '配置文件 转换'],
+    },
+  },
+  {
+    slug: 'calculate-electronics-values',
+    category: 'util',
+    title: { ko: '전자 회로 값 계산하기', en: 'Calculate Electronics Values', ja: '電子回路の値を計算', zh: '计算电子电路数值' },
+    h1: { ko: '전자 회로 값 계산', en: 'Calculate electronics values', ja: '電子回路の値を計算', zh: '计算电子电路数值' },
+    description: {
+      ko: '옴의 법칙으로 전압·전류·저항·전력을 구하고, 저항 색 띠를 읽고, 단위 접두어를 변환하세요. 취미 전자공작·학습용 보조 계산입니다.',
+      en: 'Solve for voltage, current, resistance and power with Ohm’s law, decode resistor color bands, and convert unit prefixes. A helper for hobby electronics and learning.', ja: 'オームの法則で電圧・電流・抵抗・電力を求め、抵抗のカラーバンドを読み取り、単位接頭語を変換。趣味の電子工作・学習用の補助計算です。', zh: '用欧姆定律求电压、电流、电阻、功率，识读电阻色环，转换单位前缀。供电子爱好者和学习参考的辅助计算。',
+    },
+    intro: {
+      ko: '간단한 회로를 다룰 때는 옴의 법칙으로 두 값에서 나머지를 구하고, 저항의 색 띠를 읽어 값을 확인하며, kΩ↔Ω 같은 단위 접두어를 맞추는 일이 반복됩니다. 이 세 가지를 한 흐름으로 처리할 수 있습니다. 모든 계산은 브라우저에서 이뤄지는 학습·취미용 보조 도구이며, 실제 설계·안전이 중요한 작업에는 정식 사양과 검토가 필요합니다.',
+      en: 'Working with simple circuits, you repeatedly use Ohm’s law to derive the rest from two values, read resistor color bands to confirm a value, and reconcile unit prefixes like kΩ↔Ω. You can do all three in one flow. These are browser-based helpers for learning and hobby use; real design and safety-critical work need proper specifications and review.', ja: '簡単な回路を扱うときは、オームの法則で2つの値から残りを求め、抵抗のカラーバンドを読んで値を確認し、kΩ↔Ωのような単位接頭語を合わせる作業を繰り返します。この3つを1つの流れで処理できます。すべてブラウザ内で行う学習・趣味用の補助ツールであり、実際の設計や安全が重要な作業には正式な仕様と検討が必要です。', zh: '处理简单电路时，常反复用欧姆定律由两个值求其余、读电阻色环确认数值、统一 kΩ↔Ω 等单位前缀。这三件事可在一个流程中完成。它们是在浏览器中运行、供学习与爱好使用的辅助工具；实际设计与涉及安全的工作仍需正式规格与审核。',
+    },
+    steps: [
+      {
+        href: '/tools/util/ohms-law-calc',
+        name: { ko: '옴의 법칙 계산', en: 'Ohm’s law', ja: 'オームの法則', zh: '欧姆定律' },
+        text: {
+          ko: '전압·전류·저항·전력 중 두 값을 입력하면 나머지를 계산합니다.',
+          en: 'Enter any two of voltage, current, resistance and power to get the rest.', ja: '電圧・電流・抵抗・電力のうち2つを入力すると残りを計算します。', zh: '输入电压、电流、电阻、功率中的任意两个，计算其余值。',
+        },
+      },
+      {
+        href: '/tools/util/resistor-color-code',
+        name: { ko: '저항 색 띠 읽기', en: 'Read resistor color bands', ja: '抵抗のカラーバンドを読む', zh: '识读电阻色环' },
+        text: {
+          ko: '4·5밴드 색 띠를 골라 저항값과 허용 오차를 확인합니다.',
+          en: 'Pick 4- or 5-band colors to get the resistance value and tolerance.', ja: '4・5バンドの色を選び、抵抗値と許容差を確認します。', zh: '选择 4 或 5 色环，得到电阻值和容差。',
+        },
+      },
+      {
+        href: '/tools/util/unit',
+        name: { ko: '단위 접두어 변환', en: 'Convert unit prefixes', ja: '単位接頭語を変換', zh: '换算单位前缀' },
+        text: {
+          ko: '계산 결과의 단위(예: mA·kΩ)를 다른 접두어로 맞춰 비교합니다.',
+          en: 'Convert the result’s units (e.g. mA, kΩ) to other prefixes for comparison.', ja: '計算結果の単位(例: mA・kΩ)を別の接頭語に合わせて比較します。', zh: '把结果的单位(如 mA、kΩ)换算为其他前缀以便比较。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '이 값으로 실제 회로를 만들어도 되나요?', en: 'Can I build a real circuit from these values?', ja: 'この値で実際の回路を作ってよいですか？', zh: '能用这些数值搭建实际电路吗？' },
+        a: {
+          ko: '학습·취미 수준의 참고용입니다. 부품 정격, 발열, 안전 마진은 데이터시트와 실제 측정으로 확인해야 합니다.',
+          en: 'They’re for learning and hobby reference. Component ratings, heat and safety margins must be confirmed against datasheets and real measurements.', ja: '学習・趣味レベルの参考用です。部品の定格、発熱、安全マージンはデータシートと実測で確認する必要があります。', zh: '仅供学习与爱好参考。元件额定值、发热和安全裕度须以数据手册和实测确认。',
+        },
+      },
+      {
+        q: { ko: '저항 색 띠 방향을 어떻게 정하나요?', en: 'How do I orient the resistor bands?', ja: '抵抗のカラーバンドの向きはどう決めますか？', zh: '电阻色环的方向怎么确定？' },
+        a: {
+          ko: '허용 오차 띠(흔히 금색·은색)가 한쪽 끝에 떨어져 있는 쪽이 마지막입니다. 그 반대편부터 순서대로 색을 입력하세요.',
+          en: 'The tolerance band (often gold or silver) sits slightly apart at one end and comes last. Enter colors starting from the opposite end.', ja: '許容差バンド(多くは金・銀)が片端に少し離れている側が最後です。その反対側から順に色を入力してください。', zh: '容差环(常为金色或银色)略微分开地位于一端，是最后一位。请从相反一端按顺序输入颜色。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['옴의 법칙 계산기', '저항 색 띠', '전력 계산', '단위 접두어 변환'],
+      en: ['ohms law calculator', 'resistor color code', 'power calculation', 'unit prefix converter'], ja: ['オームの法則 計算', '抵抗 カラーコード', '電力 計算', '単位接頭語 変換'], zh: ['欧姆定律 计算器', '电阻 色环', '功率 计算', '单位前缀 换算'],
+    },
+  },
+  {
+    slug: 'estimate-file-transfer-time',
+    category: 'util',
+    title: { ko: '파일 전송 시간 어림하기', en: 'Estimate File Transfer Time', ja: 'ファイル転送時間を見積もる', zh: '估算文件传输时间' },
+    h1: { ko: '파일 전송 시간 어림', en: 'Estimate file transfer time', ja: 'ファイル転送時間を見積もる', zh: '估算文件传输时间' },
+    description: {
+      ko: '파일 크기와 회선 속도로 다운로드·업로드 예상 시간을 어림하세요. GB·Gbps 같은 단위도 함께 변환합니다. 이상적 조건 기준의 추정치입니다.',
+      en: 'Estimate download/upload time from file size and link speed, and convert units like GB and Gbps along the way. These are ideal-condition estimates.', ja: 'ファイルサイズと回線速度からダウンロード・アップロードの予想時間を見積もり、GB・Gbpsなどの単位も併せて変換。理想条件を前提とした推定値です。', zh: '根据文件大小和链路速度估算下载／上传时间，并顺带换算 GB、Gbps 等单位。这是理想条件下的估算。',
+    },
+    intro: {
+      ko: '큰 파일을 옮기기 전에 대략 얼마나 걸릴지 알면 일정을 잡기 좋습니다. 파일 크기와 회선 속도를 넣어 예상 전송 시간을 어림하고, 바이트와 비트(예: GB↔Gb)나 SI/IEC 단위가 헷갈리면 함께 변환하면 됩니다. 결과는 오버헤드·혼잡·속도 변동을 뺀 이상적 조건의 추정치라 실제는 더 오래 걸릴 수 있습니다.',
+      en: 'Knowing roughly how long a big transfer will take helps you plan. Estimate the time from file size and link speed, and if bytes-vs-bits (e.g. GB↔Gb) or SI/IEC units get confusing, convert them too. Results are ideal-condition estimates that exclude overhead, congestion and speed fluctuations, so real transfers can take longer.', ja: '大きなファイルを移す前におおよその所要時間が分かると予定を立てやすいです。ファイルサイズと回線速度を入れて予想転送時間を見積もり、バイトとビット(例: GB↔Gb)やSI/IEC単位が紛らわしければ併せて変換します。結果はオーバーヘッド・輻輳・速度変動を除いた理想条件の推定値のため、実際はより時間がかかることがあります。', zh: '迁移大文件前知道大致耗时有助于安排计划。根据文件大小和链路速度估算预计传输时间，若字节与比特(如 GB↔Gb)或 SI/IEC 单位易混淆，也可一并换算。结果是排除开销、拥塞和速度波动后的理想条件估算，实际传输可能更久。',
+    },
+    steps: [
+      {
+        href: '/tools/util/download-time-calc',
+        name: { ko: '전송 시간 어림', en: 'Estimate the transfer time', ja: '転送時間を見積もる', zh: '估算传输时间' },
+        text: {
+          ko: '파일 크기와 회선 속도를 입력해 예상 다운로드·업로드 시간을 계산합니다.',
+          en: 'Enter file size and link speed to estimate download/upload time.', ja: 'ファイルサイズと回線速度を入力し、予想ダウンロード・アップロード時間を計算します。', zh: '输入文件大小和链路速度，估算下载／上传时间。',
+        },
+      },
+      {
+        href: '/tools/util/data-size-converter',
+        name: { ko: '데이터 크기 단위 변환', en: 'Convert data-size units', ja: 'データサイズ単位を変換', zh: '换算数据大小单位' },
+        text: {
+          ko: 'KB·MB·GB와 KiB·MiB·GiB(SI/IEC)를 헷갈리지 않게 변환합니다.',
+          en: 'Convert KB/MB/GB and KiB/MiB/GiB (SI/IEC) without mixing them up.', ja: 'KB・MB・GBとKiB・MiB・GiB(SI/IEC)を混同せず変換します。', zh: '换算 KB／MB／GB 与 KiB／MiB／GiB(SI/IEC)，避免混淆。',
+        },
+      },
+      {
+        href: '/tools/util/unit',
+        name: { ko: '비트·바이트 단위 맞추기', en: 'Reconcile bit/byte units', ja: 'ビット・バイト単位を合わせる', zh: '统一比特／字节单位' },
+        text: {
+          ko: '회선 속도(Gbps, 비트)와 파일 크기(GB, 바이트)의 단위를 맞춰 비교합니다.',
+          en: 'Reconcile link speed (Gbps, bits) with file size (GB, bytes) for an apples-to-apples comparison.', ja: '回線速度(Gbps、ビット)とファイルサイズ(GB、バイト)の単位を合わせて比較します。', zh: '统一链路速度(Gbps，比特)与文件大小(GB，字节)的单位以便比较。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '왜 실제보다 빠르게 나오나요?', en: 'Why does it look faster than reality?', ja: 'なぜ実際より速く出るのですか？', zh: '为什么算出来比实际快？' },
+        a: {
+          ko: '이 추정은 회선이 100% 효율로 끊김 없이 동작한다고 가정합니다. 프로토콜 오버헤드, 네트워크 혼잡, 디스크 속도, 속도 변동 때문에 실제는 보통 더 오래 걸립니다.',
+          en: 'The estimate assumes the link runs at 100% efficiency without interruption. Protocol overhead, congestion, disk speed and fluctuations mean real transfers usually take longer.', ja: 'この推定は回線が100%の効率で中断なく動作すると仮定します。プロトコルのオーバーヘッド、輻輳、ディスク速度、速度変動により、実際は通常より時間がかかります。', zh: '该估算假设链路以 100% 效率不间断运行。协议开销、网络拥塞、磁盘速度和速度波动会使实际传输通常更久。',
+        },
+      },
+      {
+        q: { ko: 'Mbps와 MB/s는 같은 건가요?', en: 'Are Mbps and MB/s the same?', ja: 'MbpsとMB/sは同じですか？', zh: 'Mbps 和 MB/s 是一回事吗？' },
+        a: {
+          ko: '아니요. Mbps는 초당 메가비트, MB/s는 초당 메가바이트로 8배 차이가 납니다. 회선 속도는 보통 비트, 파일 크기는 바이트로 표기되니 단위 변환으로 맞추세요.',
+          en: 'No. Mbps is megabits per second and MB/s is megabytes per second — a factor of 8. Link speeds are usually in bits and file sizes in bytes, so convert to align them.', ja: 'いいえ。Mbpsは1秒あたりメガビット、MB/sは1秒あたりメガバイトで8倍違います。回線速度は通常ビット、ファイルサイズはバイト表記なので、単位変換で合わせてください。', zh: '不是。Mbps 是每秒兆比特，MB/s 是每秒兆字节，相差 8 倍。链路速度通常以比特、文件大小以字节表示，请换算后对齐。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['전송 시간 계산', '다운로드 시간', '데이터 단위 변환', 'mbps mb/s 차이'],
+      en: ['transfer time calculator', 'download time', 'data size converter', 'mbps vs mb/s'], ja: ['転送時間 計算', 'ダウンロード時間', 'データ単位 変換', 'mbps mb/s 違い'], zh: ['传输时间 计算', '下载时间', '数据单位 换算', 'mbps mb/s 区别'],
+    },
+  },
+  {
+    slug: 'clean-and-analyze-text-lines',
+    category: 'text',
+    title: { ko: '텍스트 줄 정리·분석하기', en: 'Clean and Analyze Text Lines', ja: 'テキスト行を整理・分析', zh: '清理并分析文本行' },
+    h1: { ko: '텍스트 줄 정리·분석', en: 'Clean and analyze text lines', ja: 'テキスト行を整理・分析', zh: '清理并分析文本行' },
+    description: {
+      ko: '여러 줄 텍스트에서 중복 줄을 찾고, 줄 단위 통계를 보고, 숫자를 뽑아 합계까지 내세요. 로그·목록을 다듬을 때 업로드 없이 처리합니다.',
+      en: 'Find duplicate lines in multi-line text, get per-line statistics, and extract numbers with a total. Clean up logs and lists without any upload.', ja: '複数行テキストから重複行を見つけ、行単位の統計を見て、数値を抽出し合計まで算出。ログやリストを整える際、アップロードなしで処理します。', zh: '在多行文本中查找重复行、查看逐行统计、提取数字并求和。整理日志和列表时无需上传即可处理。',
+    },
+    intro: {
+      ko: '로그나 붙여넣은 목록을 다룰 때는 중복 줄을 찾아내고, 줄 길이·개수 같은 통계를 보고, 섞여 있는 숫자만 뽑아 합산하는 작업이 자주 필요합니다. 세 도구를 이어 쓰면 줄 단위 텍스트를 빠르게 정리하고 들여다볼 수 있습니다. 모든 처리가 브라우저에서 끝나 텍스트가 전송되지 않습니다.',
+      en: 'When working with logs or pasted lists, you often need to find duplicate lines, see statistics like line lengths and counts, and pull out just the numbers to total them. Chaining these three tools lets you quickly clean and inspect line-based text. Everything happens in your browser, so the text is never transmitted.', ja: 'ログや貼り付けたリストを扱うときは、重複行を見つけ、行の長さや件数などの統計を見て、混在する数値だけを抽出して合計する作業がよく必要になります。3つのツールをつなげれば、行単位のテキストを素早く整理して把握できます。すべてブラウザ内で完結し、テキストが送信されることはありません。', zh: '处理日志或粘贴的列表时，常需查找重复行、查看行长和行数等统计、并仅提取数字求和。把这三个工具串联，即可快速清理并审视按行排列的文本。所有处理都在浏览器中完成，文本不会被传输。',
+    },
+    steps: [
+      {
+        href: '/tools/text/duplicate-lines',
+        name: { ko: '중복 줄 찾기', en: 'Find duplicate lines', ja: '重複行を見つける', zh: '查找重复行' },
+        text: {
+          ko: '여러 번 나타나는 줄만 빈도와 함께 추려 중복을 확인합니다.',
+          en: 'Surface only the lines that appear more than once, with their counts.', ja: '複数回現れる行だけを頻度とともに抽出し、重複を確認します。', zh: '仅筛出出现多次的行及其频次，确认重复。',
+        },
+      },
+      {
+        href: '/tools/text/text-stats-table',
+        name: { ko: '줄 단위 통계 보기', en: 'View per-line statistics', ja: '行単位の統計を見る', zh: '查看逐行统计' },
+        text: {
+          ko: '줄 수·글자 수·평균 길이 같은 줄 단위 통계를 표로 확인합니다.',
+          en: 'See per-line stats like line count, character count and average length in a table.', ja: '行数・文字数・平均長などの行単位の統計を表で確認します。', zh: '在表格中查看行数、字符数、平均长度等逐行统计。',
+        },
+      },
+      {
+        href: '/tools/text/number-extract',
+        name: { ko: '숫자 추출 + 합계', en: 'Extract numbers + total', ja: '数値を抽出+合計', zh: '提取数字 + 求和' },
+        text: {
+          ko: '텍스트에 섞인 숫자만 뽑아 목록과 합계를 한 번에 얻습니다.',
+          en: 'Pull out just the numbers mixed into the text and get a list plus a total.', ja: 'テキストに混在する数値だけを抽出し、一覧と合計を一度に得ます。', zh: '仅提取文本中夹杂的数字，一次性获得列表与合计。',
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: { ko: '대소문자·공백 차이도 중복으로 보나요?', en: 'Do case and whitespace differences count as duplicates?', ja: '大文字小文字や空白の違いも重複と見なしますか？', zh: '大小写和空格差异也算重复吗？' },
+        a: {
+          ko: '기본은 줄 전체가 정확히 같아야 중복으로 봅니다. 앞뒤 공백이나 대소문자 차이로 안 잡히면 먼저 공백 정리·대소문자 통일 후 비교하세요.',
+          en: 'By default, lines must match exactly to count as duplicates. If trailing spaces or case differences hide matches, normalize whitespace and case first, then compare.', ja: '初期状態では行全体が完全に一致した場合のみ重複と見なします。前後の空白や大文字小文字の違いで検出されない場合は、先に空白整理・大文字小文字統一をしてから比較してください。', zh: '默认整行完全相同才算重复。若因首尾空格或大小写差异未能匹配，请先规整空格、统一大小写再比较。',
+        },
+      },
+      {
+        q: { ko: '소수점·음수도 합산되나요?', en: 'Are decimals and negatives included in the total?', ja: '小数や負の数も合計に含まれますか？', zh: '小数和负数也会计入合计吗？' },
+        a: {
+          ko: '숫자 추출은 소수점과 부호가 붙은 숫자를 인식해 합계에 포함합니다. 천 단위 구분 기호 등 형식이 섞여 있으면 결과 목록에서 인식된 값을 확인하세요.',
+          en: 'Number extraction recognizes decimals and signed numbers and includes them in the total. If formats like thousands separators are mixed in, check the recognized values in the result list.', ja: '数値抽出は小数や符号付きの数値を認識し、合計に含めます。桁区切りなど形式が混在する場合は、結果一覧で認識された値を確認してください。', zh: '数字提取会识别小数和带符号的数字并计入合计。若混有千位分隔符等格式，请在结果列表中确认被识别的值。',
+        },
+      },
+    ],
+    keywords: {
+      ko: ['중복 줄 찾기', '줄 통계', '숫자 추출 합계', '로그 정리'],
+      en: ['find duplicate lines', 'line statistics', 'extract numbers sum', 'clean log lines'], ja: ['重複行 検出', '行 統計', '数値 抽出 合計', 'ログ 整理'], zh: ['查找重复行', '行 统计', '数字 提取 求和', '日志 整理'],
+    },
+  },
 ];
 
 export const USE_CASE_SLUGS: string[] = USE_CASES.map((u) => u.slug);

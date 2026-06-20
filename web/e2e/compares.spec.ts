@@ -39,6 +39,15 @@ const CASES: Array<{ slug: string; prefix: string; a: string; b: string }> = [
   { slug: 'posterize-vs-threshold', prefix: '/zh', a: 'image-posterize', b: 'image-threshold' },
   { slug: 'random-words-vs-lorem', prefix: '/en', a: 'random-words', b: 'lorem-ipsum' },
   { slug: 'business-days-vs-date-diff', prefix: '/ja', a: 'business-days', b: 'date-diff' },
+  // 팩7 비교 8종 (로케일 프리픽스 → 도구 링크 suffix = registry id)
+  { slug: 'crc32-vs-adler32', prefix: '/en', a: 'crc32-hash', b: 'adler32-hash' },
+  { slug: 'passphrase-vs-password', prefix: '/ja', a: 'passphrase-gen', b: 'password-gen' },
+  { slug: 'jsdoc-vs-typescript-types', prefix: '/zh', a: 'json-to-jsdoc', b: 'json-to-ts' },
+  { slug: 'css-keyframes-vs-cubic-bezier', prefix: '/en', a: 'css-keyframes', b: 'cubic-bezier' },
+  { slug: 'color-shades-vs-tailwind-shades', prefix: '/ja', a: 'color-shades', b: 'tailwind-shades' },
+  { slug: 'cron-next-runs-vs-cron-explainer', prefix: '/zh', a: 'cron-next-runs', b: 'cron-explainer' },
+  { slug: 'csv-to-yaml-vs-csv-to-json', prefix: '/en', a: 'csv-to-yaml', b: 'csv-json' },
+  { slug: 'data-size-si-vs-iec', prefix: '/ja', a: 'data-size-converter', b: 'unit-converter' },
 ];
 
 test.describe('비교 — 신규 10종 렌더 + 양쪽 도구 링크', () => {

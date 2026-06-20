@@ -208,6 +208,10 @@ test.describe('맞춤 가이드 — 큐레이션 워크플로 교차링크', () 
     { guide: 'base58', prefix: '', expectLinks: ['base64', 'base-converter', 'url-encoder'] },
     { guide: 'bmr-calculator', prefix: '', expectLinks: ['bmi-calc', 'tdee', 'ideal-weight'] },
     { guide: 'credit-card-type', prefix: '/en', expectLinks: ['cc-validate', 'luhn-generator', 'ean-validate'] },
+    // 팩7 클러스터
+    { guide: 'crc32-hash', prefix: '', expectLinks: ['adler32-hash', 'text-hash', 'checksum-verify'] },
+    { guide: 'ohms-law-calc', prefix: '', expectLinks: ['resistor-color-code', 'unit-converter', 'scientific-calc'] },
+    { guide: 'color-shades', prefix: '/en', expectLinks: ['tailwind-shades', 'color-mix', 'color-converter'] },
   ];
 
   for (const { guide, prefix, expectLinks } of CLUSTERS) {

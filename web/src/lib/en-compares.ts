@@ -2283,6 +2283,404 @@ export const COMPARES: Compare[] = [
     ],
     keywords: ['business days vs date difference', 'working days calculator', 'days between dates', 'skip weekends'],
   },
+  {
+    slug: 'crc32-vs-adler32',
+    category: 'security',
+    title: 'CRC32 vs Adler-32 — Which Checksum for Error Detection?',
+    h1: 'CRC32 vs Adler-32',
+    description:
+      'CRC32 catches more errors but is a little slower; Adler-32 is faster but weaker on short data. Both detect accidental corruption — free, in your browser.',
+    intro:
+      'CRC32 and Adler-32 are both 32-bit checksums built to detect accidental data corruption — a flipped bit, a truncated download, a bad transfer. Neither is a cryptographic hash: they spot accidental changes, not deliberate tampering, so do not use either to prove authenticity. CRC32 uses polynomial division and catches a wider range of error patterns; Adler-32 sums bytes in two running totals, which is faster to compute but weaker, especially on very short inputs.',
+    options: [
+      {
+        label: 'CRC32',
+        toolId: 'crc32-hash',
+        best: 'General-purpose integrity checks where stronger detection matters.',
+        pros: [
+          'Catches more error patterns, including many burst errors',
+          'Widely used in ZIP, PNG, Ethernet and gzip',
+          'Reliable even on short inputs',
+        ],
+        cons: [
+          'Slightly slower to compute than Adler-32',
+          'Not cryptographic — detects accidents, not tampering',
+        ],
+      },
+      {
+        label: 'Adler-32',
+        toolId: 'adler32-hash',
+        best: 'Speed-sensitive checks over larger blocks of data.',
+        pros: [
+          'Faster to compute than CRC32',
+          'Simple running-sum design, used in zlib',
+          'Fine for verifying longer data streams',
+        ],
+        cons: [
+          'Weak on very short messages — poor mixing of the leading sum',
+          'Misses more error patterns than CRC32; not cryptographic',
+        ],
+      },
+    ],
+    verdict:
+      'For a dependable integrity check — especially on short data — reach for CRC32; it is the default in formats like ZIP and PNG for good reason. Choose Adler-32 only when you are checksumming larger blocks and raw speed matters more than catching every error pattern. Either way, these detect accidental corruption, not malicious changes: if you need authenticity, use a cryptographic hash. Both run entirely in your browser.',
+    faqs: [
+      {
+        q: 'Is CRC32 or Adler-32 more secure?',
+        a: 'Neither is secure in the cryptographic sense. Both only detect accidental corruption. For tamper resistance you need a cryptographic hash such as SHA-256, not a checksum.',
+      },
+      {
+        q: 'Why is Adler-32 weak on short inputs?',
+        a: 'Adler-32 keeps two running sums; with only a few bytes the second sum barely mixes, so different short inputs can collide more easily. CRC32 stays reliable even on short data.',
+      },
+    ],
+    keywords: ['crc32 vs adler32', 'checksum comparison', 'error detection checksum', 'crc32 or adler-32'],
+  },
+  {
+    slug: 'passphrase-vs-password',
+    category: 'security',
+    title: 'Passphrase vs Password — Which Should You Generate?',
+    h1: 'Passphrase vs Password',
+    description:
+      'A passphrase strings several random words for easy recall; a password is a short, dense block of random characters. Which to pick — free, in your browser.',
+    intro:
+      'A passphrase joins several randomly chosen words (correct-horse-battery-staple) so it is easier to remember and type, while a password packs randomness into a short block of mixed characters. Both can be strong when generated randomly — strength comes from real entropy, not from swapping an "a" for an "@". Whichever you use, never reuse it across sites. Both are generated locally in your browser and never transmitted.',
+    options: [
+      {
+        label: 'Passphrase',
+        toolId: 'passphrase-gen',
+        best: 'Secrets you must memorize and type — your device login or password manager master.',
+        pros: [
+          'Far easier to remember and type than random characters',
+          'Strong when it uses enough randomly chosen words',
+          'Fewer mistakes on mobile keyboards',
+        ],
+        cons: [
+          'Longer to type and may exceed short length limits',
+          'Some sites reject spaces or very long inputs',
+        ],
+      },
+      {
+        label: 'Password',
+        toolId: 'password-gen',
+        best: 'Per-site logins stored in a password manager where you never type them by hand.',
+        pros: [
+          'Dense randomness in a compact length',
+          'Fits strict length and character-class rules',
+          'Ideal when a manager autofills it for you',
+        ],
+        cons: [
+          'Hard to memorize or type accurately',
+          'Easy to fat-finger on a phone keyboard',
+        ],
+      },
+    ],
+    verdict:
+      'Pick a passphrase for the handful of secrets you actually have to remember and type, like your computer login or your password manager’s master secret. Use a random character password for everything else, where a manager stores and fills it for you. Make each one long, generate it randomly, and never reuse the same secret on two sites. Both are created in your browser and stay there.',
+    faqs: [
+      {
+        q: 'Is a passphrase more secure than a password?',
+        a: 'Not automatically — security depends on randomness and length, not the style. A long, randomly generated passphrase and a long random password can be equally strong; a short one of either is weak.',
+      },
+      {
+        q: 'Can I reuse a strong passphrase on several sites?',
+        a: 'No. Reuse is the real risk: if one site is breached, every account sharing that secret is exposed. Generate a unique secret per site and store them in a password manager.',
+      },
+    ],
+    keywords: ['passphrase vs password', 'random passphrase generator', 'strong password', 'word-based password'],
+  },
+  {
+    slug: 'jsdoc-vs-typescript-types',
+    category: 'dev',
+    title: 'JSON to JSDoc vs JSON to TypeScript — Which Type Output?',
+    h1: 'JSON to JSDoc vs JSON to TypeScript',
+    description:
+      'Generate JSDoc @typedef comments that type plain JavaScript with no build step, or TypeScript interfaces — both from your JSON, free in your browser.',
+    intro:
+      'Both tools infer a shape from sample JSON, but they emit different targets. JSON to JSDoc produces @typedef comments you drop into plain JavaScript — editors read them for autocomplete and type checks without any compiler or build step. JSON to TypeScript emits interface declarations for a TypeScript codebase, where the compiler enforces them. Same inference, two ways to consume it: documentation comments versus real .ts types.',
+    options: [
+      {
+        label: 'JSON to JSDoc',
+        toolId: 'json-to-jsdoc',
+        best: 'Typing plain JavaScript without adding TypeScript or a build step.',
+        pros: [
+          'Works in plain .js files — no compiler needed',
+          'Editors use @typedef for autocomplete and hints',
+          'Easy to sprinkle into an existing JS project',
+        ],
+        cons: [
+          'No compile-time enforcement — checks are editor-only',
+          'Verbose comments for deeply nested shapes',
+        ],
+      },
+      {
+        label: 'JSON to TypeScript',
+        toolId: 'json-to-ts',
+        best: 'Adding real interface types to a TypeScript codebase.',
+        pros: [
+          'Produces interfaces the TypeScript compiler enforces',
+          'Cleaner syntax for nested and optional fields',
+          'Integrates with the rest of your .ts types',
+        ],
+        cons: [
+          'Requires a TypeScript setup and build step',
+          'Overkill for a small plain-JavaScript file',
+        ],
+      },
+    ],
+    verdict:
+      'On a plain JavaScript project where you don’t want a build step, generate JSDoc @typedef comments — your editor gets autocomplete and gentle checks for free. If you already use TypeScript, generate interfaces so the compiler enforces the shape across your code. Both start from the same JSON sample, so you can switch outputs as a project adopts TypeScript. Everything runs in your browser.',
+    faqs: [
+      {
+        q: 'Does JSDoc give the same checking as TypeScript?',
+        a: 'It can power editor autocomplete and warnings (and tsc can type-check JS via JSDoc), but a real TypeScript setup enforces types more strictly at build time. JSDoc shines when you want types without adding a compiler.',
+      },
+      {
+        q: 'Can I convert the JSDoc output to TypeScript later?',
+        a: 'Yes. Re-run the same JSON through the TypeScript generator to get interfaces when your project adopts TypeScript — the inferred shape is the same.',
+      },
+    ],
+    keywords: ['jsdoc vs typescript types', 'json to typedef', 'json to interface', 'type javascript without build'],
+  },
+  {
+    slug: 'css-keyframes-vs-cubic-bezier',
+    category: 'dev',
+    title: 'CSS Keyframes vs Cubic-Bezier — Animation or Easing?',
+    h1: 'CSS Keyframes vs Cubic-Bezier',
+    description:
+      'Keyframes define a full multi-step @keyframes animation; cubic-bezier shapes the easing curve of a single transition. Which do you need — free, in your browser.',
+    intro:
+      'These tools sit at two different layers of CSS motion. The keyframes generator builds a complete @keyframes rule — the multi-step sequence of what changes and when across an animation. The cubic-bezier tool builds a single timing function: the easing curve that controls how a value accelerates and decelerates over its duration. Keyframes describe the whole journey; cubic-bezier describes the pacing of one leg of it.',
+    options: [
+      {
+        label: 'CSS Keyframes',
+        toolId: 'css-keyframes',
+        best: 'Multi-step animations — loops, sequences, anything beyond a simple A-to-B.',
+        pros: [
+          'Define many steps with percentage keyframes',
+          'Drives looping and complex animations',
+          'Outputs a ready-to-paste @keyframes rule',
+        ],
+        cons: ['More than you need for a single, simple transition'],
+      },
+      {
+        label: 'Cubic-Bezier',
+        toolId: 'cubic-bezier',
+        best: 'Tuning the easing curve of a transition or animation.',
+        pros: [
+          'Shapes acceleration and deceleration precisely',
+          'Drop-in replacement for ease, ease-in-out and friends',
+          'Works with both transitions and keyframe animations',
+        ],
+        cons: ['Controls pacing only — it can’t define the steps themselves'],
+      },
+    ],
+    verdict:
+      'Use the keyframes generator when the motion has multiple stages or loops — that rule defines what happens at each step. Use cubic-bezier when you’re happy with a simple start-to-end change but want it to feel right, tuning the easing. They’re complementary: build the @keyframes for the sequence, then apply a cubic-bezier timing function to control how it eases. Both run in your browser.',
+    faqs: [
+      {
+        q: 'Do I need keyframes if I only have a hover transition?',
+        a: 'No. A single state change is a CSS transition, where a cubic-bezier easing is usually all you need. Reach for @keyframes when the motion has several steps or repeats.',
+      },
+      {
+        q: 'Can I use a cubic-bezier curve inside a keyframe animation?',
+        a: 'Yes. Set animation-timing-function to your cubic-bezier value so the keyframe animation eases the way you want. The two work together.',
+      },
+    ],
+    keywords: ['css keyframes vs cubic-bezier', 'css animation easing', 'keyframes generator', 'timing function'],
+  },
+  {
+    slug: 'color-shades-vs-tailwind-shades',
+    category: 'dev',
+    title: 'Color Shades vs Tailwind Shades — Free Ramp or Named Scale?',
+    h1: 'Color Shades vs Tailwind Shades',
+    description:
+      'Color Shades builds an arbitrary lightness ramp from any color; Tailwind Shades maps it to the 50–950 scale. Which palette do you need — free, in your browser.',
+    intro:
+      'Both tools take one color and spin out lighter and darker variations, but they target different workflows. The color-shades tool builds a free lightness ramp — you choose how many steps and how they spread, with no fixed naming. The Tailwind-shades tool fits your color to Tailwind CSS’s named 50–950 scale, so the output drops straight into a Tailwind theme as numbered tokens. One gives you a flexible gradient; the other gives you Tailwind-ready steps.',
+    options: [
+      {
+        label: 'Color Shades',
+        toolId: 'color-shades',
+        best: 'A custom lightness ramp for any design system or one-off palette.',
+        pros: [
+          'Arbitrary number of steps, your spacing',
+          'Not tied to any framework’s naming',
+          'Great for hand-built or non-Tailwind palettes',
+        ],
+        cons: ['Steps don’t line up with Tailwind’s 50–950 tokens'],
+      },
+      {
+        label: 'Tailwind Shades',
+        toolId: 'tailwind-shades',
+        best: 'Generating a color’s 50–950 steps for a Tailwind theme.',
+        pros: [
+          'Outputs the named 50, 100 … 950 scale',
+          'Pastes directly into a Tailwind config',
+          'Consistent with Tailwind’s default palette structure',
+        ],
+        cons: ['Locked to the 50–950 layout — less flexible for other systems'],
+      },
+    ],
+    verdict:
+      'If you’re theming a Tailwind project, use Tailwind Shades so the output maps onto the 50–950 tokens your classes already expect. For any other design system, or when you want full control over step count and spacing, use Color Shades for a free lightness ramp. Both start from a single color and run entirely in your browser.',
+    faqs: [
+      {
+        q: 'Which one should I use for a Tailwind project?',
+        a: 'Tailwind Shades — it produces the named 50 through 950 steps that match Tailwind’s palette structure, so they slot into your config and utility classes directly.',
+      },
+      {
+        q: 'Can Color Shades make more than 11 steps?',
+        a: 'Yes. The color-shades ramp lets you choose the number of steps and how they’re spaced, which is handy when the fixed Tailwind 50–950 layout doesn’t fit your system.',
+      },
+    ],
+    keywords: ['color shades vs tailwind shades', 'color palette generator', 'tailwind 50-950', 'lightness ramp'],
+  },
+  {
+    slug: 'cron-next-runs-vs-cron-explainer',
+    category: 'dev',
+    title: 'Cron Next Runs vs Cron Explainer — When or What?',
+    h1: 'Cron Next Runs vs Cron Explainer',
+    description:
+      'Cron Next Runs lists the upcoming run datetimes for a schedule; Cron Explainer describes it in plain English. Which do you need — free, in your browser.',
+    intro:
+      'Both tools read the same cron expression but answer different questions. Cron Next Runs computes the actual upcoming fire times — the next set of datetimes the schedule will trigger — so you can confirm timing at a glance. Cron Explainer translates the five fields into a plain-English sentence describing the pattern. One tells you when it runs next; the other tells you what the schedule means.',
+    options: [
+      {
+        label: 'Cron Next Runs',
+        toolId: 'cron-next-runs',
+        best: 'Confirming exactly when a schedule will fire next.',
+        pros: [
+          'Lists concrete upcoming run datetimes',
+          'Catches surprises like odd day-of-month and weekday combos',
+          'Great for sanity-checking timing before deploying',
+        ],
+        cons: ['Doesn’t describe the pattern in words'],
+      },
+      {
+        label: 'Cron Explainer',
+        toolId: 'cron-explainer',
+        best: 'Understanding what an unfamiliar cron expression means.',
+        pros: [
+          'Turns the five fields into a plain-English sentence',
+          'Helps catch logic mistakes in the pattern',
+          'Easy to share in docs or code review',
+        ],
+        cons: ['Doesn’t show the actual upcoming run times'],
+      },
+    ],
+    verdict:
+      'Use Cron Next Runs to verify the real fire times — the fastest way to catch a schedule that doesn’t trigger when you expected. Use Cron Explainer when you’re reading someone else’s expression and need to understand the pattern in words. They pair naturally: read the explanation to confirm intent, then check the next runs to confirm timing. Both run in your browser.',
+    faqs: [
+      {
+        q: 'Why do the next runs surprise me when day-of-month and weekday are both set?',
+        a: 'In standard cron, when both fields are restricted the schedule fires when either matches (an OR), which can mean more runs than expected. Listing the next runs makes that behavior obvious.',
+      },
+      {
+        q: 'Should I read the explanation or the next runs first?',
+        a: 'Read the explanation to confirm the schedule means what you intended, then check the next runs to confirm the actual timing. Using both catches both logic and timing mistakes.',
+      },
+    ],
+    keywords: ['cron next runs vs cron explainer', 'next cron run time', 'explain cron expression', 'cron schedule'],
+  },
+  {
+    slug: 'csv-to-yaml-vs-csv-to-json',
+    category: 'docs',
+    title: 'CSV to YAML vs CSV to JSON — Which Output Format?',
+    h1: 'CSV to YAML vs CSV to JSON',
+    description:
+      'CSV to YAML produces human-friendly config-style output; CSV to JSON produces compact data for APIs and code. Pick the right target — free, in your browser.',
+    intro:
+      'Both tools turn rows of CSV into structured records, but they emit different formats. CSV to YAML outputs indentation-based YAML that reads cleanly and suits config files and human review. CSV to JSON outputs JSON — the lingua franca of APIs and most programming languages — and can also convert JSON back to CSV. Same rows, two destinations: readable config versus interchange data.',
+    options: [
+      {
+        label: 'CSV to YAML',
+        toolId: 'csv-to-yaml',
+        best: 'Turning a spreadsheet into readable config or seed data.',
+        pros: [
+          'Indentation-based output that’s easy to read and edit',
+          'Natural fit for config files and fixtures',
+          'Infers simple types from the cell values',
+        ],
+        cons: [
+          'Indentation-sensitive — easy to break by hand',
+          'Less universal than JSON for APIs',
+        ],
+      },
+      {
+        label: 'CSV to JSON',
+        toolId: 'csv-json',
+        best: 'Producing data for APIs, code and tooling — and converting back.',
+        pros: [
+          'JSON is consumed everywhere by APIs and languages',
+          'Converts both directions between CSV and JSON',
+          'Compact and unambiguous for machines',
+        ],
+        cons: ['Brackets and quotes are noisier to read than YAML'],
+      },
+    ],
+    verdict:
+      'Need data a program, API or library will consume — or want to round-trip back to CSV? Use CSV to JSON. Producing a config file, fixture or anything humans will read and edit by hand? Use CSV to YAML for its cleaner, indentation-based layout. Both parse the same CSV in your browser, so you can try one and switch if the other reads better.',
+    faqs: [
+      {
+        q: 'Which format is easier for people to read?',
+        a: 'YAML is usually easier on the eyes thanks to indentation instead of brackets and quotes, which is why it’s popular for config. JSON is more universal for machines and APIs.',
+      },
+      {
+        q: 'Can I convert JSON back into CSV?',
+        a: 'Yes — the CSV/JSON tool works both directions, so you can flatten JSON records back into CSV rows. The YAML tool focuses on the CSV-to-YAML direction.',
+      },
+    ],
+    keywords: ['csv to yaml vs csv to json', 'convert csv', 'csv yaml json', 'spreadsheet to config'],
+    relatedConverts: ['csv-to-json', 'json-to-csv'],
+  },
+  {
+    slug: 'data-size-si-vs-iec',
+    category: 'util',
+    title: 'Data Size (SI vs IEC) vs Unit Converter — Bytes or General Units?',
+    h1: 'Data Size (SI vs IEC) vs Unit Converter',
+    description:
+      'The data-size converter handles bytes in both SI (1000) and IEC (1024) units; the unit converter covers general measures like length and weight — free, in your browser.',
+    intro:
+      'These tools both convert between units, but they cover different domains. The data-size converter is purpose-built for digital storage, showing both the SI definition (1 kB = 1000 bytes, used on disk packaging) and the IEC definition (1 KiB = 1024 bytes, how operating systems often count) so you can see why a "1 TB" drive reports less. The general unit converter handles everyday physical measures — length, weight, temperature, volume and more — but not the 1000-versus-1024 byte nuance.',
+    options: [
+      {
+        label: 'Data Size Converter',
+        toolId: 'data-size-converter',
+        best: 'Converting bytes and bits with the SI vs IEC distinction made explicit.',
+        pros: [
+          'Shows both SI (1000) and IEC (1024) results side by side',
+          'Explains the "1 TB drive shows less" discrepancy',
+          'Covers bytes, KB/KiB, MB/MiB, GB/GiB and up',
+        ],
+        cons: ['Limited to digital storage units, not physical measures'],
+      },
+      {
+        label: 'Unit Converter',
+        toolId: 'unit-converter',
+        best: 'Everyday conversions across length, weight, temperature and volume.',
+        pros: [
+          'Covers many physical categories in one place',
+          'Handy for cooking, travel and general math',
+          'Simple, fast conversions you can copy',
+        ],
+        cons: ['Doesn’t model the SI-vs-IEC byte distinction'],
+      },
+    ],
+    verdict:
+      'Converting data sizes — and want to understand why 1000 versus 1024 makes a drive look smaller than advertised? Use the data-size converter, which shows both SI and IEC results. For everyday physical measures like length, weight, temperature or volume, use the general unit converter. They cover separate domains, so pick by what you’re measuring. Both run in your browser.',
+    faqs: [
+      {
+        q: 'Why does the data-size converter show two different numbers?',
+        a: 'It shows both conventions: SI counts 1 kB as 1000 bytes (used on storage packaging), while IEC counts 1 KiB as 1024 bytes (how operating systems often report). Seeing both explains the apparent shortfall on a new drive.',
+      },
+      {
+        q: 'Can the general unit converter handle gigabytes?',
+        a: 'For digital storage with the 1000-vs-1024 nuance, use the data-size converter. The general unit converter focuses on physical measures like length, weight, temperature and volume.',
+      },
+    ],
+    keywords: ['data size si vs iec', '1000 vs 1024 bytes', 'gb vs gib', 'data size converter'],
+  },
 ];
 
 export const COMPARE_SLUGS: string[] = COMPARES.map((c) => c.slug);

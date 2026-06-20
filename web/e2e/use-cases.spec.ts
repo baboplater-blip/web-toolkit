@@ -44,6 +44,18 @@ const CASES: Array<{ slug: string; prefix: string; expectHref: string }> = [
   { slug: 'make-catchy-social-media-text', prefix: '', expectHref: '/tools/text/hashtag' },
   { slug: 'create-retro-glitch-art', prefix: '', expectHref: '/tools/image/glitch' },
   { slug: 'play-focus-background-noise', prefix: '/ja', expectHref: '/tools/audio/noise' },
+  // 팩7 유스케이스 11종
+  { slug: 'preview-cron-schedule', prefix: '', expectHref: '/tools/dev/cron-next-runs' },
+  { slug: 'audit-http-response-headers', prefix: '/en', expectHref: '/tools/dev/http-header-analyzer' },
+  { slug: 'generate-types-from-json-api', prefix: '', expectHref: '/tools/dev/json-to-jsdoc' },
+  { slug: 'build-css-animation', prefix: '/ja', expectHref: '/tools/dev/css-keyframes' },
+  { slug: 'design-a-color-palette', prefix: '', expectHref: '/tools/dev/color-shades' },
+  { slug: 'verify-file-checksums', prefix: '/zh', expectHref: '/tools/security/crc32-hash' },
+  { slug: 'create-a-strong-passphrase', prefix: '', expectHref: '/tools/security/passphrase-gen' },
+  { slug: 'convert-config-data-formats', prefix: '/en', expectHref: '/tools/docs/csv-to-yaml' },
+  { slug: 'calculate-electronics-values', prefix: '', expectHref: '/tools/util/ohms-law-calc' },
+  { slug: 'estimate-file-transfer-time', prefix: '', expectHref: '/tools/util/download-time-calc' },
+  { slug: 'clean-and-analyze-text-lines', prefix: '/ja', expectHref: '/tools/text/duplicate-lines' },
 ];
 
 test.describe('유스케이스 — 신규 14종 렌더 + 단계 링크', () => {
