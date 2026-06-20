@@ -3,7 +3,10 @@
 > 이 문서는 한 라운드가 **진짜로 끝났는지** 판정하는 게이트와 절차를 담는다.
 > [goal.md](goal.md)의 Definition of Done 은 곧 "이 게이트 전부 초록불"이다.
 > 하나라도 빨간불이면 라운드는 **미완**. 커밋·푸시·완료보고 금지.
-> 작업 디렉터리: `web-toolkit/web/`
+> 작업 디렉터리: `web-toolkit/web/` · 길잡이 [README.md](README.md)
+
+> **TL;DR** — `web/` 에서 §1 "⚡ 복붙 한 방 실행" 으로 게이트 1~6, 그다음 §2 로 e2e.
+> 전부 초록불 = 라운드 완료. 빨간불 하나라도 있으면 멈추고 고친다.
 
 ---
 
@@ -20,6 +23,27 @@
 | 7 | e2e | `npm run test:e2e` | 전 스펙 통과 (아래 §3) |
 
 > ⚠ 함정: `tsconfig.tsbuildinfo` stale 로 유령 에러가 보이면 → 삭제(`rm -f tsconfig.tsbuildinfo`) 후 tsc 재실행.
+
+### ⚡ 복붙 한 방 실행 (게이트 1~6 순차)
+
+`web-toolkit/web/` 에서 그대로 붙여넣으세요. 하나라도 실패하면 거기서 멈춥니다.
+
+**PowerShell** (이 환경 기본):
+```powershell
+cd web-toolkit\web
+Remove-Item tsconfig.tsbuildinfo -ErrorAction SilentlyContinue
+npx tsc --noEmit; if ($?) { npm run lint } ; if ($?) { npm test } ; if ($?) { npm run build } ; if ($?) { npm run budget } ; if ($?) { npm run audit ; if ($?) { Write-Host "`n✅ 게이트 1~6 통과 — 다음은 e2e(§2)" } }
+```
+
+**bash**:
+```bash
+cd web-toolkit/web && rm -f tsconfig.tsbuildinfo && \
+npx tsc --noEmit && npm run lint && npm test && npm run build && \
+npm run budget && npm run audit && echo "✅ 게이트 1~6 통과 — 다음은 e2e(§2)"
+```
+
+> e2e(게이트 7)는 정적 서버가 필요해 분리돼 있습니다 → 아래 §2.
+> (편의를 위해 `package.json` 에 `npm run gate` 같은 통합 스크립트를 추가하는 것도 좋습니다 — 단 그건 코드 변경이라 별도 작업.)
 
 ## 2. e2e 실행 환경 (정적 export 서빙)
 
