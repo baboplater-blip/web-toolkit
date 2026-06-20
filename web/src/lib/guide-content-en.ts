@@ -8089,6 +8089,1412 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'cron-next-runs': {
+    metaTitle: 'Cron Next Run Times — Preview Schedule Dates Online',
+    metaDescription:
+      'Paste a 5-field cron expression like 0 9 * * 1-5 and see the next run dates. Supports *, */n, ranges and lists. Free cron schedule previewer, no signup.',
+    intro:
+      'This tool takes a standard 5-field cron expression (minute hour day month weekday) and lists the next run times after now, scanning minute by minute. Enter 0 9 * * 1-5 and it shows the next five weekday 9:00 AM runs; switch to */15 * * * * and it lists every quarter hour (:00, :15, :30, :45).',
+    features: [
+      'Parses each field into an allowed-value set, expanding ranges (a-b), steps (*/n) and comma lists (a,b,c).',
+      'Lists a configurable number of upcoming runs (1-50, default 5) as YYYY-MM-DD (Day) HH:MM.',
+      'Day-of-week accepts 0-7 with both 0 and 7 meaning Sunday.',
+      'Collapsible "field interpretation" panel shows the resolved values for each field.',
+      'Copies the run list to your clipboard joined by line breaks.',
+    ],
+    steps: [
+      {
+        title: 'Enter a cron expression',
+        body: 'Type a 5-field expression in the input (default 0 9 * * 1-5). Six-field cron with a seconds column is rejected with a "must be 5 fields" message.',
+      },
+      {
+        title: 'Set how many runs to show',
+        body: 'Choose a count from 1 to 50 (default 5). The scanner advances a cursor minute by minute, up to a 4-year horizon, collecting matches.',
+      },
+      {
+        title: 'Read and copy the dates',
+        body: 'Each upcoming run appears numbered as YYYY-MM-DD (Day) HH:MM in your browser local time. Use the copy button to grab the whole list.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are day-of-month and day-of-week combined?',
+        a: 'When both fields are set (not *), they are combined with OR, per standard cron. For example 0 0 1 * 1 fires on the 1st of every month OR every Monday — not only on Mondays that fall on the 1st.',
+      },
+      {
+        q: 'Does 7 in the weekday field mean Sunday?',
+        a: 'Yes. Weekdays are parsed as 0-7 and 7 is normalized to 0, so both 0 and 7 mean Sunday.',
+      },
+      {
+        q: 'Are aliases like @daily or @reboot supported?',
+        a: 'No. Only the plain 5-field syntax with *, */n, ranges and lists is supported. Aliases (@daily) and extensions like L, W and # are not handled.',
+      },
+      {
+        q: 'Which time zone are the times shown in?',
+        a: 'They are calculated in your browser local time zone, so the dates match the clock on your machine.',
+      },
+    ],
+  },
+
+  'http-header-analyzer': {
+    metaTitle: 'HTTP Header Analyzer — Check Security Headers Online',
+    metaDescription:
+      'Paste response headers and group them by security, cache, CORS and content. Checks for HSTS, CSP, X-Frame-Options and more. Free header analyzer, no signup.',
+    intro:
+      'Paste the response headers from your browser DevTools and this tool sorts them into security, cache, CORS, content and other groups, then audits six key security headers for presence or absence. Paste strict-transport-security: max-age=63072000 and HSTS shows as "set"; leave out X-Frame-Options and it is flagged as missing with a hint.',
+    features: [
+      'Splits each "Name: value" line at the first colon, ignoring the HTTP status line and blank lines.',
+      'Folded (continuation) header lines starting with whitespace are appended to the previous value.',
+      'Groups headers as security, cache, CORS, content or other and adds a one-line description for known headers.',
+      'Audits six security headers: HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and Permissions-Policy.',
+      'Reports each as set or missing, with a remediation hint when missing.',
+    ],
+    steps: [
+      {
+        title: 'Copy the response headers',
+        body: 'In your browser DevTools Network tab, open a request and copy the Response Headers block.',
+      },
+      {
+        title: 'Paste into the analyzer',
+        body: 'Paste into the textarea. Only "Name: value" lines are treated as headers; status lines like HTTP/2 200 are skipped automatically.',
+      },
+      {
+        title: 'Review the checklist and groups',
+        body: 'Read the security checklist (set or missing) and the grouped tables. A missing X-Frame-Options, for example, suggests setting DENY or SAMEORIGIN to prevent clickjacking.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Where do I copy the headers from?',
+        a: 'From the Response Headers section of a request in the DevTools Network tab. Make sure you paste response headers, not request headers.',
+      },
+      {
+        q: 'Does it validate the header values themselves?',
+        a: 'No. It only checks whether a header is present, not whether its value is correct. For example it does not inspect the contents of your CSP policy.',
+      },
+      {
+        q: 'Why is X-XSS-Protection flagged as not recommended?',
+        a: 'Modern browsers have dropped the legacy XSS auditor and a strong CSP is the recommended defense, so X-XSS-Protection is considered obsolete.',
+      },
+    ],
+  },
+
+  'regex-extract': {
+    metaTitle: 'Regex Extract — Pull Matches and Capture Groups Online',
+    metaDescription:
+      'Run a regex over text and extract every match, numbered capture group and named group into a table. The g flag is always applied. Free regex extractor, no signup.',
+    intro:
+      'Apply a regular expression to your text and this tool extracts every full match plus its numbered and named capture groups into a table. The global (g) flag is always added automatically. With (?<year>\\d{4})-(\\d{2})-(\\d{2}) against 2024-01-15 you get the full match, groups 01 and 15, and the named group year = 2024.',
+    features: [
+      'Builds the regex with new RegExp(pattern, flags + "g") and collects all matches via repeated exec.',
+      'Toggle the i (ignore case), m (multiline) and s (dotall) flags; the active flags show as /.../g.',
+      'Shows a table column for the full match, each numbered group and every named (?<key>) group.',
+      'Unmatched groups display as the symbol for empty so you can tell them from empty strings.',
+      'Guards against ReDoS and memory blowups with a 100,000-character input cap and a 5,000-match limit.',
+    ],
+    steps: [
+      {
+        title: 'Enter your pattern and flags',
+        body: 'Type the regex and tick the i, m or s checkboxes as needed. The g flag is forced on regardless, so all matches are extracted.',
+      },
+      {
+        title: 'Paste the target text',
+        body: 'Paste up to 100,000 characters into the text area. For \\d+ against "price 1200 won 3 items" you get two rows: 1200 and 3.',
+      },
+      {
+        title: 'Read the match table',
+        body: 'Each match is a numbered row showing the full match and its groups. If you exceed 5,000 matches the result is truncated with a notice.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the g flag always on?',
+        a: 'The tool extracts every match, which requires the global flag. Even if you only want a single match, all occurrences are returned.',
+      },
+      {
+        q: 'Do named groups get their own columns?',
+        a: 'Yes. Named groups like (?<name>...) appear as separate columns alongside the numbered groups.',
+      },
+      {
+        q: 'What happens past 5,000 matches?',
+        a: 'Matching stops and the table is truncated with a notice, to protect against memory and ReDoS issues. The text itself is also capped at 100,000 characters.',
+      },
+      {
+        q: 'Why might I see a raw JavaScript error?',
+        a: 'Invalid regex syntax is surfaced straight from the JS engine — for example a lookbehind in an environment that does not support it.',
+      },
+    ],
+  },
+
+  'json-to-jsdoc': {
+    metaTitle: 'JSON to JSDoc — Generate @typedef Type Definitions',
+    metaDescription:
+      'Turn a JSON sample into JSDoc @typedef definitions. Nested objects become separate typedefs and arrays render as element[]. Free JSON-to-JSDoc tool, no signup.',
+    intro:
+      'Paste a JSON sample and get JSDoc @typedef type definitions. {"id":1,"name":"Ada"} produces @typedef {Object} Root with @property {number} id and @property {string} name. Nested objects are split into their own @typedef blocks, and arrays render as element-type[].',
+    features: [
+      'Parses the JSON and maps value types to JSDoc (boolean, number and string pass through; null becomes *).',
+      'Emits a separate @typedef {Object} block for each nested object, named in PascalCase from the parent key.',
+      'Resolves name collisions by appending a numeric suffix (Profile, Profile2, ...).',
+      'Infers array element types from the first element and writes them as type[], wrapping unions in parentheses.',
+      'Quotes keys that are not valid identifiers and orders the output so Root appears first.',
+    ],
+    steps: [
+      {
+        title: 'Name the root type',
+        body: 'Enter a root type name (default Root). This becomes the top @typedef that the rest are nested under.',
+      },
+      {
+        title: 'Paste your JSON',
+        body: 'Paste a JSON object. {"profile":{"age":36}} yields @property {Profile} profile on Root plus a separate @typedef {Object} Profile.',
+      },
+      {
+        title: 'Copy the definitions',
+        body: 'Copy the generated @typedef blocks into your source so your editor picks up the types.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are nested objects represented?',
+        a: 'Each nested object becomes its own @typedef block, with the parent referencing it by a PascalCase name derived from the key.',
+      },
+      {
+        q: 'What happens with mixed-type arrays?',
+        a: 'Only the first element is used to infer the element type, so mixed arrays are simplified to that one type.',
+      },
+      {
+        q: 'What type is used for null values?',
+        a: 'A null value has no inferable type, so it is written as * (any).',
+      },
+      {
+        q: 'Why JSDoc instead of a TypeScript interface?',
+        a: 'JSDoc @typedef adds types to plain JavaScript without a build step, which is useful when you cannot or do not want to introduce TypeScript.',
+      },
+    ],
+  },
+
+  'sql-where-builder': {
+    metaTitle: 'SQL WHERE Builder — Escaped WHERE Clauses Online',
+    metaDescription:
+      'Pick column, operator and value to build an escaped SQL WHERE clause. Strings are quoted, numbers stay bare, and single quotes are doubled. Free, no signup.',
+    intro:
+      'Enter columns, operators and values and this tool builds an escaped SQL WHERE clause. Strings are wrapped in single quotes with embedded quotes doubled, while numeric literals stay bare. name = O\'Brien becomes WHERE name = \'O\'\'Brien\', and age >= 30 stays WHERE age >= 30.',
+    features: [
+      'Treats pure numeric literals (integers, decimals, signs, exponents) as bare values; everything else is quoted.',
+      'Escapes embedded single quotes by doubling them to prevent breaking the string.',
+      'Always quotes LIKE values as strings so % wildcards are preserved.',
+      'Splits IN values on commas and wraps each scalar into (a, b, c).',
+      'Validates column names against an identifier pattern (letters, digits, underscores, dotted notation).',
+    ],
+    steps: [
+      {
+        title: 'Add a condition',
+        body: 'Use "Add condition" to add a row, then enter a column name, choose an operator (= != < > <= >= LIKE IN) and a value.',
+      },
+      {
+        title: 'Combine conditions',
+        body: 'Toggle AND/OR to join multiple rows. status IN active, pending becomes WHERE status IN (\'active\', \'pending\').',
+      },
+      {
+        title: 'Copy the WHERE clause',
+        body: 'Copy the generated clause. Multiple conditions are joined on separate lines with your chosen connector.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are values with single quotes handled?',
+        a: 'Embedded single quotes are doubled, so O\'Brien is escaped to \'O\'\'Brien\'. This prevents the value from terminating the string early.',
+      },
+      {
+        q: 'How do I pass multiple values to IN?',
+        a: 'Enter them comma-separated. Each item is converted to a scalar and wrapped, e.g. active, pending becomes (\'active\', \'pending\').',
+      },
+      {
+        q: 'How do LIKE wildcards work?',
+        a: 'LIKE values are always quoted as strings even if they look numeric, so your % patterns are preserved intact.',
+      },
+      {
+        q: 'Is the generated clause safe to paste into a query?',
+        a: 'Quotes are escaped to reduce injection risk, but for real safety parameter binding is recommended over string concatenation.',
+      },
+    ],
+  },
+
+  'color-shades': {
+    metaTitle: 'Color Shades Generator — HSL Lightness Ramp Online',
+    metaDescription:
+      'Enter a HEX color and generate a lightness ramp from darkest shade to lightest tint. Hue and saturation stay fixed. Free color shades generator, no signup.',
+    intro:
+      'Give this tool a base HEX color and it generates an HSL lightness ramp from the darkest shade to the lightest tint. With #3b82f6 at 9 steps you get nine swatches from 97% down to 10% lightness, all keeping the same blue hue and saturation. A "base" badge marks the step closest to your input.',
+    features: [
+      'Converts HEX to RGB to HSL, then varies only lightness (L) while holding hue (H) and saturation (S) fixed.',
+      'Interpolates evenly between MAX_LIGHTNESS 0.97 and MIN_LIGHTNESS 0.1 across the chosen step count.',
+      'Step counts of 5, 7, 9, 11 or 13 (default 9); converts each back HSL to RGB to HEX.',
+      'Accepts #RGB shorthand (#39f expands to #3399ff) and offers a native color picker.',
+      'Marks the generated step whose lightness is closest to the input with a base badge.',
+    ],
+    steps: [
+      {
+        title: 'Pick a base color',
+        body: 'Enter a HEX value (default #3b82f6) or use the color picker. Shorthand like #39f is accepted.',
+      },
+      {
+        title: 'Choose the number of steps',
+        body: 'Select 5, 7, 9, 11 or 13 steps. More steps give a finer lightness scale.',
+      },
+      {
+        title: 'Copy the swatches',
+        body: 'Each swatch shows its lightness and HEX. Click a single swatch to copy it, or use Copy all for the full ramp.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does the saturation change across the ramp?',
+        a: 'No. Only lightness changes; hue and saturation stay fixed. It does not adjust the saturation curve the way Tailwind 50-950 scales do.',
+      },
+      {
+        q: 'Is this the same as Tailwind color steps?',
+        a: 'Not exactly. Tailwind tweaks saturation along the ramp; this tool keeps hue and saturation constant and varies lightness only.',
+      },
+      {
+        q: 'Does it support 3-digit HEX?',
+        a: 'Yes. A shorthand like #39f is expanded to #3399ff before the ramp is generated.',
+      },
+      {
+        q: 'What exactly does the base badge point to?',
+        a: 'It marks the generated step whose lightness is closest to your input color, not the input color itself. The endpoints are capped at 0.1 and 0.97, so pure black and white never appear.',
+      },
+    ],
+  },
+
+  'css-keyframes': {
+    metaTitle: 'CSS Keyframes Generator — @keyframes + animation Online',
+    metaDescription:
+      'Pick a preset, from/to values, duration, easing and iteration to generate @keyframes plus the animation shorthand. Free CSS animation generator, no signup.',
+    intro:
+      'Choose a preset, start and end values, duration, easing and iteration count and this tool generates both a @keyframes rule and the matching .name { animation: ... } shorthand. A fade from 0 to 1 over 1s with ease-in-out, infinite produces @keyframes with from { opacity: 0 } to { opacity: 1 } and the wiring to run it.',
+    features: [
+      'Presets for fade (opacity), slide (translateX px), scale and rotate (deg).',
+      'Generates only two keyframes (from and to) from your start and end values.',
+      'Auto-appends units: px for slide, deg for rotate.',
+      'Normalizes the animation name to a valid CSS identifier (non [a-z0-9_-] becomes -).',
+      'Easing options ease, linear, ease-in, ease-out, ease-in-out, with iteration as a number or infinite.',
+    ],
+    steps: [
+      {
+        title: 'Choose a preset and values',
+        body: 'Pick a preset and enter the start and end values. For slide, from=-100, to=0 produces transform: translateX(-100px) to translateX(0px).',
+      },
+      {
+        title: 'Set timing',
+        body: 'Enter a duration in seconds (greater than 0), pick an easing, and set the iteration count or infinite. An empty iteration defaults to 1.',
+      },
+      {
+        title: 'Copy the CSS',
+        body: 'Copy the @keyframes block and the .name { animation: ... } rule into your stylesheet.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can it make intermediate keyframes like 0%, 50%, 100%?',
+        a: 'No. It only generates the from and to keyframes. Multi-step keyframes are not supported.',
+      },
+      {
+        q: 'Can I animate several properties at once?',
+        a: 'No. Each preset animates one property (opacity, transform, etc.), so you get a single animated property per rule.',
+      },
+      {
+        q: 'Can the iteration count be a number instead of infinite?',
+        a: 'Yes. Enter a number for a fixed repeat count, or infinite to loop forever. Empty defaults to 1.',
+      },
+      {
+        q: 'How is the class name determined?',
+        a: 'Your animation name is normalized to a valid CSS identifier, replacing characters outside letters, digits, _ and - with -.',
+      },
+    ],
+  },
+
+  'json-to-env': {
+    metaTitle: 'JSON to .env — Flatten JSON to Environment Variables',
+    metaDescription:
+      'Flatten nested JSON into uppercase .env variables. Nested paths join as PARENT_CHILD and values are quoted when needed. Free JSON-to-env tool, no signup.',
+    intro:
+      'This tool flattens nested JSON into .env environment variables with uppercase keys. {"database":{"host":"localhost","port":5432}} becomes DATABASE_HOST=localhost and DATABASE_PORT=5432. Values with spaces or special characters are quoted automatically, e.g. {"apiKey":"abc 123"} becomes API_KEY="abc 123".',
+    features: [
+      'Recursively flattens objects, joining keys with _, and uses array indices as key segments.',
+      'Splits camelCase keys (apiKey becomes API_KEY) and uppercases everything.',
+      'Quotes and escapes values that contain spaces, #, quotes, backslashes, newlines or are empty.',
+      'Emits KEY= for null, empty arrays and empty objects.',
+      'Offers copy and download as a .env file.',
+    ],
+    steps: [
+      {
+        title: 'Paste your JSON',
+        body: 'Paste a JSON object or array into the textarea. A top-level primitive (not an object or array) cannot be converted and returns an error.',
+      },
+      {
+        title: 'Review the .env lines',
+        body: 'Each leaf becomes KEY=value. {"tags":["a","b"]} expands to TAGS_0=a and TAGS_1=b.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Copy the result or download it as a .env file ready to drop into your project.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are arrays represented in .env?',
+        a: 'Arrays are expanded with index keys like TAGS_0 and TAGS_1. They are not merged back into a single variable.',
+      },
+      {
+        q: 'How are camelCase keys converted?',
+        a: 'They are split at the case boundary and uppercased, so apiKey becomes API_KEY.',
+      },
+      {
+        q: 'Which values get quoted?',
+        a: 'Values containing spaces, #, quotes, backslashes or newlines, or that are empty, are wrapped in double quotes and escaped.',
+      },
+      {
+        q: 'How are null or empty values output?',
+        a: 'null, empty arrays and empty objects produce a bare KEY= with nothing after the equals sign.',
+      },
+    ],
+  },
+
+  'angle-converter': {
+    metaTitle: 'Angle Converter — Degrees, Radians, Gradians, Turns',
+    metaDescription:
+      'Convert between degrees, radians, gradians and turns at once. 90 degrees equals 1.5707963 rad, 100 grad and 0.25 turn. Free angle converter, no signup.',
+    intro:
+      'Convert a value between degrees, radians, gradians and turns all at once. Enter 90 degrees and it shows 1.5707963 radians, 100 gradians and 0.25 turn; enter pi radians and it shows 180 degrees, 200 gradians and 0.5 turn.',
+    features: [
+      'Converts through a full turn: divides by the source unit per-turn value, then multiplies by the target.',
+      'Per-turn values: degrees 360, radians 2 pi, gradians 400, turn 1.',
+      'Shows all four units at once with a copy button on each row.',
+      'Displays results with toPrecision(10), trimming trailing zeros.',
+      'Accepts comma-separated input.',
+    ],
+    steps: [
+      {
+        title: 'Enter a value',
+        body: 'Type the angle value (commas allowed) into the input box.',
+      },
+      {
+        title: 'Pick the input unit',
+        body: 'Choose whether the value is in degrees, radians, gradians or turns from the dropdown.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'All four converted values appear; use the copy button on the row you need.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is a gradian different from a degree?',
+        a: 'A gradian (grad/gon) divides a right angle into 100 units, while a degree divides it into 90. So 90 degrees equals 100 gradians.',
+      },
+      {
+        q: 'Where are turns used?',
+        a: 'A turn treats one full revolution as 1 — it is the same turn unit used by CSS rotate().',
+      },
+      {
+        q: 'How do I convert radians to degrees?',
+        a: 'Multiply radians by 180/pi. For example pi radians is 180 degrees.',
+      },
+      {
+        q: 'Why is the result slightly off?',
+        a: 'Values are rounded to 10 significant digits, so irrational results like radians are approximations.',
+      },
+    ],
+  },
+
+  'data-size-converter': {
+    metaTitle: 'Data Size Converter — SI (1000) and IEC (1024) Online',
+    metaDescription:
+      'Convert bytes between SI (KB, MB, GB) and IEC (KiB, MiB, GiB) at once. See why 500 MB is not 500 MiB. Free data size converter, no signup.',
+    intro:
+      'This converter takes a value in bytes and shows both SI (1000-based: KB, MB, GB, TB) and IEC (1024-based: KiB, MiB, GiB, TiB) sizes side by side. 500 MB becomes 0.5 GB in SI and about 476.84 MiB in IEC, while 1 GiB is exactly 1,073,741,824 bytes.',
+    features: [
+      'Computes total bytes from the input unit (SI 1000^n or IEC 1024^n), then divides into each target unit.',
+      'Shows two columns: an SI (1000) table and an IEC (1024) table.',
+      'Supports B, KB, MB, GB, TB and KiB, MiB, GiB, TiB (default MB).',
+      'Displays with toPrecision(12), thousands separators and up to 6 decimals.',
+      'Click any row to copy its value.',
+    ],
+    steps: [
+      {
+        title: 'Enter a value',
+        body: 'Type a value of 0 or more (commas allowed) into the input.',
+      },
+      {
+        title: 'Pick the input unit',
+        body: 'Choose the unit from the dropdown (default MB). 1024 KiB resolves to 1 MiB and 1.048576 MB in SI.',
+      },
+      {
+        title: 'Compare SI and IEC',
+        body: 'Read the SI and IEC tables side by side and click any row to copy that value.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between MB and MiB?',
+        a: 'MB is 1000-based (1,000,000 bytes) while MiB is 1024-based (1,048,576 bytes). Disk makers use SI; operating systems usually use IEC.',
+      },
+      {
+        q: 'Why is 1 GB not exactly 1,000,000,000 bytes everywhere?',
+        a: 'Under SI it is, but many systems report in IEC where 1 GiB is 1,073,741,824 bytes. The same "GB" label can mean either.',
+      },
+      {
+        q: 'Why does my disk show less capacity than advertised?',
+        a: 'Manufacturers advertise SI gigabytes while the OS often counts in IEC gibibytes, so a "1 TB" drive shows about 931 GiB.',
+      },
+      {
+        q: 'Should I use SI or IEC?',
+        a: 'Use IEC (KiB/MiB/GiB) when you need exact 1024-based math, and SI (KB/MB/GB) for marketing-style decimal sizes. The tool shows both so you can pick.',
+      },
+    ],
+  },
+
+  'tax-bracket-calc': {
+    metaTitle: 'Tax Bracket Calculator — Progressive Tax and Effective Rate',
+    metaDescription:
+      'Define progressive tax brackets and compute per-bracket tax, total tax, effective rate and after-tax amount. General progressive calculator, not tax advice.',
+    intro:
+      'Define your own progressive tax brackets and this calculator computes the tax for each band, the total tax, the effective rate and the after-tax amount. With four default brackets, a taxable base of 50,000,000 yields 12M x 6% + 34M x 15% + 4M x 24% = 720,000 + 5,100,000 + 960,000 = 6,780,000 total.',
+    features: [
+      'Sorts brackets by ascending upper bound, treating an empty cap as everything above.',
+      'For each bracket, taxes max(0, min(cap, base) - previous lower) at that rate, accumulating the total.',
+      'Computes the effective rate as total tax / base x 100.',
+      'Starts with four editable default brackets and lets you add or remove rows.',
+      'Shows the total tax, effective rate, after-tax amount and a per-bracket breakdown.',
+    ],
+    steps: [
+      {
+        title: 'Enter the taxable base',
+        body: 'Type the taxable amount (commas allowed) into the input.',
+      },
+      {
+        title: 'Define your brackets',
+        body: 'Edit each bracket upper bound and rate, or add rows. Leave the upper bound empty for the top "everything above" band.',
+      },
+      {
+        title: 'Read the breakdown',
+        body: 'See total tax, the effective rate and after-tax amount, plus a table of each bracket range, rate, taxed portion and tax.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between effective and marginal rate?',
+        a: 'The marginal rate is the rate on your top bracket; the effective rate is total tax divided by the whole base. The effective rate is always lower.',
+      },
+      {
+        q: 'Does it account for deductions or credits?',
+        a: 'No. It computes tax purely from the brackets you define and does not apply income deductions or tax credits.',
+      },
+      {
+        q: 'Is this real tax advice?',
+        a: 'No. It is a general progressive tax calculator with example default brackets. Use it for estimates and modeling, not as official tax guidance.',
+      },
+      {
+        q: 'How is an empty upper bound treated?',
+        a: 'An empty cap means "everything above the previous bound," so that bracket rate applies to all income past the last threshold.',
+      },
+    ],
+  },
+
+  'download-time-calc': {
+    metaTitle: 'Download Time Calculator — Transfer Time Estimator',
+    metaDescription:
+      'Estimate download time from file size and link speed, with an optional overhead %. 4.7 GB at 100 Mbps is about 6m 43s. Free transfer time calculator, no signup.',
+    intro:
+      'Estimate how long a transfer will take from a file size and a connection speed, with an optional overhead percentage. A 4.7 GB file over 100 Mbps (which is 12.5 MB/s) takes about 403 seconds, roughly 00:06:43, and adding 10% overhead lengthens it by about 11%.',
+    features: [
+      'Converts size in 1024-based units (KB, MB, GB, TB) to bytes.',
+      'Handles bit-rate units (Mbps, Gbps, divided by 8) and byte-rate units (MBps, KBps) directly.',
+      'Treats Mbps/Gbps as decimal 1000-based per networking convention.',
+      'Computes seconds as total bytes / (bytes-per-second x (1 - overhead/100)).',
+      'Outputs an HH:MM:SS estimate plus the total seconds.',
+    ],
+    steps: [
+      {
+        title: 'Enter the file size',
+        body: 'Type the size and pick a unit (KB/MB/GB/TB). 1 GB over 1 Gbps comes out to about 8 seconds.',
+      },
+      {
+        title: 'Enter the connection speed',
+        body: 'Type the speed and pick a unit (Mbps/MBps/Gbps/KBps). Line speeds are usually quoted in bits (Mbps).',
+      },
+      {
+        title: 'Add overhead and read the result',
+        body: 'Optionally add an overhead %, then read the HH:MM:SS estimate. Overhead of 100% or more is rejected to avoid infinite time.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between Mbps and MBps?',
+        a: 'Mbps is megabits per second; MBps is megabytes per second. They differ by a factor of 8 — line speeds are usually in bits (Mbps).',
+      },
+      {
+        q: 'Why does 100 Mbps only give about 12.5 MB/s?',
+        a: 'Because 100 megabits divided by 8 bits per byte is 12.5 megabytes, so the byte throughput is one-eighth of the bit rate.',
+      },
+      {
+        q: 'What does the overhead % mean?',
+        a: 'It models reduced effective throughput from protocol overhead, congestion and so on; 10% overhead makes the transfer take about 11% longer.',
+      },
+      {
+        q: 'Why is my real download slower than the estimate?',
+        a: 'Real transfers face latency, server limits, shared bandwidth and protocol overhead, so they often run slower than the theoretical figure.',
+      },
+    ],
+  },
+
+  'frame-time-calc': {
+    metaTitle: 'Frame to Timecode Calculator — Frames at fps (HH:MM:SS:FF)',
+    metaDescription:
+      'Convert between frame count and timecode (HH:MM:SS:FF) at a given fps, non-drop. 5400 frames at 30fps is 00:03:00:00. Free frame-time calculator, no signup.',
+    intro:
+      'Convert in both directions between a frame count and a timecode in HH:MM:SS:FF form at a given fps (integer, non-drop). 5400 frames at 30fps is 00:03:00:00, and 00:00:01:00 at 24fps is 24 frames. A custom 23.976 fps is rounded to 24 for the math.',
+    features: [
+      'Frames to timecode: frames = total % fps, with hours/minutes/seconds from floor(total / fps).',
+      'Timecode to frames: ((h x 60 + m) x 60 + s) x fps + frames.',
+      'fps presets of 24, 25, 30, 60 plus a custom value; non-integer fps is rounded.',
+      'Also shows total frames and total seconds (to 3 decimals).',
+      'Validates that the FF field stays below the fps.',
+    ],
+    steps: [
+      {
+        title: 'Choose the direction',
+        body: 'Toggle between frames to timecode and timecode to frames.',
+      },
+      {
+        title: 'Pick the fps',
+        body: 'Select 24, 25, 30, 60 or enter a custom value. A custom 23.976 is rounded to 24.',
+      },
+      {
+        title: 'Enter the value',
+        body: 'Type the frame count or the timecode and read the converted result, with total frames and seconds shown alongside.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it support drop-frame (29.97) timecode?',
+        a: 'No. It handles non-drop frame only. Drop-frame timecode (written with a semicolon) is not supported.',
+      },
+      {
+        q: 'How is 23.976 fps handled?',
+        a: 'fps is rounded to the nearest integer (23.976 becomes 24, 29.97 becomes 30), so results can differ slightly from the true media length.',
+      },
+      {
+        q: 'What does the last FF field mean?',
+        a: 'FF is the frame number within the current second, counting from 0 up to fps - 1 (for example 00 to 29 at 30fps).',
+      },
+      {
+        q: 'Why is a frame value at or above the fps an error?',
+        a: 'The FF field must be smaller than the fps, since a full second of frames rolls over into the seconds field.',
+      },
+    ],
+  },
+
+  'fov-calc': {
+    metaTitle: 'FOV Calculator — Camera Field of View from Sensor and Lens',
+    metaDescription:
+      'Compute horizontal, vertical and diagonal field of view from sensor size and focal length. Full-frame 50mm gives about 39.6 degrees. Approximate, no signup.',
+    intro:
+      'Compute a camera field of view from its sensor size and lens focal length using FOV = 2 x atan(sensor / (2 x focal length)). A full-frame sensor (36mm wide) with a 50mm lens gives about a 39.6-degree horizontal angle of view; a 24mm lens widens that to about 73.7 degrees.',
+    features: [
+      'Uses the rectilinear formula FOV (degrees) = 2 x atan(dimension / (2 x focal length)) x (180/pi).',
+      'Horizontal from sensor width, vertical from sensor height, diagonal from sqrt(width^2 + height^2).',
+      'Sensor presets for full-frame (36 x 24), APS-C, APS-C Canon, Micro Four Thirds and 1-inch.',
+      'Optional sensor height enables the vertical and diagonal results.',
+      'Copy the horizontal angle of view.',
+    ],
+    steps: [
+      {
+        title: 'Choose a sensor',
+        body: 'Pick a sensor preset or enter the sensor width in mm (and optionally the height).',
+      },
+      {
+        title: 'Enter the focal length',
+        body: 'Type the lens focal length in mm. Longer focal lengths narrow the field of view.',
+      },
+      {
+        title: 'Read the angle of view',
+        body: 'Read the horizontal angle of view; with a sensor height entered you also get vertical and diagonal angles.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which one is the lens angle of view?',
+        a: 'The diagonal field of view is closest to what is usually quoted as the lens angle of view. The horizontal value is based on sensor width.',
+      },
+      {
+        q: 'Why does a crop sensor narrow the field of view?',
+        a: 'A smaller sensor captures less of the projected image circle, so for the same focal length the angle of view is narrower.',
+      },
+      {
+        q: 'How are focal length and field of view related?',
+        a: 'They are inversely related — longer focal lengths give a narrower field of view. It is not a simple linear relationship.',
+      },
+      {
+        q: 'Does this work for fisheye lenses?',
+        a: 'No. The formula assumes rectilinear (straight-line) projection, so it is only an approximation and is not accurate for fisheye or other non-rectilinear lenses.',
+      },
+    ],
+  },
+
+  'ohms-law-calc': {
+    metaTitle: "Ohm's Law Calculator — Solve V, I, R, P Online",
+    metaDescription:
+      "Enter any two of voltage, current, resistance and power and get the other two via Ohm's law. V=12, I=2 gives R=6, P=24W. Free Ohm's law calculator, no signup.",
+    intro:
+      "Enter exactly two of voltage (V), current (I), resistance (R) and power (P) and this calculator derives the other two using Ohm's law and the power formulas. With V=12 and I=2 you get R=6 ohms and P=24 W; with P=24 and R=6 you get I=2 A and V=12 V.",
+    features: [
+      'Solves with V = I x R, P = V x I, P = I^2 x R and P = V^2 / R depending on which two are given.',
+      'Handles square-root cases such as I = sqrt(P / R) and V = sqrt(P x R).',
+      'Highlights computed values versus the values you entered.',
+      'Rejects physically impossible combinations such as division by zero or negative power/resistance.',
+      'Shows inline results under the input fields.',
+    ],
+    steps: [
+      {
+        title: 'Enter exactly two values',
+        body: 'Fill in exactly two of the V, I, R and P fields (commas allowed). One or three values prompts a notice.',
+      },
+      {
+        title: 'Read the computed values',
+        body: 'The remaining two are computed and emphasized. V=12 with R=6 gives I=2 A and P=24 W.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Use the copy button to grab the full set of four values.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why do I have to enter exactly two values?',
+        a: 'Two known quantities are needed to solve for the other two. Entering one or three values leaves the system under- or over-determined, so a notice appears.',
+      },
+      {
+        q: 'Can I calculate from power alone?',
+        a: 'No. Power needs a second quantity. With R you get I = sqrt(P / R) and V = sqrt(P x R); with V or I the rest follow directly.',
+      },
+      {
+        q: "Which formulas besides V = I x R are used?",
+        a: 'It also uses P = V x I, P = I^2 x R and P = V^2 / R, choosing the right relation for your inputs.',
+      },
+      {
+        q: 'Why do zero or negative inputs fail?',
+        a: 'Zero can force a division by zero (e.g. R = V / I with I = 0), and square-root cases reject negatives, so those combinations cannot be solved.',
+      },
+    ],
+  },
+
+  'resistor-color-code': {
+    metaTitle: 'Resistor Color Code Calculator — 4 and 5 Band',
+    metaDescription:
+      'Pick resistor color bands (4 or 5) and read the resistance, tolerance and range. Brown-black-red-gold is 1kΩ ±5%. Free resistor color code tool, no signup.',
+    intro:
+      'Select the color bands on a resistor (4-band or 5-band) and read its resistance, tolerance and allowed range using the IEC 60062 standard. Brown-black-red-gold (4-band) reads 10 x 100 = 1000 ohms = 1 kΩ ±5%, while yellow-violet-orange-gold reads 47 x 1000 = 47 kΩ ±5%.',
+    features: [
+      'IEC 60062 color-to-digit mapping for both 4-band (2 digits) and 5-band (3 digits) resistors.',
+      'Builds resistance as significant digits x multiplier (10^n, with gold 0.1 and silver 0.01).',
+      'Computes the tolerance range as resistance x (tolerance / 100) for min and max.',
+      'Shows the value with an automatic unit (Ω, kΩ, MΩ, GΩ) plus the raw ohm value.',
+      'Each band dropdown only offers colors valid for that role (digit, multiplier or tolerance).',
+    ],
+    steps: [
+      {
+        title: 'Choose 4 or 5 bands',
+        body: 'Toggle between 4-band and 5-band. 5-band precision resistors have three significant digits.',
+      },
+      {
+        title: 'Pick each band color',
+        body: 'Set each band from its dropdown. Brown-black-black-red-brown (5-band) reads 100 x 100 = 10 kΩ ±1%.',
+      },
+      {
+        title: 'Read the value and range',
+        body: 'Read the resistance, tolerance and min-to-max range, with the raw ohm value shown too.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between 4-band and 5-band resistors?',
+        a: '4-band resistors use 2 significant digits, a multiplier and a tolerance; 5-band precision resistors use 3 significant digits, so the same colors can read a different value.',
+      },
+      {
+        q: 'What do gold and silver bands mean?',
+        a: 'As a multiplier, gold is 0.1 and silver is 0.01; in the tolerance band gold is ±5% and silver is ±10%.',
+      },
+      {
+        q: 'Why do only some colors appear in the tolerance band?',
+        a: 'Only colors that represent a tolerance are offered there. Colors like black, orange, yellow and white have no tolerance value.',
+      },
+      {
+        q: 'How is the min-to-max range calculated?',
+        a: 'The margin is resistance x (tolerance / 100), and the range is resistance minus and plus that margin.',
+      },
+    ],
+  },
+
+  'random-date': {
+    metaTitle: 'Random Date Generator — Pick Dates in a Range',
+    metaDescription:
+      'Generate random dates within a start-end range (inclusive) using cryptographic randomness. Up to 200 dates as YYYY-MM-DD. Free random date generator, no signup.',
+    intro:
+      'Generate random dates within an inclusive start-to-end range using cryptographically secure randomness. Set 2020-01-01 to 2020-12-31 and ask for 3 and you get three random dates that year; set the start equal to the end and it always returns that one day.',
+    features: [
+      'Parses dates as UTC midnight timestamps and detects rollovers (e.g. an invalid Feb 30).',
+      'Computes the inclusive day range as (end - start) / 86400000 + 1.',
+      'Uses crypto.getRandomValues with rejection sampling for an unbiased uniform offset.',
+      'Generates from 1 to 200 dates, formatted as YYYY-MM-DD.',
+      'Generates only on button click, so it is hydration-safe.',
+    ],
+    steps: [
+      {
+        title: 'Set the date range',
+        body: 'Choose a start and end date (default 2000-01-01 to 2025-12-31). The start must not be later than the end.',
+      },
+      {
+        title: 'Choose how many',
+        body: 'Enter a count from 1 to 200 (default 5).',
+      },
+      {
+        title: 'Generate and copy',
+        body: 'Click Generate for the list of YYYY-MM-DD dates, then copy them all joined by line breaks.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can the same date appear twice?',
+        a: 'Yes. Each date is drawn independently, so duplicates are possible — especially in a small range or with a high count.',
+      },
+      {
+        q: 'How are time zones handled?',
+        a: 'Dates are processed in UTC, so your local time zone does not shift the result.',
+      },
+      {
+        q: 'How many dates can I generate at once?',
+        a: 'Up to 200 per run.',
+      },
+      {
+        q: 'Is the randomness really uniform?',
+        a: 'Yes. It uses crypto.getRandomValues with rejection sampling rather than Math.random, so the distribution is unbiased.',
+      },
+    ],
+  },
+
+  'duplicate-lines': {
+    metaTitle: 'Find Duplicate Lines — Show Repeated Lines by Frequency',
+    metaDescription:
+      'Find lines that appear two or more times and rank them by frequency. Options to ignore case and whitespace. Free duplicate line finder, no signup.',
+    intro:
+      'Paste text and this tool lists only the lines that appear two or more times, ranked by frequency — unique lines are excluded. For a\\nb\\na\\nc\\na it shows a once with a count of 3, while b and c are dropped.',
+    features: [
+      'Normalizes a comparison key per line (optionally lowercasing or collapsing whitespace) and counts in a Map.',
+      'Keeps only entries with count >= 2, sorted by descending frequency.',
+      'Breaks ties with a locale comparison.',
+      'Displays the first original occurrence even when normalized keys merged.',
+      'Handles up to 500,000 characters.',
+    ],
+    steps: [
+      {
+        title: 'Paste your text',
+        body: 'Paste up to 500,000 characters. Input beyond that is analyzed from the start only.',
+      },
+      {
+        title: 'Set the options',
+        body: 'Optionally tick ignore case and ignore whitespace. With ignore case, Apple and apple count as the same line.',
+      },
+      {
+        title: 'Read the duplicates',
+        body: 'See a table of duplicate lines with frequency bars and counts. If every line is unique you get a "no duplicates" message.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I see unique lines too?',
+        a: 'No. This tool intentionally shows only duplicates (count of 2 or more), not the full frequency of every line.',
+      },
+      {
+        q: 'Can lines differing only in case be treated as the same?',
+        a: 'Yes. Turn on ignore case and Apple and apple are counted together.',
+      },
+      {
+        q: 'Are blank lines counted as duplicates?',
+        a: 'Yes. Repeated blank lines are counted like any other line, since the comparison key includes empty content.',
+      },
+      {
+        q: 'What is the sort order?',
+        a: 'Results are ordered by descending frequency, with ties broken by a locale-aware comparison of the line text.',
+      },
+    ],
+  },
+
+  'text-stats-table': {
+    metaTitle: 'Text Stats Table — Per-Line Character and Word Counts',
+    metaDescription:
+      'Get per-line character and word counts plus longest, shortest and average line length. Counts emoji as one codepoint. Free text stats tool, no signup.',
+    intro:
+      'Paste text and get a per-line table of character and word counts, plus the longest, shortest and average line length and overall totals. "Hello world\\nHi" gives line 1 with 11 characters and 2 words, line 2 with 2 characters and 1 word, and an average of 6.5 characters.',
+    features: [
+      'Counts characters by codepoint with Array.from, so an emoji like a thumbs-up is one character.',
+      'Counts words by splitting on whitespace after trimming (a blank line is 0 words).',
+      'Computes totals plus longest, shortest and average line length (total characters / line count).',
+      'Renders the table up to 2000 rows while computing stats over every line.',
+      'Copies the table as TSV.',
+    ],
+    steps: [
+      {
+        title: 'Paste your text',
+        body: 'Paste up to 500,000 characters into the textarea.',
+      },
+      {
+        title: 'Read the summary',
+        body: 'See total lines, words and characters, plus the longest, shortest and average line.',
+      },
+      {
+        title: 'Copy the table',
+        body: 'Copy the per-line table as TSV to paste into a spreadsheet.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How many characters is an emoji counted as?',
+        a: 'One. Counting is by codepoint rather than UTF-16 length, so emoji and combining characters count as a single character.',
+      },
+      {
+        q: 'Why does Korean text show fewer words?',
+        a: 'Words are split on whitespace, so languages that do not space between words show a lower word count.',
+      },
+      {
+        q: 'The table stops at 2000 rows — are the stats truncated too?',
+        a: 'No. The table is capped at 2000 rows for display, but the summary statistics are computed over every line.',
+      },
+      {
+        q: 'How is average line length calculated?',
+        a: 'It is the total character count divided by the number of lines.',
+      },
+    ],
+  },
+
+  'number-extract': {
+    metaTitle: 'Number Extractor — Pull Numbers and Get Sum, Average',
+    metaDescription:
+      'Extract numbers from mixed text and get count, sum, average, min and max. Options for decimals, negatives and thousands commas. Free number extractor, no signup.',
+    intro:
+      'Pull the numbers out of mixed text and get the count, sum, average, minimum and maximum. From "price 1,200, discount -300" it extracts 1200 and -300 for a sum of 900. You can toggle whether decimals, negative signs and thousands commas (1,234) are recognized.',
+    features: [
+      'Builds the regex dynamically: -? for negatives, a comma pattern for thousands, and (?:\\.\\d+)? for decimals.',
+      'Strips commas from matched tokens before converting with Number.',
+      'Advances lastIndex past zero-length matches to avoid infinite loops.',
+      'Computes count, sum, average, min and max over all extracted numbers.',
+      'Shows up to 2000 numbers while computing stats over all of them.',
+    ],
+    steps: [
+      {
+        title: 'Paste your text',
+        body: 'Paste up to 500,000 characters of mixed text.',
+      },
+      {
+        title: 'Choose recognition options',
+        body: 'Toggle decimals, negatives and thousands commas (all on by default). With commas on, 1,234,567 is read as one number.',
+      },
+      {
+        title: 'Read the stats',
+        body: 'See the count, sum, average, min and max, plus the list of extracted numbers.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are numbers with thousands commas handled?',
+        a: 'With the commas option on, 1,234 is read as 1234. Turn it off and 1,234 splits into 1 and 234.',
+      },
+      {
+        q: 'Are negative signs recognized?',
+        a: 'Yes, when the negatives option is on. -300 is extracted as a negative number.',
+      },
+      {
+        q: 'Are things like phone numbers extracted as numbers?',
+        a: 'They can be, since any matching digit run is pulled. Exponent notation (1e5) and fractions are not recognized.',
+      },
+      {
+        q: 'Are the sum and average over all numbers or just the shown ones?',
+        a: 'Over all extracted numbers. The list display is capped at 2000, but the statistics use every number.',
+      },
+    ],
+  },
+
+  'text-to-columns': {
+    metaTitle: 'Text to Columns — Align Delimited Text into a Fixed-Width Table',
+    metaDescription:
+      'Turn comma, tab or space separated text into a monospace aligned table, with an optional header divider. Free text-to-columns aligner, no signup.',
+    intro:
+      'Turn delimited text into a fixed-width, monospace-aligned table. Paste "name,age,city\\nHong,30,Seoul" with the comma delimiter and the header option on, and each column is left-aligned to its widest cell with a ---- divider under the header row.',
+    features: [
+      'Splits each line by your delimiter (comma, tab, space or a custom string); space collapses runs of spaces.',
+      'Measures each column maximum width by codepoint and right-pads cells with a 2-space gutter.',
+      'Adds a dash divider under the first row when the header option is on.',
+      'Shows the resulting row and column counts.',
+      'Handles up to 200,000 characters.',
+    ],
+    steps: [
+      {
+        title: 'Paste your data',
+        body: 'Paste up to 200,000 characters of delimited text.',
+      },
+      {
+        title: 'Pick the delimiter',
+        body: 'Choose comma, tab, space or a custom delimiter. Space treats runs of spaces as one separator.',
+      },
+      {
+        title: 'Add a header divider',
+        body: 'Optionally tick "use first row as header" to insert a dashed divider below it, then copy the aligned table.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why do columns drift when I use Korean text?',
+        a: 'Widths are measured by codepoint, so wide CJK characters and emoji can render wider than one cell in a monospace font, throwing off alignment slightly.',
+      },
+      {
+        q: 'Does it handle tab-separated data?',
+        a: 'Yes. Pick the tab delimiter to align TSV data into a readable table.',
+      },
+      {
+        q: 'How do I add a header divider?',
+        a: 'Enable the "use first row as header" option, which inserts a dashed line beneath the first row.',
+      },
+      {
+        q: 'How are empty cells shown?',
+        a: 'With comma or tab delimiters empty cells are preserved as blank columns; the space delimiter collapses consecutive spaces instead.',
+      },
+    ],
+  },
+
+  'prefix-suffix-lines': {
+    metaTitle: 'Add Prefix and Suffix to Lines — Bulk Line Wrapper',
+    metaDescription:
+      'Add text to the start and end of every line at once. Wrap lines as a Markdown list, quote them, or append semicolons. Free line prefix/suffix tool, no signup.',
+    intro:
+      'Add text to the front (prefix) and back (suffix) of every line at once. Set the prefix to "- " to turn lines into a Markdown list, or use prefix " and suffix ", to wrap lines like array elements. By default empty lines are skipped.',
+    features: [
+      'Splits input on newlines and rewrites each line as prefix + line + suffix.',
+      'Optional "skip empty lines" (on by default) leaves blank lines untouched.',
+      'Pure per-line bulk processing — no numbering or dynamic transforms.',
+      'Live preview with a copy button.',
+      'Handles up to 500,000 characters.',
+    ],
+    steps: [
+      {
+        title: 'Paste your text',
+        body: 'Paste up to 500,000 characters into the textarea.',
+      },
+      {
+        title: 'Enter prefix and suffix',
+        body: 'Type the prefix and/or suffix. A suffix of ; appends a semicolon to the end of every line.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Read the preview and copy the result. Toggle "skip empty lines" off if you want blanks affected too.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I apply the prefix/suffix to blank lines too?',
+        a: 'Yes. Uncheck "skip empty lines" and the prefix and suffix are applied to empty lines as well.',
+      },
+      {
+        q: 'How do I use it for a Markdown list or quoting?',
+        a: 'Set the prefix to "- " for a Markdown list, or prefix " and suffix ", to wrap each line as a quoted array element.',
+      },
+      {
+        q: 'Can I add different text to each line?',
+        a: 'No. It applies the same prefix and suffix to every line — there is no per-line variation.',
+      },
+      {
+        q: 'What is the maximum length?',
+        a: 'Up to 500,000 characters; input beyond that is processed from the start only.',
+      },
+    ],
+  },
+
+  'crc32-hash': {
+    metaTitle: 'CRC32 Hash Calculator — Hex and Decimal Checksum',
+    metaDescription:
+      'Compute a CRC32 checksum (polynomial 0xEDB88320) in hex and decimal in real time. Same algorithm as ZIP and PNG. Free CRC32 tool, no signup.',
+    intro:
+      'Compute the CRC32 checksum of your text in real time, in both 8-digit hexadecimal and unsigned 32-bit decimal. It uses the standard reflected polynomial 0xEDB88320 — the same CRC-32 used by ZIP and PNG — so the same input always yields the same 8-digit hex value.',
+    features: [
+      'Builds a 256-entry lookup table once at module load using polynomial 0xEDB88320.',
+      'Encodes text as UTF-8 bytes, starts crc at 0xFFFFFFFF and finalizes with ^0xFFFFFFFF.',
+      'Returns an unsigned 32-bit value via >>> 0.',
+      'Shows the result as uppercase 8-digit hex and as decimal, each with a copy button.',
+      'Updates live as you type.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Type or paste text into the input. An empty input shows a placeholder result.',
+      },
+      {
+        title: 'Read hex and decimal',
+        body: 'The CRC32 appears as an 8-digit uppercase hex value and an unsigned 32-bit decimal.',
+      },
+      {
+        title: 'Copy the value',
+        body: 'Use the copy buttons to grab either the hex or decimal form.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between CRC32 and SHA-256?',
+        a: 'CRC32 is an error-detection checksum, not a security hash. For tamper protection use SHA-256 or stronger — the tool shows a warning to that effect.',
+      },
+      {
+        q: 'Is this the same value as a ZIP file CRC?',
+        a: 'Yes. It uses the standard CRC-32 with polynomial 0xEDB88320, the same algorithm as ZIP and PNG.',
+      },
+      {
+        q: 'Can I use it for security?',
+        a: 'No. CRC32 collisions are easy to produce, so it is only suitable for integrity checks, not for security.',
+      },
+      {
+        q: 'Why might the same text give a different value elsewhere?',
+        a: 'The result is computed over UTF-8 bytes, so a different character encoding of the same text produces a different checksum.',
+      },
+    ],
+  },
+
+  'adler32-hash': {
+    metaTitle: 'Adler-32 Hash Calculator — Hex and Decimal Checksum',
+    metaDescription:
+      'Compute an Adler-32 checksum (zlib, mod 65521) in hex and decimal in real time. Faster than CRC32. Free Adler-32 tool, no signup.',
+    intro:
+      'Compute the Adler-32 checksum of your text in real time, in 8-digit hex and unsigned 32-bit decimal. It is the same Adler-32 used by zlib and PNG: starting from a=1, b=0, each UTF-8 byte updates a=(a+byte) mod 65521 and b=(b+a) mod 65521, and the result is (b<<16)|a.',
+    features: [
+      'Accumulates a and b over UTF-8 bytes, both taken mod 65521 (the largest prime below 65536).',
+      'Combines them as (b<<16)|a, returned as an unsigned 32-bit value.',
+      'Shows the result as uppercase 8-digit hex and as decimal, each with a copy button.',
+      'Updates live as you type.',
+      'Faster to compute than CRC32.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Type or paste text into the input.',
+      },
+      {
+        title: 'Read hex and decimal',
+        body: 'The Adler-32 appears as an 8-digit uppercase hex value and an unsigned 32-bit decimal.',
+      },
+      {
+        title: 'Copy the value',
+        body: 'Use the copy buttons to grab either form.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which is faster and safer, Adler-32 or CRC32?',
+        a: 'Adler-32 is faster to compute, but neither is a security hash. CRC32 generally has better error detection, especially on short inputs.',
+      },
+      {
+        q: 'Why divide by 65521?',
+        a: '65521 is the largest prime below 65536, which improves the checksum distribution over a plain power-of-two modulus.',
+      },
+      {
+        q: 'Why is it unreliable on short text?',
+        a: 'For short inputs Adler-32 has weak distribution, so similar inputs can produce similar values — a known weakness compared with CRC32.',
+      },
+      {
+        q: 'Is this the same Adler-32 used by zlib?',
+        a: 'Yes. It matches the zlib/PNG Adler-32 used for data integrity.',
+      },
+    ],
+  },
+
+  'passphrase-gen': {
+    metaTitle: 'Passphrase Generator — Memorable Multi-Word Passphrases',
+    metaDescription:
+      'Generate memorable multi-word passphrases with cryptographic randomness and an entropy estimate. Like Correct-Horse-Battery-Staple42. Free, no signup.',
+    intro:
+      'Generate memorable multi-word passphrases using cryptographically secure randomness, with an estimated entropy in bits and a strength rating. A 4-word phrase with hyphens, capitalization and a trailing number looks like Correct-Horse-Battery-Staple42, and adding more words raises the entropy proportionally.',
+    features: [
+      'Selects words from a built-in list with crypto.getRandomValues and rejection sampling for uniformity.',
+      'Word count slider from 3 to 8 (default 4) with separators of hyphen, underscore, space or period.',
+      'Optional capitalization of each word and an optional trailing two-digit number (00-99).',
+      'Estimates entropy as words x log2(list size) plus log2(100) when numbers are added.',
+      'Rates strength: 80+ bits very strong, 60+ bits strong.',
+    ],
+    steps: [
+      {
+        title: 'Set the word count and separator',
+        body: 'Choose 3 to 8 words and a separator (default hyphen). More words mean more entropy.',
+      },
+      {
+        title: 'Toggle options',
+        body: 'Optionally capitalize each word and append a trailing number. The trailing number adds about 6.6 bits (log2 100).',
+      },
+      {
+        title: 'Generate and copy',
+        body: 'Click Generate, read the strength and entropy, and copy the passphrase. It is generated only on click, so it is hydration-safe.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does entropy in bits mean?',
+        a: 'It is a measure of how hard the passphrase is to guess — each added bit roughly doubles the number of possibilities. More words means more bits.',
+      },
+      {
+        q: 'How much safer is adding a trailing number?',
+        a: 'A two-digit number adds about 6.6 bits (log2 of 100), so it helps a little but far less than adding another word.',
+      },
+      {
+        q: 'How many words should I use?',
+        a: 'More words give more entropy; the bulk of the strength comes from the word count, which is why the slider goes up to 8.',
+      },
+      {
+        q: 'Is the randomness really secure?',
+        a: 'Yes. It uses crypto.getRandomValues rather than Math.random. Do not reuse the same passphrase across sites — store it in a password manager.',
+      },
+    ],
+  },
+
+  'csv-to-yaml': {
+    metaTitle: 'CSV to YAML — Convert CSV to a YAML List of Objects',
+    metaDescription:
+      'Convert a CSV table into a YAML sequence of objects keyed by the header row, with optional type inference. All in your browser. Free CSV-to-YAML tool, no signup.',
+    intro:
+      'Convert a CSV table into a YAML sequence of objects keyed by the header row. With type inference on, "name,age\\nAlice,30" becomes a list item with name: Alice and age: 30 (a number); turn inference off and age becomes the string "30".',
+    features: [
+      'Parses CSV with papaparse using header:true and controls typing itself.',
+      'With inference on: empty becomes null, true/false become booleans, numeric strings become numbers, the rest stay strings.',
+      'Quotes ambiguous tokens (null, true, false, yes, no, on, off) and numeric-looking strings to preserve them as text.',
+      'Escapes special characters with double quotes when needed.',
+      'Offers copy and download as a .yaml file, with a record count.',
+    ],
+    steps: [
+      {
+        title: 'Paste your CSV',
+        body: 'Paste CSV with a header row first (a sample is provided). Missing headers cause an error.',
+      },
+      {
+        title: 'Choose type inference',
+        body: 'Toggle "infer types" (numbers, booleans, empty). With it off every value stays a string.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Copy the YAML sequence or download it as a .yaml file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What changes when I turn type inference off?',
+        a: 'Every value stays a string. With it on, "30" becomes a number and "true" becomes a boolean.',
+      },
+      {
+        q: 'Why does a zip code with a leading zero get mangled?',
+        a: 'With inference on, numeric strings become numbers and lose the leading zero. Turn inference off to preserve numeric strings like zip codes.',
+      },
+      {
+        q: 'Why do yes/no values get quoted?',
+        a: 'yes, no, on and off are ambiguous YAML tokens that could be read as booleans, so they are quoted to keep them as strings.',
+      },
+      {
+        q: 'What if the first row is not a header?',
+        a: 'The first row must be the header. Without one the conversion errors out.',
+      },
+    ],
+  },
+
+  'json-to-toml': {
+    metaTitle: 'JSON to TOML — Convert JSON to TOML Config Online',
+    metaDescription:
+      'Convert a JSON object to TOML. Nested objects become [tables] and object arrays become [[array-tables]]. Free JSON-to-TOML converter, no signup.',
+    intro:
+      'Convert a JSON object into TOML configuration. {"owner":{"name":"Tom"}} becomes [owner] with name = "Tom", a plain array like {"ports":[8000,8001]} becomes ports = [8000, 8001], and an array of objects becomes a repeated [[table]] block.',
+    features: [
+      'Requires a JSON object at the root; arrays and primitives cannot be converted.',
+      'Emits scalars and scalar arrays first, then nested objects under [path] headers, recursively.',
+      'Repeats an [[path]] header for each item in an array of objects.',
+      'Uses bare keys when valid (letters, digits, _, -) and quotes the rest; escapes control chars as \\uXXXX.',
+      'Offers copy and download as a .toml file.',
+    ],
+    steps: [
+      {
+        title: 'Paste your JSON',
+        body: 'Paste a JSON object (a sample is provided). A top-level array or primitive cannot be converted to TOML.',
+      },
+      {
+        title: 'Review the TOML',
+        body: 'Scalars become key = value, nested objects become [table.path], and object arrays become repeated [[table.path]] blocks.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Copy the TOML or download it as a .toml file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are null values converted?',
+        a: 'TOML has no null, so null values are replaced with an empty string ("") — this conversion is not lossless for nulls.',
+      },
+      {
+        q: 'How do object arrays differ from plain arrays?',
+        a: 'An array of objects becomes repeated [[table]] blocks, while a plain array becomes an inline array like [8000, 8001]. Mixed arrays use the inline form.',
+      },
+      {
+        q: 'Can the top-level JSON be an array?',
+        a: 'No. The root must be a JSON object; arrays and primitive roots cannot be expressed as TOML.',
+      },
+      {
+        q: 'What is the difference between [table] and [[array-table]]?',
+        a: '[table] declares a single nested table, while [[array-table]] is repeated once per element to build an array of tables. Note that Infinity and NaN cannot be represented and cause an error.',
+      },
+    ],
+  },
+
+  'image-ascii-braille': {
+    metaTitle: 'Image to Braille ASCII Art — Unicode Braille Converter',
+    metaDescription:
+      'Convert an image into Unicode braille blocks (U+2800), mapping 2x4 pixels per character for denser text art than ASCII. Free braille art tool, no signup.',
+    intro:
+      'Convert an image into Unicode braille blocks (starting at U+2800) for denser text art than plain ASCII. Each braille character packs a 2x4 pixel block, so the result is higher resolution — view it in a monospace font for correct alignment.',
+    features: [
+      'Downscales to grayscale, doubling vertical sampling because a braille cell is 2 wide by 4 tall.',
+      'Uses 0.299R + 0.587G + 0.114B luminance and composites transparent areas over white.',
+      'For each 2x4 block, turns a dot on when the pixel is below the threshold (or above, when inverted).',
+      'Combines the dots into a U+2800 pattern via DOT_BITS, preserving empty cells as blank braille.',
+      'Adjustable output width (10-200 chars), threshold (0-255) and an invert option.',
+    ],
+    steps: [
+      {
+        title: 'Drop an image',
+        body: 'Drop one image (up to 50MB).',
+      },
+      {
+        title: 'Adjust width and threshold',
+        body: 'Set the output width and the threshold; a higher threshold fills more area with dots. Toggle invert for dark backgrounds.',
+      },
+      {
+        title: 'Copy the braille text',
+        body: 'Copy the braille text and paste it where a monospace font is used so it lines up.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is this different from ASCII art?',
+        a: 'Braille packs a 2x4 pixel block into each character, so it has higher resolution than ordinary ASCII art.',
+      },
+      {
+        q: 'What does the threshold slider control?',
+        a: 'It is the black/white binarization cutoff. Pixels below the threshold become dots; gray gradients are not represented — each dot is only on or off.',
+      },
+      {
+        q: 'Where should I view the result for correct alignment?',
+        a: 'In a monospace font, where every character has the same width so the braille grid lines up.',
+      },
+      {
+        q: 'How are transparent images handled?',
+        a: 'Transparent areas are composited over white, so keep that in mind when combining transparency with the invert option.',
+      },
+    ],
+  },
+
+  'image-mirror-tile': {
+    metaTitle: 'Image Mirror Tile — Kaleidoscope Symmetry to PNG',
+    metaDescription:
+      'Mirror an image horizontally and vertically into kaleidoscope-like symmetric tiles and export a PNG. Quadrant, horizontal or vertical modes. Free, no signup.',
+    intro:
+      'Mirror an image into kaleidoscope-like symmetric tiles and export a PNG. The quadrant mode places the original top-left and fills the other three cells with reflections to make a 2x2 kaleidoscope; horizontal mode makes a 2x-wide mirror and vertical mode a 2x-tall one.',
+    features: [
+      'Reflects the original on a canvas with translate + scale(-1).',
+      'Horizontal = original | flipped, vertical = original over flipped, quadrant = all four reflections in a 2x2 grid.',
+      'Encodes the result as PNG via canvas.toBlob to preserve transparency.',
+      'Corrects EXIF orientation on load so the mirroring is the right way up.',
+      'Revokes object URLs to avoid leaks.',
+    ],
+    steps: [
+      {
+        title: 'Drop an image',
+        body: 'Drop one image (up to 50MB).',
+      },
+      {
+        title: 'Choose a symmetry mode',
+        body: 'Pick quadrant (2x2), horizontal (2x wide) or vertical (2x tall).',
+      },
+      {
+        title: 'Download the PNG',
+        body: 'Preview the symmetric result and download it as a PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why is the output bigger than the original?',
+        a: 'Mirroring doubles a dimension (or both for quadrant), so output is 2x wide, 2x tall, or 2x2 the original size.',
+      },
+      {
+        q: 'How do the quadrant, horizontal and vertical modes differ?',
+        a: 'Horizontal mirrors left-to-right (2x wide), vertical mirrors top-to-bottom (2x tall), and quadrant does both into a 2x2 kaleidoscope.',
+      },
+      {
+        q: 'Can I get the result as a JPG?',
+        a: 'No. The output is always PNG, which preserves transparency. There is no format option.',
+      },
+      {
+        q: 'How is the kaleidoscope pattern made?',
+        a: 'The original is placed in one cell and reflected copies fill the rest, producing a symmetric kaleidoscope tile.',
+      },
+    ],
+  },
+
+  'binaural-tone-gen': {
+    metaTitle: 'Binaural Tone Generator — Real-Time Binaural Beats',
+    metaDescription:
+      'Generate binaural beats in real time with Web Audio — a slightly different frequency in each ear. Headphones required. Free binaural tone generator, no signup.',
+    intro:
+      'Generate binaural beats in real time with the Web Audio API by sending a slightly different frequency to each ear. A 200 Hz base with a 10 Hz beat plays 200 Hz on the left and 210 Hz on the right, and the brain perceives the 10 Hz difference as a beat. Headphones are required for the effect.',
+    features: [
+      'Creates an AudioContext inside the user click (resuming if suspended).',
+      'Left oscillator at the base frequency, right at base + beat, panned via a ChannelMerger.',
+      'Fades the gain in over 0.05s to avoid clicks, and fades out before closing the context on stop.',
+      'Base frequency 20-1500 Hz (default 200) and beat difference 0.5-40 Hz (default 10).',
+      'Volume slider that applies immediately during playback.',
+    ],
+    steps: [
+      {
+        title: 'Set base frequency and beat',
+        body: 'Choose a base frequency (20-1500 Hz) and a beat difference (0.5-40 Hz). A 4 Hz beat sits in the theta range.',
+      },
+      {
+        title: 'Set the volume and play',
+        body: 'Set the volume (0-100%, default 30) and press Play. Audio is generated live; nothing is saved to a file.',
+      },
+      {
+        title: 'Use headphones',
+        body: 'Listen with headphones so the left and right frequencies stay separated, then press Stop to fade out.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why are headphones required?',
+        a: 'Each ear needs to hear its own frequency. On speakers the left and right channels mix, so the binaural effect is lost.',
+      },
+      {
+        q: 'Do binaural beats actually work?',
+        a: 'The tool generates the tones, but no medical or cognitive effect is guaranteed.',
+      },
+      {
+        q: 'What does the beat difference (Hz) mean?',
+        a: 'It is the frequency gap between the two ears — for example a 10 Hz beat with a 200 Hz base means 200 Hz left and 210 Hz right.',
+      },
+      {
+        q: 'Can I save the sound to a file?',
+        a: 'No. It is generated live in real time and is not exported to a file. If you have a history of photosensitivity or seizures, use caution.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {

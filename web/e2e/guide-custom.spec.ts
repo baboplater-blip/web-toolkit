@@ -50,6 +50,13 @@ const CUSTOM_GUIDE_IDS: string[] = [
   'leetspeak', 'letter-frequency', 'love-calculator', 'mac-address', 'nanoid-gen',
   'noise-generator', 'random-letter', 'random-words', 'regex-cheatsheet', 'remove-duplicate-words',
   'shoe-size-converter', 'text-shadow', 'tsv-to-csv', 'uuid-validate', 'week-number',
+  // 팩7 신규 30종 (CUSTOM_GUIDES 185→215)
+  'cron-next-runs', 'http-header-analyzer', 'regex-extract', 'json-to-jsdoc', 'sql-where-builder',
+  'color-shades', 'css-keyframes', 'json-to-env', 'angle-converter', 'data-size-converter',
+  'tax-bracket-calc', 'download-time-calc', 'frame-time-calc', 'fov-calc', 'ohms-law-calc',
+  'resistor-color-code', 'random-date', 'duplicate-lines', 'text-stats-table', 'number-extract',
+  'text-to-columns', 'prefix-suffix-lines', 'crc32-hash', 'adler32-hash', 'passphrase-gen',
+  'csv-to-yaml', 'json-to-toml', 'image-ascii-braille', 'image-mirror-tile', 'binaural-tone-gen',
 ];
 
 // 자동생성 intro 의 마지막 문장(빌더 템플릿). override.intro 가 적용되면 사라진다.
@@ -72,6 +79,8 @@ const SUBSET_FOR_NON_KO = new Set([
   'bmi-calc', 'rsa-keypair', 'md-html',
   // 라운드A(팩6) 대표
   'base58', 'bmr-calculator', 'ean-validate', 'css-grid', 'html-to-markdown', 'week-number',
+  // 팩7 대표
+  'crc32-hash', 'fov-calc', 'tax-bracket-calc', 'cron-next-runs', 'csv-to-yaml', 'angle-converter',
 ]);
 
 test.describe('맞춤 가이드 — override 적용(자동생성 폴백 아님)', () => {
@@ -153,6 +162,15 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/ja/guide/bmr-calculator', phrase: 'Mifflin', note: 'JA BMR Mifflin' },
     { path: '/zh/guide/ean-validate', phrase: 'GTIN', note: 'ZH EAN GTIN' },
     { path: '/zh/guide/leetspeak', phrase: 'l337', note: 'ZH leet 변환' },
+    // 팩7 30종 맞춤 가이드(4개국어)
+    { path: '/guide/crc32-hash', phrase: '0xEDB88320', note: 'KO CRC32 다항식' },
+    { path: '/guide/adler32-hash', phrase: '65521', note: 'KO Adler-32 mod' },
+    { path: '/guide/tax-bracket-calc', phrase: '누진', note: 'KO 누진 구간세율' },
+    { path: '/guide/frame-time-calc', phrase: 'HH:MM:SS:FF', note: 'KO 타임코드' },
+    { path: '/en/guide/crc32-hash', phrase: '0xEDB88320', note: 'EN CRC32 다항식' },
+    { path: '/en/guide/passphrase-gen', phrase: 'passphrase', note: 'EN passphrase' },
+    { path: '/ja/guide/fov-calc', phrase: 'atan', note: 'JA FOV 2·atan' },
+    { path: '/zh/guide/angle-converter', phrase: 'grad', note: 'ZH 각도 grad' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {
