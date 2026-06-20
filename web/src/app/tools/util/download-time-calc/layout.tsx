@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/download-time-calc',
+      'ja': '/ja/tools/download-time-calc',
+      'zh': '/zh/tools/download-time-calc',
       'x-default': URL_PATH,
     },
   },

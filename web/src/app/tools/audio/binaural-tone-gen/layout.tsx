@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/binaural-tone-gen',
+      'ja': '/ja/tools/binaural-tone-gen',
+      'zh': '/zh/tools/binaural-tone-gen',
       'x-default': URL_PATH,
     },
   },

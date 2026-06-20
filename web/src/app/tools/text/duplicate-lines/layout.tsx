@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/duplicate-lines',
+      'ja': '/ja/tools/duplicate-lines',
+      'zh': '/zh/tools/duplicate-lines',
       'x-default': URL_PATH,
     },
   },

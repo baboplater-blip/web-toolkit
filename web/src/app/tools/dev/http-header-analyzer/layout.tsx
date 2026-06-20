@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/http-header-analyzer',
+      'ja': '/ja/tools/http-header-analyzer',
+      'zh': '/zh/tools/http-header-analyzer',
       'x-default': URL_PATH,
     },
   },

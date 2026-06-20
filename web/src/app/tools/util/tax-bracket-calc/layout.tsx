@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/tax-bracket-calc',
+      'ja': '/ja/tools/tax-bracket-calc',
+      'zh': '/zh/tools/tax-bracket-calc',
       'x-default': URL_PATH,
     },
   },

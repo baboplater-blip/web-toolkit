@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/adler32-hash',
+      'ja': '/ja/tools/adler32-hash',
+      'zh': '/zh/tools/adler32-hash',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/number-extract',
+      'ja': '/ja/tools/number-extract',
+      'zh': '/zh/tools/number-extract',
       'x-default': URL_PATH,
     },
   },

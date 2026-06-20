@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-ascii-braille',
+      'ja': '/ja/tools/image-ascii-braille',
+      'zh': '/zh/tools/image-ascii-braille',
       'x-default': URL_PATH,
     },
   },

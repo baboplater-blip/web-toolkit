@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/ohms-law-calc',
+      'ja': '/ja/tools/ohms-law-calc',
+      'zh': '/zh/tools/ohms-law-calc',
       'x-default': URL_PATH,
     },
   },

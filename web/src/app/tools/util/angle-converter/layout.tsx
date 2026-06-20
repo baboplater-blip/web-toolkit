@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/angle-converter',
+      'ja': '/ja/tools/angle-converter',
+      'zh': '/zh/tools/angle-converter',
       'x-default': URL_PATH,
     },
   },

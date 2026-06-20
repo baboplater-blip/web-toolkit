@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/cron-next-runs',
+      'ja': '/ja/tools/cron-next-runs',
+      'zh': '/zh/tools/cron-next-runs',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/text-stats-table',
+      'ja': '/ja/tools/text-stats-table',
+      'zh': '/zh/tools/text-stats-table',
       'x-default': URL_PATH,
     },
   },

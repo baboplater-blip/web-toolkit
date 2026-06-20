@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/fov-calc',
+      'ja': '/ja/tools/fov-calc',
+      'zh': '/zh/tools/fov-calc',
       'x-default': URL_PATH,
     },
   },

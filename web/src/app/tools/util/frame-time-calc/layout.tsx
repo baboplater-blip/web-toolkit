@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/frame-time-calc',
+      'ja': '/ja/tools/frame-time-calc',
+      'zh': '/zh/tools/frame-time-calc',
       'x-default': URL_PATH,
     },
   },

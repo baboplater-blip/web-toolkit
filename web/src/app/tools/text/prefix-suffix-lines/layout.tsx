@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/prefix-suffix-lines',
+      'ja': '/ja/tools/prefix-suffix-lines',
+      'zh': '/zh/tools/prefix-suffix-lines',
       'x-default': URL_PATH,
     },
   },

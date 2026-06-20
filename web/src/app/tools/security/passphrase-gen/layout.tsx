@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/passphrase-gen',
+      'ja': '/ja/tools/passphrase-gen',
+      'zh': '/zh/tools/passphrase-gen',
       'x-default': URL_PATH,
     },
   },

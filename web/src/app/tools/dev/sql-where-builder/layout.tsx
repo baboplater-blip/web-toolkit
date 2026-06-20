@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/sql-where-builder',
+      'ja': '/ja/tools/sql-where-builder',
+      'zh': '/zh/tools/sql-where-builder',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/json-to-toml',
+      'ja': '/ja/tools/json-to-toml',
+      'zh': '/zh/tools/json-to-toml',
       'x-default': URL_PATH,
     },
   },

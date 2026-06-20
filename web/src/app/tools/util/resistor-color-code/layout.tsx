@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/resistor-color-code',
+      'ja': '/ja/tools/resistor-color-code',
+      'zh': '/zh/tools/resistor-color-code',
       'x-default': URL_PATH,
     },
   },

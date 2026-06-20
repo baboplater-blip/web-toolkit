@@ -2880,6 +2880,216 @@ export const JA_TOOLS: Record<string, JaToolCopy> = {
       '任意の日付のISO-8601週番号を求めたり、指定した週番号がどの日付に当たるかを確認できます。ブラウザ内で完結します。',
     keywords: ['週番号 計算', 'iso 週番号', 'week number', '第何週', 'week of year'],
   },
+  'cron-next-runs': {
+    name: 'cron 次回実行プレビュー',
+    tagline: 'cron式から次の実行日時を一覧表示。',
+    description:
+      'cron式を入力すると、タイムゾーンを考慮して次のN回分の実行日時を一覧で確認できます。スケジュール設定の検証に便利です。',
+    keywords: ['cron 次回実行', 'cron 実行日時', 'crontab プレビュー', 'cron next runs', 'スケジュール 確認'],
+  },
+  'http-header-analyzer': {
+    name: 'HTTPヘッダー解析ツール',
+    tagline: 'レスポンスヘッダーを監査。',
+    description:
+      'レスポンスヘッダーを貼り付けると、セキュリティ・キャッシュ・CORSのヘッダーを分類し、不足しているものを指摘します。ブラウザ内で処理します。',
+    keywords: ['http ヘッダー', 'セキュリティヘッダー', 'cors', 'cache-control', 'ヘッダー 監査'],
+  },
+  'regex-extract': {
+    name: '正規表現グループ抽出',
+    tagline: '全マッチからキャプチャグループを抽出。',
+    description:
+      'テキストに正規表現を適用し、すべてのマッチからキャプチャグループや名前付きグループを表形式で抽出します。',
+    keywords: ['正規表現 抽出', 'キャプチャグループ', '名前付きグループ', 'regex 抽出', '正規表現 マッチ'],
+  },
+  'json-to-jsdoc': {
+    name: 'JSON → JSDoc 変換',
+    tagline: 'JSONから@typedefを生成。',
+    description:
+      'JSONサンプルから型を推論し、JSDocの@typedef型定義を生成します。ブラウザ内で処理します。',
+    keywords: ['json jsdoc', 'jsdoc 生成', 'typedef', '型定義', 'json 型 推論'],
+  },
+  'color-shades': {
+    name: 'カラーシェード生成',
+    tagline: '明度のトーン段階を作成。',
+    description:
+      'ベースカラーからHSLの明度を段階的に変化させ、ティント（明）とシェード（暗）のカラーランプを生成します。',
+    keywords: ['カラーシェード', 'ティント', 'パレット', 'hsl 明度', 'カラースケール'],
+  },
+  'css-keyframes': {
+    name: 'CSS keyframes ジェネレーター',
+    tagline: '@keyframes アニメCSSを生成。',
+    description:
+      'イージング・繰り返し回数・再生時間を設定して、@keyframesアニメーションのCSSを生成します。',
+    keywords: ['css keyframes', 'アニメーション', 'イージング', 'css アニメ', 'transition'],
+  },
+  'json-to-env': {
+    name: 'JSON → .env 変換',
+    tagline: 'JSONを環境変数に平坦化。',
+    description:
+      'ネストしたJSONを、大文字キーの.env環境変数の行に変換します。ブラウザ内で処理します。',
+    keywords: ['json env', 'dotenv', '環境変数', 'json 平坦化', 'environment'],
+  },
+  'sql-where-builder': {
+    name: 'SQL WHERE 句ビルダー',
+    tagline: 'エスケープ済みWHERE句を組み立て。',
+    description:
+      'フィールド・演算子・値を選んで、安全にエスケープされたSQLのWHERE句を組み立てます。',
+    keywords: ['sql where', 'クエリビルダー', '条件 絞り込み', 'sql 句', 'where 生成'],
+  },
+  'duplicate-lines': {
+    name: '重複行の検出',
+    tagline: '重複する行だけを一覧表示。',
+    description:
+      '2回以上現れる行だけを出現回数とともに抽出します。リストの重複チェックに便利です。',
+    keywords: ['重複行', '重複 検出', '出現回数', 'duplicate lines', 'テキスト 重複'],
+  },
+  'text-stats-table': {
+    name: '行ごとの長さ統計',
+    tagline: '行単位の長さ統計を集計。',
+    description:
+      '行ごとの文字数・単語数に加え、最長・最短・平均の長さを計算して表で表示します。',
+    keywords: ['行 長さ', 'テキスト 統計', '文字数', '平均 長さ', 'line length'],
+  },
+  'number-extract': {
+    name: '数値の抽出',
+    tagline: 'テキストから数値を取り出す。',
+    description:
+      'テキストから整数・小数・通貨表記の数値を抽出し、一覧と合計を表示します。ブラウザ内で処理します。',
+    keywords: ['数値 抽出', '数字 取り出し', '合計', 'number extract', '通貨 抽出'],
+  },
+  'text-to-columns': {
+    name: '列に整列',
+    tagline: '区切りテキストを表に整形。',
+    description:
+      '区切り文字で分割したテキストを、等幅フォントで桁揃えした列の表に整形します。',
+    keywords: ['列 整列', '桁揃え', '区切り文字', '表 整形', 'fixed width'],
+  },
+  'prefix-suffix-lines': {
+    name: '行の前後に文字を追加',
+    tagline: '各行をまとめて囲む。',
+    description:
+      'すべての行に接頭辞・接尾辞を一括で付与します。リストの一括編集にすばやく対応できます。',
+    keywords: ['接頭辞', '接尾辞', '行 囲む', '一括編集', 'prefix suffix'],
+  },
+  'tax-bracket-calc': {
+    name: '累進税率計算ツール',
+    tagline: '累進課税の概算を計算。',
+    description:
+      '累進課税の税率区分を設定して、実効税率と概算税額を計算します。あくまで目安としてご利用ください。',
+    keywords: ['累進税率', '税率区分', '実効税率', '所得税 概算', 'tax bracket'],
+  },
+  'data-size-converter': {
+    name: 'データサイズ変換',
+    tagline: 'バイトをSI/IECで換算。',
+    description:
+      'バイト・KB・MB・GB・TBを、SI（1000）とIEC（1024）の両基準でまとめて換算します。',
+    keywords: ['データサイズ', 'バイト 換算', 'ギガバイト', 'iec', 'kib mib'],
+  },
+  'download-time-calc': {
+    name: 'ダウンロード時間計算',
+    tagline: '転送にかかる時間を概算。',
+    description:
+      'ファイルサイズと回線速度から、ダウンロードやアップロードにかかる時間を概算します。',
+    keywords: ['ダウンロード時間', '転送時間', '回線速度', 'bandwidth', 'ファイルサイズ'],
+  },
+  'frame-time-calc': {
+    name: 'フレーム ⇄ タイムコード',
+    tagline: 'fps基準でフレームを変換。',
+    description:
+      '指定したfpsで、フレーム数とタイムコード（HH:MM:SS:FF）を相互に変換します。動画編集に便利です。',
+    keywords: ['タイムコード', 'フレーム', 'fps', '動画 編集', 'smpte'],
+  },
+  'angle-converter': {
+    name: '角度変換ツール',
+    tagline: '度・ラジアン・グラード・回転。',
+    description:
+      '度（degree）・ラジアン・グラード（gon）・回転（turn）をまとめて相互に変換します。',
+    keywords: ['角度 変換', '度', 'ラジアン', 'グラード', '回転 turn'],
+  },
+  'fov-calc': {
+    name: '画角（FOV）計算ツール',
+    tagline: 'センサーと焦点距離から画角を算出。',
+    description:
+      'センサーサイズと焦点距離から、水平・垂直・対角の画角（FOV）を計算します。',
+    keywords: ['画角', 'fov', '焦点距離', 'センサーサイズ', 'カメラ'],
+  },
+  'resistor-color-code': {
+    name: '抵抗カラーコード読み取り',
+    tagline: 'カラーバンドから抵抗値を判定。',
+    description:
+      '4バンド・5バンドの抵抗カラーコードから、抵抗値と許容差を読み取ります。電子工作に役立ちます。',
+    keywords: ['抵抗 カラーコード', 'カラーコード', 'オーム', '許容差', '電子工作'],
+  },
+  'random-date': {
+    name: 'ランダム日付生成',
+    tagline: '範囲内の日付をランダムに選ぶ。',
+    description:
+      '指定した開始日と終了日の範囲内で、安全な乱数を使ってランダムな日付を生成します。',
+    keywords: ['ランダム 日付', '日付 生成', '範囲', 'シャッフル', 'random date'],
+  },
+  'ohms-law-calc': {
+    name: 'オームの法則計算ツール',
+    tagline: 'V・I・R・Pを求める。',
+    description:
+      '電圧・電流・抵抗・電力のうち2つを入力すると、残りの値を計算します。ブラウザ内で処理します。',
+    keywords: ['オームの法則', '電圧', '電流', '抵抗', '電力'],
+  },
+  'crc32-hash': {
+    name: 'CRC32 チェックサム',
+    tagline: 'ブラウザ内でCRC32を計算。',
+    description:
+      'テキストやファイルのCRC32チェックサムを計算し、手軽に整合性を確認できます。ファイルは送信されません。',
+    keywords: ['crc32', 'チェックサム', '整合性 確認', 'ハッシュ', 'verify'],
+  },
+  'adler32-hash': {
+    name: 'Adler-32 チェックサム',
+    tagline: 'zlibのAdler-32チェックサム。',
+    description:
+      'zlibで使われるAdler-32チェックサムを、テキストやファイルから計算します。ブラウザ内で処理します。',
+    keywords: ['adler32', 'チェックサム', 'zlib', '整合性', 'ハッシュ'],
+  },
+  'passphrase-gen': {
+    name: 'パスフレーズ生成',
+    tagline: '覚えやすい複数単語パスワード。',
+    description:
+      '区切り文字・大文字小文字・数字の付加を選んで、覚えやすい複数単語のパスフレーズを生成します。使い回しは避けてください。',
+    keywords: ['パスフレーズ', 'パスワード', '覚えやすい', '単語 パスワード', '安全'],
+  },
+  'csv-to-yaml': {
+    name: 'CSV → YAML 変換',
+    tagline: 'CSVの行をYAMLに変換。',
+    description:
+      'CSVの表を、ヘッダーをキーにしたオブジェクトのYAMLリストに変換します。ブラウザ内で処理します。',
+    keywords: ['csv yaml', 'yaml 変換', '変換', 'テーブル', 'データ'],
+  },
+  'json-to-toml': {
+    name: 'JSON → TOML 変換',
+    tagline: 'JSONをTOMLに変換。',
+    description:
+      'JSONデータを、テーブルや配列のテーブルに対応したTOML設定形式に変換します。',
+    keywords: ['json toml', 'toml 変換', '変換', '設定ファイル', 'config'],
+  },
+  'image-ascii-braille': {
+    name: '画像 → 点字アート',
+    tagline: '画像を点字ドットで表現。',
+    description:
+      '画像を高解像度のUnicode点字（⠿）ブロックによるアートテキストに変換します。ブラウザ内で処理します。',
+    keywords: ['点字 アート', 'aa アスキーアート', '画像 文字化', 'unicode アート', 'ドット'],
+  },
+  'image-mirror-tile': {
+    name: 'ミラータイル',
+    tagline: '左右対称のミラータイルを作成。',
+    description:
+      '画像を水平・垂直に反転させ、左右上下が対称になるパターンタイルを作成します。万華鏡のような効果です。',
+    keywords: ['ミラー', 'タイル', '対称', 'パターン', '万華鏡'],
+  },
+  'binaural-tone-gen': {
+    name: 'バイノーラルビート生成',
+    tagline: '左右の周波数差でビートを再生。',
+    description:
+      '左右の耳でわずかに周波数を変え、バイノーラルビートをWeb Audioで生成・再生します。ヘッドホンの使用を推奨します。',
+    keywords: ['バイノーラルビート', 'ビート', '周波数', '集中', 'トーン'],
+  },
 };
 
 /** IDs that have curated Japanese copy, in insertion order. */

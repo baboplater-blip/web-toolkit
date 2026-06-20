@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/color-shades',
+      'ja': '/ja/tools/color-shades',
+      'zh': '/zh/tools/color-shades',
       'x-default': URL_PATH,
     },
   },

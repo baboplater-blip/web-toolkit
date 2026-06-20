@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/image-mirror-tile',
+      'ja': '/ja/tools/image-mirror-tile',
+      'zh': '/zh/tools/image-mirror-tile',
       'x-default': URL_PATH,
     },
   },

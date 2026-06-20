@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/css-keyframes',
+      'ja': '/ja/tools/css-keyframes',
+      'zh': '/zh/tools/css-keyframes',
       'x-default': URL_PATH,
     },
   },

@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     languages: {
       'ko-KR': URL_PATH,
       'en': '/en/tools/data-size-converter',
+      'ja': '/ja/tools/data-size-converter',
+      'zh': '/zh/tools/data-size-converter',
       'x-default': URL_PATH,
     },
   },

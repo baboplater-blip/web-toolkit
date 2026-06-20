@@ -2844,6 +2844,216 @@ export const ZH_TOOLS: Record<string, ZhToolCopy> = {
       '在浏览器本地查询任意日期的 ISO-8601 周数，并查看指定周数所覆盖的日期范围。',
     keywords: ['周数计算', 'week number', 'ISO周数', 'iso week number', '第几周', 'week of year'],
   },
+  'cron-next-runs': {
+    name: 'Cron 下次执行时间',
+    tagline: '预览 cron 表达式接下来的触发时刻。',
+    description:
+      '输入 cron 表达式，按时区列出接下来 N 次的执行日期和时间，方便核对定时任务。',
+    keywords: ['cron', '下次执行', 'next runs', '定时任务', 'crontab', '触发时间'],
+  },
+  'http-header-analyzer': {
+    name: 'HTTP 响应头分析',
+    tagline: '审查 HTTP 响应头。',
+    description:
+      '粘贴原始响应头，自动归类安全、缓存与 CORS 相关的头部，并提示缺失的关键头部。',
+    keywords: ['HTTP响应头', 'http header', '安全头', 'security headers', 'CORS', '缓存控制'],
+  },
+  'regex-extract': {
+    name: '正则分组提取',
+    tagline: '从每个匹配中提取捕获分组。',
+    description:
+      '用正则表达式扫描文本，将所有捕获分组和命名分组提取成表格，便于查看结果。',
+    keywords: ['正则提取', 'regex extract', '捕获分组', 'capture group', '命名分组', '正则表达式'],
+  },
+  'json-to-jsdoc': {
+    name: 'JSON 转 JSDoc',
+    tagline: '从 JSON 生成 @typedef 类型定义。',
+    description:
+      '根据 JSON 示例自动推断并生成 JSDoc 的 @typedef 类型定义注释。',
+    keywords: ['JSON转JSDoc', 'json to jsdoc', 'typedef', '类型定义', '注释', '类型推断'],
+  },
+  'color-shades': {
+    name: '颜色明暗色阶',
+    tagline: '生成由浅到深的色阶。',
+    description:
+      '基于 HSL 明度，从一个基准颜色生成由浅色到深色的整套色阶，适合配色与主题。',
+    keywords: ['颜色色阶', 'color shades', '明暗色', '调色板', 'hsl', '颜色梯度'],
+  },
+  'css-keyframes': {
+    name: 'CSS 关键帧生成器',
+    tagline: '生成 @keyframes 动画样式。',
+    description:
+      '设置缓动、循环次数和时长，一键生成 CSS @keyframes 动画代码。',
+    keywords: ['CSS关键帧', 'css keyframes', '动画', 'css animation', '缓动', 'easing'],
+  },
+  'json-to-env': {
+    name: 'JSON 转 .env',
+    tagline: '把 JSON 拍平成环境变量。',
+    description:
+      '将嵌套的 JSON 拍平为大写键名的 .env 环境变量行，方便配置部署。',
+    keywords: ['JSON转env', 'json to env', 'dotenv', '环境变量', '拍平', 'flatten'],
+  },
+  'sql-where-builder': {
+    name: 'SQL WHERE 构造器',
+    tagline: '拼装已转义的 WHERE 条件。',
+    description:
+      '选择字段、运算符和取值，生成安全转义后的 SQL WHERE 查询条件。',
+    keywords: ['SQL WHERE', 'where builder', '查询条件', '筛选', 'sql clause', '条件构造'],
+  },
+  'duplicate-lines': {
+    name: '查找重复行',
+    tagline: '只列出重复出现的行。',
+    description:
+      '筛选出文本中出现不止一次的行，并显示每行的出现次数。',
+    keywords: ['重复行', 'duplicate lines', '查重', 'find duplicates', '出现次数', '文本'],
+  },
+  'text-stats-table': {
+    name: '行长度统计',
+    tagline: '逐行统计长度。',
+    description:
+      '统计每一行的字符数和单词数，并给出最长、最短和平均长度。',
+    keywords: ['行长度', 'line length', '文本统计', 'text stats', '字数', '统计'],
+  },
+  'number-extract': {
+    name: '提取数字',
+    tagline: '从文本中抽取数字。',
+    description:
+      '从文本中提取整数、小数和货币金额，列出全部数值并给出合计。',
+    keywords: ['提取数字', 'extract numbers', '抽取数值', '求和', 'sum', '货币'],
+  },
+  'text-to-columns': {
+    name: '对齐成列',
+    tagline: '把分隔文本整理成表格。',
+    description:
+      '按分隔符拆分文本，并对齐成等宽字体的列表格，便于对照查看。',
+    keywords: ['分列', 'text to columns', '对齐', '分隔符', '表格', '等宽'],
+  },
+  'prefix-suffix-lines': {
+    name: '行前后缀批量添加',
+    tagline: '给每一行加上前后缀。',
+    description:
+      '为每一行同时添加前缀和（或）后缀，快速批量编辑列表。',
+    keywords: ['前缀后缀', 'prefix suffix', '批量编辑', '每行', 'wrap lines', '追加'],
+  },
+  'tax-bracket-calc': {
+    name: '累进税率计算器',
+    tagline: '按累进税级计算税额。',
+    description:
+      '设定累进税率区间，估算应缴税额和实际有效税率，仅供参考。',
+    keywords: ['累进税率', 'tax bracket', '有效税率', '边际税率', '所得税', '税额估算'],
+  },
+  'data-size-converter': {
+    name: '数据容量换算',
+    tagline: '在 SI 与 IEC 之间换算字节。',
+    description:
+      '在 SI（1000）和 IEC（1024）两种进制下换算字节、KB、MB、GB 和 TB。',
+    keywords: ['数据容量', 'data size', '字节', 'bytes', 'IEC', 'KiB MiB'],
+  },
+  'download-time-calc': {
+    name: '下载时间计算器',
+    tagline: '估算传输所需时间。',
+    description:
+      '根据文件大小和网络速度，估算下载或上传所需要的时间。',
+    keywords: ['下载时间', 'download time', '传输时间', '带宽', '网速', '文件大小'],
+  },
+  'frame-time-calc': {
+    name: '帧数与时间码',
+    tagline: '按帧率换算帧数与时间码。',
+    description:
+      '在给定帧率下，在帧数和时间码（HH:MM:SS:FF）之间相互换算。',
+    keywords: ['时间码', 'timecode', '帧数', 'frames', '帧率', 'fps'],
+  },
+  'angle-converter': {
+    name: '角度换算',
+    tagline: '度、弧度、百分度、圈数互换。',
+    description:
+      '在度、弧度、百分度（grad）和圈数（turn）之间一次性相互换算。',
+    keywords: ['角度换算', 'angle converter', '度', '弧度', 'radians', '百分度'],
+  },
+  'fov-calc': {
+    name: '视场角计算器',
+    tagline: '由传感器与焦距求视场角。',
+    description:
+      '根据传感器尺寸和焦距，计算水平、垂直和对角方向的视场角（FOV）。',
+    keywords: ['视场角', 'FOV', 'field of view', '焦距', '传感器尺寸', '相机'],
+  },
+  'resistor-color-code': {
+    name: '电阻色环识别',
+    tagline: '解读电阻色环。',
+    description:
+      '根据 4 环或 5 环电阻的颜色，读出对应的阻值和误差范围。',
+    keywords: ['电阻色环', 'resistor color code', '色环', '阻值', '欧姆', '误差'],
+  },
+  'random-date': {
+    name: '随机日期生成器',
+    tagline: '在区间内随机取一个日期。',
+    description:
+      '在指定的起止区间内，使用安全随机数生成随机日期。',
+    keywords: ['随机日期', 'random date', '日期生成', '区间', '抽取', 'picker'],
+  },
+  'ohms-law-calc': {
+    name: '欧姆定律计算器',
+    tagline: '求解电压、电流、电阻和功率。',
+    description:
+      '输入电压、电流、电阻或功率中的任意两个，即可求出其余两个值。',
+    keywords: ['欧姆定律', 'ohms law', '电压', '电流', '电阻', '功率'],
+  },
+  'crc32-hash': {
+    name: 'CRC32 校验和',
+    tagline: '在浏览器中计算 CRC32。',
+    description:
+      '计算文本或文件的 CRC32 校验和，快速核对数据完整性。',
+    keywords: ['CRC32', '校验和', 'checksum', '完整性', '哈希', '校验'],
+  },
+  'adler32-hash': {
+    name: 'Adler-32 校验和',
+    tagline: 'zlib 使用的 Adler-32 校验和。',
+    description:
+      '计算文本或文件的 Adler-32 校验和，即 zlib 所采用的校验算法。',
+    keywords: ['Adler-32', '校验和', 'checksum', 'zlib', '完整性', '哈希'],
+  },
+  'passphrase-gen': {
+    name: '口令短语生成器',
+    tagline: '易记的多词口令。',
+    description:
+      '生成易于记忆的多词口令，可设置分隔符、大小写和数字。请勿在多处重复使用同一口令。',
+    keywords: ['口令短语', 'passphrase', '密码', '易记密码', '多词密码', '安全'],
+  },
+  'csv-to-yaml': {
+    name: 'CSV 转 YAML',
+    tagline: '把 CSV 行转成 YAML。',
+    description:
+      '将 CSV 表格转换为以表头为键的 YAML 对象列表。',
+    keywords: ['CSV转YAML', 'csv to yaml', '转换', '表格', '数据', 'YAML'],
+  },
+  'json-to-toml': {
+    name: 'JSON 转 TOML',
+    tagline: '把 JSON 转成 TOML。',
+    description:
+      '将 JSON 数据转换为 TOML 配置格式，支持表（table）和表数组。',
+    keywords: ['JSON转TOML', 'json to toml', '转换', '配置', '数据', 'TOML'],
+  },
+  'image-ascii-braille': {
+    name: '图片转盲文艺术',
+    tagline: '用盲文点阵渲染图片。',
+    description:
+      '将图片转换为高分辨率的 Unicode 盲文（⠿）点阵字符画。',
+    keywords: ['盲文艺术', 'braille art', '字符画', 'ascii art', '图片转文字', '点阵'],
+  },
+  'image-mirror-tile': {
+    name: '镜像拼贴',
+    tagline: '生成对称的镜像图案。',
+    description:
+      '将图片水平和垂直镜像反射，拼成对称的万花筒式图案瓷砖。',
+    keywords: ['镜像', 'mirror', '拼贴', '对称', '图案', '万花筒'],
+  },
+  'binaural-tone-gen': {
+    name: '双耳节拍生成器',
+    tagline: '播放双耳频差节拍。',
+    description:
+      '通过 Web Audio 在左右耳之间设置微小频差，生成双耳节拍音。',
+    keywords: ['双耳节拍', 'binaural', '节拍', '频率', '专注', '音调'],
+  },
 };
 
 export const ZH_TOOL_IDS: string[] = Object.keys(ZH_TOOLS);
