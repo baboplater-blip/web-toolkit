@@ -43,6 +43,13 @@ const CUSTOM_GUIDE_IDS: string[] = [
   'bmi-calc', 'loan-calc', 'discount', 'timezone', 'date-diff', 'aspect-ratio',
   'password-strength', 'rsa-keypair', 'barcode', 'image-color-picker', 'avatar-crop',
   'word-frequency', 'md-html', 'pdf-to-txt',
+  // 라운드A(팩6) 신규 30종 (CUSTOM_GUIDES 155→185)
+  'age-difference', 'base58', 'bmr-calculator', 'business-days', 'cooking-converter',
+  'credit-card-type', 'css-grid', 'css-triangle', 'dog-age-calc', 'ean-validate',
+  'email-validator', 'hashtag-generator', 'html-to-markdown', 'image-glitch', 'image-posterize',
+  'leetspeak', 'letter-frequency', 'love-calculator', 'mac-address', 'nanoid-gen',
+  'noise-generator', 'random-letter', 'random-words', 'regex-cheatsheet', 'remove-duplicate-words',
+  'shoe-size-converter', 'text-shadow', 'tsv-to-csv', 'uuid-validate', 'week-number',
 ];
 
 // 자동생성 intro 의 마지막 문장(빌더 템플릿). override.intro 가 적용되면 사라진다.
@@ -63,6 +70,8 @@ const SUBSET_FOR_NON_KO = new Set([
   'video-convert', 'color-contrast', 'base-converter',
   // 라운드5 대표
   'bmi-calc', 'rsa-keypair', 'md-html',
+  // 라운드A(팩6) 대표
+  'base58', 'bmr-calculator', 'ean-validate', 'css-grid', 'html-to-markdown', 'week-number',
 ]);
 
 test.describe('맞춤 가이드 — override 적용(자동생성 폴백 아님)', () => {
@@ -135,6 +144,15 @@ test.describe('맞춤 가이드 — 실제 본문 문구 스팟 체크', () => {
     { path: '/en/guide/semver-checker', phrase: 'prerelease', note: 'EN semver precedence' },
     { path: '/ja/guide/pregnancy-due-date', phrase: '280', note: 'JA 출산예정일 280일' },
     { path: '/zh/guide/image-threshold', phrase: '0.299', note: 'ZH 휘도 계수' },
+    // 라운드A — 팩6 30종 맞춤 가이드(4개국어)
+    { path: '/guide/base58', phrase: '9Ajdvzr', note: 'KO base58 Hello→9Ajdvzr' },
+    { path: '/guide/bmr-calculator', phrase: 'Mifflin', note: 'KO BMR Mifflin-St Jeor' },
+    { path: '/guide/ean-validate', phrase: 'GTIN', note: 'KO EAN GTIN 체크디지트' },
+    { path: '/en/guide/base58', phrase: 'Bitcoin', note: 'EN base58 Bitcoin 알파벳' },
+    { path: '/en/guide/week-number', phrase: 'ISO', note: 'EN ISO-8601 주차' },
+    { path: '/ja/guide/bmr-calculator', phrase: 'Mifflin', note: 'JA BMR Mifflin' },
+    { path: '/zh/guide/ean-validate', phrase: 'GTIN', note: 'ZH EAN GTIN' },
+    { path: '/zh/guide/leetspeak', phrase: 'l337', note: 'ZH leet 변환' },
   ];
 
   for (const { path, phrase, note } of MARKERS) {

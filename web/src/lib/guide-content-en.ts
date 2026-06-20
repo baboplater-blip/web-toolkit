@@ -6799,6 +6799,1296 @@ export const CUSTOM_GUIDES_EN: Record<string, GuideOverrideEn> = {
       },
     ],
   },
+
+  'age-difference': {
+    metaTitle: 'Age Difference Calculator — Years, Months, Days Between Dates',
+    metaDescription:
+      'Find the exact gap between two dates in years, months and days plus total days. 2000-01-15 to 2003-03-20 is 3 years 2 months 5 days (1160 days). Free, no signup.',
+    intro:
+      'This age difference calculator works out the exact gap between two birthdays or dates and breaks it down into years, months and days, plus a total day count. Enter 2000-01-15 and 2003-03-20 and it shows 3 years 2 months 5 days (1160 days total) — and the order you type the dates in does not matter.',
+    features: [
+      'Two date pickers (First date / Second date) in YYYY-MM-DD; the result is the absolute difference, so order is irrelevant.',
+      'Calendar-aware breakdown into years, months and days, with day borrowing from the previous month when needed.',
+      'Total day count computed separately (e.g. 1160 days), since months vary in length.',
+      'Parses dates at UTC midnight so time zones never shift the result by a day, and rejects impossible dates like 2026-02-30.',
+      'Copy the formatted result such as `3 years 2 months 5 days` to the clipboard with one tap.',
+    ],
+    steps: [
+      {
+        title: 'Pick the two dates',
+        body: 'Choose a value in the First date and Second date fields. For a current age, put a birthday in one field and today in the other — the tool measures the gap between dates, not an age on its own.',
+      },
+      {
+        title: 'Read the breakdown',
+        body: 'The result appears as years, months and days, for example 3 years 2 months 5 days, alongside the total day count (1160 days). Swapping the inputs gives the identical answer.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'Tap Copy to put the formatted text on your clipboard for pasting into a message, spreadsheet or document.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does the order of the two dates matter?',
+        a: 'No. The calculator uses the absolute difference, so 2003-03-20 to 2000-01-15 gives exactly the same result as the reverse — 3 years 2 months 5 days.',
+      },
+      {
+        q: 'Why does not the total day count match years times 365?',
+        a: 'The years/months/days breakdown is calendar-based, and months have different lengths (28-31 days), so it does not divide evenly into the total. The total day count is computed directly from the millisecond gap, which is why both numbers are shown.',
+      },
+      {
+        q: 'Can time zones make the result off by a day?',
+        a: 'No. Dates are parsed at UTC midnight, so the calculation is unaffected by your local time zone and stays consistent everywhere.',
+      },
+    ],
+  },
+
+  'base58': {
+    metaTitle: 'Base58 Encode / Decode — Bitcoin Alphabet (no 0, O, I, l)',
+    metaDescription:
+      'Encode text to Base58 or decode Base58 back to UTF-8 text using the Bitcoin alphabet. Hello becomes 9Ajdvzr. The confusable 0, O, I and l are excluded. Free, no signup.',
+    intro:
+      'This Base58 tool encodes text into the Bitcoin Base58 alphabet or decodes a Base58 string back to UTF-8 text. The word Hello encodes to 9Ajdvzr, and 9Ajdvzr decodes straight back to Hello. The alphabet deliberately leaves out the easily confused characters 0, O, I and l.',
+    features: [
+      'Two-way mode toggle: encode plain text to Base58, or decode a Base58 string back to UTF-8.',
+      'Uses the 58-character Bitcoin alphabet 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz — no digit 0, capital O, capital I or lowercase l.',
+      'Encoding runs UTF-8 bytes through big-endian repeated division and preserves leading zero bytes as a leading `1`.',
+      'Decoding validates the result as UTF-8 (fatal mode) and reports an error on invalid characters or non-UTF-8 output.',
+      'Copy the converted result with one tap.',
+    ],
+    steps: [
+      {
+        title: 'Choose encode or decode',
+        body: 'Flip the mode toggle. In encode mode the input is labelled Text; in decode mode it is labelled Base58.',
+      },
+      {
+        title: 'Enter your value',
+        body: 'Type or paste into the input area — for example Hello to encode (giving 9Ajdvzr), or 9Ajdvzr to decode back to Hello.',
+      },
+      {
+        title: 'Copy the output',
+        body: 'The read-only result updates live. Tap Copy to grab it. If you decode a string containing 0, O, I or l, you will get an invalid Base58 character error since those are not in the alphabet.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between Base58 and Base64?',
+        a: 'They use entirely different alphabets. Base58 has 58 characters and removes the visually confusable 0, O, I and l, so the same input produces a completely different string from Base64.',
+      },
+      {
+        q: 'Why are 0, O, I and l left out of the alphabet?',
+        a: 'Those four characters are easy to mix up when read or typed by hand. Bitcoin Base58 omits them so values like addresses are less error-prone, which is the whole point of the scheme.',
+      },
+      {
+        q: 'Why does decoding sometimes throw an error?',
+        a: 'Decoding validates the output as UTF-8 in fatal mode. If the decoded bytes are not valid text — for example a key or hash that was never text to begin with — you get a non-UTF-8 error, so this tool is best for text, not arbitrary binary.',
+      },
+    ],
+  },
+
+  'bmr-calculator': {
+    metaTitle: 'BMR Calculator — Mifflin-St Jeor + TDEE Activity Table',
+    metaDescription:
+      'Calculate basal metabolic rate with the Mifflin-St Jeor equation and see daily calories (TDEE) across 5 activity levels. Male, 30y, 170cm, 65kg gives 1567 kcal/day. Free.',
+    intro:
+      'This BMR calculator uses the Mifflin-St Jeor equation to estimate your basal metabolic rate, then multiplies it across five activity levels to estimate your daily calorie needs (TDEE). A 30-year-old man at 170 cm and 65 kg gets a BMR of 1567 kcal/day, and roughly 2429 kcal/day at the moderate (1.55) activity level.',
+    features: [
+      'Mifflin-St Jeor equation: men = 10 x kg + 6.25 x cm - 5 x age + 5; women = the same minus 161.',
+      'Inputs for sex toggle, age in years, height in cm and weight in kg (metric, not pounds or inches).',
+      'TDEE table across five activity multipliers: sedentary 1.2, light 1.375, moderate 1.55, active 1.725, very active 1.9.',
+      'BMR is rounded to a whole number of kcal/day, with each activity row showing the corresponding daily calories.',
+      'Copy the BMR result (e.g. `1567 kcal`) to the clipboard.',
+    ],
+    steps: [
+      {
+        title: 'Enter your details',
+        body: 'Pick your sex and enter age (years), height (cm) and weight (kg). For example male, 30, 170, 65 gives 10 x 65 + 6.25 x 170 - 5 x 30 + 5 = 1567 kcal/day.',
+      },
+      {
+        title: 'Read your BMR and TDEE',
+        body: 'Your BMR appears as a whole number, and the activity table shows daily calories for each level — for the example above, moderate (1.55) is about 2429 kcal/day.',
+      },
+      {
+        title: 'Pick the right activity row',
+        body: 'Match the row to your typical week and copy that figure as your maintenance estimate. The BMR copy button grabs the base figure if that is all you need.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between BMR and TDEE?',
+        a: 'BMR is the calories your body burns at complete rest. TDEE is your real daily need — BMR multiplied by an activity factor (1.2 to 1.9). For most people TDEE is the more useful number.',
+      },
+      {
+        q: 'How does Mifflin-St Jeor differ from Harris-Benedict?',
+        a: 'Both estimate BMR from sex, age, height and weight, but Mifflin-St Jeor (used here) is generally considered more accurate for modern populations. The constants differ — men get +5 and women -161 in this equation.',
+      },
+      {
+        q: 'Can I use this for medical or diet decisions?',
+        a: 'It is an estimate only. Actual needs vary with body composition and health, so do not treat it as medical advice — use it as a starting point and adjust based on real results.',
+      },
+    ],
+  },
+
+  'business-days': {
+    metaTitle: 'Business Days Calculator — Count Weekdays Between Dates',
+    metaDescription:
+      'Count working days (Mon-Fri) between two dates, inclusive of both ends, and subtract your own holidays. Mon to Fri is 5 business days; add a holiday and it drops to 4. Free.',
+    intro:
+      'This business days calculator counts the weekdays (Monday to Friday) between a start and end date, including both ends, and lets you subtract any holidays you list. A range from Monday 2026-01-05 to Friday 2026-01-09 is 5 business days; extend it to Sunday and it stays 5 business days out of 7 total.',
+    features: [
+      'Start and end date pickers (prefilled with today after mount); start and end are both counted.',
+      'Optional holidays box accepting YYYY-MM-DD values separated by newlines, commas or spaces.',
+      'Weekends (Saturday and Sunday) are excluded automatically by checking each day with getDay().',
+      'If the start date is later than the end date, the two are swapped automatically.',
+      'Shows both the business-day count and the total span, and copies `N business days (M total)`.',
+    ],
+    steps: [
+      {
+        title: 'Set the date range',
+        body: 'Pick a start and end date. Both endpoints are included, so Monday to Friday with no holidays counts as 5 business days over 5 total days.',
+      },
+      {
+        title: 'Add any holidays',
+        body: 'In the holidays box, list dates as YYYY-MM-DD separated by newlines, commas or spaces. Adding 2026-01-07 to a Mon-Fri week drops the business days from 5 to 4.',
+      },
+      {
+        title: 'Read and copy the result',
+        body: 'The tool shows business days and the total span. Tap Copy to grab text like `4 business days (7 total)`.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Are the start and end dates included in the count?',
+        a: 'Yes. Both endpoints are counted, so if both are weekdays they are included. Monday to Friday is 5 business days, not 4.',
+      },
+      {
+        q: 'Are public holidays removed automatically?',
+        a: 'No. The tool only knows about weekends. Any public or company holidays must be entered by hand in the holidays box as YYYY-MM-DD values.',
+      },
+      {
+        q: 'What format do holidays need to be in?',
+        a: 'Strictly YYYY-MM-DD. You can separate multiple dates with newlines, commas or spaces, but anything not matching that format is silently ignored.',
+      },
+    ],
+  },
+
+  'cooking-converter': {
+    metaTitle: 'Cooking Measurement Converter — Cups, Tbsp, tsp, ml, g',
+    metaDescription:
+      'Convert cooking units between cups, tablespoons, teaspoons, ml, fluid ounces and grams (water). 1 US cup = 236.588 ml and 1 tbsp = 3 tsp. Free, no signup.',
+    intro:
+      'This cooking converter switches between cups, tablespoons, teaspoons, millilitres, fluid ounces and grams using US standard measures. One US cup is 236.588 ml, one tablespoon equals exactly 3 teaspoons, and 100 g of water converts to 100 ml.',
+    features: [
+      'Converts an amount between cups, tbsp, tsp, ml, fl oz and grams (water basis).',
+      'Everything is normalised through ml: result = amount x from.ml / to.ml.',
+      'US standard reference values: 1 cup = 236.588 ml, 1 tbsp = 14.7868 ml, 1 tsp = 4.92892 ml, 1 fl oz = 29.5735 ml.',
+      'Results round to at most 3 decimals with trailing zeros trimmed; a density note appears when grams are involved.',
+      'Copy the converted value with one tap.',
+    ],
+    steps: [
+      {
+        title: 'Enter the amount',
+        body: 'Type a number into the amount field, for example 1.',
+      },
+      {
+        title: 'Pick the from and to units',
+        body: 'Choose the source unit (e.g. cup) and target unit (e.g. ml) from the dropdowns. 1 cup converts to 236.588 ml, and 1 tbsp to tsp gives exactly 3.',
+      },
+      {
+        title: 'Read the result',
+        body: 'The converted value appears immediately. When grams are involved you will see a note that it assumes water density (1 ml = 1 g). Tap Copy to grab the value.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How many ml is one cup here?',
+        a: 'One cup is 236.588 ml, the US standard. That differs from a UK or Australian cup, and from a Korean 200 ml paper cup.',
+      },
+      {
+        q: 'Can I get the exact gram weight of one cup of flour?',
+        a: 'Not accurately. Gram conversions assume water density (1 ml = 1 g). Flour, sugar and other ingredients have different densities, so their real weight will differ from the water-based figure.',
+      },
+      {
+        q: 'How do tablespoons and teaspoons relate?',
+        a: 'One tablespoon equals 3 teaspoons (14.7868 ml vs 4.92892 ml), and one US cup equals 16 tablespoons.',
+      },
+    ],
+  },
+
+  'credit-card-type': {
+    metaTitle: 'Credit Card Type Detector — Brand, Length & Luhn Check',
+    metaDescription:
+      'Detect a card brand from its BIN prefix and length (Visa, Mastercard, Amex, Discover, Diners, JCB, UnionPay) and verify the Luhn checksum. 4111... is a valid Visa. Free.',
+    intro:
+      'This tool identifies a payment card brand from its starting digits and length, then checks the Luhn checksum. Enter 4111 1111 1111 1111 and it reports Visa, 16 digits (allowed), Luhn passed. Spaces and hyphens are stripped automatically.',
+    features: [
+      'Brand detection from the BIN prefix: Visa (^4), Mastercard (51-55 or 2221-2720), Amex (^3[47]), Discover, Diners, JCB and UnionPay (^62).',
+      'Length validation against each brand (e.g. Amex 15 digits, Visa 13/16/19) or 12-19 when the brand is unknown.',
+      'Luhn checksum pass/fail using the standard mod-10 algorithm.',
+      'Spaces and hyphens are ignored, so you can paste a formatted number directly.',
+      'Single text input, no extra options.',
+    ],
+    steps: [
+      {
+        title: 'Paste the card number',
+        body: 'Type or paste the number into the input. Spaces and hyphens like 4111 1111 1111 1111 are removed automatically.',
+      },
+      {
+        title: 'Read the brand and length',
+        body: 'The tool shows the brand (or Unknown), the digit count and whether it falls in the allowed range — for example American Express, 15 digits, allowed.',
+      },
+      {
+        title: 'Check the Luhn result',
+        body: 'A pass/fail badge shows whether the number satisfies the Luhn checksum. 1234 5678 9012 3456 reports Unknown brand and Luhn failed.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'If the Luhn check passes, is it a real, usable card?',
+        a: 'No. Brand and Luhn checks only confirm the format is internally consistent. They cannot tell you whether the card was actually issued or is active.',
+      },
+      {
+        q: 'Why does my card show an Unknown brand?',
+        a: 'The brand is matched from the leading digits. If the prefix does not fit any known pattern it shows Unknown — a number can even pass Luhn while still being an unknown brand, and vice versa.',
+      },
+      {
+        q: 'What can the BIN (first 6 digits) tell me?',
+        a: 'The leading digits identify the card brand and network. This tool uses them only for brand detection — it does not look up the issuing bank or country.',
+      },
+    ],
+  },
+
+  'css-grid': {
+    metaTitle: 'CSS Grid Generator — Live Preview + grid-template Code',
+    metaDescription:
+      'Build a CSS grid layout with column/row counts and gap, see a live preview, and copy the grid-template code. 3 columns, 2 rows, 8px gap is one click. Free, no signup.',
+    intro:
+      'This CSS grid generator turns column count, row count and gap into ready-to-paste grid CSS with a live preview. Set 3 columns, 2 rows and an 8px gap and it outputs grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; — and you can type your own track sizing too.',
+    features: [
+      'Column count (1-12), row count (1-12) and gap (0-200px) inputs, with values clamped to those ranges.',
+      'Optional column/row sizing fields accept values like `1fr 2fr` or `repeat(3, 1fr)`, overriding the count.',
+      'When sizing is left blank it auto-fills repeat(N, 1fr) from the count.',
+      'Live numbered grid preview (columns x rows, capped at 144 cells).',
+      'Outputs display:grid, grid-template-columns, grid-template-rows and gap, copyable with one click.',
+    ],
+    steps: [
+      {
+        title: 'Set columns, rows and gap',
+        body: 'Enter the column count, row count and gap. For example 3, 2 and 8 produces repeat(3, 1fr) columns, repeat(2, 1fr) rows and an 8px gap.',
+      },
+      {
+        title: 'Optionally type track sizing',
+        body: 'Fill the column or row sizing field to take control — entering `1fr 2fr` yields grid-template-columns: 1fr 2fr; and overrides the count, so keep the two in sync.',
+      },
+      {
+        title: 'Copy the CSS',
+        body: 'Check the numbered preview, then copy the four-line CSS into your container element. Note that only container properties are generated — child cell styles are not.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What does 1fr mean?',
+        a: '`fr` is a fractional unit — it divides the available space into equal shares. repeat(3, 1fr) makes three equal-width columns; 1fr 2fr makes the second column twice as wide as the first.',
+      },
+      {
+        q: 'What happens if I leave the sizing field blank?',
+        a: 'It auto-fills repeat(N, 1fr) from your count, giving equal tracks. Fill it in to use explicit sizes, which then take priority over the count.',
+      },
+      {
+        q: 'Does the generated CSS include the grid items?',
+        a: 'No. It only produces the container properties (display:grid, the templates and gap). You style the cells (children) yourself.',
+      },
+    ],
+  },
+
+  'css-triangle': {
+    metaTitle: 'CSS Triangle Generator — Border Trick, 8 Directions',
+    metaDescription:
+      'Make a pure-CSS triangle with the border trick: pick direction, size and color, preview it, and copy the code. Up triangle = colored border-bottom, transparent sides. Free.',
+    intro:
+      'This CSS triangle generator builds a pure-CSS triangle using the classic border trick, with a live preview and copyable code. An up-pointing 60px blue triangle outputs border-left:60px solid transparent; border-right:60px solid transparent; border-bottom:60px solid #3b82f6; — the element has zero width and height, so the borders form the shape.',
+    features: [
+      '8 direction buttons: up, down, left, right and the four diagonals.',
+      'Size slider (4-200px) and a color picker with hex input.',
+      'Uses the border trick — width/height are 0, with the opposite border colored and the side borders transparent.',
+      'Diagonal directions produce a right-triangle by coloring one of two adjacent borders.',
+      'Live preview plus copyable width:0/height:0 + border CSS.',
+    ],
+    steps: [
+      {
+        title: 'Pick a direction',
+        body: 'Choose one of the 8 direction buttons. Counter-intuitively, an up-pointing triangle is made by coloring border-bottom, with border-left and border-right transparent.',
+      },
+      {
+        title: 'Set size and color',
+        body: 'Drag the size slider (4-200px) — this sets the border thickness, which determines the triangle size — and pick a color via the picker or hex field.',
+      },
+      {
+        title: 'Copy the CSS',
+        body: 'Check the live preview and copy the generated rule. For an up, 60px, #3b82f6 triangle you get transparent left/right borders and a 60px solid border-bottom in that color.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why are width and height set to 0?',
+        a: 'The triangle is formed entirely from the element borders, so the box itself has no size. The visible size comes from the border thickness.',
+      },
+      {
+        q: 'How does a border make a triangle?',
+        a: 'Adjacent borders meet at 45-degree diagonals. By making the side borders transparent and only one border colored, that colored border shows as a triangle pointing away from itself.',
+      },
+      {
+        q: 'How do I change the triangle color?',
+        a: 'Change the border color, not a background color. The shape is the border, so the color picker sets the colored border value.',
+      },
+    ],
+  },
+
+  'dog-age-calc': {
+    metaTitle: 'Dog Age Calculator — Human Years by Size (not just x7)',
+    metaDescription:
+      'Convert your dog age to human years with a size-aware curve, not the old x7 rule. A medium dog at 1 year is 15; a large dog at 5 years is about 42. Free, no signup.',
+    intro:
+      'This dog age calculator converts your dog age in years into human years using a size-aware curve that is more accurate than the simple x7 rule. A medium dog at 1 year equals 15 human years, at 2 years equals 24, and a large dog at 5 years comes out to about 42.',
+    features: [
+      'Dog age in years (decimals allowed, e.g. 3.5) and a size dropdown (small ~9kg / medium 10-22kg / large 23-40kg / giant 41kg+).',
+      'Years 0-1 interpolate linearly from 0 to 15, and years 1-2 from 15 to 24.',
+      'Beyond 2 years, each year adds a size-based amount: small +4, medium +5, large +6, giant +7.',
+      'First-year 15 and second-year cumulative 24 are the same across all sizes.',
+      'Shows the rounded human-age estimate and copies `Human age about N years`.',
+    ],
+    steps: [
+      {
+        title: 'Enter the dog age',
+        body: 'Type the age in years. For a puppy, convert months to a decimal — 6 months is 0.5.',
+      },
+      {
+        title: 'Pick the size',
+        body: 'Choose small, medium, large or giant. Size changes the per-year aging after age 2, since larger dogs age faster.',
+      },
+      {
+        title: 'Read the human age',
+        body: 'The result shows as `about N years`. A large dog at 5 years works out to 24 + (5-2) x 6 = about 42. Tap Copy to grab it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why not just use dog age x 7?',
+        a: 'The x7 rule is a crude shortcut. Dogs age very fast in their first two years (reaching about 24 human years) and then more slowly, at a rate that depends on size — which this curve reflects.',
+      },
+      {
+        q: 'Why does size change the result?',
+        a: 'After age 2, larger dogs age faster: each year adds +4 for small dogs up to +7 for giants. So the same age gives a higher human age for a bigger dog.',
+      },
+      {
+        q: 'How do I enter a 6-month-old puppy?',
+        a: 'Enter it as a decimal year — 6 months is 0.5. The 0-1 year range interpolates from 0 to 15 human years.',
+      },
+    ],
+  },
+
+  'ean-validate': {
+    metaTitle: 'EAN / UPC Barcode Validator — Check Digit (EAN-13, EAN-8, UPC-A)',
+    metaDescription:
+      'Validate EAN-13, EAN-8 and UPC-A barcodes by their GTIN check digit. The format is detected from length; 4006381333931 is a valid EAN-13. Free, no signup.',
+    intro:
+      'This barcode validator checks EAN-13, EAN-8 and UPC-A numbers by recomputing their GTIN check digit. It detects the format from the digit count (8, 12 or 13) — so 4006381333931 validates as a valid EAN-13 with a matching check digit.',
+    features: [
+      'Auto-detects format by length: 8 digits = EAN-8, 12 = UPC-A, 13 = EAN-13.',
+      'GTIN check-digit algorithm: alternating weights 3 and 1 from the right, then the 10-complement of (sum mod 10).',
+      'Strips spaces and hyphens automatically; non-digit characters trigger a digits-only error.',
+      'Shows a valid/invalid badge, the normalized number, the detected format, the input check digit and the expected one.',
+      'No options — just paste the number.',
+    ],
+    steps: [
+      {
+        title: 'Paste the barcode number',
+        body: 'Enter the digits; spaces and hyphens are removed for you. An 8-digit number is read as EAN-8, 12 as UPC-A and 13 as EAN-13.',
+      },
+      {
+        title: 'Read the result',
+        body: 'A badge shows valid or invalid with the reason, plus the detected format and both the input and expected check digit.',
+      },
+      {
+        title: 'Fix a mismatch',
+        body: 'If the last digit is wrong you will see something like `check digit error: input X, expected Y`, telling you the correct final digit.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is the check digit calculated?',
+        a: 'Each data digit is weighted by alternating 3 and 1 starting from the right, the products are summed, and the check digit is the 10-complement of that sum mod 10 — i.e. (10 - sum % 10) % 10.',
+      },
+      {
+        q: 'What is the difference between EAN-13, EAN-8 and UPC-A?',
+        a: 'They differ by length: EAN-13 has 13 digits, UPC-A 12 and EAN-8 8. The tool detects which one you entered from the digit count and uses the same GTIN check-digit logic.',
+      },
+      {
+        q: 'If the check digit is valid, does the product really exist?',
+        a: 'No. A valid check digit only confirms there is no typo in the number. It does not guarantee the barcode is registered to a real, for-sale product.',
+      },
+    ],
+  },
+
+  'email-validator': {
+    metaTitle: 'Email Validator — Bulk Check Email Format (one per line)',
+    metaDescription:
+      'Check email address format in bulk — one per line — and get valid/invalid for each plus totals. user@example.com is valid; name@site.c is not. Format-only, free, no signup.',
+    intro:
+      'This email validator checks the format of one or many email addresses — paste one per line and it flags each as valid or invalid with a summary count. user@example.com passes, while name@site.c fails because its top-level domain is a single letter.',
+    features: [
+      'Multi-line textarea: one email per line, blank lines ignored.',
+      'Practical pattern: no spaces, exactly one @, at least one dot in the domain, and a TLD of 2+ letters.',
+      'Summary of total, valid and invalid counts plus a per-line valid/invalid list.',
+      'Format-only check — it is a widely used pragmatic pattern, not full RFC 5322.',
+      'No options to configure.',
+    ],
+    steps: [
+      {
+        title: 'Paste the addresses',
+        body: 'Enter one email per line in the textarea. Blank lines are skipped automatically.',
+      },
+      {
+        title: 'Read the summary',
+        body: 'The tool shows total, valid and invalid counts, then marks each line. name@site.io is valid; name@site.c is invalid because the TLD has only one letter.',
+      },
+      {
+        title: 'Fix the invalid ones',
+        body: 'Correct any flagged addresses and the list updates. Remember this checks shape only, not whether the mailbox exists.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'If an address passes, will the email actually arrive?',
+        a: 'Not necessarily. This is a format check only — it does not verify that the mailbox exists or can receive mail (no MX or send test).',
+      },
+      {
+        q: 'Does it follow the full RFC standard?',
+        a: 'No. It uses a practical, widely accepted pattern rather than the complete RFC 5322 grammar, so a few rare but technically legal addresses may be marked invalid.',
+      },
+      {
+        q: 'Why are non-Latin domain emails marked invalid?',
+        a: 'The TLD must be 2 or more Latin letters, so internationalized (e.g. non-ASCII) domains and single-letter TLDs are flagged as invalid.',
+      },
+    ],
+  },
+
+  'hashtag-generator': {
+    metaTitle: 'Hashtag Generator — Turn Keywords into #Hashtags',
+    metaDescription:
+      'Convert keywords or a sentence into social hashtags: split words, strip punctuation, add #, dedupe. apple pie, summer becomes #apple #pie #summer. Free, no signup.',
+    intro:
+      'This hashtag generator turns keywords or a sentence into ready-to-post hashtags. It splits on spaces and commas, removes punctuation, prefixes each token with #, and drops duplicates — so apple pie, summer becomes #apple #pie #summer.',
+    features: [
+      'Splits input on spaces, commas and line breaks into separate tags.',
+      'Strips punctuation from each token, keeping only letters and numbers (Unicode-aware).',
+      'Case option: lowercase, keep original, or Capitalize first letter.',
+      'Case-insensitive deduplication — fun fun FUN becomes a single #fun.',
+      'Copy or download the result as a .txt file.',
+    ],
+    steps: [
+      {
+        title: 'Enter your keywords',
+        body: 'Type or paste words or a sentence. Spaces and commas separate tags, so `New York` becomes #new #york rather than one tag.',
+      },
+      {
+        title: 'Choose the case option',
+        body: 'Pick lowercase, keep original, or capitalize first letter. Hello World capitalized gives #Hello #World.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The space-separated hashtags appear in the read-only area. Copy them or download as .txt for your posts.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I make a multi-word phrase into one hashtag?',
+        a: 'Not automatically — spaces and commas split words into separate tags, so `New York` becomes #new #york. To keep it as one tag, join the words first (e.g. NewYork).',
+      },
+      {
+        q: 'How are duplicate hashtags handled?',
+        a: 'Duplicates are removed case-insensitively, so fun, Fun and FUN collapse to a single #fun.',
+      },
+      {
+        q: 'Are emoji and symbols kept in the tags?',
+        a: 'No. Only letters and numbers are retained within each tag; punctuation, emoji and special characters are stripped out.',
+      },
+    ],
+  },
+
+  'html-to-markdown': {
+    metaTitle: 'HTML to Markdown Converter — Headings, Links, Lists & Code',
+    metaDescription:
+      'Convert HTML to Markdown in your browser with DOMParser. <h1>Title</h1> becomes # Title and <strong>bold</strong> becomes **bold**. Free, no signup.',
+    intro:
+      'This converter turns HTML into Markdown using the browser DOMParser. Headings, bold, italics, links, images, lists, code and blockquotes are supported — <h1>Title</h1> becomes # Title, and <a href="https://x.com">link</a> becomes [link](https://x.com).',
+    features: [
+      'Recursively walks the parsed DOM: h1-h6 to #, strong/b to **, em/i to _, code to backticks, pre to fenced code blocks.',
+      'Links become [text](href) and images become ![alt](src); br becomes a hard line break.',
+      'Lists are handled as blocks — ol uses 1. 2. numbering, ul uses -.',
+      'Unknown tags are dropped while their text content is kept; runs of 3+ blank lines collapse to 2.',
+      'Copy the result or download it as a .md file.',
+    ],
+    steps: [
+      {
+        title: 'Paste your HTML',
+        body: 'Enter HTML in the input area (it starts with sample HTML). The tool parses it with the browser DOMParser.',
+      },
+      {
+        title: 'Read the Markdown',
+        body: 'The Markdown output updates live — for example <ul><li>a</li><li>b</li></ul> becomes `- a` then `- b` on separate lines.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Copy the Markdown to your clipboard or download it as a .md file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which HTML tags get converted?',
+        a: 'Headings (h1-h6), strong/b, em/i, code, pre, a, img, br, p, blockquote, ul and ol are all supported. Other tags are removed but their inner text is kept.',
+      },
+      {
+        q: 'Are HTML tables turned into Markdown tables?',
+        a: 'No. Complex structures like tables are not converted to Markdown table syntax — only the supported tags above are mapped.',
+      },
+      {
+        q: 'What happens with broken or malformed HTML?',
+        a: 'It is parsed by the browser DOMParser, so the result follows whatever the browser auto-corrects the markup into.',
+      },
+    ],
+  },
+
+  'image-glitch': {
+    metaTitle: 'Image Glitch Effect — RGB Shift + Scanlines (PNG)',
+    metaDescription:
+      'Apply a glitch effect to images with RGB channel split and scanlines, right in your browser. Reroll the pattern for a different look. Outputs PNG with alpha. Free, no signup.',
+    intro:
+      'This tool gives images a digital glitch look by splitting the RGB channels left/right and overlaying scanlines. With an 8px RGB shift and 40% scanlines you get a light color fringe with faint horizontal lines, and the Regenerate pattern button reshuffles the per-row jitter for a fresh result.',
+    features: [
+      'Drop zone (up to 50MB), RGB shift slider (0-60px) and scanline intensity slider (0-100%).',
+      'Per-row deterministic jitter shifts the R channel left and the B channel right to create color separation.',
+      'Every third row is darkened by the scanline intensity; the alpha channel is preserved.',
+      'Regenerate pattern reseeds the jitter for a different glitch at the same settings.',
+      'Slider changes are debounced 200ms; output is always PNG.',
+    ],
+    steps: [
+      {
+        title: 'Drop your image',
+        body: 'Upload an image (up to 50MB). It is processed in the browser canvas immediately.',
+      },
+      {
+        title: 'Adjust the sliders',
+        body: 'Set the RGB shift (0-60px) and scanline intensity (0-100%). At 0 shift there is no color split — you can apply scanlines alone.',
+      },
+      {
+        title: 'Reroll and download',
+        body: 'Click Regenerate pattern to get a different per-row wobble at the same settings, then download the PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What do the RGB shift and scanline controls do?',
+        a: 'RGB shift separates the red and blue channels horizontally for a color-fringe look; scanline intensity darkens every third row for a CRT-style line overlay.',
+      },
+      {
+        q: 'What does the Regenerate pattern button change?',
+        a: 'It rolls a new random seed, so the per-row jitter differs even with the same slider values — giving you a different glitch each time.',
+      },
+      {
+        q: 'Can I export as JPG instead?',
+        a: 'No. The output is always PNG so that transparency (alpha) is preserved.',
+      },
+    ],
+  },
+
+  'image-posterize': {
+    metaTitle: 'Image Posterize Tool — Reduce Color Levels (2-8)',
+    metaDescription:
+      'Posterize images by quantizing each RGB channel to 2-8 levels for a poster or pop-art look. 2 levels gives only 0/255; 4 levels gives 0/85/170/255. Free, no signup.',
+    intro:
+      'This posterize tool reduces the number of color levels per channel to give images a poster or illustration look. At 2 levels each channel is forced to 0 or 255 for a strong pop-art effect; the default 4 levels snaps each channel to 0, 85, 170 or 255.',
+    features: [
+      'Drop zone (up to 50MB) and a per-channel level slider (2-8, default 4).',
+      'Each RGB channel is quantized independently to the nearest level: round((v/255) x (levels-1)) / (levels-1) x 255.',
+      'Fewer levels mean simpler, more banded color; more levels stay closer to the original.',
+      'The alpha channel is preserved and output is PNG.',
+      'Slider changes are debounced 200ms for smooth adjustment.',
+    ],
+    steps: [
+      {
+        title: 'Drop your image',
+        body: 'Upload an image (up to 50MB).',
+      },
+      {
+        title: 'Set the level count',
+        body: 'Drag the slider from 2 to 8. At 2 levels each channel is only 0 or 255 (strongest effect); at 8 levels it stays close to the original.',
+      },
+      {
+        title: 'Download the result',
+        body: 'Preview the posterized image and download it as PNG.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What happens when I reduce the color levels?',
+        a: 'Each channel is snapped to a small set of values, so smooth gradients turn into flat bands. Fewer levels gives a bolder, more graphic look.',
+      },
+      {
+        q: 'How many levels give the strongest poster look?',
+        a: '2 levels gives the most extreme result — each channel becomes only 0 or 255, producing a hard pop-art effect.',
+      },
+      {
+        q: 'Does it turn the image grayscale?',
+        a: 'No. The R, G and B channels are quantized independently, so the result keeps its colors — it just has fewer of them.',
+      },
+    ],
+  },
+
+  'leetspeak': {
+    metaTitle: 'Leetspeak Translator — Encode & Decode 1337 Text',
+    metaDescription:
+      'Convert text to leetspeak (1337) or back. Basic maps a4 e3 i1 o0 t7 s5, so leet becomes l337; advanced adds more substitutions. Free, no signup.',
+    intro:
+      'This leetspeak tool encodes normal text into 1337 or decodes leet back to plain text. With the basic map, leet becomes l337; advanced mode adds more substitutions so hello becomes #3110. Decoding 1337 returns leet.',
+    features: [
+      'Direction dropdown (to leet / to plain) and substitution strength (basic / advanced, disabled when decoding).',
+      'Basic map: a to 4, e to 3, i to 1, o to 0, t to 7, s to 5.',
+      'Advanced map adds many more, including multi-character tokens like m to /\\/\\ and w to \\/\\/.',
+      'Decoding sorts the reverse map by length so multi-character tokens match first; ambiguous digits resolve to the most common letter.',
+      'Copy the result or download it as a .txt file.',
+    ],
+    steps: [
+      {
+        title: 'Pick the direction',
+        body: 'Choose to leet or to plain. When decoding, the strength option is disabled.',
+      },
+      {
+        title: 'Choose strength (encoding)',
+        body: 'For encoding, pick basic or advanced. Basic turns leet into l337; advanced turns hello into #3110 (l to 1, o to 0, h to #, e to 3).',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The converted text appears in the read-only area. Copy it or download as .txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between basic and advanced strength?',
+        a: 'Basic substitutes only the common letters (a, e, i, o, t, s). Advanced adds many more, including multi-character symbols like m to /\\/\\, for a denser leet look.',
+      },
+      {
+        q: 'Why does decoding sometimes differ from the original?',
+        a: 'Decoding is a best guess. Ambiguous characters like 1 (i or l) or 0 (o) each map back to a single letter, so the recovered text may not exactly match what was encoded.',
+      },
+      {
+        q: 'Is leetspeak secure or a form of encryption?',
+        a: 'No. It is for fun and styling only — it is a simple character swap, not encryption, and offers no security.',
+      },
+    ],
+  },
+
+  'letter-frequency': {
+    metaTitle: 'Letter Frequency Counter — Count Letters with Bar Chart',
+    metaDescription:
+      'Count how often each letter appears in text, with counts and percentages in a bar chart. hello gives l:2, h:1, e:1, o:1. Letters only by default. Free, no signup.',
+    intro:
+      'This letter frequency counter tallies how often each letter appears in your text and shows counts and percentages as a bar chart. By default it counts English letters only, so hello gives l:2, h:1, e:1, o:1 out of 5 total.',
+    features: [
+      'Text input plus two checkboxes: ignore case (on by default) and include numbers (off by default).',
+      'Sorts by frequency descending, with ties broken alphabetically.',
+      'Letters a-z are counted (lowercased when ignore case is on); digits only count when include numbers is on.',
+      'Other characters — spaces, punctuation, non-Latin scripts — are excluded.',
+      'Percentage is count divided by the total counted characters; copy or download as .txt.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Type or paste text into the input area.',
+      },
+      {
+        title: 'Set the options',
+        body: 'Leave ignore case on to merge A and a, or turn it off to count them separately. Turn on include numbers to count digits — a1b2 then gives a, 1, b, 2 at 1 each.',
+      },
+      {
+        title: 'Read the chart',
+        body: 'Each letter shows with its count and a percentage bar, sorted by frequency. The total counted-character count is shown too.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can it count non-Latin letters?',
+        a: 'No. By default only English letters a-z are counted; other scripts, spaces and punctuation are excluded.',
+      },
+      {
+        q: 'Why are spaces and punctuation left out?',
+        a: 'The counter focuses on letters (and optionally digits). Spaces, punctuation and other symbols are not part of the tally.',
+      },
+      {
+        q: 'What is the percentage based on?',
+        a: 'It is the share of the total counted characters, not the full input length. So if only letters are counted, the percentages add up over those letters.',
+      },
+    ],
+  },
+
+  'love-calculator': {
+    metaTitle: 'Love Calculator — Name Compatibility Score (just for fun)',
+    metaDescription:
+      'Get a deterministic 0-100% love score from two names, just for fun. The same pair always gives the same score, and swapping the names changes nothing. Free, no signup.',
+    intro:
+      'This love calculator turns two names into a 0-100% compatibility score, purely for fun. It is deterministic — the same pair of names always returns the same score, and swapping the order makes no difference because the names are sorted before hashing.',
+    features: [
+      'Two name inputs; the score runs 0-100 with a progress bar and a band-based message.',
+      'Names are trimmed, lowercased and sorted before being combined, so Alice+Bob equals Bob+Alice.',
+      'Uses a deterministic FNV-1a 32-bit hash (no Math.random) mapped to 0-100 via mod 101.',
+      'Band messages at 90+, 75+, 60+, 40+, 20+ and 0+.',
+      'Copy the result as `NameA <heart> NameB : N%`.',
+    ],
+    steps: [
+      {
+        title: 'Enter two names',
+        body: 'Type a name into each field.',
+      },
+      {
+        title: 'Read the score',
+        body: 'You get a fixed 0-100% score with a progress bar and a band message — 90+ shows the soulmate message. The same names always give the same number.',
+      },
+      {
+        title: 'Copy and share',
+        body: 'Tap Copy to grab the formatted result for sharing.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does swapping the name order change the score?',
+        a: 'No. The names are sorted before hashing, so the pair is treated the same either way — it is intentionally fair.',
+      },
+      {
+        q: 'Why does the same pair always give the same score?',
+        a: 'It uses a deterministic FNV-1a hash rather than randomness, so the result is fixed for a given pair. There is no reroll.',
+      },
+      {
+        q: 'Does the score mean anything real?',
+        a: 'No. It is entirely for fun, computed from the letters of the names — it has nothing to do with real compatibility.',
+      },
+    ],
+  },
+
+  'mac-address': {
+    metaTitle: 'MAC Address Validator & Formatter — Colon, Hyphen, Cisco',
+    metaDescription:
+      'Validate a MAC address and convert between colon, hyphen, Cisco dot and no-separator forms in upper and lower case, plus extract the OUI. 00:1A:2B... is recognized. Free.',
+    intro:
+      'This tool validates a MAC address and converts it across colon, hyphen, Cisco-dot and no-separator notations in both upper and lower case, and extracts the OUI (top 3 bytes). 00:1A:2B:3C:4D:5E is recognized, giving an OUI of 00:1A:2B and a Cisco form of 001A.2B3C.4D5E.',
+    features: [
+      'Accepts 6 colon/hyphen groups (2 digits each), 3 Cisco-dot groups (4 digits each) or 12 hex digits with no separator.',
+      'Outputs 8 representations: colon, hyphen, dot and no-separator, each in upper and lower case.',
+      'Extracts the OUI as the top 3 bytes (e.g. 00:1A:2B).',
+      'Shows a valid/invalid status with the reason.',
+      'Single text input, no extra options.',
+    ],
+    steps: [
+      {
+        title: 'Enter the MAC address',
+        body: 'Type or paste it in any supported form — colon, hyphen, Cisco-dot (001a.2b3c.4d5e) or 12 bare hex digits.',
+      },
+      {
+        title: 'Read the conversions',
+        body: 'You get all 8 notations plus the OUI. For example 001a2b3c4d5e converts to 00:1A:2B:3C:4D:5E and 00-1A-2B-3C-4D-5E.',
+      },
+      {
+        title: 'Copy the form you need',
+        body: 'Grab whichever notation matches your target system or config.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can the OUI tell me the manufacturer name?',
+        a: 'No. The OUI is just the top 3 bytes extracted from the address. This tool does not look up the actual vendor database.',
+      },
+      {
+        q: 'Which MAC formats can I enter?',
+        a: 'Colon or hyphen (6 groups of 2 digits), Cisco dot (3 groups of 4 digits, like 001a.2b3c.4d5e), or 12 hex digits with no separator. Mixing separator types is invalid.',
+      },
+      {
+        q: 'Can I paste just 12 hex digits with no separators?',
+        a: 'Yes. 001a2b3c4d5e is accepted and converted to all the separated forms.',
+      },
+    ],
+  },
+
+  'nanoid-gen': {
+    metaTitle: 'NanoID Generator — URL-safe Random IDs (crypto secure)',
+    metaDescription:
+      'Generate URL-safe NanoID strings with cryptographic randomness. Pick a length (default 21) and count (up to 1000). Uses A-Za-z0-9_- with no bias. Free, no signup.',
+    intro:
+      'This NanoID generator creates short, URL-safe unique IDs using cryptographic randomness. Pick a length (default 21, like a UUID v4 collision profile) and a count, and it produces strings such as V1StGXR8_Z5jdHi6B-myT from the A-Za-z0-9_- alphabet.',
+    features: [
+      'Length (1-256, default 21) and count (1-1000, default 1) inputs with a Generate button.',
+      'Uses the standard NanoID URL-safe alphabet A-Za-z0-9_- (64 characters).',
+      'crypto.getRandomValues with bitmask rejection sampling for unbiased IDs.',
+      'The initial render is an empty list (hydration-safe); IDs are only created on Generate.',
+      'Copy individual IDs or all at once.',
+    ],
+    steps: [
+      {
+        title: 'Set length and count',
+        body: 'Enter the ID length (default 21) and how many to make (up to 1000).',
+      },
+      {
+        title: 'Generate',
+        body: 'Click Generate. A length of 21 gives IDs like V1StGXR8_Z5jdHi6B-myT; the _ and - mean they are safe to drop into URLs.',
+      },
+      {
+        title: 'Copy what you need',
+        body: 'Copy a single ID or use copy-all to grab the whole list.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How is a NanoID different from a UUID?',
+        a: 'NanoID is shorter and URL-safe (no hyphen-delimited blocks). It uses a 64-character alphabet rather than UUID hex, so a 21-character NanoID has a collision safety comparable to UUID v4.',
+      },
+      {
+        q: 'Why is the default length 21 characters?',
+        a: '21 is the recommended NanoID default — it gives a collision resistance similar to a 122-bit UUID v4 while staying compact.',
+      },
+      {
+        q: 'Which characters are used, and are they URL-safe?',
+        a: 'The alphabet is A-Za-z0-9 plus _ and -, all of which are safe in URLs without encoding.',
+      },
+    ],
+  },
+
+  'noise-generator': {
+    metaTitle: 'Noise Generator — White, Pink & Brown Noise + WAV Download',
+    metaDescription:
+      'Play white, pink or brown noise in your browser and download a 10-second 16-bit WAV. White is hiss, pink is rain-like, brown is the deepest. Free, no signup.',
+    intro:
+      'This noise generator creates white, pink and brown noise directly in the browser, plays it on a loop, and exports the selected type as a 10-second WAV file. White noise sounds like hiss, pink is closer to steady rain, and brown is the deepest — like a waterfall.',
+    features: [
+      'Three noise types (white / pink / brown), each with play-stop and a WAV download.',
+      'White is uniform random; pink uses a 7-tap Paul Kellet filter (-3dB/oct); brown integrates white noise (-6dB/oct) with a leak factor.',
+      'Volume slider (0-100%); playback starts only from a user gesture (autoplay-safe).',
+      'Download is always a 10-second, mono, 16-bit PCM WAV at 44.1kHz (e.g. white-noise-10s.wav).',
+      'Live looped playback plus an audio player and file-size display.',
+    ],
+    steps: [
+      {
+        title: 'Pick a noise type',
+        body: 'Choose white, pink or brown. Pink resembles rain or wind; brown resembles a waterfall or distant thunder.',
+      },
+      {
+        title: 'Press play',
+        body: 'Hit the play toggle — sound starts on this user gesture (it will not autoplay). Set the volume low first to protect your hearing.',
+      },
+      {
+        title: 'Download the WAV',
+        body: 'Click download to save a 10-second mono 16-bit WAV of the selected noise.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'What is the difference between white, pink and brown noise?',
+        a: 'White noise has equal energy at all frequencies (a hiss). Pink emphasizes lower frequencies (rain-like). Brown emphasizes the low end the most (waterfall-like).',
+      },
+      {
+        q: 'What length and format is the downloaded file?',
+        a: 'It is always 10 seconds, mono, 16-bit PCM WAV at 44.1kHz.',
+      },
+      {
+        q: 'Why does sound only start when I press play?',
+        a: 'Browsers block autoplay, so the AudioContext is created on your click. That is also why nothing plays until you interact with the page.',
+      },
+    ],
+  },
+
+  'random-letter': {
+    metaTitle: 'Random Letter Generator — Pick A-Z (crypto secure)',
+    metaDescription:
+      'Pick random A-Z letters with cryptographic randomness. Choose uppercase, lowercase and whether to allow repeats. Up to 26 unique letters. Free, no signup.',
+    intro:
+      'This random letter generator draws letters from A-Z using cryptographic randomness. Choose how many, whether to use uppercase, lowercase or both, and whether repeats are allowed — pick 5 with repeats and you might get QXQAM.',
+    features: [
+      'Count (1-50) plus three checkboxes: uppercase A-Z (on by default), lowercase a-z and allow repeats (on by default).',
+      'crypto.getRandomValues with rejection sampling for unbiased, unbiased-modulo draws.',
+      'With repeats off it shuffles the A-Z pool (Fisher-Yates) and takes the first N — so at most 26 unique letters.',
+      'When both cases are on, each letter independently picks upper or lower.',
+      'Initial render is empty (hydration-safe); copy joins the letters into a string.',
+    ],
+    steps: [
+      {
+        title: 'Set the count and options',
+        body: 'Enter how many letters and tick uppercase and/or lowercase. At least one case must be selected.',
+      },
+      {
+        title: 'Draw',
+        body: 'Click the draw button. With repeats off you get distinct letters (up to 26); going over 26 triggers a warning.',
+      },
+      {
+        title: 'Copy the result',
+        body: 'The letters appear as cards. Copy them as a joined string.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How many letters can I draw without repeats?',
+        a: 'Up to 26, the size of the alphabet. Asking for more than that without allowing repeats triggers a warning.',
+      },
+      {
+        q: 'What happens if I turn on both uppercase and lowercase?',
+        a: 'Each drawn letter independently picks a case, so you get a mix of upper and lower.',
+      },
+      {
+        q: 'Is it truly unbiased random?',
+        a: 'Yes. It uses crypto.getRandomValues with rejection sampling to avoid modulo bias, so each draw is genuinely random and cannot be reproduced.',
+      },
+    ],
+  },
+
+  'random-words': {
+    metaTitle: 'Random Word Generator — English Words (crypto secure)',
+    metaDescription:
+      'Generate random English words from a built-in pool with cryptographic randomness. Pick a count and optionally no repeats. For dummy data and ideas, not passwords. Free.',
+    intro:
+      'This random word generator pulls English words from a built-in pool of about 240 common words using cryptographic randomness. Ask for 5 and you might get river guitar amber cookie tiger — handy for dummy data, ideas and test content.',
+    features: [
+      'Count (1-100), a no-repeats checkbox and a Generate button.',
+      'Draws from ~240 common English words via crypto.getRandomValues with rejection sampling.',
+      'With no repeats it uses a partial Fisher-Yates shuffle, limited by the pool size.',
+      'Initial render is empty; words are produced on Generate (hydration-safe).',
+      'Copy the space-separated words or download as .txt.',
+    ],
+    steps: [
+      {
+        title: 'Set the count',
+        body: 'Enter how many words you want (1-100) and optionally tick no repeats.',
+      },
+      {
+        title: 'Generate',
+        body: 'Click Generate to get words like river guitar amber cookie tiger from the fruit, nature, adjective, instrument and space categories.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'Copy the result or download it as a .txt file.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can it generate non-English or custom words?',
+        a: 'No. It only produces English words from its fixed pool; custom or non-Latin words are not supported.',
+      },
+      {
+        q: 'How big is the word pool?',
+        a: 'About 240 common English words across categories like fruit, nature, adjectives, instruments and space. With no repeats the count is capped by that pool size.',
+      },
+      {
+        q: 'Is it safe to use as a password?',
+        a: 'No. It is meant for dummy data, ideas and test content, not for generating secure passwords.',
+      },
+    ],
+  },
+
+  'regex-cheatsheet': {
+    metaTitle: 'Regex Cheatsheet — Searchable Reference for JS Regex',
+    metaDescription:
+      'A searchable regex reference: character classes, anchors, quantifiers, groups, lookarounds and flags with examples. Search \\d to find the digit token. JS syntax. Free.',
+    intro:
+      'This regex cheatsheet is a searchable reference covering character classes, anchors, quantifiers, groups, lookarounds and flags, each with a token, description and example. Search for \\d and you get the digit [0-9] token with an example like \\d{3} matching "123" — it is a viewer, not a tester.',
+    features: [
+      'Six groups: character classes, anchors/boundaries, quantifiers, groups/substitution, lookarounds and flags.',
+      'Each entry shows the token, a description and an example.',
+      'A search box does partial matching across tokens, descriptions and examples (empty search shows everything).',
+      'Based on JavaScript regex syntax (lookbehind, named groups, etc.).',
+      'Read-only — it does not run regex against your own text.',
+    ],
+    steps: [
+      {
+        title: 'Browse the groups',
+        body: 'Scroll the six categorized tables to find the token you need.',
+      },
+      {
+        title: 'Search a token',
+        body: 'Type into the search box — for example `lazy` to find the *? lazy quantifier, or \\d for the digit class. It matches tokens, descriptions and examples.',
+      },
+      {
+        title: 'Copy into your pattern',
+        body: 'Read the example to confirm behavior, then use the token in your own regex.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I test a regex against my text here?',
+        a: 'No. This is a reference cheatsheet, not a tester. To match patterns against input text you need a separate regex tester tool.',
+      },
+      {
+        q: 'Which regex engine or language does it cover?',
+        a: 'JavaScript regex syntax, including features like lookbehind and named groups.',
+      },
+      {
+        q: 'What is the difference between greedy and lazy quantifiers?',
+        a: 'Greedy quantifiers (like *) match as much as possible; lazy ones (like *?) match as little as possible. Both appear in the quantifiers group with examples.',
+      },
+    ],
+  },
+
+  'remove-duplicate-words': {
+    metaTitle: 'Remove Duplicate Words — Keep First Occurrence',
+    metaDescription:
+      'Remove repeated words, keeping the first occurrence, while preserving punctuation and line breaks. the cat the dog becomes the cat dog. Free, no signup.',
+    intro:
+      'This tool removes repeated words and keeps only the first occurrence, while preserving the punctuation and line breaks between words. the cat the dog becomes the cat dog, and it reports how many words were removed.',
+    features: [
+      'Text input plus an ignore case checkbox (off by default).',
+      'Splits text into word tokens and the separators between them, alternating.',
+      'A word already seen (tracked in a Set, lowercased when ignore case is on) is skipped.',
+      'The separator following a removed word is dropped too, avoiding double spaces.',
+      'Shows the de-duplicated text and the count of removed words; copy or download as .txt.',
+    ],
+    steps: [
+      {
+        title: 'Enter your text',
+        body: 'Type or paste the text into the input area.',
+      },
+      {
+        title: 'Set case sensitivity',
+        body: 'By default it is case-sensitive, so The and the count as different words. Turn on ignore case to treat them as the same — Hello hello then becomes Hello.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The cleaned text appears with a removed-word count. a, a, b becomes a, b (the duplicate a and its trailing separator are removed). Copy or download as .txt.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Does it remove duplicate lines or duplicate words?',
+        a: 'Duplicate words. It works at the word level, not the line or sentence level.',
+      },
+      {
+        q: 'Are differently-cased versions of a word treated as duplicates?',
+        a: 'Only if you turn on ignore case. By default The and the are distinct; with the option on they are merged.',
+      },
+      {
+        q: 'Which copy is kept — the first or the last?',
+        a: 'The first occurrence is kept; later duplicates are removed. The separator after a removed word is also dropped to prevent double spaces.',
+      },
+    ],
+  },
+
+  'shoe-size-converter': {
+    metaTitle: 'Shoe Size Converter — US, UK, EU & cm in One Table',
+    metaDescription:
+      'Convert shoe sizes between US men, US women, UK, EU and foot length in cm. US men 9 is about UK 8.5, US women 10.5, EU 42, cm 26.3. Approximate. Free, no signup.',
+    intro:
+      'This shoe size converter takes a size in one system and shows the matching sizes across US men, US women, UK, EU and foot length in cm. Enter US men 9 and you get roughly UK 8.5, US women 10.5, EU 42 and about 26.3 cm.',
+    features: [
+      'Input system dropdown (US men / US women / UK / EU / cm) plus a size value.',
+      'A 5-system table (US men, US women, UK, EU, cm) with the input row highlighted.',
+      'Everything is normalised to foot length in cm, then expanded back out.',
+      'Relations: US men = UK + 0.5, US women = US men + 1.5, UK approx cm x 1.5 - 23 (Brannock), EU approx (cm + 1.5) x 1.5.',
+      'Sizes round to 0.5 (EU rounds to a whole number); copy the result.',
+    ],
+    steps: [
+      {
+        title: 'Pick the input system',
+        body: 'Choose the system you know your size in (e.g. US men) from the dropdown.',
+      },
+      {
+        title: 'Enter the size',
+        body: 'Type your size. US men 9 converts to UK 8.5, US women 10.5, EU about 42 and about 26.3 cm.',
+      },
+      {
+        title: 'Read the table',
+        body: 'All five systems are shown with your input row highlighted. Copy the result if you need it.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Why do US men and US women sizes differ?',
+        a: "There is a 1.5-size offset between them (US women = US men + 1.5), so the same foot is labelled differently in each system.",
+      },
+      {
+        q: 'How is the EU size calculated?',
+        a: 'EU is approximated as (cm + 1.5) x 1.5 from the foot length and rounded to a whole number, which is why it appears as an integer.',
+      },
+      {
+        q: 'Is this table exact for every brand?',
+        a: 'No. Real sizing varies by brand and country, so this is an approximate conversion. When possible, buy by foot length in cm.',
+      },
+    ],
+  },
+
+  'text-shadow': {
+    metaTitle: 'CSS text-shadow Generator — Up to 2 Layers, Live Preview',
+    metaDescription:
+      'Build CSS text-shadow with X/Y offset, blur and color, up to 2 layers, with live preview and copyable code. 2px 2px 4px #000000 is one example. Free, no signup.',
+    intro:
+      'This text-shadow generator lets you build CSS text shadows with offset, blur and color, stack up to 2 layers, and copy the code with a live preview. A single shadow of 2px 2px 4px #000000 outputs text-shadow: 2px 2px 4px #000000;.',
+    features: [
+      'Shadow 1 (always on) and Shadow 2 (toggle) each with X offset (-50 to 50), Y offset (-50 to 50), blur (0-100) and color.',
+      'Each layer serialises to `Xpx Ypx blurpx color`; enabled layers are joined with commas.',
+      'If both layers are off the output is `text-shadow: none;`.',
+      'Negative offsets are allowed for up/left shadows.',
+      'Live text preview plus copyable CSS.',
+    ],
+    steps: [
+      {
+        title: 'Configure shadow 1',
+        body: 'Set the X/Y offsets, blur and color. For example 2px 2px 4px #000000 gives text-shadow: 2px 2px 4px #000000;.',
+      },
+      {
+        title: 'Add a second layer',
+        body: 'Tick Shadow 2 to stack another layer, e.g. text-shadow: 2px 2px 4px #000000, -2px -2px 4px #3b82f6;. Negative offsets push the shadow up and left.',
+      },
+      {
+        title: 'Copy the CSS',
+        body: 'Check the preview and copy the rule. With both layers off the output is text-shadow: none;.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can I stack more than 2 shadow layers?',
+        a: 'No. The generator supports up to 2 layers. For more complex stacks you would extend the generated code by hand.',
+      },
+      {
+        q: 'What do the X/Y offset and blur control?',
+        a: 'X and Y move the shadow horizontally and vertically; blur softens its edge. A blur of 0 makes a sharp duplicate of the text.',
+      },
+      {
+        q: 'What is the difference between text-shadow and box-shadow?',
+        a: 'text-shadow applies to the text glyphs themselves, while box-shadow applies to the element box. This tool generates text-shadow only.',
+      },
+    ],
+  },
+
+  'tsv-to-csv': {
+    metaTitle: 'TSV to CSV Converter — Two-way, Quote-safe',
+    metaDescription:
+      'Convert between tab-separated (TSV) and comma-separated (CSV) data in both directions. Fields with commas are quoted; CSV is parsed with papaparse. Free, no signup.',
+    intro:
+      'This tool converts between tab-separated (TSV) and comma-separated (CSV) data in both directions. TSV name\\tage becomes CSV name,age, and any field containing a comma is wrapped in quotes — so a,b becomes "a,b" in the CSV output.',
+    features: [
+      'Direction toggle: TSV to CSV or CSV to TSV (input is prefilled with sample TSV).',
+      'TSV to CSV splits on newlines and tabs, then CSV-encodes — fields with commas, quotes or newlines are quoted, and inner quotes are escaped as "".',
+      'CSV to TSV uses papaparse to handle quoting and escaping correctly, then joins with tabs.',
+      'Parsing errors are shown as messages.',
+      'Copy the result or download as output.csv / output.tsv.',
+    ],
+    steps: [
+      {
+        title: 'Pick the direction',
+        body: 'Toggle TSV to CSV or CSV to TSV. The input label changes accordingly and starts with sample TSV.',
+      },
+      {
+        title: 'Paste your data',
+        body: 'Paste a table copied from a spreadsheet (tab-separated) or your CSV text. Values with commas get quoted in CSV output; CSV "a,b",c becomes a,b<tab>c.',
+      },
+      {
+        title: 'Copy or download',
+        body: 'The read-only result updates live. Copy it or download as output.csv or output.tsv.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are values containing a comma handled?',
+        a: 'In CSV output, any field with a comma, quote or newline is wrapped in double quotes, and inner quotes are escaped as "". So a,b becomes "a,b".',
+      },
+      {
+        q: 'Can it convert CSV back to TSV too?',
+        a: 'Yes. It is two-way. CSV to TSV uses papaparse to interpret quotes and escapes correctly before joining fields with tabs.',
+      },
+      {
+        q: 'Can I paste a table copied from Excel?',
+        a: 'Yes. Excel copies as tab-separated text, so you can paste it directly into the TSV to CSV direction.',
+      },
+    ],
+  },
+
+  'uuid-validate': {
+    metaTitle: 'UUID Validator — Detect Version, Variant & Nil UUID',
+    metaDescription:
+      'Validate a UUID/GUID, detect its version (v1-v5) and variant, recognize the nil UUID, and show the normalized form. Braces are accepted. Free, no signup.',
+    intro:
+      'This UUID validator checks the 8-4-4-4-12 format, detects the version (v1-v5) and variant, recognizes the nil UUID, and shows the normalized lowercase value. 550e8400-e29b-41d4-a716-446655440000 is valid v4 (random), variant RFC 4122 — and braces around a GUID are accepted.',
+    features: [
+      'Validates the 8-4-4-4-12 hex pattern, with optional surrounding braces.',
+      'Normalizes to lowercase 8-4-4-4-12 and checks for the nil UUID (all zeros).',
+      'Version from the 13th hex digit (1-5 are standard); variant from the 17th: 0xxx NCS, 10xx RFC 4122, 110x Microsoft, 111x reserved.',
+      'Shows valid/invalid, nil status, normalized value, version description and variant.',
+      'Single text input, no options.',
+    ],
+    steps: [
+      {
+        title: 'Paste the UUID',
+        body: 'Enter a UUID or GUID; surrounding braces like {550e8400-...} are accepted.',
+      },
+      {
+        title: 'Read the details',
+        body: 'You get valid/invalid, whether it is nil, the normalized form, the version (e.g. v4 random) and the variant (e.g. RFC 4122).',
+      },
+      {
+        title: 'Use the normalized value',
+        body: 'Copy the normalized lowercase 8-4-4-4-12 form for consistent storage.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How are UUID versions (v1-v5) distinguished?',
+        a: 'The version is the 13th hex digit (the first character of the third group). Only values 1-5 are standard; anything else is reported as unknown/non-standard.',
+      },
+      {
+        q: 'What does the variant (e.g. RFC 4122) mean?',
+        a: 'The variant comes from the high bits of the 17th hex digit and indicates the layout family — most modern UUIDs are RFC 4122 (10xx).',
+      },
+      {
+        q: 'What is a nil UUID?',
+        a: 'It is the all-zero UUID 00000000-0000-0000-0000-000000000000. The validator recognizes and reports it explicitly.',
+      },
+    ],
+  },
+
+  'week-number': {
+    metaTitle: 'Week Number Calculator — ISO-8601 Week of the Year',
+    metaDescription:
+      'Get the ISO-8601 week number for any date. Weeks start Monday and week 1 contains the first Thursday, so a result looks like 2026-W08. Free, no signup.',
+    intro:
+      'This week number calculator returns the ISO-8601 week number for a date. Weeks start on Monday and week 1 is the week containing the year first Thursday, so the result looks like 2026-W08 along with the week start and end and the ISO week-year.',
+    features: [
+      'Single date picker (prefilled with today after mount).',
+      'ISO-8601 logic: shift the date to its Thursday, then count weeks from that Thursday year January 1.',
+      'Computed at UTC midnight so time zones never shift the week.',
+      'Shows the ISO week label (e.g. 2026-W08), the week number, the ISO week-year, the day of year and the Monday-Sunday span.',
+      'Copy the `YYYY-Www` label.',
+    ],
+    steps: [
+      {
+        title: 'Pick a date',
+        body: 'Choose a date (it defaults to today after the page loads).',
+      },
+      {
+        title: 'Read the week info',
+        body: 'You get the ISO week label like 2026-W08, the week number, the ISO week-year and the Monday-Sunday range for that week.',
+      },
+      {
+        title: 'Copy the label',
+        body: 'Tap Copy to grab the YYYY-Www string.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'How does ISO week numbering differ from the US system?',
+        a: 'ISO-8601 weeks start on Monday and week 1 is the week with the first Thursday. The US system starts weeks on Sunday and counts the week containing January 1 as week 1, so the numbers can differ.',
+      },
+      {
+        q: 'How is week 1 determined?',
+        a: 'Week 1 is the week that contains the year first Thursday — equivalently, the week containing January 4.',
+      },
+      {
+        q: 'Why does a late-December date show next year as its week-year?',
+        a: 'Under ISO-8601 the last days of December can belong to week 1 of the following year, so the ISO week-year differs from the calendar year for those dates.',
+      },
+    ],
+  },
 };
 
 const CATEGORY_NOUN_EN: Record<string, string> = {

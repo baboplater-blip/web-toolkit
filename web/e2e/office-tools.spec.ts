@@ -53,7 +53,9 @@ test.describe('문서 실무', () => {
     await page.goto('/tools/security/redact');
     await page.getByLabel('원문').fill('내 번호는 901201-1234567 입니다');
     const out = page.getByLabel('마스킹 결과');
-    await expect(out).toHaveValue(/901201-1\*{6}/);
+    // 주민등록번호는 생년월일 노출 차단을 위해 전 숫자를 마스킹한다(보안 강화, redact 규칙 `\d→*`).
+    await expect(out).toHaveValue(/\*{6}[-\s]?\*{7}/);
+    await expect(out).not.toHaveValue(/901201/);
   });
 
   test('Excel 수식 — VLOOKUP 수식이 생성된다', async ({ page }) => {
