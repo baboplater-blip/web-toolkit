@@ -2871,6 +2871,216 @@ export const EN_TOOLS: Record<string, EnToolCopy> = {
       'Generate and play white, pink or brown noise for focus, sleep or masking — synthesized in your browser.',
     keywords: ['white noise generator', 'pink noise', 'brown noise', 'noise generator'],
   },
+  'cron-next-runs': {
+    name: 'Cron Next Runs',
+    tagline: 'Preview upcoming cron fire times',
+    description:
+      'Enter a cron expression to list the next N execution dates by timezone.',
+    keywords: ['cron', 'next runs', 'schedule preview', 'fire times', 'crontab'],
+  },
+  'http-header-analyzer': {
+    name: 'HTTP Header Analyzer',
+    tagline: 'Audit response headers',
+    description:
+      'Paste raw response headers to classify security, cache and CORS headers and flag missing ones.',
+    keywords: ['http header', 'security headers', 'cors', 'cache control', 'header audit'],
+  },
+  'regex-extract': {
+    name: 'Regex Group Extractor',
+    tagline: 'Pull capture groups from every match',
+    description:
+      'Run a regex over text and extract all capture and named groups into a table.',
+    keywords: ['regex', 'capture group', 'named group', 'extract matches', 'regular expression'],
+  },
+  'json-to-jsdoc': {
+    name: 'JSON to JSDoc',
+    tagline: 'Generate @typedef from JSON',
+    description:
+      'Infer JSDoc @typedef type definitions from a JSON sample.',
+    keywords: ['json', 'jsdoc', 'typedef', 'type definition', 'annotation'],
+  },
+  'color-shades': {
+    name: 'Color Shade Scale',
+    tagline: 'Build tint and shade ramps',
+    description:
+      'Generate a brightness ramp of tints and shades from a base color in HSL.',
+    keywords: ['color shades', 'tints', 'palette', 'hsl ramp', 'color scale'],
+  },
+  'css-keyframes': {
+    name: 'CSS Keyframes Generator',
+    tagline: 'Build @keyframes animation CSS',
+    description:
+      'Configure easing, iterations and duration to generate @keyframes animation CSS.',
+    keywords: ['css keyframes', 'animation', 'easing', 'css animation', 'transition'],
+  },
+  'json-to-env': {
+    name: 'JSON to .env',
+    tagline: 'Flatten JSON into env vars',
+    description:
+      'Convert nested JSON into uppercase-key .env environment variable lines.',
+    keywords: ['json', 'dotenv', 'env vars', 'flatten', 'environment'],
+  },
+  'sql-where-builder': {
+    name: 'SQL WHERE Builder',
+    tagline: 'Assemble escaped WHERE clauses',
+    description:
+      'Pick fields, operators and values to build a safely escaped SQL WHERE clause.',
+    keywords: ['sql where', 'query builder', 'filter', 'condition', 'sql clause'],
+  },
+  'duplicate-lines': {
+    name: 'Find Duplicate Lines',
+    tagline: 'List only repeated lines',
+    description:
+      'Surface only the lines that appear more than once, with their counts.',
+    keywords: ['duplicate lines', 'repeated', 'count', 'find duplicates', 'text'],
+  },
+  'text-stats-table': {
+    name: 'Line Length Stats',
+    tagline: 'Per-line length statistics',
+    description:
+      'Compute char and word counts per line plus longest, shortest and average length.',
+    keywords: ['line length', 'text stats', 'word count', 'average', 'statistics'],
+  },
+  'number-extract': {
+    name: 'Extract Numbers',
+    tagline: 'Pull numbers out of text',
+    description:
+      'Extract integers, decimals and currency numbers from text with a list and sum.',
+    keywords: ['extract numbers', 'number', 'sum', 'parse numbers', 'currency'],
+  },
+  'text-to-columns': {
+    name: 'Align to Columns',
+    tagline: 'Tabulate delimited text',
+    description:
+      'Split delimited text and align it into a padded monospace column table.',
+    keywords: ['columns', 'align', 'delimiter', 'tabulate', 'fixed width'],
+  },
+  'prefix-suffix-lines': {
+    name: 'Prefix & Suffix Lines',
+    tagline: 'Wrap every line with text',
+    description:
+      'Add a prefix and/or suffix to every line at once for quick list editing.',
+    keywords: ['prefix', 'suffix', 'wrap lines', 'bulk edit', 'append'],
+  },
+  'tax-bracket-calc': {
+    name: 'Tax Bracket Calculator',
+    tagline: 'Progressive bracket tax math',
+    description:
+      'Define progressive tax brackets and compute the effective rate and tax owed.',
+    keywords: ['tax bracket', 'progressive tax', 'effective rate', 'marginal', 'income tax'],
+  },
+  'data-size-converter': {
+    name: 'Data Size Converter',
+    tagline: 'Bytes across SI and IEC',
+    description:
+      'Convert bytes, KB, MB, GB and TB across both SI (1000) and IEC (1024) bases.',
+    keywords: ['data size', 'bytes', 'gigabyte', 'iec', 'kib mib'],
+  },
+  'download-time-calc': {
+    name: 'Download Time Calculator',
+    tagline: 'Estimate transfer duration',
+    description:
+      'Estimate download or upload time from file size and connection speed.',
+    keywords: ['download time', 'transfer time', 'bandwidth', 'speed', 'file size'],
+  },
+  'frame-time-calc': {
+    name: 'Frame & Timecode',
+    tagline: 'Frames to timecode at fps',
+    description:
+      'Convert between frame counts and timecode (HH:MM:SS:FF) at a given fps.',
+    keywords: ['timecode', 'frames', 'fps', 'video', 'smpte'],
+  },
+  'angle-converter': {
+    name: 'Angle Converter',
+    tagline: 'Degrees, radians, grads, turns',
+    description:
+      'Convert between degrees, radians, gradians and turns at once.',
+    keywords: ['angle', 'degrees', 'radians', 'gradians', 'turns'],
+  },
+  'fov-calc': {
+    name: 'Field of View Calculator',
+    tagline: 'FOV from sensor and focal length',
+    description:
+      'Compute horizontal, vertical and diagonal field of view from sensor size and focal length.',
+    keywords: ['field of view', 'fov', 'focal length', 'sensor size', 'camera'],
+  },
+  'resistor-color-code': {
+    name: 'Resistor Color Code',
+    tagline: 'Decode resistor color bands',
+    description:
+      'Read resistance and tolerance from 4 or 5-band resistor color codes.',
+    keywords: ['resistor', 'color code', 'ohms', 'tolerance', 'electronics'],
+  },
+  'random-date': {
+    name: 'Random Date Generator',
+    tagline: 'Pick a date in a range',
+    description:
+      'Generate random dates within a chosen start and end range using secure randomness.',
+    keywords: ['random date', 'date generator', 'range', 'shuffle', 'picker'],
+  },
+  'ohms-law-calc': {
+    name: 'Ohm\'s Law Calculator',
+    tagline: 'Solve V, I, R and P',
+    description:
+      'Enter any two of voltage, current, resistance or power to solve the rest.',
+    keywords: ['ohms law', 'voltage', 'current', 'resistance', 'power'],
+  },
+  'crc32-hash': {
+    name: 'CRC32 Checksum',
+    tagline: 'Compute CRC32 in the browser',
+    description:
+      'Calculate the CRC32 checksum of text or a file for quick integrity checks.',
+    keywords: ['crc32', 'checksum', 'integrity', 'hash', 'verify'],
+  },
+  'adler32-hash': {
+    name: 'Adler-32 Checksum',
+    tagline: 'zlib Adler-32 checksum',
+    description:
+      'Compute the Adler-32 checksum used by zlib for text or files.',
+    keywords: ['adler32', 'checksum', 'zlib', 'integrity', 'hash'],
+  },
+  'passphrase-gen': {
+    name: 'Passphrase Generator',
+    tagline: 'Memorable multi-word passwords',
+    description:
+      'Generate easy-to-remember multi-word passphrases with separator, case and number options.',
+    keywords: ['passphrase', 'password', 'memorable', 'word password', 'secure'],
+  },
+  'csv-to-yaml': {
+    name: 'CSV to YAML',
+    tagline: 'Turn CSV rows into YAML',
+    description:
+      'Convert a CSV table into a YAML list of header-keyed objects.',
+    keywords: ['csv', 'yaml', 'convert', 'table', 'data'],
+  },
+  'json-to-toml': {
+    name: 'JSON to TOML',
+    tagline: 'Convert JSON into TOML',
+    description:
+      'Convert JSON data into TOML config format with table and array support.',
+    keywords: ['json', 'toml', 'convert', 'config', 'data'],
+  },
+  'image-ascii-braille': {
+    name: 'Image to Braille Art',
+    tagline: 'Render images as braille dots',
+    description:
+      'Convert an image into high-resolution Unicode braille (⠿) block art text.',
+    keywords: ['braille art', 'ascii art', 'image to text', 'unicode art', 'dots'],
+  },
+  'image-mirror-tile': {
+    name: 'Mirror Tile',
+    tagline: 'Make symmetric mirror tiles',
+    description:
+      'Reflect an image horizontally and vertically to build a symmetric pattern tile.',
+    keywords: ['mirror', 'tile', 'symmetry', 'pattern', 'kaleidoscope'],
+  },
+  'binaural-tone-gen': {
+    name: 'Binaural Beat Generator',
+    tagline: 'Play binaural frequency beats',
+    description:
+      'Generate binaural beats with a small frequency offset between ears via Web Audio.',
+    keywords: ['binaural', 'beats', 'frequency', 'focus', 'tone'],
+  },
 };
 
 /** IDs that have curated English copy, in insertion order. */
