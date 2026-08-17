@@ -13,7 +13,7 @@
       ],
       "numberOfRuns": 1,
       "settings": {
-        "preset": "perf",
+        "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
         "formFactor": "mobile",
         "screenEmulation": {
           "mobile": true,

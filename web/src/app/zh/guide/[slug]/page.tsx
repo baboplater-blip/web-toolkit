@@ -11,7 +11,7 @@ import { renderInlineGuide, stripInlineGuide } from '@/lib/guide-inline';
 import { SponsoredTip } from '@/components/SponsoredTip';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

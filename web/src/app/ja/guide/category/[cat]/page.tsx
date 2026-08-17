@@ -6,7 +6,7 @@ import { CATEGORY_GUIDES_JA } from '@/lib/category-guide-content-ja';
 import { JA_TOOLS, hasJaCopy } from '@/lib/ja-tools';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

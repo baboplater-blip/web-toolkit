@@ -3,7 +3,7 @@ import { ArrowLeft, GitCompare } from 'lucide-react';
 import { COMPARES_ZH } from '@/lib/zh-compares';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

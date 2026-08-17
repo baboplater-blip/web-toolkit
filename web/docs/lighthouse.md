@@ -191,7 +191,7 @@ npx -p @lhci/cli@0.14.x lhci autorun
 
 **측정 URL**: `https://agent-control-panel-phi.vercel.app` (옛 ACP 시절 alias.
 
-> ⚠️ **알림**: `https://web-toolkit.vercel.app` 은 다른 사용자의 빈 Next.js 데모가
+> ⚠️ **알림**: `https://agent-control-panel-phi.vercel.app` 은 다른 사용자의 빈 Next.js 데모가
 > 점유 중이라 우리가 확보할 수 없다. 본 프로젝트의 Vercel 이름은 `web-toolkit` 으로
 > 변경됐고(2026-05-25), 새 deployment 부터 `web-toolkit-*.vercel.app` 패턴의
 > alias 가 자동 발급된다. 진짜 도메인은 추후 구매 후 alias 로 연결할 예정.

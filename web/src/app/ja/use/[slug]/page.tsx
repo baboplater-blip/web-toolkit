@@ -7,7 +7,7 @@ import { FORMATS } from '@/lib/convert-matrix';
 import { getCompareJa } from '@/lib/ja-compares';
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app'
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app'
 )
   .replace(/^﻿/, '')
   .replace(/\/$/, '');

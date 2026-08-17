@@ -5,7 +5,7 @@
  *
  * 환경변수:
  *   INDEXNOW_KEY                  — 사용자가 발급한 키 (필수). 미설정 시 no-op
- *   NEXT_PUBLIC_SITE_URL          — 사이트 root URL. 기본 https://web-toolkit.vercel.app
+ *   NEXT_PUBLIC_SITE_URL          — 사이트 root URL. 기본 https://agent-control-panel-phi.vercel.app
  *   INDEXNOW_KEY_LOCATION         — 키 파일 위치 (기본: https://{HOST}/{KEY}.txt)
  *
  * 키 파일:
@@ -26,7 +26,7 @@ if (!KEY) {
   process.exit(0);
 }
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://web-toolkit.vercel.app').replace(/\/$/, '');
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agent-control-panel-phi.vercel.app').replace(/\/$/, '');
 const HOST = SITE_URL.replace(/^https?:\/\//, '');
 const KEY_LOCATION = process.env.INDEXNOW_KEY_LOCATION ?? `${SITE_URL}/${KEY}.txt`;
 
@@ -81,7 +81,20 @@ async function main() {
     return;
   }
   console.log(`[indexnow] ${urls.length} URL 추출 완료`);
-  await ping(urls);
+
+  // 호스트 정합성 가드: sitemap 의 URL 호스트가 ping host(=키 검증 도메인)와
+  // 다르면 IndexNow 가 422 로 거부한다. 이는 보통 프로덕션 빌드에
+  // NEXT_PUBLIC_SITE_URL 이 안 걸려 sitemap 이 엉뚱한 도메인을 내보낼 때 발생.
+  // 알림 폭탄(exit 1) 대신 원인을 로그로 크게 남기고 스킵(exit 0)한다.
+  const sameHost = urls.filter((u) => u === `https://${HOST}` || u.startsWith(`https://${HOST}/`));
+  if (sameHost.length === 0) {
+    console.warn(
+      `[indexnow] 스킵 — sitemap URL 호스트(${new URL(urls[0]).host})가 ping HOST(${HOST})와 불일치.\n` +
+        `  프로덕션 빌드의 NEXT_PUBLIC_SITE_URL 과 워크플로/스크립트 HOST 를 같은 도메인으로 맞추세요.`,
+    );
+    return;
+  }
+  await ping(sameHost);
 }
 
 main().catch((err) => {

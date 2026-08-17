@@ -10,4 +10,4 @@
  */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/^﻿/, '').replace(/\/$/, '') ??
-  'https://web-toolkit.vercel.app';
+  'https://agent-control-panel-phi.vercel.app';
