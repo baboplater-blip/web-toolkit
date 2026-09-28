@@ -5,6 +5,7 @@ import { Loader2, ShieldOff } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { uniqueFileName } from '@/lib/tools/image-common';
 import { Button } from '@/components/ui/button';
 
 export default function ExifBatchPage() {
@@ -39,12 +40,15 @@ export default function ExifBatchPage() {
     setProgress(0);
 
     try {
-      const piexif = (await import('piexifjs')) as unknown as {
-        remove: (jpeg: string) => string;
-      };
+      // piexifjs 는 CJS — 번들러에 따라 remove 가 default 아래에만 있을 수 있다.
+      type PiexifLib = { remove: (jpeg: string) => string };
+      const mod = (await import('piexifjs')) as unknown as Partial<PiexifLib> & { default?: PiexifLib };
+      const piexif = (mod.default ?? mod) as PiexifLib;
+      if (typeof piexif.remove !== 'function') throw new Error('EXIF 처리 라이브러리를 불러오지 못했습니다.');
 
       const zip = new JSZip();
       let processed = 0;
+      const usedNames = new Set<string>();
       let bytesBefore = 0;
       let bytesAfter = 0;
 
@@ -58,19 +62,23 @@ export default function ExifBatchPage() {
           const canvas = document.createElement('canvas');
           canvas.width = img.naturalWidth;
           canvas.height = img.naturalHeight;
-          canvas.getContext('2d')!.drawImage(img, 0, 0);
+          const cctx = canvas.getContext('2d')!;
+          // JPEG 는 알파 미지원 — 투명 영역이 검게 나오지 않도록 흰 배경을 먼저 깐다.
+          cctx.fillStyle = '#ffffff';
+          cctx.fillRect(0, 0, canvas.width, canvas.height);
+          cctx.drawImage(img, 0, 0);
           const blob = await new Promise<Blob>((res) => canvas.toBlob((b) => res(b!), 'image/jpeg', 0.92));
           URL.revokeObjectURL(img.src);
           const u8 = new Uint8Array(await blob.arrayBuffer());
           bytesAfter += u8.byteLength;
-          zip.file(f.name.replace(/\.[^.]+$/, '.jpg'), u8);
+          zip.file(uniqueFileName(usedNames, f.name.replace(/\.[^.]+$/, '.jpg')), u8);
         } else {
           const dataUrl = await fileToDataUrl(f);
           const stripped = piexif.remove(dataUrl);
           const blob = dataUrlToBlob(stripped);
           const u8 = new Uint8Array(await blob.arrayBuffer());
           bytesAfter += u8.byteLength;
-          zip.file(f.name, u8);
+          zip.file(uniqueFileName(usedNames, f.name), u8);
         }
         processed++;
         setProgress(Math.round(((i + 1) / files.length) * 95));
@@ -123,7 +131,7 @@ export default function ExifBatchPage() {
         </div>
       )}
 
-      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} extraInfo="JPG 는 EXIF 제거, 그 외는 JPG 재인코딩 (EXIF 자동 손실)" />}
+      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} metaText="JPG 는 EXIF 제거, 그 외는 JPG 재인코딩 (EXIF 자동 손실)" />}
     </main>
   );
 }

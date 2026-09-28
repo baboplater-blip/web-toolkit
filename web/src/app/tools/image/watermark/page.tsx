@@ -22,7 +22,7 @@ import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
-  detectFormatFromFile,
+  defaultOutputFormat,
   formatExtension,
   loadImageFile,
   type ImageFormat,
@@ -103,7 +103,7 @@ export default function ImageWatermarkPage() {
       const info = await loadImageFile(f);
       setFile(f);
       setLoaded(info);
-      setOutputFormat(detectFormatFromFile(f) ?? 'jpeg');
+      setOutputFormat(defaultOutputFormat(f, 'jpeg'));
     } catch (err) {
       setError(err instanceof Error ? err.message : '이미지 로드 실패');
     }

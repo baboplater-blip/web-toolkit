@@ -51,7 +51,13 @@ function buildArgs(format: TargetFormat, crf: number): string[] {
     return ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', String(crf), '-c:a', 'aac', '-b:a', '128k'];
   }
   if (format === 'webm') {
-    return ['-c:v', 'libvpx-vp9', '-crf', String(crf), '-b:v', '0', '-c:a', 'libopus', '-b:a', '96k'];
+    // ffmpeg.wasm core 0.12.x 의 libvpx-vp9 는 인코딩 중 "memory access out of bounds"
+    // 로 워커가 죽어 변환이 영원히 멈춘다 → VP8(libvpx) 로 인코딩. -b:v 는 CRF 상한.
+    return [
+      '-c:v', 'libvpx', '-crf', String(Math.min(63, Math.max(4, crf))), '-b:v', '2M',
+      '-deadline', 'good', '-cpu-used', '4',
+      '-c:a', 'libopus', '-b:a', '96k',
+    ];
   }
   // avi — 호환성 우선
   return ['-c:v', 'mpeg4', '-qscale:v', '5', '-c:a', 'libmp3lame', '-qscale:a', '5'];
@@ -277,7 +283,7 @@ export default function VideoConvertPage() {
         </div>
         <p className="text-[10px] text-muted-foreground mt-1">
           {target === 'mp4' && 'H.264 + AAC · 가장 널리 호환'}
-          {target === 'webm' && 'VP9 + Opus · 웹 최적화'}
+          {target === 'webm' && 'VP8 + Opus · 웹 호환'}
           {target === 'mov' && 'H.264 + AAC (QuickTime 컨테이너)'}
           {target === 'avi' && 'MPEG-4 + MP3 · 구형 플레이어 호환'}
           {target === 'mkv' && 'H.264 + AAC (Matroska 컨테이너)'}

@@ -25,9 +25,19 @@ export async function loadBitmap(file: File): Promise<ImageBitmap> {
   try {
     return await createImageBitmap(file, { imageOrientation: 'from-image' });
   } catch {
-    return createImageBitmap(file);
+    try {
+      return await createImageBitmap(file);
+    } catch (err) {
+      // 브라우저 원문("The source image could not be decoded.")은 영문이라 사용자용 한국어로 바꾼다.
+      console.error('[image-common] decode failed', err);
+      throw new Error(IMAGE_DECODE_ERROR);
+    }
   }
 }
+
+/** 이미지 디코딩 실패 시 사용자에게 보여줄 공통 메시지 */
+export const IMAGE_DECODE_ERROR =
+  '이미지를 읽을 수 없습니다. 파일이 손상되었거나 브라우저가 지원하지 않는 형식입니다(HEIC 는 HEIC→JPG 변환 도구를 먼저 이용하세요).';
 
 /**
  * 캔버스 한 변의 최대 픽셀(브라우저 공통 안전선). 이를 넘으면 일부 브라우저가
@@ -89,6 +99,16 @@ export function detectFormatFromFile(file: File): ImageFormat | null {
   return null;
 }
 
+/**
+ * 입력 파일 포맷을 기본 출력 포맷으로 쓸 때 사용.
+ * 주요 브라우저(Chrome·Safari·Firefox)는 캔버스 AVIF 인코딩을 지원하지 않으므로
+ * AVIF 입력은 WebP 로 기본 출력한다(사용자는 여전히 수동 선택 가능).
+ */
+export function defaultOutputFormat(file: File, fallback: ImageFormat): ImageFormat {
+  const f = detectFormatFromFile(file) ?? fallback;
+  return f === 'avif' ? 'webp' : f;
+}
+
 export function formatExtension(format: ImageFormat): string {
   return format === 'jpeg' ? 'jpg' : format;
 }
@@ -102,7 +122,23 @@ export function canvasToBlob(
   const q = format === 'png' ? undefined : quality;
   return new Promise((resolve, reject) => {
     canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error('이미지 변환 실패'))),
+      (b) => {
+        if (!b) {
+          reject(new Error('이미지 변환 실패'));
+          return;
+        }
+        // 브라우저가 해당 포맷 인코딩을 지원하지 않으면 toBlob 이 조용히 PNG 를 돌려준다
+        // (예: Chrome 의 AVIF, 구형 Safari 의 WebP). 확장자만 바뀐 PNG 가 저장되지 않도록 막는다.
+        if (b.type && b.type !== mime) {
+          reject(
+            new Error(
+              `이 브라우저는 ${format.toUpperCase()} 인코딩을 지원하지 않습니다. JPEG·PNG 등 다른 포맷을 선택하세요.`,
+            ),
+          );
+          return;
+        }
+        resolve(b);
+      },
       mime,
       q,
     );
@@ -164,4 +200,27 @@ export async function supportsAvifEncode(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * 용량 감소율(%). 양수=감소, 음수=증가.
+ * (lib/compress/format 의 compressionRatio 는 0 미만을 0 으로 잘라 "용량 증가"를 표시할 수 없다.)
+ */
+export function sizeReductionPercent(original: number, output: number): number {
+  if (original <= 0) return 0;
+  return Math.round(((original - output) / original) * 100);
+}
+
+/**
+ * ZIP 등 한 폴더에 담을 파일명을 중복 없이 만든다(a.jpg → a-2.jpg …, 대소문자 무시).
+ * 여러 입력이 같은 출력명(a.png·a.webp → a.jpg)을 가질 때 덮어쓰기로 파일이 사라지는 것을 막는다.
+ */
+export function uniqueFileName(used: Set<string>, name: string): string {
+  const dot = name.lastIndexOf('.');
+  const base = dot > 0 ? name.slice(0, dot) : name;
+  const ext = dot > 0 ? name.slice(dot) : '';
+  let out = name;
+  for (let n = 2; used.has(out.toLowerCase()); n++) out = `${base}-${n}${ext}`;
+  used.add(out.toLowerCase());
+  return out;
 }

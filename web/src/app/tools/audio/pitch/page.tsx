@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Download, Loader2, Music2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -46,14 +46,16 @@ function buildAtempoChain(rate: number): string {
 
 /**
  * 반음(semitone) 단위 피치 변경 필터 그래프 생성.
- * asetrate 로 피치+속도를 함께 올린 뒤, atempo 로 속도를 원래대로 되돌려
- * "속도 유지, 피치만 변경" 을 구현한다. aresample 로 표준 sr 로 리샘플.
+ * 먼저 표준 sr 로 리샘플해 입력 샘플레이트를 확정한 뒤(asetrate 는 입력 sr 을
+ * 정확히 알아야 한다 — Web Audio decodeAudioData 는 컨텍스트 sr 로 리샘플해
+ * 원본 sr 을 알려주지 않으므로 쓰지 않는다), asetrate 로 피치+속도를 함께 올리고
+ * atempo 로 속도를 원래대로 되돌려 "속도 유지, 피치만 변경" 을 구현한다.
  */
-function buildPitchFilter(semitones: number, sourceRate: number): string {
+function buildPitchFilter(semitones: number): string {
   const factor = Math.pow(2, semitones / 12);
-  const shiftedRate = Math.round(sourceRate * factor);
-  const tempoChain = buildAtempoChain(1 / factor);
-  return `asetrate=${shiftedRate},aresample=${TARGET_SAMPLE_RATE},${tempoChain}`;
+  const shiftedRate = Math.round(TARGET_SAMPLE_RATE * factor);
+  const tempoChain = buildAtempoChain(TARGET_SAMPLE_RATE / shiftedRate);
+  return `aresample=${TARGET_SAMPLE_RATE},asetrate=${shiftedRate},aresample=${TARGET_SAMPLE_RATE},${tempoChain}`;
 }
 
 export default function AudioPitchPage() {
@@ -67,7 +69,6 @@ export default function AudioPitchPage() {
   const [result, setResult] = useState<{ blob: Blob; url: string; fileName: string } | null>(
     null,
   );
-  const sampleRateRef = useRef<number>(44100);
 
   useEffect(() => {
     return () => {
@@ -80,22 +81,7 @@ export default function AudioPitchPage() {
     };
   }, [result]);
 
-  /** Web Audio 로 원본 샘플레이트만 빠르게 추출 (실패해도 기본값 사용). */
-  const probeSampleRate = async (f: File): Promise<number> => {
-    const AudioCtx =
-      window.AudioContext ??
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioCtx) return TARGET_SAMPLE_RATE;
-    const ctx = new AudioCtx();
-    try {
-      const buffer = await ctx.decodeAudioData(await f.arrayBuffer());
-      return buffer.sampleRate;
-    } finally {
-      void ctx.close();
-    }
-  };
-
-  const acceptFile = async (f: File) => {
+  const acceptFile = (f: File) => {
     if (!f.type.startsWith('audio/') && !/\.(mp3|wav|ogg|oga|aac|m4a|flac|opus|amr|aiff|wma)$/i.test(f.name)) {
       setError('오디오 파일만 업로드 가능합니다.');
       return;
@@ -111,11 +97,6 @@ export default function AudioPitchPage() {
     setResult(null);
     setFile(f);
     setPreviewUrl(URL.createObjectURL(f));
-    try {
-      sampleRateRef.current = await probeSampleRate(f);
-    } catch {
-      sampleRateRef.current = TARGET_SAMPLE_RATE;
-    }
   };
 
   const reset = () => {
@@ -158,7 +139,7 @@ export default function AudioPitchPage() {
       try {
         await writeFile(ffmpeg, inputName, file);
         setProgressText('피치 변경 중');
-        const filter = buildPitchFilter(semitones, sampleRateRef.current);
+        const filter = buildPitchFilter(semitones);
         await ffmpeg.exec(['-i', inputName, '-af', filter, '-y', outputName]);
         const blob = await readOutput(ffmpeg, outputName, file.type || `audio/${ext}`);
         const suffix = semitones > 0 ? `-pitch+${semitones}` : `-pitch${semitones}`;

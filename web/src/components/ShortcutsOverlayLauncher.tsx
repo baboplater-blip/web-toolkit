@@ -25,6 +25,14 @@ function isEditableTarget(target: EventTarget | null): boolean {
   return target.isContentEditable;
 }
 
+/** 이미 다른 모달(다이얼로그)이 열려 있는지 — 모달 스태킹 방지. (CommandPalette 와 동일) */
+function isAnotherDialogOpen(): boolean {
+  return (
+    document.querySelector('[data-slot="dialog-content"], [role="dialog"]') !==
+    null
+  );
+}
+
 export function ShortcutsOverlayLauncher() {
   const [loaded, setLoaded] = useState(false);
 
@@ -35,6 +43,8 @@ export function ShortcutsOverlayLauncher() {
       if (e.key !== '?') return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (isEditableTarget(e.target)) return;
+      // 열린 팔레트·드로어 등 다른 모달 위에 치트시트를 스태킹하지 않는다.
+      if (isAnotherDialogOpen()) return;
       e.preventDefault();
       setLoaded(true);
     };

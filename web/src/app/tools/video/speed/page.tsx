@@ -15,7 +15,9 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import {
   cleanupFiles,
   getFFmpeg,
+  hasAudioStream,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -58,18 +60,17 @@ function buildAtempoChain(speed: number): string {
   return filters.join(',');
 }
 
-function buildArgs(speed: number, input: string, output: string): string[] {
+function buildArgs(speed: number, input: string, output: string, withAudio: boolean): string[] {
   // setpts 는 PTS 를 1/speed 로 줄여 재생 속도를 speed 배로 만든다.
   const ptsFactor = Number((1 / speed).toFixed(6));
+  // 오디오 트랙이 없는 영상에 [0:a] 를 참조하면 필터 그래프가 실패하므로 영상만 처리.
+  const graph = withAudio
+    ? ['-filter_complex', `[0:v]setpts=${ptsFactor}*PTS[v];[0:a]${buildAtempoChain(speed)}[a]`, '-map', '[v]', '-map', '[a]']
+    : ['-filter_complex', `[0:v]setpts=${ptsFactor}*PTS[v]`, '-map', '[v]'];
   return [
     '-i',
     input,
-    '-filter_complex',
-    `[0:v]setpts=${ptsFactor}*PTS[v];[0:a]${buildAtempoChain(speed)}[a]`,
-    '-map',
-    '[v]',
-    '-map',
-    '[a]',
+    ...graph,
     '-c:v',
     'libx264',
     '-preset',
@@ -135,35 +136,40 @@ export default function VideoSpeedPage() {
     const ext = file.name.split('.').pop() || 'mp4';
     const inputName = `in.${ext}`;
     const outputName = 'speed.mp4';
-    let ffmpeg;
     try {
       setStage('FFmpeg 로딩');
-      ffmpeg = await getFFmpeg();
-      setStage('파일 준비');
-      await writeFile(ffmpeg, inputName, file);
-
+      const ffmpeg = await getFFmpeg();
       const onProgress = ({ progress: p }: { progress: number }) => {
         setProgress(Math.min(99, Math.round(p * 100)));
       };
       ffmpeg.on('progress', onProgress);
+      try {
+        setStage('파일 준비');
+        await writeFile(ffmpeg, inputName, file);
 
-      setStage('배속 처리');
-      await ffmpeg.exec(buildArgs(speed, inputName, outputName));
-      ffmpeg.off('progress', onProgress);
+        setStage('배속 처리');
+        const withAudio = await hasAudioStream(ffmpeg, inputName);
+        await ffmpeg.exec(buildArgs(speed, inputName, outputName, withAudio));
 
-      const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
-      const url = URL.createObjectURL(blob);
+        const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
+        const url = URL.createObjectURL(blob);
 
-      const base = file.name.replace(/\.[^.]+$/, '');
-      setResult({ url, blob, size: blob.size, name: `${base}-${speed}x.mp4` });
-      setProgress(100);
-      setStage('완료');
-
-      await cleanupFiles(ffmpeg, [inputName, outputName]);
+        const base = file.name.replace(/\.[^.]+$/, '');
+        setResult({ url, blob, size: blob.size, name: `${base}-${speed}x.mp4` });
+        setProgress(100);
+        setStage('완료');
+      } finally {
+        // exec 실패 시에도 진행률 리스너·MEMFS 잔류 파일이 새지 않게 finally 에서 정리.
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, [inputName, outputName]);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '배속 처리 실패';
-      setError(explainFfmpegError(msg, file.size));
-      if (ffmpeg) await cleanupFiles(ffmpeg, [inputName, outputName]);
+      const friendly = explainFfmpegError(msg, file.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setBusy(false);
     }

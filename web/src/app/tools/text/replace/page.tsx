@@ -11,6 +11,17 @@ import { triggerDownload } from '@/lib/tools/file-utils';
 // 일정 길이를 넘으면 실시간 평가를 건너뛰고 안내만 표시한다.
 const MAX_LIVE_EVAL_CHARS = 100_000;
 
+/**
+ * 정규식 모드에서 대체 문자열의 \n·\t·\r·\\ 이스케이프를 실제 문자로 푼다.
+ * 단일 패스라 \\n 은 리터럴 백슬래시+n 으로 남는다. $1 등 캡처 그룹 참조는
+ * String.replace 가 처리하므로 건드리지 않는다.
+ */
+function unescapeReplacement(s: string): string {
+  return s.replace(/\\([nrt\\])/g, (_, ch: string) =>
+    ch === 'n' ? '\n' : ch === 't' ? '\t' : ch === 'r' ? '\r' : '\\',
+  );
+}
+
 export default function TextReplacePage() {
   const [text, setText] = useState(
     'Hello World\nHello Web Toolkit\nGoodbye World\n안녕 세계\n안녕 안녕 세계',
@@ -55,7 +66,9 @@ export default function TextReplacePage() {
     try {
       const re = new RegExp(pattern, flags);
       const matches = deferredText.match(re);
-      const out = deferredText.replace(re, deferredReplace);
+      // 정규식 모드에서만 대체 문자열의 \n·\t 등 이스케이프를 해석(UI 안내와 일치)
+      const replacement = useRegex ? unescapeReplacement(deferredReplace) : deferredReplace;
+      const out = deferredText.replace(re, replacement);
       return { output: out, matchCount: matches?.length ?? 0, regexError: null };
     } catch (e) {
       return {

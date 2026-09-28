@@ -19,8 +19,13 @@ export const ISSUER_RULES: readonly IssuerRule[] = [
   // Mastercard: 51–55 또는 2221–2720
   { name: 'Mastercard', pattern: /^(5[1-5]|222[1-9]|22[3-9]\d|2[3-6]\d\d|27[01]\d|2720)/, lengths: [16] },
   { name: 'American Express', pattern: /^3[47]/, lengths: [15] },
-  // Discover: 6011, 65, 644–649, 622126–622925
-  { name: 'Discover', pattern: /^(6011|65|64[4-9]|622)/, lengths: [16, 19] },
+  // Discover: 6011, 65, 644–649, 622126–622925 (622 는 정확한 서브레인지만 —
+  // 622000–622125·622926–622999 는 UnionPay 로 흘려보낸다)
+  {
+    name: 'Discover',
+    pattern: /^(6011|65|64[4-9]|622(1(2[6-9]|[3-9]\d)|[2-8]\d\d|9([01]\d|2[0-5])))/,
+    lengths: [16, 19],
+  },
   // Diners Club: 300–305, 3095, 36, 38–39
   { name: 'Diners Club', pattern: /^(30[0-5]|3095|36|3[89])/, lengths: [14, 16, 19] },
   { name: 'JCB', pattern: /^35(2[89]|[3-8]\d)/, lengths: [16, 17, 18, 19] },

@@ -148,6 +148,12 @@ export default function ImageFiltersPage() {
     }
   }
 
+  // 이미지 로드 직후 현재 선택된 필터로 바로 미리보기 생성(필터를 다시 누르지 않아도 결과가 보이도록).
+  useEffect(() => {
+    if (bitmap) void renderFilter(filterId, exportFormat);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bitmap]);
+
   function selectFilter(id: FilterId) {
     setFilterId(id);
     void renderFilter(id, exportFormat);

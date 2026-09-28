@@ -76,10 +76,15 @@ export default function PomodoroPage() {
   const [completedCycles, setCompletedCycles] = useState(0);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // 단계 종료 시각(epoch ms)과 백업 타이머 — 백그라운드 탭에서 인터벌이 스로틀돼도
+  // 벽시계(Date.now)와 setTimeout 으로 정확한 시점에 단계를 전환한다(timer-stopwatch 패턴).
+  const endAtRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // 단계 전환을 인터벌 콜백 안에서 안전하게 처리하기 위한 최신값 ref
   const phaseRef = useRef<Phase>(phase);
   const focusMinRef = useRef(DEFAULT_FOCUS_MIN);
   const breakMinRef = useRef(DEFAULT_BREAK_MIN);
+  const finishPhaseRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -98,7 +103,46 @@ export default function PomodoroPage() {
     }
   }, []);
 
-  // 인터벌은 한 번만 설치하고 ref 로 최신 단계를 참조해 전환한다.
+  const clearBackupTimeout = useCallback(() => {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
+
+  // 단계 종료 처리 — 알림·비프 후 다음 단계로 전환하고 종료시각·백업 타이머 재설정.
+  // 첫 줄의 clearBackupTimeout 이 인터벌·백업 타이머의 이중 발화를 막는다.
+  const finishPhase = useCallback(() => {
+    clearBackupTimeout();
+    const finishedPhase = phaseRef.current;
+    notify(finishedPhase);
+    playBeep();
+
+    let nextSeconds: number;
+    if (finishedPhase === 'focus') {
+      setCompletedCycles((c) => c + 1);
+      setPhase('break');
+      phaseRef.current = 'break';
+      nextSeconds = breakMinRef.current * 60;
+    } else {
+      setPhase('focus');
+      phaseRef.current = 'focus';
+      nextSeconds = focusMinRef.current * 60;
+    }
+    endAtRef.current = Date.now() + nextSeconds * 1000;
+    timeoutRef.current = setTimeout(
+      () => finishPhaseRef.current?.(),
+      nextSeconds * 1000,
+    );
+    setRemaining(nextSeconds);
+  }, [clearBackupTimeout]);
+
+  useEffect(() => {
+    finishPhaseRef.current = finishPhase;
+  }, [finishPhase]);
+
+  // 인터벌은 한 번만 설치하고, 남은 시간은 틱 횟수가 아닌 벽시계(절대 종료시각)로
+  // 계산한다 — 백그라운드 탭에서 인터벌이 스로틀돼도 표시·종료 판정이 어긋나지 않는다.
   useEffect(() => {
     if (!running) {
       clearTimer();
@@ -107,31 +151,22 @@ export default function PomodoroPage() {
     if (intervalRef.current !== null) return;
 
     intervalRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev > 1) return prev - 1;
-
-        // 현재 단계 종료 → 알림·비프 후 다음 단계로 전환
-        const finishedPhase = phaseRef.current;
-        notify(finishedPhase);
-        playBeep();
-
-        if (finishedPhase === 'focus') {
-          setCompletedCycles((c) => c + 1);
-          setPhase('break');
-          phaseRef.current = 'break';
-          return breakMinRef.current * 60;
-        }
-        setPhase('focus');
-        phaseRef.current = 'focus';
-        return focusMinRef.current * 60;
-      });
+      const endAt = endAtRef.current;
+      if (endAt === null) return;
+      const remainingMs = endAt - Date.now();
+      if (remainingMs <= 0) {
+        finishPhaseRef.current?.();
+        return;
+      }
+      setRemaining(Math.ceil(remainingMs / 1000));
     }, 1000);
 
     return clearTimer;
   }, [running, clearTimer]);
 
-  // 언마운트 시 인터벌 정리
+  // 언마운트 시 인터벌·백업 타이머 정리
   useEffect(() => clearTimer, [clearTimer]);
+  useEffect(() => clearBackupTimeout, [clearBackupTimeout]);
 
   async function start() {
     // 첫 시작 시 알림 권한 요청 (거부돼도 비프는 동작)
@@ -145,14 +180,31 @@ export default function PomodoroPage() {
         console.warn('[pomodoro] permission request failed', err);
       }
     }
+    // 현재 남은 시간 기준으로 절대 종료시각 고정 + 백그라운드 백업 타이머 설정.
+    // (Date.now() 는 핸들러 안에서만 사용 — 초기 렌더는 결정적으로 유지)
+    const remainingMs = Math.max(0, remaining) * 1000;
+    endAtRef.current = Date.now() + remainingMs;
+    clearBackupTimeout();
+    timeoutRef.current = setTimeout(
+      () => finishPhaseRef.current?.(),
+      remainingMs,
+    );
     setRunning(true);
   }
 
   function pause() {
+    clearBackupTimeout();
+    // 일시정지 시점의 정확한 남은 시간을 벽시계 기준으로 고정
+    if (endAtRef.current !== null) {
+      setRemaining(Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000)));
+      endAtRef.current = null;
+    }
     setRunning(false);
   }
 
   function reset() {
+    clearBackupTimeout();
+    endAtRef.current = null;
     setRunning(false);
     clearTimer();
     setPhase('focus');

@@ -18,6 +18,8 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import {
   cleanupFiles,
   getFFmpeg,
+  hasAudioStream,
+  probeVideo,
   readOutput,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
@@ -122,12 +124,35 @@ export default function VideoMergePage() {
           outputName,
         ];
       } else {
+        // 해상도·SAR·fps·오디오 형식이 다르면 concat 필터가 "parameters do not match"
+        // 로 실패한다 → 모든 입력을 첫 영상 크기(레터박스)·30fps·44.1kHz 스테레오로 정규화.
+        // 오디오가 없는 입력은 길이만큼 무음을 만들어 채운다.
+        const first = await probeVideo(files[0]).catch(() => null);
+        const W = Math.max(2, Math.round((first?.width || 1280) / 2) * 2);
+        const H = Math.max(2, Math.round((first?.height || 720) / 2) * 2);
         args = [];
         for (const n of inputNames) {
           args.push('-i', n);
         }
-        const filterInputs = inputNames.map((_, i) => `[${i}:v][${i}:a]`).join('');
-        const filter = `${filterInputs}concat=n=${inputNames.length}:v=1:a=1[outv][outa]`;
+        const parts: string[] = [];
+        for (let i = 0; i < inputNames.length; i++) {
+          parts.push(
+            `[${i}:v]scale=${W}:${H}:force_original_aspect_ratio=decrease,` +
+              `pad=${W}:${H}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v${i}]`,
+          );
+          if (await hasAudioStream(ffmpeg, inputNames[i])) {
+            parts.push(
+              `[${i}:a]aresample=44100,aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`,
+            );
+          } else {
+            const dur = (await probeVideo(files[i]).catch(() => null))?.duration || 1;
+            parts.push(
+              `anullsrc=r=44100:cl=stereo,atrim=duration=${dur.toFixed(3)},aformat=sample_fmts=fltp[a${i}]`,
+            );
+          }
+        }
+        const concatInputs = inputNames.map((_, i) => `[v${i}][a${i}]`).join('');
+        const filter = `${parts.join(';')};${concatInputs}concat=n=${inputNames.length}:v=1:a=1[outv][outa]`;
         args.push(
           '-filter_complex',
           filter,

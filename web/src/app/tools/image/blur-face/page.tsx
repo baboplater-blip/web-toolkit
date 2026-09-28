@@ -21,7 +21,7 @@ import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
-  detectFormatFromFile,
+  defaultOutputFormat,
   formatExtension,
   loadImageFile,
   type ImageFormat,
@@ -596,7 +596,7 @@ export default function BlurFacePage() {
       const info = await loadImageFile(f);
       setFile(f);
       setLoaded(info);
-      setOutputFormat(detectFormatFromFile(f) ?? 'jpeg');
+      setOutputFormat(defaultOutputFormat(f, 'jpeg'));
       if (target === 'face') await detectFaces(info);
       else setAddMode(true); // 번호판·기타 모드는 바로 그리기
     } catch (err) {

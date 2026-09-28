@@ -61,10 +61,13 @@ function buildCron(fields: CronField): { expression: string; description: string
   return { expression, description: parts.join(' · ') };
 }
 
-/** cron 필드 한 칸이 주어진 값과 매치되는지 검사한다(별표·스텝·범위·목록 지원). */
-function matchField(value: string, current: number, min: number, max: number): boolean {
+/** cron 필드 한 칸이 주어진 값과 매치되는지 검사한다(별표·스텝·범위·스텝범위·목록 지원). */
+function matchField(value: string, current: number, min: number, max: number, wrapValue?: number): boolean {
   const trimmed = value.trim();
   if (trimmed === '' || trimmed === '*') return true;
+  // Unix cron 요일 7=일요일(0): current 가 min(0)이면 wrapValue(7)로 쓴 표현식과도 매치.
+  const candidates =
+    wrapValue !== undefined && current === min ? [current, wrapValue] : [current];
   for (const part of trimmed.split(',')) {
     const token = part.trim();
     const step = token.match(/^\*\/(\d+)$/);
@@ -73,16 +76,17 @@ function matchField(value: string, current: number, min: number, max: number): b
       if (n > 0 && (current - min) % n === 0) return true;
       continue;
     }
-    const range = token.match(/^(\d+)-(\d+)$/);
+    // a-b 또는 a-b/n (스텝 범위)
+    const range = token.match(/^(\d+)-(\d+)(?:\/(\d+))?$/);
     if (range) {
       const lo = Number(range[1]);
       const hi = Number(range[2]);
-      if (current >= lo && current <= hi) return true;
+      const n = range[3] ? Number(range[3]) : 1;
+      if (n > 0 && candidates.some((c) => c >= lo && c <= hi && (c - lo) % n === 0)) return true;
       continue;
     }
-    if (Number(token) === current) return true;
+    if (candidates.includes(Number(token))) return true;
   }
-  void min;
   void max;
   return false;
 }
@@ -111,7 +115,7 @@ function nextRuns(fields: CronField, from: Date, count: number): Date[] {
     const domRestricted = fields.dayOfMonth.trim() !== '*' && fields.dayOfMonth.trim() !== '';
     const dowRestricted = fields.dayOfWeek.trim() !== '*' && fields.dayOfWeek.trim() !== '';
     const domOk = matchField(fields.dayOfMonth, dom, 1, 31);
-    const dowOk = matchField(fields.dayOfWeek, dow, 0, 6);
+    const dowOk = matchField(fields.dayOfWeek, dow, 0, 6, 7);
     let dayOk: boolean;
     if (domRestricted && dowRestricted) dayOk = domOk || dowOk;
     else if (domRestricted) dayOk = domOk;

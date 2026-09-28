@@ -204,6 +204,16 @@ export default function ScreenRecordPage() {
       mic?.getTracks().forEach((t) => t.stop());
       displayStreamRef.current = null;
       micStreamRef.current = null;
+      // buildStream 이 MediaRecorder 생성 전에 만든 믹스 스트림·AudioContext 도 해제
+      // (new MediaRecorder 가 throw 하면 시도마다 AudioContext 가 살아남던 누수 방지)
+      mixedStreamRef.current?.getTracks().forEach((t) => t.stop());
+      mixedStreamRef.current = null;
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {
+          /* 이미 닫혔으면 무시 */
+        });
+        audioContextRef.current = null;
+      }
       if (err instanceof DOMException && err.name === 'NotAllowedError') {
         setError('화면 공유 권한이 거부되었습니다.');
       } else {

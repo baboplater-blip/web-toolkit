@@ -23,6 +23,7 @@ import {
   triggerDownload,
 } from '@/lib/tools/pdf-common';
 import { formatBytes } from '@/lib/compress/format';
+import { assertCanvasSize, loadBitmap } from '@/lib/tools/image-common';
 
 type PageSize = 'A4' | 'Letter' | 'Legal' | 'fit';
 type Orientation = 'portrait' | 'landscape';
@@ -40,6 +41,51 @@ const MARGIN_VALUES: Record<MarginPreset, number> = {
   medium: 40,
   large: 72,
 };
+
+/**
+ * embed 용 이미지 바이트 준비 — EXIF Orientation 을 픽셀에 굽는다.
+ * PDF 뷰어는 임베드된 이미지 스트림의 EXIF 를 무시하므로, 원본 바이트를 그대로
+ * embedJpg 하면 세로로 찍은 휴대폰 사진이 옆으로 누워 렌더된다.
+ * loadBitmap(imageOrientation:'from-image') 으로 디코딩해 캔버스에 그린 뒤
+ * 재인코딩한 바이트를 반환한다(PNG 는 투명도 보존을 위해 PNG 유지).
+ */
+async function toEmbeddableBytes(
+  file: File,
+): Promise<{ bytes: Uint8Array; isJpg: boolean }> {
+  const isJpg = file.type === 'image/jpeg' || /\.jpe?g$/i.test(file.name);
+  const bmp = await loadBitmap(file);
+  try {
+    assertCanvasSize(bmp.width, bmp.height);
+  } catch (e) {
+    bmp.close();
+    throw e;
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = bmp.width;
+  canvas.height = bmp.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    bmp.close();
+    throw new Error('Canvas 컨텍스트를 생성할 수 없습니다');
+  }
+  ctx.drawImage(bmp, 0, 0);
+  bmp.close();
+  const blob: Blob = await new Promise((res, rej) =>
+    canvas.toBlob(
+      (b) =>
+        b
+          ? res(b)
+          : rej(
+              new Error(
+                '이미지가 너무 커서 변환할 수 없습니다. 크기를 줄인 뒤 다시 시도해주세요.',
+              ),
+            ),
+      isJpg ? 'image/jpeg' : 'image/png',
+      isJpg ? 0.92 : undefined,
+    ),
+  );
+  return { bytes: new Uint8Array(await blob.arrayBuffer()), isJpg };
+}
 
 export default function FromJpgPage() {
   const [items, setItems] = useState<QueueItem[]>([]);
@@ -130,8 +176,7 @@ export default function FromJpgPage() {
       for (let i = 0; i < items.length; i++) {
         setProgressText(`변환 중 ${i + 1}/${items.length}`);
         const { file } = items[i];
-        const bytes = new Uint8Array(await file.arrayBuffer());
-        const isJpg = file.type === 'image/jpeg' || /\.jpe?g$/i.test(file.name);
+        const { bytes, isJpg } = await toEmbeddableBytes(file);
         const image = isJpg ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
         const imgW = image.width;
         const imgH = image.height;

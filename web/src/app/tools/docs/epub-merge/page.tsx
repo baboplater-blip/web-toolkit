@@ -13,6 +13,9 @@ import {
   fmtBytes,
   parseEpub,
   readChapter,
+  relocateChapterAssets,
+  resolveHref,
+  type RelocatedAsset,
 } from '@/lib/tools/epub-common';
 
 interface InputItem {
@@ -71,6 +74,8 @@ export default function EpubMergePage() {
     setProgress(0);
     try {
       const allChapters: Array<{ id: string; title: string; bodyHtml: string }> = [];
+      // 각 책의 이미지 등 자산 — 챕터 본문 참조를 새 경로로 바꾸고 함께 담는다(누락 시 이미지 깨짐).
+      const assets = new Map<string, RelocatedAsset>();
       const firstMeta: { title: string; creator: string; language: string; description?: string } = {
         title: title || '',
         creator: creator || '',
@@ -91,10 +96,23 @@ export default function EpubMergePage() {
 
         // 책 자체를 한 섹션의 시작으로 표시
         const bookTitle = epub.metadata.title || f.name.replace(/\.epub$/i, '');
+        // 원본 챕터 경로 → 새 챕터 파일명 (책 안의 챕터 간 링크 유지)
+        const pathMap = new Map<string, string>();
+        epub.spine.forEach((idref, j) => {
+          const it = epub.manifest.get(idref);
+          if (it) pathMap.set(resolveHref(epub.opfDir, it.href), `book${i + 1}_ch${j + 1}.xhtml`);
+        });
         for (let j = 0; j < epub.spine.length; j++) {
           const ch = await readChapter(epub, epub.spine[j]);
           if (!ch) continue;
-          const body = extractBody(ch.xhtml);
+          const body = await relocateChapterAssets(
+            epub,
+            ch.path,
+            extractBody(ch.xhtml),
+            `b${i + 1}/`,
+            assets,
+            pathMap,
+          );
           const cTitle = chapterTitle(ch.xhtml, `${bookTitle} ${j + 1}`);
           allChapters.push({
             id: `book${i + 1}_ch${j + 1}`,
@@ -111,6 +129,7 @@ export default function EpubMergePage() {
         language: firstMeta.language,
         description: firstMeta.description,
         chapters: allChapters,
+        assets: Array.from(assets.values()),
       });
       setProgress(100);
 

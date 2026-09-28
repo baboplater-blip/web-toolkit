@@ -28,18 +28,18 @@ const SYSTEM_OPTIONS: SystemOption[] = [
  *   US 남성 = UK + 0.5
  *   US 여성 = US 남성 + 1.5
  *   EU(파리 포인트) ≈ (발 길이 cm + 1.5) × 1.5   (여유분 포함)
- *   UK ≈ 발 길이 cm × 1.5 − 23                    (브래녹 근사)
+ *   UK(발리콘, 1인치 = 3사이즈) ≈ 발 길이 cm × 3 ÷ 2.54 − 23
  */
 
 const selectClass =
   'h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm';
 
 function ukToCm(uk: number): number {
-  return (uk + 23) / 1.5;
+  return ((uk + 23) * 2.54) / 3;
 }
 
 function cmToUk(cm: number): number {
-  return cm * 1.5 - 23;
+  return (cm * 3) / 2.54 - 23;
 }
 
 function cmToEu(cm: number): number {

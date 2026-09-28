@@ -251,7 +251,7 @@ export default function RegexPage() {
             readOnly
             value={replaced}
             rows={5}
-            className="w-full rounded-lg border bg-muted px-2.5 py-2 text-xs font-mono resize-y" aria-label="치환" />
+            className="w-full rounded-lg border bg-muted px-2.5 py-2 text-xs font-mono resize-y" aria-label="치환 결과" />
         </div>
       </main>
     </div>

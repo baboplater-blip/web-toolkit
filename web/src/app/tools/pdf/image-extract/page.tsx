@@ -137,6 +137,7 @@ export default function PdfImageExtractPage() {
           originalSize={result.originalSize}
           compressedSize={result.compressedSize}
           blobUrl={result.blobUrl}
+          metaText={`PNG ${count.toLocaleString()}장 · ZIP`}
         />
       )}
 

@@ -50,12 +50,21 @@ function encodeHTML(input: string, all: boolean): string {
 }
 
 function decodeHTML(input: string): string {
-  return input
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
-      String.fromCodePoint(parseInt(hex, 16)),
-    )
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
-    .replace(/&([a-zA-Z]+);/g, (m, name) => NAMED_ENTITIES[name] ?? m);
+  // 명명·10진·16진 엔티티를 하나의 정규식으로 단일 패스 디코드한다.
+  // 패스를 나누면 숫자 엔티티의 출력(&#38; → &)이 뒤 패스에서 다시
+  // 디코드되는 이중 디코드가 생긴다(&#38;lt; 가 &lt; 아닌 < 로 붕괴).
+  return input.replace(
+    /&(?:#x([0-9a-fA-F]+)|#(\d+)|([a-zA-Z]+));/g,
+    (match, hex, dec, name) => {
+      if (name !== undefined) return NAMED_ENTITIES[name] ?? match;
+      try {
+        // 범위 밖 코드포인트(예: &#1114112;)는 throw → 해당 엔티티만 원문 유지
+        return String.fromCodePoint(hex !== undefined ? parseInt(hex, 16) : Number(dec));
+      } catch {
+        return match;
+      }
+    },
+  );
 }
 
 export default function HtmlEntitiesPage() {

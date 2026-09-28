@@ -261,6 +261,7 @@ export default function SvgToPngPage() {
           originalSize={result.originalSize}
           compressedSize={result.compressedSize}
           blobUrl={result.blobUrl}
+          metaText="SVG → PNG 래스터화 완료"
         />
       )}
 

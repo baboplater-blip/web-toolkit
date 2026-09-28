@@ -6,9 +6,9 @@ import {
   composeSyllable,
   en2ko,
   ko2en,
-  hanjaToHangul,
   autoSpacing,
 } from './korean';
+import { hanjaToHangul } from './hanja-dict';
 
 describe('isSyllable', () => {
   it('완성형 한글 음절을 판별', () => {
@@ -67,6 +67,12 @@ describe('en2ko / ko2en 자판 변환', () => {
   it('한글을 영문 자판으로 되돌린다', () => {
     expect(ko2en('안녕')).toBe('dkssud');
   });
+  it('ko2en: 겹모음·겹받침도 낱자 키로 분해', () => {
+    expect(ko2en('과자 의자 앉음 닭 괜찮아')).toBe('rhkwk dmlwk dkswdma ekfr rhoscksgdk');
+  });
+  it('en2ko: Caps Lock 대문자도 변환', () => {
+    expect(en2ko('DKSSUD')).toBe('안녕');
+  });
   it('en2ko → ko2en 왕복', () => {
     const ko = en2ko('dkssud');
     expect(ko2en(ko)).toBe('dkssud');
@@ -87,9 +93,19 @@ describe('hanjaToHangul', () => {
     expect(result).toBe('한글');
     expect(replacements).toBe(0);
   });
+  it('자주 쓰는 한자(韓·漢 등)도 사전에 포함', () => {
+    expect(hanjaToHangul('大韓民國 漢字').result).toBe('대한민국 한자');
+  });
+  it('단어 첫머리 두음법칙', () => {
+    expect(hanjaToHangul('女子 來日 李舜臣 論理 勞動 歷史').result).toBe('여자 내일 이순신 논리 노동 역사');
+    expect(hanjaToHangul('男女').result).toBe('남녀');
+  });
 });
 
 describe('autoSpacing', () => {
+  it('의존명사 수 + 있다/없다 띄어쓰기', () => {
+    expect(autoSpacing('할수있다 갈수없다')).toBe('할 수 있다 갈 수 없다');
+  });
   it('결정적: 같은 입력은 같은 출력', () => {
     const input = '안녕하세요반갑습니다';
     expect(autoSpacing(input)).toBe(autoSpacing(input));

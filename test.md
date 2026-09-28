@@ -19,7 +19,7 @@
 | 3 | 단위 | `npm test` (vitest) | 전 케이스 통과 |
 | 4 | 빌드 | `npm run build` | 성공 + 페이지 수 status.md 예상치 부합 |
 | 5 | 예산 | `npm run budget` | gzip First-Load JS 게이트 통과(도구·허브 임계) |
-| 6 | 정합성 | `npm run audit` | registry 전수 통과 (415/415) |
+| 6 | 정합성 | `npm run audit` | registry 전수 통과 (445/445) |
 | 7 | e2e | `npm run test:e2e` | 전 스펙 통과 (아래 §3) |
 
 > ⚠ 함정: `tsconfig.tsbuildinfo` stale 로 유령 에러가 보이면 → 삭제(`rm -f tsconfig.tsbuildinfo`) 후 tsc 재실행.
@@ -63,7 +63,7 @@ $env:PLAYWRIGHT_BASE_URL="http://localhost:3000"; npm run test:e2e
 
 | 스펙 | 가드 대상 |
 |---|---|
-| `all-tools-smoke.spec.ts` | **전 도구(415) + 허브 마운트** — HTTP200 + heading + pageerror 0 |
+| `all-tools-smoke.spec.ts` | **전 도구(445) + 허브 마운트** — HTTP200 + heading + pageerror 0 |
 | `guide-custom.spec.ts` | 맞춤가이드 자동생성 꼬리말 부재 + 음성대조 + 클러스터 교차링크 |
 | `use-cases.spec.ts` | 유스케이스 렌더 + step 링크 + HowTo 스키마 + 하이드레이션 0 |
 | `compares.spec.ts` | 비교 두 도구 링크 + 하이드레이션 0 (로케일별 링크형태 분기) |

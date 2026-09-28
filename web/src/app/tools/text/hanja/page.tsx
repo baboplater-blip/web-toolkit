@@ -4,7 +4,7 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useMemo, useState } from 'react';
 import { Copy, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { hanjaToHangul } from '@/lib/tools/korean';
+import { hanjaToHangul } from '@/lib/tools/hanja-dict';
 import { triggerDownload } from '@/lib/tools/file-utils';
 
 export default function HanjaPage() {
@@ -28,7 +28,7 @@ export default function HanjaPage() {
 
       <header className="space-y-1">
         <p className="text-sm text-muted-foreground">
-          한자를 한국 한자음(한글) 로 변환합니다. 자주 쓰이는 한자 위주 사전.
+          한자를 한국 한자음(한글) 로 변환합니다. KS X 1001 한자 약 4,600자 사전.
         </p>
 
       </header>
@@ -69,7 +69,7 @@ export default function HanjaPage() {
       </div>
 
       <div className="rounded-lg border bg-muted/30 p-3 text-[11px] leading-relaxed text-muted-foreground">
-        <p>일상에서 자주 쓰이는 한자(~500자) 위주 사전입니다. 일부 동음이의 한자는 일반적인 음을 적용합니다.</p>
+        <p>KS X 1001 한자 약 4,600자 사전입니다. 여러 음을 가진 한자는 대표음을 적용하고, 단어 첫머리에는 두음법칙(女子→여자)을 적용합니다.</p>
       </div>
     </main>
     </div>

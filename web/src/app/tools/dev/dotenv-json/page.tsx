@@ -19,10 +19,15 @@ function stripQuotes(value: string): string {
     const first = trimmed[0];
     const last = trimmed[trimmed.length - 1];
     if ((first === '"' || first === "'") && first === last) {
-      return trimmed.slice(1, -1);
+      const inner = trimmed.slice(1, -1);
+      // 큰따옴표 값은 dotenv 관례대로 \n · \" · \\ 이스케이프를 해석한다.
+      return first === '"'
+        ? inner.replace(/\\(["\\n])/g, (_, c: string) => (c === 'n' ? '\n' : c))
+        : inner;
     }
   }
-  return trimmed;
+  // 따옴표 없는 값의 ` # 주석` 은 값에서 제외한다.
+  return trimmed.replace(/\s+#.*$/, '');
 }
 
 function parseDotenvToJson(text: string): ConvertResult {
@@ -55,7 +60,7 @@ function needsQuotes(value: string): boolean {
 
 function escapeEnvValue(value: string): string {
   if (!needsQuotes(value)) return value;
-  return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\n')}"`;
 }
 
 function parseJsonToDotenv(text: string): ConvertResult {
@@ -104,6 +109,13 @@ export default function DotenvJsonPage() {
     }
   }
 
+  /** 방향 전환 시 현재 변환 결과를 새 입력으로 넘겨 바로 역변환할 수 있게 한다. */
+  function switchDirection(next: Direction) {
+    if (next === direction) return;
+    if (output && !error) setInput(output);
+    setDirection(next);
+  }
+
   function reset() {
     setInput('');
     setDirection('env-to-json');
@@ -129,14 +141,14 @@ export default function DotenvJsonPage() {
           <Button
             variant={direction === 'env-to-json' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setDirection('env-to-json')}
+            onClick={() => switchDirection('env-to-json')}
           >
             .env → JSON
           </Button>
           <Button
             variant={direction === 'json-to-env' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setDirection('json-to-env')}
+            onClick={() => switchDirection('json-to-env')}
           >
             JSON → .env
           </Button>

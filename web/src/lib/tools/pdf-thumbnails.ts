@@ -106,12 +106,16 @@ export async function renderAllThumbnails(
   maxDim = 180,
 ): Promise<Thumbnail[]> {
   const pdf = await openPdf(file);
-  const results: Thumbnail[] = [];
-  const total = pdf.numPages;
-  for (let i = 1; i <= total; i++) {
-    onProgress?.(i, total);
-    results.push(await renderThumbnail(pdf, i, maxDim));
+  try {
+    const results: Thumbnail[] = [];
+    const total = pdf.numPages;
+    for (let i = 1; i <= total; i++) {
+      onProgress?.(i, total);
+      results.push(await renderThumbnail(pdf, i, maxDim));
+    }
+    return results;
+  } finally {
+    // 렌더 중 예외(손상 페이지 등)가 나도 pdf.js 워커·문서 메모리를 반드시 해제한다.
+    pdf.destroy();
   }
-  pdf.destroy();
-  return results;
 }

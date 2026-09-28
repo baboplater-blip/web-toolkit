@@ -6,6 +6,7 @@ import { Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 interface VCardEntry {
   name: string;
@@ -166,7 +167,7 @@ export default function VcardParsePage() {
     const file = files[0];
     if (!file) return;
     try {
-      const text = await file.text();
+      const text = await readTextAutoEncoding(file);
       if (!/BEGIN:VCARD/i.test(text)) {
         setEntries(null);
         setFileName(null);

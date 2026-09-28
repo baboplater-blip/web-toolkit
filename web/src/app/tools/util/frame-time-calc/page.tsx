@@ -158,7 +158,7 @@ export default function FrameTimeCalcPage() {
             </Button>
           </div>
 
-          <label className="block space-y-1">
+          <div className="block space-y-1">
             <span className="text-sm font-medium">fps (프레임/초)</span>
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="fps 프리셋">
               {FPS_PRESETS.map((preset) => (
@@ -193,7 +193,7 @@ export default function FrameTimeCalcPage() {
                 className="mt-2"
               />
             )}
-          </label>
+          </div>
 
           {direction === 'frames-to-tc' ? (
             <label className="block space-y-1">

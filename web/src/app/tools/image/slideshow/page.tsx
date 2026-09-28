@@ -8,6 +8,7 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { getFFmpeg } from '@/lib/tools/ffmpeg-common';
 import { explainFfmpegError, fmtMB, getMediaLimits } from '@/lib/tools/media-limits';
+import { loadBitmap } from '@/lib/tools/image-common';
 
 export default function SlideshowPage() {
   const [files, setFiles] = useState<File[]>([]);
@@ -43,46 +44,62 @@ export default function SlideshowPage() {
       ffmpeg = await getFFmpeg();
       const [w, h] = resolution.split('x').map(Number);
 
-      // 각 이미지를 input 파일로 저장
-      const sortedFiles = [...files];
+      // 각 이미지를 목표 해상도의 PNG 로 정규화해 저장한다.
+      // (PNG·JPG 를 섞거나 크기가 다른 이미지를 concat demuxer 로 넘기면 첫 코덱 외 프레임이
+      //  디코딩되지 않아 1프레임짜리 영상이 나오던 문제 방지 — 비율 유지·흰 여백으로 가운데 배치)
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas 컨텍스트를 생성할 수 없습니다.');
       const fileNames: string[] = [];
-      for (let i = 0; i < sortedFiles.length; i++) {
-        const f = sortedFiles[i];
-        const ext = (f.name.split('.').pop() ?? 'jpg').toLowerCase();
-        const name = `img${String(i).padStart(4, '0')}.${ext}`;
-        const buf = new Uint8Array(await f.arrayBuffer());
-        await ffmpeg.writeFile(name, buf);
+      for (let i = 0; i < files.length; i++) {
+        const bmp = await loadBitmap(files[i]);
+        const s = Math.min(w / bmp.width, h / bmp.height);
+        const dw = Math.round(bmp.width * s);
+        const dh = Math.round(bmp.height * s);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(bmp, Math.round((w - dw) / 2), Math.round((h - dh) / 2), dw, dh);
+        bmp.close();
+        const png = await new Promise<Blob>((resolve, reject) =>
+          canvas.toBlob(
+            (b) => (b ? resolve(b) : reject(new Error(`${files[i].name} 이미지를 처리하지 못했습니다.`))),
+            'image/png',
+          ),
+        );
+        const name = `img${String(i).padStart(4, '0')}.png`;
+        await ffmpeg.writeFile(name, new Uint8Array(await png.arrayBuffer()));
         fileNames.push(name);
         setProgress(Math.round(((i + 1) / files.length) * 30));
       }
 
-      // 입력 리스트 텍스트 (concat demuxer 형식)
-      const listLines = fileNames.map((n) => `file '${n}'\nduration ${duration}`);
-      // 마지막 항목은 duration 없이 한 번 더
-      listLines.push(`file '${fileNames[fileNames.length - 1]}'`);
-      const listTxt = listLines.join('\n');
-      await ffmpeg.writeFile('list.txt', new TextEncoder().encode(listTxt));
-
       ffmpeg.on('progress', onProgress);
 
-      const filter = `scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2:white,setsar=1`;
-      await ffmpeg.exec([
+      // 이미지마다 "duration 초 × fps" 길이의 정지 영상 입력으로 만든 뒤 concat 필터로 잇는다.
+      // (concat demuxer 의 마지막 항목 duration 처리 방식이 FFmpeg 버전마다 달라 길이가 어긋나는 문제 회피)
+      const inputArgs: string[] = [];
+      for (const n of fileNames) {
+        inputArgs.push('-loop', '1', '-framerate', String(fps), '-t', String(duration), '-i', n);
+      }
+      const pads = fileNames.map((_, i) => `[${i}:v]`).join('');
+      const code = await ffmpeg.exec([
         '-y',
-        '-f', 'concat',
-        '-safe', '0',
-        '-i', 'list.txt',
-        '-vf', filter,
-        '-r', String(fps),
+        ...inputArgs,
+        '-filter_complex', `${pads}concat=n=${fileNames.length}:v=1:a=0,setsar=1,format=yuv420p[v]`,
+        '-map', '[v]',
         '-c:v', 'libx264',
-        '-pix_fmt', 'yuv420p',
         '-preset', 'fast',
+        '-movflags', '+faststart',
         'out.mp4',
       ]);
+      if (code !== 0) throw new Error(`FFmpeg 인코딩 실패 (코드 ${code})`);
       setProgress(95);
 
       const data = await ffmpeg.readFile('out.mp4');
       const u8 = typeof data === 'string' ? new TextEncoder().encode(data) : data;
       const blob = new Blob([new Uint8Array(u8)], { type: 'video/mp4' });
+      if (blob.size === 0) throw new Error('영상 생성에 실패했습니다. 이미지가 손상되지 않았는지 확인해주세요.');
       setResult({
         blobUrl: URL.createObjectURL(blob),
         filename: `slideshow-${Date.now()}.mp4`,
@@ -93,7 +110,6 @@ export default function SlideshowPage() {
 
       // cleanup
       for (const n of fileNames) await ffmpeg.deleteFile(n).catch(() => {});
-      await ffmpeg.deleteFile('list.txt').catch(() => {});
       await ffmpeg.deleteFile('out.mp4').catch(() => {});
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -197,7 +213,7 @@ export default function SlideshowPage() {
 
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
-      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} extraInfo={`${files.length}장 × ${duration}초 슬라이드쇼`} />}
+      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} metaText={`${files.length}장 × ${duration}초 슬라이드쇼 (MP4)`} />}
       </main>
     </div>
   );

@@ -18,6 +18,7 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -184,38 +185,42 @@ export default function VideoWatermarkPage() {
     const videoInput = `in.${videoExt}`;
     const logoInput = `logo.${logoExt}`;
     const outputName = 'watermarked.mp4';
-    let ffmpeg;
     try {
       setStage('FFmpeg 로딩');
-      ffmpeg = await getFFmpeg();
-      setStage('파일 준비');
-      await writeFile(ffmpeg, videoInput, video);
-      await writeFile(ffmpeg, logoInput, logo);
-
+      const ffmpeg = await getFFmpeg();
       const onProgress = ({ progress: p }: { progress: number }) => {
         setProgress(Math.min(99, Math.round(p * 100)));
       };
       ffmpeg.on('progress', onProgress);
+      try {
+        setStage('파일 준비');
+        await writeFile(ffmpeg, videoInput, video);
+        await writeFile(ffmpeg, logoInput, logo);
 
-      setStage('워터마크 합성');
-      await ffmpeg.exec(
-        buildArgs(corner, marginPx, opacity, videoInput, logoInput, outputName),
-      );
-      ffmpeg.off('progress', onProgress);
+        setStage('워터마크 합성');
+        await ffmpeg.exec(
+          buildArgs(corner, marginPx, opacity, videoInput, logoInput, outputName),
+        );
 
-      const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
-      const url = URL.createObjectURL(blob);
+        const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
+        const url = URL.createObjectURL(blob);
 
-      const base = video.name.replace(/\.[^.]+$/, '');
-      setResult({ blob, url, size: blob.size, name: `${base}-watermarked.mp4` });
-      setProgress(100);
-      setStage('완료');
-
-      await cleanupFiles(ffmpeg, [videoInput, logoInput, outputName]);
+        const base = video.name.replace(/\.[^.]+$/, '');
+        setResult({ blob, url, size: blob.size, name: `${base}-watermarked.mp4` });
+        setProgress(100);
+        setStage('완료');
+      } finally {
+        // exec 실패 시에도 진행률 리스너·MEMFS 잔류 파일이 새지 않게 finally 에서 정리.
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, [videoInput, logoInput, outputName]);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '워터마크 처리 실패';
-      setError(explainFfmpegError(msg, video.size));
-      if (ffmpeg) await cleanupFiles(ffmpeg, [videoInput, logoInput, outputName]);
+      const friendly = explainFfmpegError(msg, video.size);
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setBusy(false);
     }

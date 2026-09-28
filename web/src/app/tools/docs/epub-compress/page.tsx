@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
-import { fmtBytes, parseEpub, repackageEpub, resolveHref } from '@/lib/tools/epub-common';
+import { fmtBytes, parseEpub, repackageEpub, resolveHref, rewriteResourceRefs } from '@/lib/tools/epub-common';
 
 type Quality = 0.6 | 0.75 | 0.85;
 type Target = 'jpeg' | 'webp' | 'keep';
@@ -52,6 +52,8 @@ export default function EpubCompressPage() {
       const epub = await parseEpub(file);
       const images = Array.from(epub.manifest.values()).filter((i) => i.mediaType.startsWith('image/'));
       let processed = 0;
+      // 확장자가 바뀐 이미지(구 경로 → 새 경로). 본문·CSS·목차의 참조를 함께 고쳐야 이미지가 깨지지 않는다.
+      const renames = new Map<string, string>();
       let skipped = 0;
       let before = 0;
       let after = 0;
@@ -83,6 +85,7 @@ export default function EpubCompressPage() {
               : fullPath.replace(/\.[^./]+$/, target === 'jpeg' ? '.jpg' : '.webp');
             if (newPath !== fullPath) {
               epub.zip.remove(fullPath);
+              renames.set(fullPath, newPath);
             }
             epub.zip.file(newPath, compressed.bytes);
 
@@ -115,6 +118,7 @@ export default function EpubCompressPage() {
         setProgress(Math.round(((i + 1) / images.length) * 90));
       }
 
+      await rewriteResourceRefs(epub.zip, renames);
       const blob = await repackageEpub(epub.zip);
       const baseName = file.name.replace(/\.epub$/i, '');
       setResult({
@@ -241,47 +245,52 @@ async function compressImage(
   // 1) Blob → Image
   const blob = new Blob([new Uint8Array(data)], { type: mediaType });
   const img = await blobToImage(blob);
-  try {
-    const { width, height } = img;
-    const scale = Math.min(opts.maxDim / Math.max(width, height), 1);
-    const outW = Math.max(1, Math.round(width * scale));
-    const outH = Math.max(1, Math.round(height * scale));
+  const { width, height } = img;
+  const scale = Math.min(opts.maxDim / Math.max(width, height), 1);
+  const outW = Math.max(1, Math.round(width * scale));
+  const outH = Math.max(1, Math.round(height * scale));
 
-    const canvas = document.createElement('canvas');
-    canvas.width = outW;
-    canvas.height = outH;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Canvas 컨텍스트 실패');
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    // JPEG 출력 시 배경 흰색
-    const outMime = opts.target === 'webp'
-      ? 'image/webp'
-      : opts.target === 'jpeg'
-        ? 'image/jpeg'
-        : mediaType.startsWith('image/png') ? 'image/png' : 'image/jpeg';
-    if (outMime === 'image/jpeg') {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, outW, outH);
-    }
-    ctx.drawImage(img, 0, 0, outW, outH);
-
-    const outBlob = await new Promise<Blob>((res, rej) => {
-      canvas.toBlob((b) => (b ? res(b) : rej(new Error('인코딩 실패'))), outMime, opts.quality);
-    });
-    const buf = new Uint8Array(await outBlob.arrayBuffer());
-    return { bytes: buf };
-  } finally {
-    URL.revokeObjectURL(img.src);
+  const canvas = document.createElement('canvas');
+  canvas.width = outW;
+  canvas.height = outH;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas 컨텍스트 실패');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  // JPEG 출력 시 배경 흰색
+  const outMime = opts.target === 'webp'
+    ? 'image/webp'
+    : opts.target === 'jpeg'
+      ? 'image/jpeg'
+      : mediaType.startsWith('image/png') ? 'image/png' : 'image/jpeg';
+  if (outMime === 'image/jpeg') {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, outW, outH);
   }
+  ctx.drawImage(img, 0, 0, outW, outH);
+
+  const outBlob = await new Promise<Blob>((res, rej) => {
+    canvas.toBlob((b) => (b ? res(b) : rej(new Error('인코딩 실패'))), outMime, opts.quality);
+  });
+  const buf = new Uint8Array(await outBlob.arrayBuffer());
+  return { bytes: buf };
 }
 
 function blobToImage(blob: Blob): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
     const img = new Image();
-    img.onload = () => res(img);
-    img.onerror = () => rej(new Error('이미지 로드 실패'));
-    img.src = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
+    // 디코드 성공·실패 양쪽에서 ObjectURL 을 즉시 해제해 이미지당 URL 누수를 막는다.
+    // (revoke 는 이미 디코드된 img 사용에 영향 없음)
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      res(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      rej(new Error('이미지 로드 실패'));
+    };
+    img.src = url;
   });
 }
 

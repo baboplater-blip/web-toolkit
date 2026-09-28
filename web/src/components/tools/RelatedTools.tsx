@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Compass, Sparkles, Workflow } from 'lucide-react';
 import { TOOLS, type ToolMeta } from '@/lib/tools/registry';
@@ -13,11 +13,14 @@ const SAME_CATEGORY_COUNT = 4;
 const CROSS_CATEGORY_COUNT = 3;
 const RECENT_DAYS = 14;
 
-function isRecent(addedAt: string | undefined): boolean {
+function isRecent(addedAt: string | undefined, now: number | null): boolean {
+  // now 는 마운트 후에만 채워진다 — SSR/초기 렌더에서 Date.now() 를 쓰면
+  // 정적 HTML 과 하이드레이션 결과가 어긋날 수 있다(14일 경계의 정렬·배지).
+  if (now === null) return false;
   if (!addedAt) return false;
   const t = Date.parse(addedAt);
   if (Number.isNaN(t)) return false;
-  return (Date.now() - t) / 86_400_000 < RECENT_DAYS;
+  return (now - t) / 86_400_000 < RECENT_DAYS;
 }
 
 /**
@@ -37,6 +40,14 @@ export function RelatedTools() {
   const pathname = usePathname();
   const { isFavorite, toggle } = useFavorites();
   const usage = useUsageStats();
+  // 초기 렌더는 결정적(phase 순 정렬), 마운트 후 현재 시각을 주입해
+  // 신규(addedAt 14일 이내) 우선 정렬을 계산한다.
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    // 마운트 후 현재 시각 주입(하이드레이션 안전). 의도된 1회 주입.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(Date.now());
+  }, []);
 
   const current = useMemo<ToolMeta | undefined>(() => {
     if (!pathname) return undefined;
@@ -66,9 +77,9 @@ export function RelatedTools() {
     const sameCatPool = allReady
       .filter((t) => t.category === current.category)
       .sort((a, b) => {
-        // 최근 추가된 도구 우선
-        const ar = isRecent(a.addedAt) ? 1 : 0;
-        const br = isRecent(b.addedAt) ? 1 : 0;
+        // 최근 추가된 도구 우선 (now 미주입 시 둘 다 0 → phase 순 결정적 정렬)
+        const ar = isRecent(a.addedAt, now) ? 1 : 0;
+        const br = isRecent(b.addedAt, now) ? 1 : 0;
         if (ar !== br) return br - ar;
         return a.phase - b.phase;
       });
@@ -90,7 +101,7 @@ export function RelatedTools() {
       sameCat,
       crossCat: crossCatPool.slice(0, CROSS_CATEGORY_COUNT),
     };
-  }, [current, usage]);
+  }, [current, usage, now]);
 
   if (!current) return null;
   if (workflow.length === 0 && sameCat.length === 0 && crossCat.length === 0) return null;

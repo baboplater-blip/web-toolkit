@@ -222,7 +222,7 @@ export default function HashPage() {
         <div className="grid grid-cols-2 gap-1.5">
           <button
             type="button"
-            onClick={() => setMode('file')}
+            onClick={() => { setMode('file'); setFile(null); setResults([]); setError(null); }}
             className={`h-10 text-sm rounded-md border ${
               mode === 'file'
                 ? 'bg-primary text-primary-foreground border-primary'
@@ -233,7 +233,7 @@ export default function HashPage() {
           </button>
           <button
             type="button"
-            onClick={() => setMode('text')}
+            onClick={() => { setMode('text'); setFile(null); setResults([]); setError(null); }}
             className={`h-10 text-sm rounded-md border ${
               mode === 'text'
                 ? 'bg-primary text-primary-foreground border-primary'
@@ -280,7 +280,7 @@ export default function HashPage() {
               <label className="text-xs font-medium mb-1.5 block">텍스트</label>
               <textarea
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={(e) => { setText(e.target.value); setResults([]); }}
                 placeholder="해시를 계산할 텍스트를 입력하세요"
                 rows={5}
                 className="w-full rounded-lg border bg-background px-2.5 py-2 text-sm font-mono resize-y" aria-label="텍스트" />

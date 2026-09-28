@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { CloudOff, Sparkles, Star } from 'lucide-react';
 import { CATEGORY_LABELS, type ToolMeta } from '@/lib/tools/registry';
 import { isOfflineCapable } from '@/lib/offline-tools';
@@ -17,11 +18,14 @@ interface ToolCardProps {
   query?: string;
 }
 
-function isRecent(addedAt: string | undefined): boolean {
+function isRecent(addedAt: string | undefined, now: number | null): boolean {
+  // now 는 마운트 후에만 채워진다 — SSR/초기 렌더에서 Date.now() 를 쓰면
+  // 정적 HTML 과 하이드레이션 결과가 어긋날 수 있다(NEW 배지 14일 경계).
+  if (now === null) return false;
   if (!addedAt) return false;
   const t = Date.parse(addedAt);
   if (Number.isNaN(t)) return false;
-  const days = (Date.now() - t) / 86_400_000;
+  const days = (now - t) / 86_400_000;
   return days >= 0 && days < NEW_BADGE_DAYS;
 }
 
@@ -61,7 +65,14 @@ export function ToolCard({
 }: ToolCardProps) {
   const Icon = tool.icon;
   const isPlanned = tool.status === 'planned';
-  const isNew = !isPlanned && isRecent(tool.addedAt);
+  // 초기 렌더는 결정적(배지 없음), 마운트 후 현재 시각을 주입해 배지 계산
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    // 마운트 후 현재 시각 주입(하이드레이션 안전). 의도된 1회 주입.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(Date.now());
+  }, []);
+  const isNew = !isPlanned && isRecent(tool.addedAt, now);
   const offline = !isPlanned && isOfflineCapable(tool.id);
 
   const inner = (

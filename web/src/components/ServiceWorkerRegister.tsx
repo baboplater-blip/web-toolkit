@@ -22,6 +22,7 @@ export function ServiceWorkerRegister() {
     // (beforeunload 는 모바일·BFCache 에서 신뢰할 수 없어 누수 위험 → 사용 안 함)
     let periodic: ReturnType<typeof setInterval> | undefined;
     let onVisibility: (() => void) | undefined;
+    let onControllerChange: (() => void) | undefined;
 
     const onLoad = async () => {
       try {
@@ -52,7 +53,7 @@ export function ServiceWorkerRegister() {
         //  - 페이지가 hidden 이면 즉시 reload (작업 중 아님)
         //  - visible 이면 토스트로 안내 (사용자 작업 손실 방지)
         let reloaded = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
+        onControllerChange = () => {
           if (reloaded) return;
           reloaded = true;
           if (document.visibilityState === 'hidden') {
@@ -64,7 +65,8 @@ export function ServiceWorkerRegister() {
             duration: 8000,
             id: 'sw-update-active',
           });
-        });
+        };
+        navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
 
         // 탭이 활성화될 때마다 SW 업데이트 체크 (사용자가 돌아오면 새 버전 자동 감지)
         onVisibility = () => {
@@ -92,11 +94,13 @@ export function ServiceWorkerRegister() {
       window.addEventListener('load', onLoad, { once: true });
     }
 
-    // 언마운트 시 일괄 정리 — load 리스너(아직 안 붙었을 수도)·주기 타이머·가시성 리스너.
+    // 언마운트 시 일괄 정리 — load 리스너(아직 안 붙었을 수도)·주기 타이머·가시성·controllerchange 리스너.
     return () => {
       window.removeEventListener('load', onLoad);
       if (periodic !== undefined) clearInterval(periodic);
       if (onVisibility) document.removeEventListener('visibilitychange', onVisibility);
+      if (onControllerChange)
+        navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
     };
   }, []);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,14 @@ function formatDate(utcMillis: number): string {
   )} (${weekday})`;
 }
 
+/** start 에서 months 개월 뒤(월말은 해당 달 말일로 클램프) UTC 자정 ms. */
+function addMonthsClamped(start: Date, months: number): number {
+  const y = start.getUTCFullYear();
+  const m = start.getUTCMonth() + months;
+  const lastDay = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  return Date.UTC(y, m, Math.min(start.getUTCDate(), lastDay));
+}
+
 /** 두 UTC 자정 사이의 연/월/일 차이 (달력 기준). end >= start 가정. */
 function calendarBreakdown(
   startMs: number,
@@ -46,23 +54,26 @@ function calendarBreakdown(
 ): { years: number; months: number; days: number } {
   const start = new Date(startMs);
   const end = new Date(endMs);
-  let years = end.getUTCFullYear() - start.getUTCFullYear();
-  let months = end.getUTCMonth() - start.getUTCMonth();
-  let days = end.getUTCDate() - start.getUTCDate();
+  // 총 개월 수 후보: 연·월 차이 기준, end 의 일(day)이 모자라면 한 달 빌린다.
+  let totalMonths =
+    (end.getUTCFullYear() - start.getUTCFullYear()) * 12 +
+    (end.getUTCMonth() - start.getUTCMonth());
+  if (end.getUTCDate() < start.getUTCDate()) totalMonths -= 1;
+  if (totalMonths < 0) totalMonths = 0;
 
+  // start + totalMonths 개월(월말 클램프) 시점을 기준으로 남은 일수 계산 —
+  // 클램프 덕분에 일수가 음수가 되지 않는다(예: 01-31 → 03-01 = 1개월 1일).
+  let days = Math.round((endMs - addMonthsClamped(start, totalMonths)) / MS_PER_DAY);
   if (days < 0) {
-    months -= 1;
-    // 이전 달(= end 기준 직전 달)의 일수를 더해 보정.
-    const prevMonthDays = new Date(
-      Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), 0),
-    ).getUTCDate();
-    days += prevMonthDays;
+    // 방어적 재정규화 (클램프 로직상 도달하지 않지만 음수 표시를 구조적으로 차단).
+    totalMonths -= 1;
+    days = Math.round((endMs - addMonthsClamped(start, totalMonths)) / MS_PER_DAY);
   }
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-  return { years, months, days };
+  return {
+    years: Math.floor(totalMonths / 12),
+    months: totalMonths % 12,
+    days,
+  };
 }
 
 function todayInputValue(): string {
@@ -74,11 +85,19 @@ function todayInputValue(): string {
 export default function DateDiffPage() {
   const [mode, setMode] = useState<Mode>('diff');
   // diff 모드
-  const [startDate, setStartDate] = useState<string>(todayInputValue);
-  const [endDate, setEndDate] = useState<string>(todayInputValue);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   // add 모드
-  const [baseDate, setBaseDate] = useState<string>(todayInputValue);
+  const [baseDate, setBaseDate] = useState<string>('');
   const [offsetDays, setOffsetDays] = useState<string>('100');
+
+  // 하이드레이션 안전: 초기 렌더는 빈 값(결정적). 마운트 후에만 오늘 날짜 주입.
+  useEffect(() => {
+    const today = todayInputValue();
+    setStartDate(today);
+    setEndDate(today);
+    setBaseDate(today);
+  }, []);
   // 복사 피드백: 어느 버튼이 방금 복사됐는지(또는 실패했는지) 추적.
   const [copied, setCopied] = useState<'diff' | 'add' | null>(null);
   const [copyError, setCopyError] = useState<'diff' | 'add' | null>(null);

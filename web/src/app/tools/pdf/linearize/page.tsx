@@ -6,7 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { loadPdfFromFile } from '@/lib/tools/pdf-common';
 
 export default function PdfLinearizePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -32,9 +32,8 @@ export default function PdfLinearizePage() {
     setBusy(true);
     setResult(null);
     try {
-      const { PDFDocument } = await loadPdfLib();
-      const buf = await file.arrayBuffer();
-      const doc = await PDFDocument.load(buf, { updateMetadata: false, ignoreEncryption: false });
+      // 공유 로더 사용 — 암호화 PDF 는 ENCRYPTED_PDF_MESSAGE(한국어)로 정규화되어 던져진다.
+      const doc = await loadPdfFromFile(file);
       // 새 PDF 를 처음부터 재저장 — 구조 단순화·중복 객체 제거
       doc.setProducer(doc.getProducer() ?? 'Web Toolkit');
       doc.setModificationDate(new Date());

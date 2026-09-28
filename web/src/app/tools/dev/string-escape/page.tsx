@@ -71,10 +71,17 @@ function escapeHtml(input: string): string {
 }
 
 function unescapeHtml(input: string): string {
-  return input
-    .replace(/&(amp|lt|gt|quot|apos|#39|#x27);/g, (entity) => HTML_UNESCAPE[entity] ?? entity)
-    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(parseInt(hex, 16)));
+  // 이름·10진·16진 엔티티를 결합 정규식 한 번의 패스로 디코드한다.
+  // (패스를 나누면 앞 패스의 출력이 뒤 패스에서 다시 디코드되어
+  //  `&amp;#65;` → 'A' 처럼 이중 해석되는 버그가 생긴다. 기대값은 `&#65;`.)
+  return input.replace(
+    /&(?:amp|lt|gt|quot|apos|#39|#x27);|&#(\d+);|&#x([0-9a-fA-F]+);/g,
+    (entity, dec: string | undefined, hex: string | undefined) => {
+      if (dec !== undefined) return String.fromCodePoint(Number(dec));
+      if (hex !== undefined) return String.fromCodePoint(parseInt(hex, 16));
+      return HTML_UNESCAPE[entity] ?? entity;
+    },
+  );
 }
 
 /** SQL 문자열 리터럴: 작은따옴표를 두 번 반복(표준 SQL), 백슬래시 보존. */

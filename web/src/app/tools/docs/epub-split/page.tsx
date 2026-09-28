@@ -13,7 +13,9 @@ import {
   extractBody,
   parseEpub,
   readChapter,
+  relocateChapterAssets,
   type ParsedEpub,
+  type RelocatedAsset,
 } from '@/lib/tools/epub-common';
 
 interface ChapterPick {
@@ -96,7 +98,9 @@ export default function EpubSplitPage() {
         const c = picked[i];
         const ch = await readChapter(epub, c.idref);
         if (!ch) continue;
-        const body = extractBody(ch.xhtml);
+        // 챕터가 참조하는 이미지 등 자산도 함께 담는다(누락 시 분할본 이미지 깨짐).
+        const assets = new Map<string, RelocatedAsset>();
+        const body = await relocateChapterAssets(epub, ch.path, extractBody(ch.xhtml), 'res/', assets);
         const epubBlob = await buildEpub({
           title: `${epub.metadata.title || baseName} — ${c.title}`,
           creator: epub.metadata.creator,
@@ -105,6 +109,7 @@ export default function EpubSplitPage() {
           publisher: epub.metadata.publisher,
           subjects: epub.metadata.subjects,
           chapters: [{ id: 'chap1', title: c.title, bodyHtml: body }],
+          assets: Array.from(assets.values()),
         });
         const safeTitle = c.title.replace(/[\\/:*?"<>|]/g, '_').slice(0, 80);
         outZip.file(`${String(i + 1).padStart(3, '0')}-${safeTitle || 'chapter'}.epub`, epubBlob);

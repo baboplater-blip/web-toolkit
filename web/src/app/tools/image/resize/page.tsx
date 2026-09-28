@@ -18,15 +18,17 @@ import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
-  detectFormatFromFile,
+  defaultOutputFormat,
+  supportsAvifEncode,
   drawToCanvas,
   formatExtension,
   loadImageFile,
   type ImageFormat,
   type LoadedImage,
+  sizeReductionPercent,
 } from '@/lib/tools/image-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { formatBytes, compressionRatio, renameWithSuffix } from '@/lib/compress/format';
+import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
 import {
   commonRoot,
   filterFiles,
@@ -64,6 +66,11 @@ export default function ImageResizePage() {
   const [percent, setPercent] = useState(50);
   const [targetKb, setTargetKb] = useState(200);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
+  // 캔버스 AVIF 인코딩 미지원 브라우저에서는 AVIF 버튼을 비활성화한다.
+  const [avifSupported, setAvifSupported] = useState<boolean | null>(null);
+  useEffect(() => {
+    void supportsAvifEncode().then(setAvifSupported);
+  }, []);
   const [quality, setQuality] = useState(85);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
@@ -97,7 +104,7 @@ export default function ImageResizePage() {
       setLoaded(info);
       setTargetW(info.width);
       setTargetH(info.height);
-      const fmt = detectFormatFromFile(f) ?? 'jpeg';
+      const fmt = defaultOutputFormat(f, 'jpeg');
       setOutputFormat(fmt);
     } catch (err) {
       setError(err instanceof Error ? err.message : '이미지 로드 실패');
@@ -350,7 +357,7 @@ export default function ImageResizePage() {
     }
   };
 
-  const reduction = result ? compressionRatio(file!.size, result.blob.size) : 0;
+  const reduction = result ? sizeReductionPercent(file!.size, result.blob.size) : 0;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -567,7 +574,7 @@ export default function ImageResizePage() {
                     key={f}
                     type="button"
                     onClick={() => setOutputFormat(f)}
-                    disabled={processing}
+                    disabled={processing || (f === 'avif' && avifSupported === false)}
                     className={`h-9 text-xs rounded-md border transition-colors ${
                       outputFormat === f
                         ? 'bg-primary text-primary-foreground border-primary'

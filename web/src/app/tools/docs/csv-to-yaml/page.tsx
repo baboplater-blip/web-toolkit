@@ -45,7 +45,14 @@ function serializeScalar(raw: string, typed: boolean): string {
     const lower = raw.toLowerCase();
     if (lower === 'true') return 'true';
     if (lower === 'false') return 'false';
-    if (/^[+-]?\d+(\.\d+)?$/.test(raw) && Number.isFinite(Number(raw))) return raw;
+    // 앞자리 0 이 있는 값(우편번호·전화번호 "010…", "007")은 숫자로 바꾸면 0 이 사라지므로 문자열 유지.
+    if (
+      /^[+-]?\d+(\.\d+)?$/.test(raw) &&
+      !/^[+-]?0\d/.test(raw) &&
+      Number.isFinite(Number(raw))
+    ) {
+      return raw;
+    }
   }
   if (raw === '') return "''";
   return isPlainScalar(raw) ? raw : quoteYaml(raw);

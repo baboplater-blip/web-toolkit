@@ -54,6 +54,14 @@ export default function ImageBlurPage() {
       // 0px 이면 필터를 지정하지 않아 원본 그대로 그린다.
       ctx.filter = blurRadius > 0 ? `blur(${blurRadius}px)` : 'none';
       ctx.drawImage(bitmap, 0, 0);
+      if (blurRadius > 0) {
+        // blur 필터는 가장자리 바깥을 투명으로 샘플링해 테두리가 반투명해진다.
+        // 원본을 뒤에 깔아(destination-over) 가장자리를 불투명하게 유지한다.
+        ctx.filter = 'none';
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.drawImage(bitmap, 0, 0);
+        ctx.globalCompositeOperation = 'source-over';
+      }
 
       const blob = await new Promise<Blob>((resolve, reject) =>
         canvas.toBlob(

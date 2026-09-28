@@ -25,6 +25,13 @@ function toClassName(raw: string): string {
   return /^[A-Za-z]/.test(name) ? name : `Class${name}`;
 }
 
+/** 배열 키 이름(items)에서 요소 클래스명 후보(item)를 만든다. */
+function singularize(raw: string): string {
+  if (/ies$/i.test(raw) && raw.length > 3) return raw.slice(0, -3) + 'y';
+  if (/[^s]s$/i.test(raw) && raw.length > 2) return raw.slice(0, -1);
+  return raw;
+}
+
 /** 두 타입을 병합해 Optional/혼합 타입을 처리. */
 function unifyTypes(left: string, right: string): string {
   if (left === right) return left;
@@ -61,6 +68,30 @@ function inferType(
 
   if (Array.isArray(value)) {
     if (value.length === 0) return 'list[Any]';
+    // 객체 배열은 요소마다 클래스를 만들지 않고 키를 합쳐 하나의 클래스로 추론한다.
+    // (일부 요소에만 있거나 null 인 키는 Optional)
+    const nonNull = value.filter((item) => item !== null);
+    const isObj = (item: JsonValue): item is { [key: string]: JsonValue } =>
+      item !== null && typeof item === 'object' && !Array.isArray(item);
+    if (nonNull.length > 0 && nonNull.every(isObj)) {
+      const objects = nonNull as Array<{ [key: string]: JsonValue }>;
+      const merged: { [key: string]: JsonValue } = {};
+      for (const obj of objects) {
+        for (const [key, fieldValue] of Object.entries(obj)) {
+          if (!(key in merged) || merged[key] === null) merged[key] = fieldValue;
+        }
+      }
+      const className = inferType(merged, singularize(suggestedName), classes, seenNames);
+      const def = classes.find((c) => c.name === className);
+      if (def) {
+        for (const field of def.fields) {
+          if (objects.some((obj) => !(field.name in obj) || obj[field.name] === null)) {
+            field.type = wrapOptional(field.type);
+          }
+        }
+      }
+      return `list[${nonNull.length < value.length ? wrapOptional(className) : className}]`;
+    }
     const elementType = value
       .map((item) => inferType(item, suggestedName, classes, seenNames))
       .reduce((acc, type) => unifyTypes(acc, type));
@@ -139,11 +170,10 @@ function generate(jsonText: string, rootName: string, format: OutputFormat): str
     return `# 루트 값 타입: ${rootType}`;
   }
 
-  // 의존 클래스가 먼저 오도록 역순(중첩이 나중에 push 되므로) 렌더.
+  // inferType 은 중첩 클래스를 부모보다 먼저 push 하므로(후위 순회) 그대로 렌더하면
+  // 의존 클래스가 먼저 정의된다. (역순이면 부모의 어노테이션 평가 시 NameError 발생)
   const render = format === 'dataclass' ? renderDataclass : renderTypedDict;
   const body = classes
-    .slice()
-    .reverse()
     .map(render)
     .join('\n\n\n');
   const imports = buildImports(body, format);

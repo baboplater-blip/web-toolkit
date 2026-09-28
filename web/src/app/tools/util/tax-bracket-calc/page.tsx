@@ -95,6 +95,22 @@ export default function TaxBracketCalcPage() {
       if (lower >= taxableBase) break;
     }
 
+    // 최고 구간 상한이 유한한데 과세표준이 그보다 크면, 초과분을 최고 구간 세율로
+    // 과세하고 행으로 표시한다 (초과분이 조용히 비과세되는 것을 방지).
+    if (lower < taxableBase) {
+      const topRate = parsed[parsed.length - 1].rate;
+      const taxableInBracket = taxableBase - lower;
+      const tax = (taxableInBracket * topRate) / 100;
+      totalTax += tax;
+      rows.push({
+        lower,
+        upper: null,
+        rate: topRate,
+        taxableInBracket,
+        tax,
+      });
+    }
+
     const effectiveRate = taxableBase > 0 ? (totalTax / taxableBase) * 100 : 0;
     return {
       rows,

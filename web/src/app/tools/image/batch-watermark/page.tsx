@@ -5,6 +5,7 @@ import { Loader2, Stamp } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
+import { uniqueFileName } from '@/lib/tools/image-common';
 import { Button } from '@/components/ui/button';
 
 type Position = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
@@ -51,6 +52,7 @@ export default function BatchWatermarkPage() {
     try {
       const zip = new JSZip();
       let totalOriginal = 0;
+      const usedNames = new Set<string>();
 
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
@@ -87,7 +89,9 @@ export default function BatchWatermarkPage() {
           const isJpg = /\.(jpe?g)$/i.test(f.name);
           const mime = isJpg ? 'image/jpeg' : 'image/png';
           const blob = await new Promise<Blob>((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('인코딩 실패'))), mime, isJpg ? 0.92 : undefined));
-          zip.file(f.name, new Uint8Array(await blob.arrayBuffer()));
+          // JPG 외(WebP·GIF·BMP 등)는 PNG 로 인코딩되므로 확장자도 .png 로 맞춘다.
+          const outName = isJpg ? f.name : f.name.replace(/\.[^.]+$/, '') + '.png';
+          zip.file(uniqueFileName(usedNames, outName), new Uint8Array(await blob.arrayBuffer()));
         } finally {
           URL.revokeObjectURL(img.src);
         }
@@ -171,7 +175,7 @@ export default function BatchWatermarkPage() {
 
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
-      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} />}
+      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} metaText={`${files.length}장 워터마크 적용 (ZIP)`} />}
     </main>
   );
 }

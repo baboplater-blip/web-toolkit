@@ -23,9 +23,8 @@ import { formatBytes } from '@/lib/compress/format';
 
 /**
  * PDF 잠금 해제 전략:
- * 1) pdf-lib 로 `ignoreEncryption: true` 로드 → 재저장
- *    - 소유자 암호 (편집/인쇄 제한) 는 대부분 해제됨
- *    - 사용자 암호 (열람 암호) 는 실패할 수 있음
+ * 1) pdf.js 로 암호 필요/불일치 판별 → @cantoo/pdf-lib 로 `password` 복호화 로드
+ *    → Encrypt 사전 제거 후 재저장 (텍스트·구조 유지, 열람 암호도 입력 시 해제)
  * 2) 실패 시 pdfjs-dist 로 암호와 함께 로드 → 각 페이지 렌더 → pdf-lib 로 래스터 재조립
  *    - 콘텐츠는 이미지로 변환되어 텍스트 선택 불가 (fallback)
  */
@@ -82,13 +81,46 @@ export default function PdfUnlockPage() {
       const arrayBuffer = await file.arrayBuffer();
 
       if (mode === 'auto') {
-        setProgressText('잠금 제거 시도 중');
+        // 1) pdf.js 로 먼저 열어 열람 암호 필요/불일치 여부를 정확히 판별한다.
+        setProgressText('암호 확인 중');
+        const pdfjs = await loadPdfJs();
+        try {
+          const probe = await pdfjs.getDocument({
+            data: new Uint8Array(arrayBuffer.slice(0)),
+            password: password || undefined,
+          }).promise;
+          await probe.destroy();
+        } catch (err) {
+          const code = (err as { name?: string; code?: number })?.name === 'PasswordException'
+            ? (err as { code?: number }).code
+            : undefined;
+          if (code === 1) {
+            setError('열람 암호가 걸린 PDF 입니다. 비밀번호를 입력한 뒤 다시 시도하세요.');
+            return;
+          }
+          if (code === 2) {
+            setError('비밀번호가 올바르지 않습니다.');
+            return;
+          }
+          throw err;
+        }
+
+        // 2) 암호 해독(복호화) 후 암호화 사전을 제거하고 재저장 — 텍스트·구조 유지.
+        //    ignoreEncryption 만 쓰면 스트림이 암호화된 채로 Encrypt 사전만 빠져 결과가 깨진다.
+        setProgressText('잠금 제거 중');
         try {
           const doc = await PDFDocument.load(arrayBuffer, {
             ignoreEncryption: true,
             updateMetadata: false,
+            password,
           });
-          const bytes = await doc.save({ useObjectStreams: true });
+          doc.context.trailerInfo.Encrypt = undefined;
+          const bytes = await doc.save({ useObjectStreams: false });
+          // 결과가 정상적으로 열리는지 검증 (복호화 실패 시 깨진 PDF 방지)
+          const check = await pdfjs.getDocument({ data: new Uint8Array(bytes.slice(0)) }).promise;
+          const p1 = await check.getPage(1);
+          await p1.getOperatorList();
+          await check.destroy();
           const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
           const baseName = stripExtension(file.name);
           setResult({
@@ -96,12 +128,11 @@ export default function PdfUnlockPage() {
             fileName: `${baseName}-unlocked.pdf`,
             size: blob.size,
           });
-          setWarning(
-            '소유자 암호(편집/인쇄 제한)는 제거됐습니다. 내용이 여전히 암호화된 경우 "래스터화" 모드로 재시도하세요.',
-          );
+          setWarning(null);
         } catch (err) {
+          console.error('[pdf-unlock] auto failed', err);
           setError(
-            `자동 해제 실패. 열람 암호가 걸린 PDF 는 "래스터화" 모드로 전환 후 비밀번호를 입력하세요. (${
+            `자동 해제에 실패했습니다. "래스터화" 모드로 다시 시도하세요. (${
               err instanceof Error ? err.message : ''
             })`,
           );
@@ -137,8 +168,11 @@ export default function PdfUnlockPage() {
           });
           const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
           const img = await outDoc.embedJpg(jpegBytes);
-          const pgOut = outDoc.addPage([canvas.width, canvas.height]);
-          pgOut.drawImage(img, { x: 0, y: 0, width: canvas.width, height: canvas.height });
+          // 렌더는 2배 해상도, 페이지 크기는 원본 pt 단위(1배) 유지
+          const pageW = viewport.width / 2;
+          const pageH = viewport.height / 2;
+          const pgOut = outDoc.addPage([pageW, pageH]);
+          pgOut.drawImage(img, { x: 0, y: 0, width: pageW, height: pageH });
           page.cleanup();
         }
 
@@ -242,7 +276,7 @@ export default function PdfUnlockPage() {
                 >
                   <div className="font-medium">자동 (권장)</div>
                   <div className="text-[10px] opacity-80 mt-0.5">
-                    편집/인쇄 제한 해제. 원본 구조 유지.
+                    편집/인쇄 제한·열람 암호 해제(암호 입력). 원본 구조 유지.
                   </div>
                 </button>
                 <button
@@ -263,8 +297,7 @@ export default function PdfUnlockPage() {
               </div>
             </div>
 
-            {mode === 'rasterize' && (
-              <div>
+            <div>
                 <label className="text-xs font-medium mb-1.5 block">
                   비밀번호 (있는 경우)
                 </label>
@@ -279,7 +312,6 @@ export default function PdfUnlockPage() {
                   비밀번호는 브라우저에서만 사용되며 저장되지 않습니다.
                 </p>
               </div>
-            )}
 
             <Separator />
 

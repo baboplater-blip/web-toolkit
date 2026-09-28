@@ -109,8 +109,22 @@ function decodeEntities(s: string): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16)));
+    // fromCodePoint: 아스트랄 평면 문자(이모지·CJK 확장) 보존.
+    // 범위 밖 코드포인트는 throw → 해당 엔티티만 원문 유지.
+    .replace(/&#(\d+);/g, (m, n) => {
+      try {
+        return String.fromCodePoint(parseInt(n, 10));
+      } catch {
+        return m;
+      }
+    })
+    .replace(/&#x([0-9a-f]+);/gi, (m, n) => {
+      try {
+        return String.fromCodePoint(parseInt(n, 16));
+      } catch {
+        return m;
+      }
+    });
 }
 
 function encodeXmlText(s: string): string {
@@ -301,20 +315,31 @@ export function htmlToPlainText(html: string): string {
   return s.trim();
 }
 
-/** 챕터 제목 추출 — <title>/<h1>/<h2>/첫 5단어 폴백 */
+/** 챕터 제목 추출 — 본문 첫 <h1~h6> / <title> / 첫 5단어 폴백.
+ *  <title> 은 많은 EPUB 에서 책 제목·파일명("ch1")이 반복되므로 본문 제목을 우선한다. */
 export function chapterTitle(xhtml: string, fallback: string): string {
-  const titleTag = xhtml.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-  if (titleTag && titleTag[1].trim()) return decodeEntities(titleTag[1]).trim();
-  const hMatch = xhtml.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
+  const hMatch = extractBody(xhtml).match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
   if (hMatch) {
     const t = htmlToPlainText(hMatch[1]);
     if (t) return t;
   }
+  const titleTag = xhtml.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  if (titleTag && titleTag[1].trim()) return decodeEntities(titleTag[1]).trim();
   const body = extractBody(xhtml);
   const plain = htmlToPlainText(body).trim();
   if (!plain) return fallback;
   const words = plain.split(/\s+/).slice(0, 5).join(' ');
   return words.length < plain.length ? `${words}…` : words;
+}
+
+/** 챕터 본문이 (앞에 다른 텍스트 없이) title 과 같은 제목 태그로 시작하는지.
+ *  변환 시 "# 제목" 을 덧붙이면 본문 제목과 중복되므로 이 경우엔 생략한다. */
+export function startsWithTitleHeading(xhtml: string, title: string): boolean {
+  const body = extractBody(xhtml);
+  const m = body.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
+  if (!m || m.index === undefined) return false;
+  const before = htmlToPlainText(body.slice(0, m.index)).trim();
+  return !before && htmlToPlainText(m[1]).trim() === title.trim();
 }
 
 /** 모든 챕터를 순서대로 텍스트로 변환 */
@@ -332,7 +357,12 @@ export async function epubToText(epub: ParsedEpub, options: {
     const text = htmlToPlainText(body);
     if (opts.includeTitles) {
       const t = chapterTitle(ch.xhtml, `Chapter ${i + 1}`);
-      parts.push(`# ${t}\n\n${text}`);
+      // 본문 첫 줄이 이미 같은 제목이면 제목 줄로 승격만 하고 중복 출력하지 않는다.
+      parts.push(
+        startsWithTitleHeading(ch.xhtml, t)
+          ? `# ${t}\n\n${text.replace(t, '').trimStart()}`
+          : `# ${t}\n\n${text}`,
+      );
     } else {
       parts.push(text);
     }
@@ -550,6 +580,24 @@ function escapeId(id: string): string {
   return id.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/^([0-9])/, '_$1') || 'item';
 }
 
+/**
+ * HTML 조각을 XHTML(잘 짜인 XML) 조각으로 정규화한다.
+ * marked 등이 만드는 <br>·<hr>·<img ...> 같은 비종결 태그나 &nbsp; 는 XHTML 로 읽는 전자책
+ * 리더에서 파싱 오류(빈 페이지)를 일으키므로, 브라우저 HTML 파서로 읽어 XMLSerializer 로 다시 쓴다.
+ * DOMParser 가 없는 환경(서버)에서는 원문을 그대로 돌려준다.
+ */
+export function toXhtmlFragment(html: string): string {
+  if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined') return html;
+  try {
+    const doc = new DOMParser().parseFromString(`<!DOCTYPE html><html><body>${html}</body></html>`, 'text/html');
+    const xml = new XMLSerializer().serializeToString(doc.body);
+    // <body xmlns="http://www.w3.org/1999/xhtml">…</body> 껍데기 제거
+    return xml.replace(/^<body[^>]*>/, '').replace(/<\/body>$/, '').replace(/^<body[^>]*\/>$/, '');
+  } catch {
+    return html;
+  }
+}
+
 export async function buildEpub(opts: BuildEpubOptions): Promise<Blob> {
   const zip = new JSZip();
   const language = opts.language || 'ko';
@@ -597,7 +645,7 @@ export async function buildEpub(opts: BuildEpubOptions): Promise<Blob> {
   <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 <body>
-${c.bodyHtml}
+${toXhtmlFragment(c.bodyHtml)}
 </body>
 </html>`;
     zip.file(`OEBPS/${c.file}`, xhtml);
@@ -782,6 +830,141 @@ export async function repackageEpub(zip: JSZip): Promise<Blob> {
     compression: 'DEFLATE',
     compressionOptions: { level: 6 },
   });
+}
+
+/* ============================================================
+ * 리소스 참조 재작성 — 이미지 이름·확장자를 바꾼 뒤 본문/CSS/목차의 링크를 갱신
+ * ============================================================ */
+
+/** from 파일(전체 경로) 기준으로 to(전체 경로)를 가리키는 상대 경로. */
+export function relativeEpubPath(from: string, to: string): string {
+  const fromDir = from.includes('/') ? from.substring(0, from.lastIndexOf('/')).split('/') : [];
+  const toParts = to.split('/');
+  let i = 0;
+  while (i < fromDir.length && i < toParts.length - 1 && fromDir[i] === toParts[i]) i++;
+  const up = fromDir.slice(i).map(() => '..');
+  return [...up, ...toParts.slice(i)].join('/');
+}
+
+const REF_TEXT_EXTS = new Set(['xhtml', 'html', 'htm', 'css', 'ncx', 'svg', 'xml']);
+
+/**
+ * renames(구 전체경로 → 새 전체경로)에 해당하는 참조를 zip 내 모든 XHTML·CSS·NCX·SVG 에서 갱신한다.
+ * src/href/xlink:href 속성과 CSS url(...) 을 대상으로 하며, OPF 는 호출자가 직접 갱신한다.
+ */
+export async function rewriteResourceRefs(zip: JSZip, renames: Map<string, string>): Promise<void> {
+  if (renames.size === 0) return;
+  const files = Object.values(zip.files).filter(
+    (f) => !f.dir && REF_TEXT_EXTS.has(extOf(f.name).toLowerCase()) && !/\.opf$/i.test(f.name),
+  );
+  for (const f of files) {
+    const text = await f.async('text');
+    const dir = f.name.includes('/') ? f.name.substring(0, f.name.lastIndexOf('/') + 1) : '';
+    const fix = (ref: string): string => {
+      if (/^(?:[a-z][a-z0-9+.-]*:|#|\/)/i.test(ref)) return ref;
+      const cut = ref.search(/[?#]/);
+      const pathPart = cut >= 0 ? ref.slice(0, cut) : ref;
+      const suffix = cut >= 0 ? ref.slice(cut) : '';
+      let decoded = pathPart;
+      try {
+        decoded = decodeURIComponent(pathPart);
+      } catch {
+        /* 잘못된 % 인코딩은 원문 그대로 비교 */
+      }
+      const target = renames.get(normalizeEpubPath(dir + decoded));
+      return target ? relativeEpubPath(f.name, target) + suffix : ref;
+    };
+    const next = text
+      .replace(/\b((?:xlink:)?(?:src|href))(\s*=\s*)(["'])([^"']*)\3/gi, (_m, a: string, eq: string, q: string, v: string) => `${a}${eq}${q}${fix(v)}${q}`)
+      .replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi, (_m, q: string, v: string) => `url(${q}${fix(v)}${q})`);
+    if (next !== text) zip.file(f.name, next);
+  }
+}
+
+/** XHTML 이 참조하는 로컬 리소스(이미지·CSS·폰트 등)의 전체 경로 목록. chapterPath 는 XHTML 의 전체 경로. */
+export function collectLocalRefs(xhtml: string, chapterPath: string): string[] {
+  const dir = chapterPath.includes('/') ? chapterPath.substring(0, chapterPath.lastIndexOf('/') + 1) : '';
+  const out = new Set<string>();
+  const add = (ref: string) => {
+    if (/^(?:[a-z][a-z0-9+.-]*:|#|\/)/i.test(ref)) return;
+    const pathPart = ref.split(/[?#]/)[0];
+    if (!pathPart) return;
+    let decoded = pathPart;
+    try {
+      decoded = decodeURIComponent(pathPart);
+    } catch {
+      /* noop */
+    }
+    out.add(normalizeEpubPath(dir + decoded));
+  };
+  for (const m of xhtml.matchAll(/\b(?:xlink:)?(?:src|href)\s*=\s*["']([^"']*)["']/gi)) add(m[1]);
+  for (const m of xhtml.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)) add(m[1]);
+  return Array.from(out);
+}
+
+export interface RelocatedAsset {
+  /** 새 책 OEBPS/ 기준 경로 */
+  path: string;
+  data: Uint8Array;
+  mediaType: string;
+}
+
+/**
+ * 원본 챕터 body 의 로컬 참조(이미지·SVG 등)를 새 책(buildEpub, OEBPS/ 평면 구조)용 경로로 바꾸고
+ * 필요한 자산을 assets 에 모은다. 병합·분할처럼 챕터를 새 EPUB 으로 옮길 때 이미지가 빠지지 않게 한다.
+ *
+ * @param chapterPath 원본 챕터의 zip 내 전체 경로
+ * @param assetPrefix 새 책에서 자산을 둘 폴더(예: "b1/"). 여러 원본 책을 합칠 때 이름 충돌 방지.
+ * @param assets      원본 전체경로(접두 포함) → 자산. 챕터 간 공유(중복 추가 방지).
+ * @param pathMap     원본 챕터 전체경로 → 새 챕터 파일명(챕터 간 링크 유지용, 선택).
+ */
+export async function relocateChapterAssets(
+  epub: ParsedEpub,
+  chapterPath: string,
+  bodyHtml: string,
+  assetPrefix: string,
+  assets: Map<string, RelocatedAsset>,
+  pathMap?: Map<string, string>,
+): Promise<string> {
+  const dir = chapterPath.includes('/') ? chapterPath.substring(0, chapterPath.lastIndexOf('/') + 1) : '';
+  // 1) 필요한 자산 파일을 먼저 비동기로 적재
+  for (const full of collectLocalRefs(bodyHtml, chapterPath)) {
+    if (pathMap?.has(full)) continue;
+    const key = assetPrefix + full;
+    if (assets.has(key)) continue;
+    if (isHtmlExt(extOf(full))) continue; // 다른 챕터 링크는 자산이 아님
+    const zf = epub.zip.file(full);
+    if (!zf) continue;
+    const rel = full.startsWith(epub.opfDir) ? full.slice(epub.opfDir.length) : full;
+    const mediaType = epub.manifestByHref.get(rel)?.mediaType || mimeForExt(extOf(full));
+    assets.set(key, {
+      path: (assetPrefix + full).replace(/[^A-Za-z0-9._/-]/g, '_'),
+      data: await zf.async('uint8array'),
+      mediaType,
+    });
+  }
+  // 2) 참조 재작성
+  const fix = (ref: string): string => {
+    if (/^(?:[a-z][a-z0-9+.-]*:|#|\/)/i.test(ref)) return ref;
+    const cut = ref.search(/[?#]/);
+    const pathPart = cut >= 0 ? ref.slice(0, cut) : ref;
+    const suffix = cut >= 0 ? ref.slice(cut) : '';
+    if (!pathPart) return ref;
+    let decoded = pathPart;
+    try {
+      decoded = decodeURIComponent(pathPart);
+    } catch {
+      /* noop */
+    }
+    const full = normalizeEpubPath(dir + decoded);
+    const mapped = pathMap?.get(full);
+    if (mapped) return mapped + suffix;
+    const asset = assets.get(assetPrefix + full);
+    return asset ? asset.path + suffix : ref;
+  };
+  return bodyHtml
+    .replace(/\b((?:xlink:)?(?:src|href))(\s*=\s*)(["'])([^"']*)\3/gi, (_m, a: string, eq: string, q: string, v: string) => `${a}${eq}${q}${fix(v)}${q}`)
+    .replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi, (_m, q: string, v: string) => `url(${q}${fix(v)}${q})`);
 }
 
 /* ============================================================

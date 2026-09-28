@@ -9,6 +9,7 @@ import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import {
   chapterTitle,
+  startsWithTitleHeading,
   extOf,
   extractBody,
   isImageExt,
@@ -53,12 +54,17 @@ export default function EpubToHtmlPage() {
       const epub = await parseEpub(file);
       const baseName = file.name.replace(/\.epub$/i, '');
 
-      const chapters: Array<{ title: string; html: string; sourcePath: string }> = [];
+      const chapters: Array<{ title: string; html: string; sourcePath: string; hasOwnHeading: boolean }> = [];
       for (let i = 0; i < epub.spine.length; i++) {
         const ch = await readChapter(epub, epub.spine[i]);
         if (!ch) continue;
         const title = chapterTitle(ch.xhtml, `Chapter ${i + 1}`);
-        chapters.push({ title, html: extractBody(ch.xhtml), sourcePath: ch.path });
+        chapters.push({
+          title,
+          html: extractBody(ch.xhtml),
+          sourcePath: ch.path,
+          hasOwnHeading: startsWithTitleHeading(ch.xhtml, title),
+        });
       }
 
       let blob: Blob;
@@ -93,7 +99,9 @@ export default function EpubToHtmlPage() {
             replacements.push([raw, `${attrName}="${dataUrl}"`]);
           }
           for (const [from, to] of replacements) body = body.replace(from, to);
-          inlinedChapters.push(`<section class="chapter"><h2>${escapeHtml(c.title)}</h2>${body}</section>`);
+          // 본문이 이미 같은 제목으로 시작하면 <h2> 를 덧붙이지 않는다(중복 방지).
+          const heading = c.hasOwnHeading ? '' : `<h2>${escapeHtml(c.title)}</h2>`;
+          inlinedChapters.push(`<section class="chapter">${heading}${body}</section>`);
         }
 
         const combined = `<!doctype html>

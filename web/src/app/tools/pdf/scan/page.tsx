@@ -6,6 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { buttonVariants } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
+import { assertCanvasSize, loadBitmap } from '@/lib/tools/image-common';
 
 interface Item {
   file: File;
@@ -21,7 +22,15 @@ const FILTERS: Record<Enhance, string> = {
 };
 
 async function enhanceToJpeg(file: File, mode: Enhance): Promise<Uint8Array> {
-  const bmp = await createImageBitmap(file);
+  // loadBitmap: EXIF Orientation 반영 디코딩 — 세로로 찍은 휴대폰 서류 사진이
+  // 90° 회전된 채 PDF 에 들어가는 것을 막는다.
+  const bmp = await loadBitmap(file);
+  try {
+    assertCanvasSize(bmp.width, bmp.height);
+  } catch (e) {
+    bmp.close();
+    throw e;
+  }
   const canvas = document.createElement('canvas');
   canvas.width = bmp.width;
   canvas.height = bmp.height;
@@ -29,8 +38,19 @@ async function enhanceToJpeg(file: File, mode: Enhance): Promise<Uint8Array> {
   ctx.filter = FILTERS[mode];
   ctx.drawImage(bmp, 0, 0);
   bmp.close();
-  const blob: Blob = await new Promise((res) =>
-    canvas.toBlob((b) => res(b!), 'image/jpeg', 0.85),
+  const blob: Blob = await new Promise((res, rej) =>
+    canvas.toBlob(
+      (b) =>
+        b
+          ? res(b)
+          : rej(
+              new Error(
+                '이미지가 너무 커서 변환할 수 없습니다. 크기를 줄인 뒤 다시 시도해주세요.',
+              ),
+            ),
+      'image/jpeg',
+      0.85,
+    ),
   );
   return new Uint8Array(await blob.arrayBuffer());
 }

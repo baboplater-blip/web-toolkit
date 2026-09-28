@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 type Direction = 'xlsx-to-csv' | 'xlsx-to-json' | 'csv-to-xlsx' | 'json-to-xlsx';
 
@@ -91,7 +92,8 @@ export default function XlsxConvertPage() {
 
         if (direction === 'xlsx-to-csv') {
           const csv = XLSX.utils.sheet_to_csv(ws);
-          blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+          // BOM 을 붙여야 엑셀에서 열 때 한글이 깨지지 않는다.
+          blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
           filename = `${baseName}-${sheetName}.csv`;
         } else {
           const json = XLSX.utils.sheet_to_json(ws, { defval: null });
@@ -100,7 +102,7 @@ export default function XlsxConvertPage() {
           filename = `${baseName}-${sheetName}.json`;
         }
       } else if (direction === 'csv-to-xlsx') {
-        const text = await file.text();
+        const text = await readTextAutoEncoding(file);
         const wb = XLSX.read(text, { type: 'string', raw: false });
         const xlsxBytes = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
         blob = new Blob([new Uint8Array(xlsxBytes)], {

@@ -30,6 +30,8 @@ export default function VatCalcPage() {
     const v = parseNum(value);
     const r = parseNum(rate) / 100;
     if (v <= 0 || r < 0) return null;
+    // 세액 입력 모드는 세율로 나누므로 세율 0% 는 역산 불가 (0 나눗셈 → "∞원" 방지).
+    if (mode === 'vat' && r <= 0) return null;
     let supply: number;
     let vat: number;
     let total: number;

@@ -43,15 +43,23 @@ function calcCompound(
   contribution: number,
 ): CompoundResult {
   const periodsPerYear = FREQUENCY_PER_YEAR[frequency];
-  const totalPeriods = Math.round(years * periodsPerYear);
+  // 소수 기간(예: 연 복리 1.5년)을 반올림하지 않는다 — 완결된 주기는 루프로,
+  // 남은 분수 주기는 (1+r)^분수 로 정확히 성장시킨다. 적립은 주기 말 납입이므로
+  // 완결된 주기에만 발생한다.
+  const exactPeriods = years * periodsPerYear;
+  const wholePeriods = Math.floor(exactPeriods);
+  const fractionalPeriod = exactPeriods - wholePeriods;
   const ratePerPeriod = annualRatePercent / 100 / periodsPerYear;
 
   let balance = principal;
-  for (let period = 0; period < totalPeriods; period += 1) {
+  for (let period = 0; period < wholePeriods; period += 1) {
     balance = balance * (1 + ratePerPeriod) + contribution;
   }
+  if (fractionalPeriod > 0) {
+    balance *= (1 + ratePerPeriod) ** fractionalPeriod;
+  }
 
-  const totalContribution = contribution * totalPeriods;
+  const totalContribution = contribution * wholePeriods;
   const finalAmount = balance;
   const totalInterest = finalAmount - principal - totalContribution;
 

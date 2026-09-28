@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { renderElementToPdf } from '@/lib/tools/html-to-pdf-raster';
 
 export default function DocxToPdfPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -38,11 +39,9 @@ export default function DocxToPdfPage() {
 
       setProgressText('PDF 조립 중 — 이미지가 많으면 시간이 걸립니다');
       const container = document.createElement('div');
-      container.style.position = 'fixed';
-      container.style.left = '-9999px';
-      container.style.top = '0';
       container.style.width = '595px';
-      container.style.padding = '36pt 40pt';
+      container.style.boxSizing = 'border-box';
+      container.style.padding = '8pt 40pt';
       container.style.color = '#111';
       container.style.background = '#fff';
       container.style.fontFamily =
@@ -54,39 +53,22 @@ export default function DocxToPdfPage() {
       // DOMPurify 는 window 가 필요하므로 클라이언트에서만 동작(이 핸들러는 항상 클라이언트).
       container.innerHTML =
         typeof window !== 'undefined' ? DOMPurify.sanitize(r.value) : r.value;
-      document.body.appendChild(container);
-
-      try {
-        const { jsPDF } = await import('jspdf');
-        const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
-
-        await pdf.html(container, {
-          x: 0,
-          y: 0,
-          width: 595,
-          windowWidth: 595,
-          margin: 0,
-          autoPaging: 'text',
-          html2canvas: {
-            scale: 0.96,
-            useCORS: false,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-          },
-          callback: () => {},
-        });
-
-        const blob = pdf.output('blob');
-        const baseName = file.name.replace(/\.docx$/i, '');
-        setResult({
-          blobUrl: URL.createObjectURL(blob),
-          filename: `${baseName}.pdf`,
-          originalSize: file.size,
-          compressedSize: blob.size,
-        });
-      } finally {
-        container.remove();
+      if (!container.textContent?.trim() && !container.querySelector('img')) {
+        throw new Error('문서에서 변환할 내용을 찾지 못했습니다.');
       }
+
+      // jsPDF.html() 은 숨김용 left:-9999px 까지 복제해 빈 PDF 를 만들고 한글도 깨지므로
+      // 페이지 단위 래스터(html2canvas-pro) 로 직접 조립한다.
+      const blob = await renderElementToPdf(container, {
+        onProgress: (done, total) => setProgressText(`PDF 조립 중 (${done}/${total} 페이지)`),
+      });
+      const baseName = file.name.replace(/\.docx$/i, '');
+      setResult({
+        blobUrl: URL.createObjectURL(blob),
+        filename: `${baseName}.pdf`,
+        originalSize: file.size,
+        compressedSize: blob.size,
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : '변환에 실패했습니다.');
     } finally {

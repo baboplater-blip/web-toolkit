@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2, Download } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ToolHeader } from '@/components/tools/ToolHeader';
@@ -18,12 +18,21 @@ export default function PosterPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 최신 URL 을 ref 로 추적해 언마운트 시 "현재" URL 을 revoke
+  // (기존 [] deps 클로저는 초기값 '' 만 캡처해 revoke 가 항상 스킵되던 누수 수정)
+  const videoUrlRef = useRef('');
+  const posterUrlRef = useRef('');
+  useEffect(() => {
+    videoUrlRef.current = videoUrl;
+  }, [videoUrl]);
+  useEffect(() => {
+    posterUrlRef.current = posterUrl;
+  }, [posterUrl]);
   useEffect(() => {
     return () => {
-      if (videoUrl) URL.revokeObjectURL(videoUrl);
-      if (posterUrl) URL.revokeObjectURL(posterUrl);
+      if (videoUrlRef.current) URL.revokeObjectURL(videoUrlRef.current);
+      if (posterUrlRef.current) URL.revokeObjectURL(posterUrlRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleFile(f: File) {

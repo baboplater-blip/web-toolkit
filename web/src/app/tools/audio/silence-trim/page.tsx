@@ -186,6 +186,7 @@ export default function SilenceTrimPage() {
           blobUrl={result.blobUrl}
           originalSize={result.originalSize}
           compressedSize={result.compressedSize}
+          metaText="앞뒤·중간의 긴 무음을 제거한 오디오"
         />
       )}
 

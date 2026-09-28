@@ -21,7 +21,8 @@ import {
 } from '@/lib/tools/ffmpeg-common';
 import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
-import { compressionRatio, formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import { formatBytes, renameWithSuffix } from '@/lib/compress/format';
+import { sizeReductionPercent } from '@/lib/tools/image-common';
 
 type Preset = 'light' | 'medium' | 'strong';
 
@@ -174,7 +175,7 @@ export default function GifOptimizePage() {
     }
   };
 
-  const reduction = result && file ? compressionRatio(file.size, result.blob.size) : 0;
+  const reduction = result && file ? sizeReductionPercent(file.size, result.blob.size) : 0;
 
   return (
     <div className="min-h-dvh bg-background">
@@ -376,7 +377,7 @@ export default function GifOptimizePage() {
                     reduction > 0 ? 'text-green-500' : 'text-yellow-500'
                   }`}
                 >
-                  {reduction > 0 ? `-${reduction}%` : '0%'}
+                  {reduction > 0 ? `-${reduction}%` : `+${-reduction}%`}
                 </p>
               </div>
             </div>

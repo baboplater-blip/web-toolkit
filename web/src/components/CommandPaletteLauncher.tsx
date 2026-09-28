@@ -23,6 +23,22 @@ const CommandPalette = dynamic(
   { ssr: false },
 );
 
+/** 입력 컨텍스트(텍스트 입력·편집기)인지 판정 — 단축키 가로채기 방지. (CommandPalette 와 동일) */
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  return target.isContentEditable;
+}
+
+/** 이미 다른 모달(다이얼로그)이 열려 있는지 — 모달 스태킹 방지. (CommandPalette 와 동일) */
+function isAnotherDialogOpen(): boolean {
+  return (
+    document.querySelector('[data-slot="dialog-content"], [role="dialog"]') !==
+    null
+  );
+}
+
 export function CommandPaletteLauncher() {
   const [loaded, setLoaded] = useState(false);
 
@@ -33,10 +49,19 @@ export function CommandPaletteLauncher() {
     const onKey = (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey;
       if (!isMod || e.key.toLowerCase() !== 'k') return;
+      // 첫 트리거도 CommandPalette 자체 리스너와 동일한 가드를 적용한다.
+      // 도구 입력 필드·편집기에서 타이핑 중이면 가로채지 않는다.
+      if (isEditableTarget(e.target)) return;
+      // 다른 모달이 떠 있으면 스태킹하지 않는다.
+      if (isAnotherDialogOpen()) return;
       e.preventDefault();
       setLoaded(true);
     };
-    const onEvent = () => setLoaded(true);
+    const onEvent = () => {
+      // 커스텀 이벤트로 열 때도 다른 모달 위에 겹치지 않는다. (CommandPalette 와 동일)
+      if (isAnotherDialogOpen()) return;
+      setLoaded(true);
+    };
 
     window.addEventListener('keydown', onKey);
     window.addEventListener('webtoolkit:open-palette', onEvent);

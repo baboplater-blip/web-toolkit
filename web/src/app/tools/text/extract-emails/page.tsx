@@ -1,8 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
+
+/** 입력 상한(문자) — 초과분은 잘라내고 안내한다(대용량 입력의 정규식 멈춤 방지). */
+const MAX_INPUT_LENGTH = 500_000;
 
 // RFC 5322 의 실용적 근사 — 한 줄에 하나, 대부분의 일반 이메일을 포착한다.
 const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi;
@@ -11,13 +14,18 @@ export default function ExtractEmailsPage() {
   const [input, setInput] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // 추출은 입력보다 한 박자 늦게 수행해 키 입력이 막히는 것을 줄인다.
+  const deferredInput = useDeferredValue(input);
+  const overLimit = deferredInput.length > MAX_INPUT_LENGTH;
+
   const emails = useMemo(() => {
-    if (!input) return [] as string[];
-    const matches = input.match(EMAIL_RE) ?? [];
+    const source = overLimit ? deferredInput.slice(0, MAX_INPUT_LENGTH) : deferredInput;
+    if (!source) return [] as string[];
+    const matches = source.match(EMAIL_RE) ?? [];
     const unique = Array.from(new Set(matches.map((m) => m.toLowerCase())));
     unique.sort((a, b) => a.localeCompare(b));
     return unique;
-  }, [input]);
+  }, [deferredInput, overLimit]);
 
   const output = emails.join('\n');
 
@@ -52,6 +60,12 @@ export default function ExtractEmailsPage() {
           placeholder="여기에 입력하세요"
           aria-label="입력"
         />
+
+        {overLimit && (
+          <p className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+            입력이 {MAX_INPUT_LENGTH.toLocaleString()}자를 초과해 앞부분만 분석합니다.
+          </p>
+        )}
 
         <p className="text-sm text-muted-foreground">
           {emails.length}개 발견

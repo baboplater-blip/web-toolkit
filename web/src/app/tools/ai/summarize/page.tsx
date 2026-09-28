@@ -74,12 +74,32 @@ function splitSentences(text: string): string[] {
     .filter((part) => part.length > 0);
 }
 
-/** 문장에서 점수 산정용 단어 토큰을 추출한다(소문자화, 불용어·짧은 토큰 제외). */
+// 한국어 어절 끝의 흔한 조사·어미. "인공지능은"·"인공지능의"·"인공지능" 이 같은 단어로
+// 집계돼야 유사도·키워드가 의미를 가지므로 긴 것부터 떼어낸다(어간이 2자 이상 남을 때만).
+const KO_SUFFIXES = [
+  '에서는', '으로는', '에게서', '이라는', '에서도', '으로서', '으로써', '이었다', '였다', '이다',
+  '에서', '에게', '으로', '까지', '부터', '보다', '처럼', '마다', '이나', '에는', '와의', '과의',
+  '들은', '들이', '들을', '들의', '하고', '이며', '이고',
+  '은', '는', '이', '가', '을', '를', '의', '에', '와', '과', '도', '로', '만', '들',
+];
+
+function stripKoSuffix(token: string): string {
+  if (!/^[가-힣]+$/.test(token)) return token;
+  for (const suffix of KO_SUFFIXES) {
+    if (token.length - suffix.length >= 2 && token.endsWith(suffix)) {
+      return token.slice(0, -suffix.length);
+    }
+  }
+  return token;
+}
+
+/** 문장에서 점수 산정용 단어 토큰을 추출한다(소문자화, 조사 제거, 불용어·짧은 토큰 제외). */
 function tokenize(sentence: string): string[] {
   const tokens = sentence
     .toLowerCase()
     .split(/[^0-9a-z가-힣぀-ヿ一-鿿]+/)
-    .filter((token) => token.length > 0);
+    .filter((token) => token.length > 0)
+    .map(stripKoSuffix);
   return tokens.filter((token) => {
     if (STOP_WORDS.has(token)) return false;
     // 한 글자 라틴/숫자 토큰은 의미가 약하므로 제외(한글 한 글자는 유지).

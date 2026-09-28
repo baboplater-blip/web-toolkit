@@ -16,8 +16,10 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import {
   cleanupFiles,
   getFFmpeg,
+  mp4AudioArgs,
   probeVideo,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -120,46 +122,51 @@ export default function VideoResizePage() {
     try {
       setStage('FFmpeg 로딩');
       const ffmpeg = await getFFmpeg();
-      setStage('파일 준비');
-      await writeFile(ffmpeg, inputName, file);
-
       const onProgress = ({ progress: p }: { progress: number }) => {
         setProgress(Math.min(99, Math.round(p * 100)));
       };
       ffmpeg.on('progress', onProgress);
+      try {
+        setStage('파일 준비');
+        await writeFile(ffmpeg, inputName, file);
 
-      setStage('해상도 변경');
-      // scale=-2:{h} → 가로는 비율 유지하며 2의 배수로 맞춤(libx264 요구), 오디오는 복사.
-      await ffmpeg.exec([
-        '-i',
-        inputName,
-        '-vf',
-        `scale=-2:${height}`,
-        '-c:v',
-        'libx264',
-        '-preset',
-        'veryfast',
-        '-crf',
-        '23',
-        '-c:a',
-        'copy',
-        '-y',
-        outputName,
-      ]);
-      ffmpeg.off('progress', onProgress);
+        setStage('해상도 변경');
+        // scale=-2:{h} → 가로는 비율 유지하며 2의 배수로 맞춤(libx264 요구), 오디오는 복사.
+        await ffmpeg.exec([
+          '-i',
+          inputName,
+          '-vf',
+          `scale=-2:${height}`,
+          '-c:v',
+          'libx264',
+          '-preset',
+          'veryfast',
+          '-crf',
+          '23',
+          ...mp4AudioArgs(inputName),
+          '-y',
+          outputName,
+        ]);
 
-      const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
-      const url = URL.createObjectURL(blob);
+        const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
+        const url = URL.createObjectURL(blob);
 
-      const base = file.name.replace(/\.[^.]+$/, '');
-      setResult({ url, blob, size: blob.size, name: `${base}-${height}p.mp4` });
-      setProgress(100);
-      setStage('완료');
-
-      await cleanupFiles(ffmpeg, [inputName, outputName]);
+        const base = file.name.replace(/\.[^.]+$/, '');
+        setResult({ url, blob, size: blob.size, name: `${base}-${height}p.mp4` });
+        setProgress(100);
+        setStage('완료');
+      } finally {
+        // exec 실패 시에도 진행률 리스너·MEMFS 잔류 파일이 새지 않게 finally 에서 정리.
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, [inputName, outputName]);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '해상도 변경에 실패했습니다.';
-      setError(file ? explainFfmpegError(msg, file.size) : msg);
+      const friendly = file ? explainFfmpegError(msg, file.size) : msg;
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setBusy(false);
     }

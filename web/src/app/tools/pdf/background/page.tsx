@@ -8,8 +8,54 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
 import { loadPdfLib } from '@/lib/tools/pdf-lazy';
 import { loadPdfFromFile } from '@/lib/tools/pdf-common';
+import { assertCanvasSize, loadBitmap } from '@/lib/tools/image-common';
 
 type Mode = 'color' | 'image';
+
+/**
+ * embed 용 이미지 바이트 준비 — EXIF Orientation 을 픽셀에 굽는다.
+ * PDF 뷰어는 임베드된 이미지 스트림의 EXIF 를 무시하므로, 사진 배경을
+ * 원본 바이트 그대로 embedJpg 하면 세로 촬영 사진이 옆으로 누워 렌더된다.
+ * loadBitmap(imageOrientation:'from-image') 으로 디코딩해 캔버스에 그린 뒤
+ * 재인코딩한 바이트를 반환한다(PNG 는 투명도 보존을 위해 PNG 유지).
+ */
+async function toEmbeddableBytes(
+  file: File,
+): Promise<{ bytes: Uint8Array; isJpg: boolean }> {
+  const isJpg = file.type === 'image/jpeg' || /\.jpe?g$/i.test(file.name);
+  const bmp = await loadBitmap(file);
+  try {
+    assertCanvasSize(bmp.width, bmp.height);
+  } catch (e) {
+    bmp.close();
+    throw e;
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = bmp.width;
+  canvas.height = bmp.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    bmp.close();
+    throw new Error('Canvas 컨텍스트를 생성할 수 없습니다');
+  }
+  ctx.drawImage(bmp, 0, 0);
+  bmp.close();
+  const blob: Blob = await new Promise((res, rej) =>
+    canvas.toBlob(
+      (b) =>
+        b
+          ? res(b)
+          : rej(
+              new Error(
+                '이미지가 너무 커서 변환할 수 없습니다. 크기를 줄인 뒤 다시 시도해주세요.',
+              ),
+            ),
+      isJpg ? 'image/jpeg' : 'image/png',
+      isJpg ? 0.92 : undefined,
+    ),
+  );
+  return { bytes: new Uint8Array(await blob.arrayBuffer()), isJpg };
+}
 
 export default function PdfBackgroundPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -81,9 +127,7 @@ export default function PdfBackgroundPage() {
           });
         }
       } else if (bgImage) {
-        const imgBytes = new Uint8Array(await bgImage.arrayBuffer());
-        const ext = (bgImage.type || '').toLowerCase();
-        const isJpg = ext.includes('jpeg') || ext.includes('jpg');
+        const { bytes: imgBytes, isJpg } = await toEmbeddableBytes(bgImage);
         const embedded = isJpg ? await doc.embedJpg(imgBytes) : await doc.embedPng(imgBytes);
         for (const p of pages) {
           const { width, height } = p.getSize();

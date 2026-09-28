@@ -16,6 +16,7 @@ import { explainFfmpegError, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools
 import {
   cleanupFiles,
   getFFmpeg,
+  hasAudioStream,
   probeVideo,
   readOutput,
   writeFile,
@@ -121,6 +122,9 @@ export default function VideoToAudioPage() {
         if (format !== 'wav') args.push('-b:a', `${bitrate}k`);
         args.push('-y', outputName);
 
+        if (!(await hasAudioStream(ffmpeg, inputName))) {
+          throw new Error('does not contain any stream');
+        }
         setProgressText('오디오 추출 중');
         await ffmpeg.exec(args);
 

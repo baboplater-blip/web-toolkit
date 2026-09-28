@@ -1,11 +1,13 @@
 'use client';
 
+import DOMPurify from 'dompurify';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
+import { renderElementToPdf } from '@/lib/tools/html-to-pdf-raster';
 
 /**
  * EPUB → PDF
@@ -125,7 +127,8 @@ export default function EpubToPdfPage() {
           setProgressText(`챕터 변환 중 (${i + 1}/${spine.length})`);
         }
 
-        const combined = sections.join('\n<div style="page-break-after: always;"></div>\n');
+        // 챕터마다 새 페이지에서 시작(renderElementToPdf 의 강제 페이지 나눔 표식)
+        const combined = sections.join('\n<div data-pdf-break=""></div>\n');
 
         // 6) 임시 hidden div 에 주입
         setStage('pdf');
@@ -133,43 +136,33 @@ export default function EpubToPdfPage() {
         setProgress(65);
 
         const container = document.createElement('div');
-        container.style.position = 'fixed';
-        container.style.left = '-9999px';
-        container.style.top = '0';
         container.style.width = '595px'; // A4 width in pt
-        container.style.padding = '36pt 40pt';
+        container.style.boxSizing = 'border-box';
+        container.style.padding = '8pt 40pt';
         container.style.color = '#111';
         container.style.background = '#fff';
         container.style.fontFamily = '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif';
         container.style.fontSize = '11pt';
         container.style.lineHeight = '1.6';
-        container.innerHTML = combined;
-        document.body.appendChild(container);
-
+        // EPUB 챕터 HTML 을 라이브 DOM 에 그대로 주입하면 악성 EPUB 의
+        // <img onerror>/<iframe>/javascript: 등이 실행될 수 있으므로 DOMPurify 로 정화한다.
+        container.innerHTML = sanitizeChapterHtml(combined);
         try {
-          const { jsPDF } = await import('jspdf');
-          const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
-
-          await pdf.html(container, {
-            x: 0,
-            y: 0,
-            width: 595,
-            windowWidth: 595,
-            margin: 0,
-            autoPaging: 'text',
-            html2canvas: {
-              scale: 0.96,
-              useCORS: false,
-              allowTaint: true,
-              backgroundColor: '#ffffff',
+          checkAbort();
+          // jsPDF.html() 은 숨김용 left:-9999px 까지 복제해 빈 PDF 를 만들고 한글도 깨지므로
+          // 페이지 단위 래스터(html2canvas-pro) 로 직접 조립한다. 페이지 사이마다 취소를 확인.
+          const pdfBlob = await renderElementToPdf(container, {
+            signal: token,
+            onProgress: (done, total) => {
+              setProgress(65 + Math.round((done / total) * 30));
+              setProgressText(`PDF 조립 중 (${done}/${total} 페이지)`);
             },
-            callback: () => {},
           });
           checkAbort();
           setProgress(95);
 
           const baseName = file.name.replace(/\.epub$/i, '') || title || 'book';
-          const blob = pdf.output('blob');
+          const blob = pdfBlob;
           const blobUrl = URL.createObjectURL(blob);
           setResult({
             blobUrl,
@@ -212,6 +205,7 @@ export default function EpubToPdfPage() {
 
       <FileDropZone
         accept="application/epub+zip,.epub"
+        maxBytes={50 * 1024 * 1024}
         onFiles={(files) => setFile(files[0] ?? null)}
         title="EPUB 파일을 끌어다 놓거나 클릭하여 선택"
         hint="50 MB 이하 권장"
@@ -289,6 +283,23 @@ export default function EpubToPdfPage() {
 }
 
 /* ---------- helpers ---------- */
+
+/**
+ * 결합된 챕터 HTML 을 innerHTML 에 넣기 전에 정화한다.
+ * rewriteAssets 는 <script>/스타일시트 링크만 제거하므로 onerror/<iframe>/javascript:
+ * 등이 그대로 남는다 → DOMPurify 로 차단. 단, 이미지 src 는 이미 blob: URL 로
+ * 재작성된 상태이므로 blob: URI 는 허용해야 그림이 깨지지 않는다(data: 인라인 이미지 포함).
+ * DOMPurify 는 window 가 필요하므로 서버(prerender)에선 건너뛴다(클라이언트에서만 호출됨).
+ */
+function sanitizeChapterHtml(html: string): string {
+  if (typeof window === 'undefined') return html;
+  return DOMPurify.sanitize(html, {
+    // data: 는 일부 EPUB 의 인라인 이미지, blob: 는 위에서 재작성한 이미지 URL
+    ADD_URI_SAFE_ATTR: ['xlink:href'],
+    ALLOW_UNKNOWN_PROTOCOLS: false,
+    ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel|blob|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.:-]|$))/i,
+  });
+}
 
 function fmtSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;

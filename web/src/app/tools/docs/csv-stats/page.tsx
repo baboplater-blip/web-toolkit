@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2, Sigma } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { FileDropZone } from '@/components/tools/FileDropZone';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 /** 메모리 보호: 전체 파일을 파싱하므로 과대 파일은 사전 거부한다. */
 const MAX_BYTES = 25 * 1024 * 1024; // 25MB
@@ -42,8 +43,10 @@ function computeColumnStats(name: string, values: unknown[]): ColumnStats {
   const numbers: number[] = [];
   let allNumeric = present.length > 0;
   for (const text of present) {
-    const num = Number(text);
-    if (text.trim() !== '' && !Number.isNaN(num)) {
+    // "1,200"·"₩3,000"·"$5" 처럼 천 단위 쉼표·통화 기호가 붙은 값도 숫자로 인식한다.
+    const cleaned = text.trim().replace(/^[₩$€£¥]\s*/, '').replace(/,(?=\d{3}(?:\D|$))/g, '');
+    const num = Number(cleaned);
+    if (cleaned !== '' && !Number.isNaN(num)) {
       numbers.push(num);
     } else {
       allNumeric = false;
@@ -111,7 +114,7 @@ export default function CsvStatsPage() {
     setStats(null);
     setProcessing(true);
     try {
-      const text = await file.text();
+      const text = await readTextAutoEncoding(file);
       const Papa = (await import('papaparse')).default;
       const parsed = Papa.parse<Record<string, unknown>>(text, {
         header: true,

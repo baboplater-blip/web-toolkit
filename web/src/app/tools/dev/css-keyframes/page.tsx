@@ -9,12 +9,15 @@ type PresetKey = 'fade' | 'slide' | 'scale' | 'rotate';
 
 interface Preset {
   label: string;
+  /** 프리셋 전환 시 채워 넣을 기본 시작·끝 값 */
+  defaults: { from: string; to: string };
   /** 시작 프레임(0%)과 끝 프레임(100%) 의 CSS 선언 목록을 생성한다. */
   build: (from: number, to: number) => { from: string; to: string };
 }
 
 const PRESETS: Record<PresetKey, Preset> = {
   fade: {
+    defaults: { from: '0', to: '1' },
     label: '페이드 (opacity)',
     build: (from, to) => ({
       from: `opacity: ${from};`,
@@ -22,6 +25,7 @@ const PRESETS: Record<PresetKey, Preset> = {
     }),
   },
   slide: {
+    defaults: { from: '-100', to: '0' },
     label: '슬라이드 (translateX, px)',
     build: (from, to) => ({
       from: `transform: translateX(${from}px);`,
@@ -29,6 +33,7 @@ const PRESETS: Record<PresetKey, Preset> = {
     }),
   },
   scale: {
+    defaults: { from: '0.5', to: '1' },
     label: '스케일 (scale)',
     build: (from, to) => ({
       from: `transform: scale(${from});`,
@@ -36,6 +41,7 @@ const PRESETS: Record<PresetKey, Preset> = {
     }),
   },
   rotate: {
+    defaults: { from: '0', to: '360' },
     label: '회전 (rotate, deg)',
     build: (from, to) => ({
       from: `transform: rotate(${from}deg);`,
@@ -153,7 +159,13 @@ export default function CssKeyframesPage() {
             <span className="text-sm font-medium">속성 프리셋</span>
             <select
               value={preset}
-              onChange={(e) => setPreset(e.target.value as PresetKey)}
+              onChange={(e) => {
+                const next = e.target.value as PresetKey;
+                setPreset(next);
+                // 프리셋마다 단위·범위가 달라(opacity 0~1 vs px·deg) 기본 시작·끝 값을 함께 바꾼다.
+                setFrom(PRESETS[next].defaults.from);
+                setTo(PRESETS[next].defaults.to);
+              }}
               className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
               aria-label="속성 프리셋"
             >

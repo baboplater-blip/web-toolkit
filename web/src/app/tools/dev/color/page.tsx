@@ -51,6 +51,8 @@ function parseAny(input: string): RGB | null {
 }
 
 function hslToRgb({ h, s, l, a }: HSL): RGB {
+  // hue 를 [0, 360) 으로 정규화 (h≥360·음수 입력 대응).
+  h = ((h % 360) + 360) % 360;
   const S = s / 100;
   const L = l / 100;
   const C = (1 - Math.abs(2 * L - 1)) * S;
@@ -63,7 +65,9 @@ function hslToRgb({ h, s, l, a }: HSL): RGB {
   else if (h < 240) { r = 0; g = X; b = C; }
   else if (h < 300) { r = X; g = 0; b = C; }
   else { r = C; g = 0; b = X; }
-  return { r: Math.round((r + m) * 255), g: Math.round((g + m) * 255), b: Math.round((b + m) * 255), a };
+  // 채널을 [0, 255] 로 클램프해 음수·초과값이 잘못된 HEX(#ff-5500 등)로 새는 것을 막는다.
+  const to255 = (v: number) => clamp(Math.round((v + m) * 255), 0, 255);
+  return { r: to255(r), g: to255(g), b: to255(b), a };
 }
 
 function rgbToHsl({ r, g, b, a }: RGB): HSL {

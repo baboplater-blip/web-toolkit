@@ -89,6 +89,25 @@ export async function compressImage(
     );
   });
 
+  // 같은 포맷·같은 크기인데 재인코딩 결과가 원본보다 크면(이미 최적화된 PNG 등) 원본을 그대로 돌려준다.
+  const sameFormat =
+    file.type === mimeType || (opts.format === 'jpeg' && file.type === 'image/jpg');
+  if (
+    sameFormat &&
+    width === img.naturalWidth &&
+    height === img.naturalHeight &&
+    blob.size >= file.size
+  ) {
+    return {
+      blob: file,
+      width,
+      height,
+      mimeType,
+      originalSize: file.size,
+      compressedSize: file.size,
+    };
+  }
+
   return {
     blob,
     width,

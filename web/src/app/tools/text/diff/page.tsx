@@ -30,7 +30,11 @@ export default function DiffPage() {
     (async () => {
       const diff = await import('diff');
       let result: Part[];
-      if (deferredMode === 'line') result = diff.diffLines(deferredA, deferredB);
+      // 줄 비교: 마지막 줄 끝의 줄바꿈 유무만 달라도 jsdiff 는 그 줄을 "변경"으로 본다
+      // (예: 원본 마지막 줄 뒤에 줄이 추가되면 원본 마지막 줄까지 삭제+추가로 표시).
+      // 양쪽 끝을 줄바꿈으로 맞춰 실제로 바뀐 줄만 표시한다.
+      const withEol = (s: string) => (s === '' || s.endsWith('\n') ? s : s + '\n');
+      if (deferredMode === 'line') result = diff.diffLines(withEol(deferredA), withEol(deferredB));
       else if (deferredMode === 'word') result = diff.diffWords(deferredA, deferredB);
       else result = diff.diffChars(deferredA, deferredB);
       if (cancelled) return;

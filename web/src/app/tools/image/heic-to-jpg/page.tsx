@@ -250,6 +250,7 @@ export default function HeicToJpgPage() {
           originalSize={result.originalSize}
           compressedSize={result.compressedSize}
           blobUrl={result.blobUrl}
+          metaText="HEIC 변환 완료"
         />
       )}
 

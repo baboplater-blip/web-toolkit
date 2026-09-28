@@ -50,8 +50,22 @@ function valueToType(
 
   if (Array.isArray(value)) {
     if (value.length === 0) return 'Array<*>';
-    // 요소 타입은 첫 요소를 대표로 추론한다(혼합 배열은 단순화).
-    const elementType = valueToType(value[0], suggestedName, typedefs, usedNames);
+    // 객체 배열은 모든 요소의 키를 합쳐 하나의 typedef 로 추론하고(뒤 요소에만 있는 키 누락 방지),
+    // 그 외에는 첫 요소를 대표로 추론한다(혼합 배열은 단순화).
+    const nonNull = value.filter((item) => item !== null);
+    const allObjects =
+      nonNull.length > 0 && nonNull.every((item) => typeof item === 'object' && !Array.isArray(item));
+    let sample: JsonValue = value[0];
+    if (allObjects) {
+      const merged: Record<string, JsonValue> = {};
+      for (const obj of nonNull as Array<Record<string, JsonValue>>) {
+        for (const [key, fieldValue] of Object.entries(obj)) {
+          if (!(key in merged) || merged[key] === null) merged[key] = fieldValue;
+        }
+      }
+      sample = merged;
+    }
+    const elementType = valueToType(sample, suggestedName, typedefs, usedNames);
     // 유니온/객체 타입은 괄호로 감싸 `[]` 우선순위 모호성을 피한다.
     return /[|&]/.test(elementType) ? `(${elementType})[]` : `${elementType}[]`;
   }

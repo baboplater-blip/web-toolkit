@@ -102,8 +102,13 @@ async function extractFramesToZip(
       }
     }
     if (opts.format === 'jpeg') {
+      // ffmpeg.wasm core 0.12.x 는 mjpeg 기본 픽셀포맷(yuvj420p, full range)로의
+      // swscale 변환에서 멈추거나 메모리 오류로 죽는다 → yuv420p 로 고정하고
+      // 비표준 범위 허용(-strict -1)으로 인코딩한다.
+      const vfIdx = args.indexOf('-vf');
+      if (vfIdx >= 0) args[vfIdx + 1] += ',format=yuv420p';
       const q = Math.max(2, Math.round(31 - (opts.quality / 100) * 29));
-      args.push('-q:v', String(q));
+      args.push('-strict', '-1', '-q:v', String(q));
     }
     args.push('-y', pattern);
 

@@ -47,7 +47,9 @@ function formatDuration(seconds: number): string {
     [24, '시간'],
     [365, '일'],
     [100, '년'],
-    [10, '세기'],
+    // 마지막 단위(세기)는 더 이상 나누지 않는다 — 년÷100=세기까지가 변환의 끝.
+    // (아주 큰 값은 아래 지수 표기 분기가 처리한다.)
+    [Infinity, '세기'],
   ];
 
   let value = seconds;

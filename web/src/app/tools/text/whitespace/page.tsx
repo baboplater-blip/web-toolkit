@@ -34,8 +34,9 @@ function cleanWhitespace(input: string, opts: WhitespaceOptions): string {
   let result = lines.join('\n');
 
   if (opts.collapseBlankLines) {
-    // 연속된 빈 줄(공백만 있는 줄 포함)을 1개로
-    result = result.replace(/\n[ \t]*(?:\n[ \t]*)+/g, '\n\n');
+    // 연속된 빈 줄(공백만 있는 줄 포함)을 1개로.
+    // 마지막 \n 뒤는 매칭하지 않아 다음 내용 줄의 들여쓰기를 먹지 않는다.
+    result = result.replace(/(?:\n[ \t]*)+\n/g, '\n\n');
   }
 
   if (opts.trimEdgeBlankLines) {

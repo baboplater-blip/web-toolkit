@@ -22,7 +22,8 @@ export default function KeyboardFlipPage() {
     let ko = 0;
     for (const c of input) {
       const code = c.charCodeAt(0);
-      if (code >= 0xac00 && code <= 0xd7a3) ko++;
+      // 완성형 음절 + 호환 자모(ㅗ·ㅐ 등 조합 안 된 낱자)까지 한글로 본다
+      if ((code >= 0xac00 && code <= 0xd7a3) || (code >= 0x3131 && code <= 0x318e)) ko++;
     }
     if (ko / total > 0.3) return ko2en(input);
     return en2ko(input);

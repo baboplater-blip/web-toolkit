@@ -98,7 +98,8 @@ export default function PdfBookletPage() {
       const order = buildBookletOrder(padded); // 1-based, 0 은 빈 페이지
 
       // 실제 임베드가 필요한 원본 페이지(1..inputPages)만 한 번씩 임베드.
-      const embedded = await out.embedPdf(src);
+      // embedPdf 는 indices 생략 시 첫 페이지만 임베드하므로 전 페이지 인덱스를 명시한다.
+      const embedded = await out.embedPdf(src, src.getPageIndices());
 
       // 한 면(landscape 시트)당 좌·우 절반에 1페이지씩.
       const halfW = (SHEET_W - MARGIN * 2 - GUTTER) / 2;

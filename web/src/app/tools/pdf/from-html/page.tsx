@@ -1,5 +1,6 @@
 'use client';
 
+import DOMPurify from 'dompurify';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { ResultCard } from '@/components/tools/ResultCard';
@@ -44,10 +45,19 @@ export default function HtmlToPdfPage() {
       const pdf = new jsPDF({ unit: 'pt', format: pageSize, orientation });
       const pageW = pdf.internal.pageSize.getWidth();
 
+      // 화면 밖 배치는 바깥 host 에만 준다(캡처 대상 노드에는 위치 스타일을 두지 않는다).
+      const host = document.createElement('div');
+      host.style.position = 'fixed';
+      host.style.left = '-9999px';
+      host.style.top = '0';
+      // 사이트 전역 Tailwind preflight(@layer base)가 h1·ul 등의 기본 스타일을 지워 버리므로,
+      // 레이어 밖(우선순위 높음)·0 특이도 규칙으로 사용자 HTML 요소를 브라우저 기본 스타일로 되돌린다.
+      // (사용자 <style>/인라인 스타일은 이 규칙보다 우선한다)
+      const reset = document.createElement('style');
+      reset.textContent = ':where(.h2p-root) :where(*) { all: revert; }';
+      host.appendChild(reset);
       const container = document.createElement('div');
-      container.style.position = 'fixed';
-      container.style.left = '-9999px';
-      container.style.top = '0';
+      container.className = 'h2p-root';
       container.style.width = `${pageW - margin * 2}px`;
       container.style.padding = '0';
       container.style.color = '#111';
@@ -55,25 +65,46 @@ export default function HtmlToPdfPage() {
       container.style.fontFamily = '"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
       container.style.fontSize = '11pt';
       container.style.lineHeight = '1.6';
-      container.innerHTML = wrapHtml(html);
-      document.body.appendChild(container);
+      // 업로드/입력된 HTML 을 라이브 DOM 에 그대로 주입하면 악성 <script>·<img onerror>
+      // 등이 실행될 수 있으므로 DOMPurify 로 정화한다. jsPDF/html2canvas 렌더에는
+      // 스크립트·이벤트 핸들러가 필요 없다(base64 인라인 이미지는 유지됨).
+      // DOMPurify 는 window 가 필요하므로 클라이언트에서만 동작(이 핸들러는 항상 클라이언트).
+      const wrapped = wrapHtml(html);
+      container.innerHTML =
+        typeof window !== 'undefined' ? DOMPurify.sanitize(wrapped) : wrapped;
+      host.appendChild(container);
+      document.body.appendChild(host);
 
       try {
-        await pdf.html(container, {
-          x: margin,
-          y: margin,
-          width: pageW - margin * 2,
-          windowWidth: pageW - margin * 2,
-          margin: [margin, margin, margin, margin],
-          autoPaging: 'text',
-          html2canvas: {
-            scale: 0.96,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-          },
-          callback: () => {},
+        // jsPDF.html() 은 텍스트를 jsPDF 기본(라틴) 폰트로 다시 그려 한글이 깨진다.
+        // → html2canvas-pro(최신 색 함수 지원)로 브라우저 폰트 그대로 래스터화한 뒤 페이지 높이로 잘라 넣는다.
+        const html2canvas = (await import('html2canvas-pro')).default;
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
         });
+        const pageH = pdf.internal.pageSize.getHeight();
+        const contentW = pageW - margin * 2;
+        const contentH = pageH - margin * 2;
+        const pxPerPt = canvas.width / contentW;
+        const sliceHpx = Math.max(1, Math.floor(contentH * pxPerPt));
+        const breaks = computeBreaks(container, sliceHpx, canvas.width / (container.offsetWidth || contentW), canvas.height);
+        for (let i = 0; i + 1 < breaks.length; i++) {
+          const y = breaks[i];
+          const h = Math.max(1, breaks[i + 1] - y);
+          const slice = document.createElement('canvas');
+          slice.width = canvas.width;
+          slice.height = h;
+          const sctx = slice.getContext('2d');
+          if (!sctx) throw new Error('캔버스를 만들 수 없습니다.');
+          sctx.fillStyle = '#ffffff';
+          sctx.fillRect(0, 0, slice.width, h);
+          sctx.drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
+          if (i > 0) pdf.addPage();
+          pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, contentW, h / pxPerPt);
+        }
         const blob = pdf.output('blob');
         const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         setResult({
@@ -83,7 +114,7 @@ export default function HtmlToPdfPage() {
           compressedSize: blob.size,
         });
       } finally {
-        container.remove();
+        host.remove();
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'PDF 생성에 실패했습니다.');
@@ -195,6 +226,40 @@ export default function HtmlToPdfPage() {
       </main>
     </div>
   );
+}
+
+/**
+ * 캔버스 픽셀 기준 페이지 분할 위치. 문단·표 행·이미지 등 블록이 페이지 경계에 걸치면
+ * (한 페이지보다 작은 블록에 한해) 그 블록 시작점에서 잘라 글줄이 반으로 잘리지 않게 한다.
+ */
+function computeBreaks(root: HTMLElement, pageHpx: number, pxPerCss: number, totalPx: number): number[] {
+  const base = root.getBoundingClientRect().top;
+  const blocks: Array<[number, number]> = [];
+  root.querySelectorAll<HTMLElement>('p,h1,h2,h3,h4,h5,h6,li,img,tr,pre,blockquote,figure,svg,dt,dd').forEach((n) => {
+    const r = n.getBoundingClientRect();
+    if (r.height > 0) blocks.push([(r.top - base) * pxPerCss, (r.bottom - base) * pxPerCss]);
+  });
+  const breaks = [0];
+  let y = 0;
+  while (y + 1 < totalPx) {
+    let cut = Math.min(y + pageHpx, totalPx);
+    if (cut < totalPx) {
+      for (let guard = 0; guard < 20; guard++) {
+        let moved = false;
+        for (const [top, bottom] of blocks) {
+          if (top < cut - 1 && bottom > cut + 1 && bottom - top < pageHpx * 0.9 && top > y + pageHpx * 0.3) {
+            cut = Math.floor(top);
+            moved = true;
+          }
+        }
+        if (!moved) break;
+      }
+    }
+    if (cut <= y) cut = Math.min(y + pageHpx, totalPx);
+    breaks.push(cut);
+    y = cut;
+  }
+  return breaks;
 }
 
 function wrapHtml(inner: string): string {

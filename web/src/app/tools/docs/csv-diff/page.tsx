@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 interface DiffRow {
   type: 'add' | 'remove' | 'change' | 'eq';
@@ -42,12 +43,14 @@ export default function CsvDiffPage() {
     try {
       const Papa = (await import('papaparse')).default;
       // worker: true 로 큰 파일 파싱을 별도 스레드에서 처리해 UI 블로킹을 막는다.
+      // 한국어 엑셀 CSV(CP949)도 한글이 깨지지 않도록 인코딩을 추정해 문자열로 읽은 뒤 파싱한다.
+      const [textA, textB] = await Promise.all([readTextAutoEncoding(a), readTextAutoEncoding(b)]);
       const [resA, resB] = await Promise.all([
         new Promise<string[][]>((res, rej) =>
-          Papa.parse<string[]>(a, { worker: true, complete: (r) => res(r.data), error: rej }),
+          Papa.parse<string[]>(textA, { worker: true, complete: (r) => res(r.data), error: rej }),
         ),
         new Promise<string[][]>((res, rej) =>
-          Papa.parse<string[]>(b, { worker: true, complete: (r) => res(r.data), error: rej }),
+          Papa.parse<string[]>(textB, { worker: true, complete: (r) => res(r.data), error: rej }),
         ),
       ]);
       const hA = resA[0] ?? [];

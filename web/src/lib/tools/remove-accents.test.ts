@@ -14,10 +14,13 @@ describe('removeAccents', () => {
     expect(removeAccents('hello')).toBe('hello');
     expect(removeAccents('ABC 123')).toBe('ABC 123');
   });
-  it('한글은 글자가 삭제되지 않는다(NFD 분해되지만 동등)', () => {
-    // removeAccents 는 NFD 정규화를 거치므로 한글은 분해형으로 나오지만
-    // 결합 분음 기호가 아니므로 글자 자체는 보존된다(NFC 비교 시 동일).
-    expect(removeAccents('한글').normalize('NFC')).toBe('한글');
+  it('한글은 NFC 재결합되어 그대로 보존된다', () => {
+    // NFD 분해 후 NFC 로 재결합하므로 한글은 완성형 그대로 나온다.
+    const result = removeAccents('한국 café');
+    expect(result).toBe('한국 cafe');
+    expect(result.includes('한')).toBe(true);
+    expect(result).toBe(result.normalize('NFC'));
+    expect(removeAccents('한글')).toBe('한글');
   });
   it('빈 문자열', () => {
     expect(removeAccents('')).toBe('');

@@ -62,10 +62,14 @@ export default function ChartPage() {
 
     if (type === 'pie') {
       drawPie(ctx, parsed, width, height, color);
+      // 원그래프도 다운로드 URL 을 갱신해야 이전(막대/꺾은선) 이미지가 받아지지 않는다.
+      setDownloadUrl(canvas.toDataURL('image/png'));
       return;
     }
 
-    const max = Math.max(...parsed.map((p) => p.value));
+    // 모든 값이 0 이면 max === min 이라 0 으로 나누게 되므로 최소 1 의 범위를 둔다.
+    const rawMax = Math.max(0, ...parsed.map((p) => p.value));
+    const max = rawMax === Math.min(0, ...parsed.map((p) => p.value)) ? rawMax + 1 : rawMax;
     const min = Math.min(0, ...parsed.map((p) => p.value));
     const chartW = width - padding.left - padding.right;
     const chartH = height - padding.top - padding.bottom;

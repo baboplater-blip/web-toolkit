@@ -63,7 +63,8 @@ export default function PdfNupPage() {
       const pageW = useLandscape ? a4[1] : a4[0];
       const pageH = useLandscape ? a4[0] : a4[1];
 
-      const embedded = await out.embedPdf(src);
+      // embedPdf 는 indices 생략 시 첫 페이지만 임베드하므로 전 페이지 인덱스를 명시한다.
+      const embedded = await out.embedPdf(src, src.getPageIndices());
       // 원본 페이지의 /Rotate 메타데이터 — embedPdf 는 회전을 굽지 않으므로 직접 보정.
       const srcRotations = src.getPages().map((pg) => normalizeAngle(pg.getRotation().angle));
 

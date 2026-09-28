@@ -108,7 +108,11 @@ export function recordRecent(id: string): RecentEntry[] {
 
 export function clearRecent(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(RECENT_KEY);
+  try {
+    localStorage.removeItem(RECENT_KEY);
+  } catch {
+    // 시크릿 모드 / 사이트 데이터 차단 환경 — 조용히 무시
+  }
   emit(RECENT_EVENT, []);
 }
 
@@ -139,7 +143,11 @@ export function incrementUsage(id: string): UsageStats {
 
 export function clearUsageStats(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(STATS_KEY);
+  try {
+    localStorage.removeItem(STATS_KEY);
+  } catch {
+    // 시크릿 모드 / 사이트 데이터 차단 환경 — 조용히 무시
+  }
   emit(STATS_EVENT, {});
 }
 

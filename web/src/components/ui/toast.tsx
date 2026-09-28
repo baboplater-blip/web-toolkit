@@ -21,6 +21,22 @@ type Listener = (items: ToastItem[]) => void;
 
 let queue: ToastItem[] = [];
 const listeners = new Set<Listener>();
+// id 별 자동 소멸 타이머. 같은 id 재발행 시 이전 타이머가 새 토스트를 조기 제거하지
+// 않도록 교체 전에 반드시 clear 하고, ToastHost 언마운트 시 일괄 해제한다.
+const timers = new Map<string, ReturnType<typeof setTimeout>>();
+
+function clearTimer(id: string) {
+  const t = timers.get(id);
+  if (t !== undefined) {
+    clearTimeout(t);
+    timers.delete(id);
+  }
+}
+
+function clearAllTimers() {
+  for (const t of timers.values()) clearTimeout(t);
+  timers.clear();
+}
 
 function emit() {
   for (const l of listeners) l(queue);
@@ -35,19 +51,25 @@ export function toast(
   const variant = opts.variant ?? 'info';
 
   // 같은 id 가 이미 있으면 교체 (예: 같은 채널 재연결 실패 연속 알림 억제)
+  clearTimer(id);
   queue = [...queue.filter((t) => t.id !== id), { id, message, variant, duration }];
   emit();
 
   if (duration > 0) {
-    setTimeout(() => {
-      queue = queue.filter((t) => t.id !== id);
-      emit();
-    }, duration);
+    timers.set(
+      id,
+      setTimeout(() => {
+        timers.delete(id);
+        queue = queue.filter((t) => t.id !== id);
+        emit();
+      }, duration),
+    );
   }
   return id;
 }
 
 export function dismissToast(id: string) {
+  clearTimer(id);
   queue = queue.filter((t) => t.id !== id);
   emit();
 }
@@ -72,6 +94,8 @@ export function ToastHost() {
     setItems(queue);
     return () => {
       listeners.delete(l);
+      // 마지막 호스트가 내려가면 표시 대상이 없으므로 잔여 타이머를 모두 해제.
+      if (listeners.size === 0) clearAllTimers();
     };
   }, []);
 

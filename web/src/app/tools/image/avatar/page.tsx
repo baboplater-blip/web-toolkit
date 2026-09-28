@@ -91,6 +91,12 @@ export default function AvatarCropPage() {
     }
   }
 
+  // 이미지 로드 직후 현재 선택된 크기로 바로 미리보기 생성(크기 버튼을 누르지 않아도 결과가 보이도록).
+  useEffect(() => {
+    if (bitmap) void render(size);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bitmap]);
+
   function selectSize(target: AvatarSize) {
     setSize(target);
     void render(target);

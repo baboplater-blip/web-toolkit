@@ -31,7 +31,7 @@ const TEMPLATES: Template[] = [
       { key: 'range', label: '찾을 범위', ph: 'Sheet2!A:C' },
       { key: 'col', label: '가져올 열 번호', ph: '3' },
     ],
-    build: (v) => `=VLOOKUP(${T(v, 'key', 'A2')}, ${T(v, 'range', 'Sheet2!A:C')}, ${T(v, 'col', '2')}, FALSE)`,
+    build: (v) => `=VLOOKUP(${T(v, 'key', 'A2')}, ${T(v, 'range', 'Sheet2!A:C')}, ${T(v, 'col', '3')}, FALSE)`,
   },
   {
     id: 'indexmatch',

@@ -80,6 +80,11 @@ export interface PageTextLine {
   avgFontHeight: number;
   /** 라인 시작 y (pdf 좌표계) */
   y: number;
+  /**
+   * 큰 가로 간격(대략 글자 높이 이상)으로 나눈 셀 텍스트 — 표 추출용.
+   * 라인 전체가 한 덩어리면 길이 1.
+   */
+  cells: string[];
 }
 
 /**
@@ -90,7 +95,7 @@ export async function extractPageLines(page: PDFPageProxy): Promise<PageTextLine
   const items = (content.items as TextItem[]).filter((i) => 'str' in i && i.str !== undefined);
 
   // y 좌표 기준 라인 그룹화 (tolerance 2pt)
-  type Buf = { y: number; chunks: Array<{ x: number; text: string; h: number }> };
+  type Buf = { y: number; chunks: Array<{ x: number; text: string; h: number; w: number }> };
   const lines: Buf[] = [];
 
   for (const it of items) {
@@ -100,11 +105,12 @@ export async function extractPageLines(page: PDFPageProxy): Promise<PageTextLine
     const x = t[4];
     const y = t[5];
     const h = Math.abs(it.height ?? Math.hypot(t[2], t[3]) ?? 10);
+    const w = typeof it.width === 'number' && it.width > 0 ? it.width : estimateWidth(it.str, h);
     const existing = lines.find((l) => Math.abs(l.y - y) < 2);
     if (existing) {
-      existing.chunks.push({ x, text: it.str, h });
+      existing.chunks.push({ x, text: it.str, h, w });
     } else {
-      lines.push({ y, chunks: [{ x, text: it.str, h }] });
+      lines.push({ y, chunks: [{ x, text: it.str, h, w }] });
     }
   }
 
@@ -115,8 +121,35 @@ export async function extractPageLines(page: PDFPageProxy): Promise<PageTextLine
     l.chunks.sort((a, b) => a.x - b.x);
     const text = mergeChunks(l.chunks);
     const avgH = l.chunks.reduce((s, c) => s + c.h, 0) / Math.max(1, l.chunks.length);
-    return { text, avgFontHeight: avgH, y: l.y };
+    return { text, avgFontHeight: avgH, y: l.y, cells: splitCells(l.chunks) };
   });
+}
+
+/** 청크 사이 가로 간격이 글자 높이 이상이면 다른 셀로 본다(표의 열 경계 추정). */
+function splitCells(chunks: Array<{ x: number; text: string; h: number; w: number }>): string[] {
+  const cells: string[] = [];
+  let cur: typeof chunks = [];
+  let prevEnd: number | null = null;
+  let prevH = 10;
+  let forceBreak = false;
+  for (const c of chunks) {
+    const gapLimit = Math.max(4, (c.h || prevH) * 1.0);
+    // pdf.js 는 단어 사이 간격을 폭이 있는 공백 항목(h=0)으로 넣는다 — 넓은 공백은 열 경계
+    if (c.text.trim() === '') {
+      if (c.w > Math.max(4, prevH * 1.0)) forceBreak = true;
+      continue;
+    }
+    if (cur.length && (forceBreak || (prevEnd !== null && c.x - prevEnd > gapLimit))) {
+      cells.push(mergeChunks(cur).trim());
+      cur = [];
+    }
+    forceBreak = false;
+    cur.push(c);
+    prevEnd = Math.max(prevEnd ?? -Infinity, c.x + c.w);
+    prevH = c.h || prevH;
+  }
+  if (cur.length) cells.push(mergeChunks(cur).trim());
+  return cells;
 }
 
 function mergeChunks(chunks: Array<{ x: number; text: string; h: number }>): string {
@@ -317,10 +350,15 @@ export async function extractImagesFromPdf(
         fn !== OPS.paintImageMaskXObject
       ) continue;
       const args = opList.argsArray[j];
-      const name = args?.[0];
-      if (typeof name !== 'string') continue;
+      const ref = args?.[0];
       try {
-        const imgObj = await getImageObject(page, name);
+        // paintImageXObject 는 객체 이름(string), 인라인/마스크 이미지는 이미지 객체 자체가 인자로 온다.
+        const imgObj =
+          typeof ref === 'string'
+            ? await getImageObject(page, ref)
+            : ref && typeof ref === 'object'
+              ? (ref as PdfImageObject)
+              : null;
         if (!imgObj) continue;
         const png = await imageObjectToPng(imgObj);
         if (png) {
@@ -352,22 +390,31 @@ interface PdfImageObject {
 }
 
 function getImageObject(page: PDFPageProxy, name: string): Promise<PdfImageObject | null> {
+  // pdf.js 는 여러 페이지에서 공유되는 이미지를 commonObjs(이름 'g_' 접두)에 둔다.
+  // objs.get(name) 동기 호출은 아직 resolve 되지 않은 객체에서 예외를 던지므로
+  // 콜백형 get 으로 resolve 를 기다린다(일정 시간 내 안 오면 건너뜀).
+  const store = (name.startsWith('g_') ? page.commonObjs : page.objs) as unknown as {
+    get: (id: string, cb: (data: unknown) => void) => unknown;
+  };
   return new Promise((resolve) => {
-    const tryGet = () => {
-      try {
-        const obj = page.objs.get(name);
-        if (obj) resolve(obj as PdfImageObject);
-        else resolve(null);
-      } catch {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
         resolve(null);
       }
-    };
-    // 일부 버전은 동기/비동기 모두 지원
-    if (typeof (page.objs as { has?: (k: string) => boolean }).has === 'function' && (page.objs as { has: (k: string) => boolean }).has(name)) {
-      tryGet();
-    } else {
-      // wait — fallback
-      setTimeout(tryGet, 0);
+    }, 10000);
+    try {
+      store.get(name, (data) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve((data as PdfImageObject | null) ?? null);
+      });
+    } catch {
+      settled = true;
+      clearTimeout(timer);
+      resolve(null);
     }
   });
 }
@@ -480,15 +527,43 @@ export async function getPdfOutline(pdf: PDFDocumentProxy): Promise<OutlineNode[
 
 /** 페이지 폰트 수집 — operatorList 의 setFont 호출 추적 */
 export async function collectFonts(pdf: PDFDocumentProxy, maxPages = 5): Promise<string[]> {
+  const pdfjs = await loadPdfJs();
   const fontNames = new Set<string>();
   const limit = Math.min(pdf.numPages, maxPages);
   for (let i = 1; i <= limit; i++) {
     const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const styles = (content.styles as Record<string, { fontFamily?: string }>) ?? {};
-    for (const k of Object.keys(styles)) {
-      const fam = styles[k]?.fontFamily;
-      if (fam) fontNames.add(fam);
+    // 실제 폰트 이름(예: Helvetica, ABCDEF+NanumGothic)은 setFont 연산자의 폰트 객체(commonObjs)에 있다.
+    // textContent.styles.fontFamily 는 대체 계열(sans-serif 등)만 주므로 폴백으로만 쓴다.
+    const opList = await page.getOperatorList();
+    const loaded = new Set<string>();
+    for (let j = 0; j < opList.fnArray.length; j++) {
+      if (opList.fnArray[j] !== pdfjs.OPS.setFont) continue;
+      const id = opList.argsArray[j]?.[0];
+      if (typeof id === 'string') loaded.add(id);
+    }
+    for (const id of loaded) {
+      const font = await new Promise<{ name?: string } | null>((resolve) => {
+        const t = setTimeout(() => resolve(null), 3000);
+        try {
+          (page.commonObjs as unknown as { get: (k: string, cb: (d: unknown) => void) => void }).get(id, (d) => {
+            clearTimeout(t);
+            resolve((d as { name?: string } | null) ?? null);
+          });
+        } catch {
+          clearTimeout(t);
+          resolve(null);
+        }
+      });
+      const name = font?.name?.replace(/^[A-Z]{6}\+/, '');
+      if (name) fontNames.add(name);
+    }
+    if (loaded.size === 0) {
+      const content = await page.getTextContent();
+      const styles = (content.styles as Record<string, { fontFamily?: string }>) ?? {};
+      for (const k of Object.keys(styles)) {
+        const fam = styles[k]?.fontFamily;
+        if (fam) fontNames.add(fam);
+      }
     }
     page.cleanup();
   }

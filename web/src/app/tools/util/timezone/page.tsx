@@ -50,6 +50,16 @@ function getTimeZones(): string[] {
   return FALLBACK_ZONES;
 }
 
+/** Intl 이 인식하는 시간대인지 확인 */
+function isValidZone(zone: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: zone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** 사용자의 현재 시간대를 안전하게 얻는다. */
 function getLocalZone(): string {
   try {
@@ -149,7 +159,14 @@ function nowLocalInputValue(): string {
 }
 
 export default function TimezonePage() {
-  const zones = useMemo(() => getTimeZones(), []);
+  // Chrome 의 Intl.supportedValuesOf('timeZone') 은 'UTC' 를 포함하지 않는다.
+  // 기본값 UTC 가 목록에 없어 "유효한 시간대를 선택하세요" 오류가 뜨던 문제 → 항상 포함.
+  const zones = useMemo(() => {
+    const list = getTimeZones();
+    return list.includes('UTC') ? list : ['UTC', ...list];
+  }, []);
+  // 로컬 시간대 이름이 목록의 표기와 다를 수 있어(예: Asia/Calcutta) 선택값을 옵션에 보장
+  const optionsFor = (current: string) => (zones.includes(current) ? zones : [current, ...zones]);
   // 서버 TZ·시각과 클라이언트가 달라 하이드레이션 불일치가 나므로
   // 결정적 기본값(UTC·빈 입력)으로 시작하고 마운트 후 로컬값을 주입한다.
   const [fromZone, setFromZone] = useState<string>('UTC');
@@ -166,7 +183,7 @@ export default function TimezonePage() {
 
   const result = useMemo(() => {
     if (!dateTime) return null;
-    if (!zones.includes(fromZone) || !zones.includes(toZone)) return null;
+    if (!isValidZone(fromZone) || !isValidZone(toZone)) return null;
     const utcMillis = wallTimeToUtc(dateTime, fromZone);
     if (utcMillis === null || !Number.isFinite(utcMillis)) return null;
 
@@ -178,7 +195,7 @@ export default function TimezonePage() {
       toOffset,
       diffMinutes: toOffset - fromOffset,
     };
-  }, [dateTime, fromZone, toZone, zones]);
+  }, [dateTime, fromZone, toZone]);
 
   async function copyResult() {
     if (!result) return;
@@ -229,7 +246,7 @@ export default function TimezonePage() {
               className="h-8 w-full rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               aria-label="출발 시간대"
             >
-              {zones.map((zone) => (
+              {optionsFor(fromZone).map((zone) => (
                 <option key={zone} value={zone}>
                   {zone}
                 </option>
@@ -245,7 +262,7 @@ export default function TimezonePage() {
               className="h-8 w-full rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               aria-label="도착 시간대"
             >
-              {zones.map((zone) => (
+              {optionsFor(toZone).map((zone) => (
                 <option key={zone} value={zone}>
                   {zone}
                 </option>

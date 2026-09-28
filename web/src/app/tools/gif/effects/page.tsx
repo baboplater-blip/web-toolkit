@@ -82,7 +82,10 @@ export default function GifEffectsPage() {
   ): Promise<number> => {
     let fps = 0;
     const logHandler = (e: { message: string }) => {
-      const m = e.message.match(/(\d+(?:\.\d+)?)\s*fps/);
+      // 스트림 정보 줄("... 10 fps, 10 tbr ...")만 사용한다. 진행 로그("frame=   30 fps=0.0")의
+      // 프레임 수가 fps 로 오인되면 출력 프레임이 불필요하게 복제된다.
+      if (fps > 0) return;
+      const m = e.message.match(/(\d+(?:\.\d+)?)\s*fps,/);
       if (m) fps = Number(m[1]);
     };
     ffmpeg.on('log', logHandler);

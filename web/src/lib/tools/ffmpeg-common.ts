@@ -89,7 +89,41 @@ export async function readOutput(
   const data = await ffmpeg.readFile(name);
   // data 는 Uint8Array | string. Uint8Array 만 처리.
   const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+  // ffmpeg.exec 는 실패해도 throw 하지 않고 종료 코드만 돌려준다 → 빈 출력은
+  // 여기서 막아 0바이트 파일이 "성공" 으로 다운로드되는 일을 없앤다.
+  if (!bytes || bytes.length === 0) {
+    throw new Error('출력 파일이 비어 있습니다. 입력 형식을 확인해주세요.');
+  }
   return new Blob([bytes as unknown as BlobPart], { type: mimeType });
+}
+
+/**
+ * MEMFS 에 올라간 미디어에 오디오 스트림이 있는지 확인한다.
+ * `ffmpeg -i` 만 실행(출력 없음 → 종료 코드 1 은 정상)하고 로그의 스트림 목록을 본다.
+ */
+export async function hasAudioStream(ffmpeg: FFmpeg, name: string): Promise<boolean> {
+  let found = false;
+  const onLog = ({ message }: { message: string }) => {
+    if (/Stream #\d+:\d+.*: Audio:/.test(message)) found = true;
+  };
+  ffmpeg.on('log', onLog);
+  try {
+    await ffmpeg.exec(['-hide_banner', '-i', name]);
+  } catch {
+    /* 출력 파일이 없어 실패하는 게 정상 */
+  } finally {
+    ffmpeg.off('log', onLog);
+  }
+  return found;
+}
+
+/**
+ * MP4 로 출력할 때의 오디오 코덱 인자. mp4/mov 계열 입력(대개 AAC)은 그대로 복사하고,
+ * webm(Vorbis/Opus)·avi·mkv 등은 MP4 에서 재생이 안 되는 경우가 많아 AAC 로 변환한다.
+ */
+export function mp4AudioArgs(inputName: string): string[] {
+  const ext = (inputName.split('.').pop() ?? '').toLowerCase();
+  return ['mp4', 'm4v', 'mov'].includes(ext) ? ['-c:a', 'copy'] : ['-c:a', 'aac', '-b:a', '128k'];
 }
 
 export async function cleanupFiles(ffmpeg: FFmpeg, names: string[]): Promise<void> {

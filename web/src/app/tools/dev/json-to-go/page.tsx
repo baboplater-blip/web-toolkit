@@ -62,6 +62,18 @@ function deriveGoType(
   if (Array.isArray(value)) {
     if (value.length === 0) return '[]interface{}';
     const elementName = suggestedName.endsWith('s') ? suggestedName.slice(0, -1) : suggestedName;
+    // 객체 배열은 요소마다 struct 를 만들면(Item, Item2…) 타입이 달라져 interface{} 로
+    // 떨어지므로, 모든 요소의 키를 합친 하나의 struct 로 추론한다.
+    const objects = value.filter((item) => item !== null);
+    if (objects.length > 0 && objects.every(isPlainObject)) {
+      const merged: { [key: string]: JsonValue } = {};
+      for (const obj of objects as Array<{ [key: string]: JsonValue }>) {
+        for (const [key, fieldValue] of Object.entries(obj)) {
+          if (!(key in merged) || merged[key] === null) merged[key] = fieldValue;
+        }
+      }
+      return `[]${deriveGoType(merged, elementName || 'Item', structs, usedNames)}`;
+    }
     const elementTypes = value.map((item) =>
       deriveGoType(item, elementName || 'Item', structs, usedNames),
     );

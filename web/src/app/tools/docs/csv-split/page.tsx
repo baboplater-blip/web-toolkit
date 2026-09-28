@@ -7,6 +7,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { triggerDownload, stripExtension } from '@/lib/tools/file-utils';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 /** 메모리 보호: 파일 전체를 텍스트로 읽으므로 과대 파일은 사전 거부. */
 const MAX_BYTES = 25 * 1024 * 1024; // 25MB
@@ -22,7 +23,7 @@ interface ParsedCsv {
 /** CSV 파일을 헤더 + 데이터 행으로 파싱한다(header 없이 2차원 배열). */
 async function parseCsv(file: File): Promise<ParsedCsv> {
   const Papa = (await import('papaparse')).default;
-  const text = await file.text();
+  const text = await readTextAutoEncoding(file);
   return new Promise<ParsedCsv>((resolve, reject) => {
     Papa.parse<string[]>(text, {
       skipEmptyLines: true,
@@ -128,7 +129,8 @@ export default function CsvSplitPage() {
         const slice = rows.slice(start, start + chunkRows);
         // 각 청크는 헤더를 유지한다.
         const csv = Papa.unparse([headers, ...slice]);
-        zip.file(`part-${part + 1}.csv`, csv);
+        // BOM 을 붙여야 엑셀에서 열 때 한글이 깨지지 않는다.
+        zip.file(`part-${part + 1}.csv`, '﻿' + csv);
         setProgress(Math.round(((part + 1) / total) * 90));
       }
 

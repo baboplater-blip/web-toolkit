@@ -120,6 +120,8 @@ export default function VideoContactSheetPage() {
     const inputName = `input.${inExt}`;
     const created: string[] = [inputName];
     const bitmaps: ImageBitmap[] = [];
+    // resetFFmpeg 로 인스턴스를 폐기하면 MEMFS 도 함께 사라지므로 finally 의 정리를 건너뛴다.
+    let didReset = false;
 
     try {
       const ffmpeg = await getFFmpeg();
@@ -192,16 +194,23 @@ export default function VideoContactSheetPage() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : '썸네일 시트 생성에 실패했습니다.';
       const friendly = explainFfmpegError(msg, file.size);
-      if (friendly !== msg) resetFFmpeg();
+      if (friendly !== msg) {
+        resetFFmpeg();
+        didReset = true;
+      }
       setError(friendly);
     } finally {
       for (const bmp of bitmaps) bmp.close();
       // 입력 파일 정리 (프레임은 루프 내에서 이미 삭제).
-      try {
-        const ffmpeg = await getFFmpeg();
-        await cleanupFiles(ffmpeg, created);
-      } catch {
-        /* 정리 실패는 무시 */
+      // 단 reset 이 일어났다면 파일도 인스턴스와 함께 사라졌으므로,
+      // 정리만을 위해 ~31MB 코어를 다시 로드하지 않는다.
+      if (!didReset) {
+        try {
+          const ffmpeg = await getFFmpeg();
+          await cleanupFiles(ffmpeg, created);
+        } catch {
+          /* 정리 실패는 무시 */
+        }
       }
       setProcessing(false);
       setProgressText('');

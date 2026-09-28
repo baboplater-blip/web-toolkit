@@ -16,6 +16,7 @@ import {
   cleanupFiles,
   getFFmpeg,
   readOutput,
+  resetFFmpeg,
   writeFile,
 } from '@/lib/tools/ffmpeg-common';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -99,37 +100,43 @@ export default function VideoReversePage() {
     try {
       setStage('FFmpeg 로딩');
       const ffmpeg = await getFFmpeg();
-      setStage('파일 준비');
-      await writeFile(ffmpeg, inputName, file);
-
       const onProgress = ({ progress: p }: { progress: number }) => {
         setProgress(Math.min(99, Math.round(p * 100)));
       };
       ffmpeg.on('progress', onProgress);
-
-      setStage('역방향 처리');
-      // 오디오 유무를 사전 판단할 수 없으므로, 먼저 오디오 포함으로 시도하고
-      // 실패(무음 영상의 areverse 오류) 시 영상만 역재생으로 재시도한다.
       try {
-        await ffmpeg.exec(buildArgs(inputName, outputName, true));
-      } catch {
-        setStage('역방향 처리 (무음)');
-        await ffmpeg.exec(buildArgs(inputName, outputName, false));
+        setStage('파일 준비');
+        await writeFile(ffmpeg, inputName, file);
+
+        setStage('역방향 처리');
+        // 오디오 유무를 사전 판단할 수 없으므로, 먼저 오디오 포함으로 시도하고
+        // 실패(무음 영상의 areverse 오류) 시 영상만 역재생으로 재시도한다.
+        try {
+          await ffmpeg.exec(buildArgs(inputName, outputName, true));
+        } catch {
+          setStage('역방향 처리 (무음)');
+          await ffmpeg.exec(buildArgs(inputName, outputName, false));
+        }
+
+        const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
+        const url = URL.createObjectURL(blob);
+
+        const base = file.name.replace(/\.[^.]+$/, '');
+        setResult({ url, blob, size: blob.size, name: `${base}-reversed.mp4` });
+        setProgress(100);
+        setStage('완료');
+      } finally {
+        // exec 실패 시에도 진행률 리스너·MEMFS 잔류 파일이 새지 않게 finally 에서 정리.
+        ffmpeg.off('progress', onProgress);
+        await cleanupFiles(ffmpeg, [inputName, outputName]);
       }
-      ffmpeg.off('progress', onProgress);
-
-      const blob = await readOutput(ffmpeg, outputName, 'video/mp4');
-      const url = URL.createObjectURL(blob);
-
-      const base = file.name.replace(/\.[^.]+$/, '');
-      setResult({ url, blob, size: blob.size, name: `${base}-reversed.mp4` });
-      setProgress(100);
-      setStage('완료');
-
-      await cleanupFiles(ffmpeg, [inputName, outputName]);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '역방향 처리에 실패했습니다.';
-      setError(file ? explainFfmpegError(msg, file.size) : msg);
+      const friendly = file ? explainFfmpegError(msg, file.size) : msg;
+      // explainFfmpegError 가 메시지를 바꿨다면 OOM/abort 패턴 — 싱글턴이
+      // 망가졌을 수 있으니 폐기해 다음 도구가 깨끗하게 재로드하도록 한다.
+      if (friendly !== msg) resetFFmpeg();
+      setError(friendly);
     } finally {
       setBusy(false);
     }

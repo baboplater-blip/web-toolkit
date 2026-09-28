@@ -6,6 +6,7 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button } from '@/components/ui/button';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 /** 메모리 보호: 파일 전체를 텍스트로 읽으므로 과대 파일은 사전 거부. */
 const MAX_BYTES = 25 * 1024 * 1024; // 25MB
@@ -20,7 +21,7 @@ interface ParsedFile {
 /** 한 CSV 파일을 header:true 로 파싱해 헤더 순서와 레코드를 얻는다. */
 async function parseCsvFile(file: File): Promise<ParsedFile> {
   const Papa = (await import('papaparse')).default;
-  const text = await file.text();
+  const text = await readTextAutoEncoding(file);
   return new Promise<ParsedFile>((resolve, reject) => {
     Papa.parse<CsvRecord>(text, {
       header: true,
@@ -136,7 +137,8 @@ export default function CsvMergePage() {
   function download() {
     const csv = resultCsvRef.current;
     if (!csv) return;
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    // BOM 을 붙여야 엑셀에서 열 때 한글이 깨지지 않는다.
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
     triggerDownload(blob, 'merged.csv');
   }
 

@@ -57,6 +57,8 @@ export default function BarcodePage() {
         });
         setError(null);
       } catch (err) {
+        // 잘못된 입력이면 직전(유효한) 바코드가 미리보기·다운로드에 남지 않도록 비운다
+        svgRef.current?.replaceChildren();
         setError(
           err instanceof Error ? err.message : `${format} 포맷에 맞지 않는 값입니다.`,
         );
@@ -70,14 +72,14 @@ export default function BarcodePage() {
   };
 
   const downloadSvg = () => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || error || !svgRef.current.hasChildNodes()) return;
     const svgData = new XMLSerializer().serializeToString(svgRef.current);
     const blob = new Blob([svgData], { type: 'image/svg+xml' });
     triggerDownload(blob, `barcode-${format}.svg`);
   };
 
   const downloadPng = async () => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || error || !svgRef.current.hasChildNodes()) return;
     const svgData = new XMLSerializer().serializeToString(svgRef.current);
     const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(svgBlob);
@@ -260,11 +262,11 @@ export default function BarcodePage() {
           </div>
           <Separator />
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" className="w-full" onClick={downloadSvg}>
+            <Button variant="outline" className="w-full" onClick={downloadSvg} disabled={!!error || !text.trim()}>
               <Download className="h-4 w-4" />
               SVG 다운로드
             </Button>
-            <Button className="w-full" onClick={downloadPng}>
+            <Button className="w-full" onClick={downloadPng} disabled={!!error || !text.trim()}>
               <Download className="h-4 w-4" />
               PNG 다운로드
             </Button>

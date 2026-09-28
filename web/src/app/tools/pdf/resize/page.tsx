@@ -59,7 +59,8 @@ export default function PdfResizePage() {
       const targetH = orientation === 'landscape' ? baseW : baseH;
 
       const total = src.getPageCount();
-      const embedded = await out.embedPdf(src);
+      // embedPdf 는 indices 생략 시 첫 페이지만 임베드하므로 전 페이지 인덱스를 명시한다.
+      const embedded = await out.embedPdf(src, src.getPageIndices());
 
       for (let i = 0; i < total; i++) {
         const emb = embedded[i];

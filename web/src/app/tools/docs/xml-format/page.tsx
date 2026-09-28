@@ -24,7 +24,14 @@ function parseXml(source: string): Document | string {
   const doc = parser.parseFromString(source, 'application/xml');
   const parserError = doc.getElementsByTagName('parsererror');
   if (parserError.length > 0) {
-    const detail = parserError[0].textContent?.trim();
+    // Chrome 은 "This page contains the following errors: … Below is a rendering…" 로 감싸므로
+    // 실제 오류 줄("error on line N at column M: …")만 뽑는다.
+    const raw = parserError[0].textContent?.trim() ?? '';
+    const lineMatch = raw.match(/error on line \d+ at column \d+:[^\n]*/i);
+    const detail = (lineMatch ? lineMatch[0] : raw)
+      .replace(/Below is a rendering of the page up to the first error\.?/i, '')
+      .replace(/^This page contains the following errors:/i, '')
+      .trim();
     return detail && detail.length > 0
       ? `XML 파싱 오류: ${detail}`
       : 'XML 파싱 오류: 올바른 XML 형식이 아닙니다.';

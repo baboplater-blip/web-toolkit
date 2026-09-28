@@ -74,7 +74,8 @@ function analyze(md: string): Stats {
   // 코드 블록 안 내용은 통계에서 제외하기 위해 일단 제거
   const noCodeBlocks = md.replace(/```[\s\S]*?```/g, '');
   const inlineCode = countMatches(noCodeBlocks, /(?<!`)`[^`\n]+`(?!`)/g);
-  const links = countMatches(noCodeBlocks, /\[[^\]]+\]\([^)]+\)/g);
+  // 이미지 `![alt](src)` 는 링크로 중복 집계하지 않는다.
+  const links = countMatches(noCodeBlocks, /(?<!!)\[[^\]]+\]\([^)]+\)/g);
   const images = countMatches(noCodeBlocks, /!\[[^\]]*\]\([^)]+\)/g);
   const lists = countMatches(md, /^\s*[-*+]\s+/gm) + countMatches(md, /^\s*\d+\.\s+/gm);
   const tables = countMatches(md, /^\s*\|[^\n]*\|\s*$/gm);

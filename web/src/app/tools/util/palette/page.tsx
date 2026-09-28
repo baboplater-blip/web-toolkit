@@ -88,7 +88,8 @@ function extractPalette(
   }
 
   const total = pixels.length;
-  const swatches: Swatch[] = buckets
+  const merged = new Map<string, Swatch>();
+  buckets
     .filter((b) => b.length > 0)
     .map((b) => {
       let r = 0;
@@ -111,9 +112,17 @@ function extractPalette(
         ratio: n / total,
       };
     })
-    .sort((a, b) => b.count - a.count);
+    // 중앙값 분할은 단색 영역이 넓으면 같은 색 버킷을 여러 개 만든다 → 같은 색은 하나로 합친다
+    // (같은 색이 여러 번 나열되고 React key 가 중복되던 문제)
+    .forEach((s) => {
+      const prev = merged.get(s.hex);
+      if (prev) {
+        prev.count += s.count;
+        prev.ratio = prev.count / total;
+      } else merged.set(s.hex, s);
+    });
 
-  return swatches;
+  return [...merged.values()].sort((a, b) => b.count - a.count);
 }
 
 export default function PalettePage() {

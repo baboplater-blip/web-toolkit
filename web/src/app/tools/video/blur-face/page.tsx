@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Download, Loader2, ScanFace, Square } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -62,6 +62,25 @@ export default function VideoBlurFacePage() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stopRef = useRef<(() => void) | null>(null);
+  const abortRef = useRef<(() => void) | null>(null);
+  const mountedRef = useRef(true);
+  const resultUrlRef = useRef<string | null>(null);
+
+  // 최신 결과 URL 을 ref 로 추적 (언마운트 시 revoke 용)
+  useEffect(() => {
+    resultUrlRef.current = result?.url ?? null;
+  }, [result]);
+
+  // 언마운트 시: 진행 중 처리 중단 + 미디어 자원(비디오·레코더·감지기·AudioContext) 해제 + 결과 URL revoke
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      stopRef.current?.();
+      abortRef.current?.();
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current);
+    };
+  }, []);
 
   function onFiles(files: File[]) {
     const f = files[0];
@@ -91,6 +110,7 @@ export default function VideoBlurFacePage() {
     let audioCtx: AudioContext | null = null;
     let recorder: MediaRecorder | null = null;
     let stopped = false;
+    let allTracks: MediaStreamTrack[] = [];
 
     const cleanup = () => {
       detector?.close();
@@ -99,6 +119,42 @@ export default function VideoBlurFacePage() {
       } catch {
         /* noop */
       }
+      URL.revokeObjectURL(objectUrl);
+    };
+
+    // 언마운트 시 즉시 전체 해제 (닫은 자원은 null 처리해 finally 의 cleanup 과 이중 close 방지)
+    abortRef.current = () => {
+      stopped = true;
+      try {
+        if (recorder && recorder.state !== 'inactive') recorder.stop();
+      } catch {
+        /* noop */
+      }
+      try {
+        video.pause();
+      } catch {
+        /* noop */
+      }
+      video.src = '';
+      allTracks.forEach((t) => {
+        try {
+          t.stop();
+        } catch {
+          /* noop */
+        }
+      });
+      try {
+        detector?.close();
+      } catch {
+        /* noop */
+      }
+      detector = null;
+      try {
+        audioCtx?.close();
+      } catch {
+        /* noop */
+      }
+      audioCtx = null;
       URL.revokeObjectURL(objectUrl);
     };
 
@@ -135,6 +191,8 @@ export default function VideoBlurFacePage() {
       } catch {
         /* 오디오 없는 영상이거나 미지원 — 영상만 */
       }
+
+      allTracks = tracks;
 
       const outStream = new MediaStream(tracks);
       const mime = pickMime();
@@ -220,15 +278,18 @@ export default function VideoBlurFacePage() {
 
       if (recorder.state !== 'inactive') recorder.stop();
       const blob = await done;
-      const url = URL.createObjectURL(blob);
-      setResult({ url, size: blob.size });
-      setStatus(stopped ? '중단됨 (지금까지 분량 저장)' : '완료');
+      if (mountedRef.current) {
+        const url = URL.createObjectURL(blob);
+        setResult({ url, size: blob.size });
+        setStatus(stopped ? '중단됨 (지금까지 분량 저장)' : '완료');
+      }
     } catch (e) {
-      setError(e instanceof Error ? e.message : '동영상 처리 실패');
+      if (mountedRef.current) setError(e instanceof Error ? e.message : '동영상 처리 실패');
     } finally {
       stopRef.current = null;
+      abortRef.current = null;
       cleanup();
-      setProcessing(false);
+      if (mountedRef.current) setProcessing(false);
     }
   }
 

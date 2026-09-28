@@ -6,7 +6,10 @@
 // 결합 분음 기호 범위 U+0300–U+036F.
 const COMBINING_MARKS = /[̀-ͯ]/g;
 
-/** 분해 정규화(NFD) 후 결합 분음 기호를 제거한다. café → cafe */
+/**
+ * 분해 정규화(NFD) 후 결합 분음 기호를 제거하고 NFC 로 재결합한다. café → cafe
+ * (NFC 재결합이 없으면 한글이 분해된 자모 형태로 남아 문자열 비교가 깨진다.)
+ */
 export function removeAccents(value: string): string {
-  return value.normalize('NFD').replace(COMBINING_MARKS, '');
+  return value.normalize('NFD').replace(COMBINING_MARKS, '').normalize('NFC');
 }

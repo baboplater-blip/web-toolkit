@@ -19,11 +19,14 @@ import { cn } from '@/lib/utils';
 
 const NEW_BADGE_DAYS = 14;
 
-function isRecentlyAdded(addedAt: string | undefined): boolean {
+function isRecentlyAdded(addedAt: string | undefined, now: number | null): boolean {
+  // now 는 마운트 후에만 채워진다 — SSR/초기 렌더에서 Date.now() 를 쓰면
+  // 정적 HTML 과 하이드레이션 결과가 어긋날 수 있다(NEW 배지 14일 경계).
+  if (now === null) return false;
   if (!addedAt) return false;
   const t = Date.parse(addedAt);
   if (Number.isNaN(t)) return false;
-  const days = (Date.now() - t) / 86_400_000;
+  const days = (now - t) / 86_400_000;
   return days >= 0 && days < NEW_BADGE_DAYS;
 }
 
@@ -42,6 +45,13 @@ export function ToolNavigation() {
   const menuRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const filterRef = useRef<HTMLInputElement>(null);
+  // 초기 렌더는 결정적(NEW 배지 없음), 마운트 후 현재 시각 주입
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    // 마운트 후 현재 시각 주입(하이드레이션 안전). 의도된 1회 주입.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(Date.now());
+  }, []);
 
   // 메뉴 외부 클릭 + Esc 키로 닫기
   useEffect(() => {
@@ -153,7 +163,7 @@ export function ToolNavigation() {
             <p className="text-[10px] text-muted-foreground">이전</p>
             <p className="truncate font-medium flex items-center gap-1">
               <span className="truncate">{prev ? prev.title : '—'}</span>
-              {prev && isRecentlyAdded(prev.addedAt) && (
+              {prev && isRecentlyAdded(prev.addedAt, now) && (
                 <Sparkles
                   className="h-2.5 w-2.5 shrink-0 text-emerald-600 dark:text-emerald-400"
                   aria-label="NEW"
@@ -213,7 +223,7 @@ export function ToolNavigation() {
                   </li>
                 )}
                 {filteredSiblings.map((t) => {
-                  const isNew = isRecentlyAdded(t.addedAt);
+                  const isNew = isRecentlyAdded(t.addedAt, now);
                   return (
                     <li key={t.id}>
                       <a
@@ -270,7 +280,7 @@ export function ToolNavigation() {
           <div className="min-w-0 flex-1 text-right">
             <p className="text-[10px] text-muted-foreground">다음</p>
             <p className="truncate font-medium flex items-center justify-end gap-1">
-              {next && isRecentlyAdded(next.addedAt) && (
+              {next && isRecentlyAdded(next.addedAt, now) && (
                 <Sparkles
                   className="h-2.5 w-2.5 shrink-0 text-emerald-600 dark:text-emerald-400"
                   aria-label="NEW"

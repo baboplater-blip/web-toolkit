@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check, Copy, Download, FileCode } from 'lucide-react';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { triggerDownload } from '@/lib/tools/file-utils';
@@ -115,15 +115,23 @@ function htmlToMarkdown(html: string): string {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const markdown = Array.from(doc.body.childNodes).map(nodeToMarkdown).join('');
   // 과도한 빈 줄을 최대 2개로 정리하고 양끝 공백을 제거한다.
-  return markdown.replace(/\n{3,}/g, '\n\n').trim();
+  // 블록 사이 공백 텍스트 노드가 남긴 '공백만 있는 줄'을 먼저 비운다.
+  return markdown.replace(/^[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 export default function HtmlToMarkdownPage() {
   const [input, setInput] = useState(SAMPLE_HTML);
   const [copied, setCopied] = useState(false);
 
-  // 초기 렌더는 빈 문자열로 결정적이며, 입력이 있을 때만 DOMParser 가 실행된다.
-  const output = useMemo(() => (input.trim() ? htmlToMarkdown(input) : ''), [input]);
+  // DOMParser 는 브라우저 전용이라 SSR 결과('')와 클라이언트 첫 렌더가 달라지면 하이드레이션 불일치로
+  // 버튼 disabled 속성이 갱신되지 않는다. 마운트 후에만 변환해 초기 렌더를 결정적으로 유지한다.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 감지(하이드레이션 안전)
+  useEffect(() => setMounted(true), []);
+  const output = useMemo(
+    () => (mounted && input.trim() ? htmlToMarkdown(input) : ''),
+    [input, mounted],
+  );
 
   const reset = () => {
     setInput('');

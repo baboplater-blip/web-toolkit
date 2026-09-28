@@ -14,7 +14,8 @@ import { Separator } from '@/components/ui/separator';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import {
   canvasToBlob,
-  detectFormatFromFile,
+  defaultOutputFormat,
+  supportsAvifEncode,
   formatExtension,
   loadImageFile,
   type ImageFormat,
@@ -47,6 +48,11 @@ export default function ImageCropPage() {
   const [box, setBox] = useState<CropBox | null>(null);
   const [aspectPreset, setAspectPreset] = useState<AspectPreset>('free');
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
+  // 캔버스 AVIF 인코딩 미지원 브라우저에서는 AVIF 버튼을 비활성화한다.
+  const [avifSupported, setAvifSupported] = useState<boolean | null>(null);
+  useEffect(() => {
+    void supportsAvifEncode().then(setAvifSupported);
+  }, []);
   const [quality, setQuality] = useState(90);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +110,7 @@ export default function ImageCropPage() {
       const info = await loadImageFile(f);
       setFile(f);
       setLoaded(info);
-      setOutputFormat(detectFormatFromFile(f) ?? 'jpeg');
+      setOutputFormat(defaultOutputFormat(f, 'jpeg'));
       // 기본 박스: 중앙 80%
       const w0 = Math.round(info.width * 0.8);
       const h0 = Math.round(info.height * 0.8);
@@ -389,7 +395,7 @@ export default function ImageCropPage() {
                       key={f}
                       type="button"
                       onClick={() => setOutputFormat(f)}
-                      disabled={processing}
+                      disabled={processing || (f === 'avif' && avifSupported === false)}
                       className={`h-9 text-xs rounded-md border transition-colors ${
                         outputFormat === f
                           ? 'bg-primary text-primary-foreground border-primary'

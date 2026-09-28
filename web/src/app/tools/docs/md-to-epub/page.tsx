@@ -204,7 +204,8 @@ async function splitMarkdownByHeading(
   level: number,
   marked: MarkedLike,
 ): Promise<Array<{ id: string; title: string; bodyHtml: string }>> {
-  const lines = text.split('\n');
+  // Windows(CRLF) 파일은 줄 끝 \r 때문에 헤딩 정규식이 안 맞아 챕터가 나뉘지 않으므로 함께 자른다.
+  const lines = text.split(/\r?\n/);
   const re = new RegExp(`^${'#'.repeat(level)}\\s+(.+)$`);
   const chunks: Array<{ title: string; lines: string[] }> = [];
   let current: { title: string; lines: string[] } | null = null;
@@ -215,7 +216,9 @@ async function splitMarkdownByHeading(
       if (current) chunks.push(current);
       current = { title: m[1].trim(), lines: [] };
     } else {
-      if (!current) current = { title: 'Introduction', lines: [] };
+      // 첫 헤딩 앞의 빈 줄만으로는 '들어가며' 챕터를 만들지 않는다.
+      if (!current && !line.trim()) continue;
+      if (!current) current = { title: '들어가며', lines: [] };
       current.lines.push(line);
     }
   }
@@ -241,7 +244,9 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border bg-background px-2 py-1.5 text-sm" aria-label="$" />
+        className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+        aria-label={label.replace(/\s*\*$/, '')}
+      />
     </div>
   );
 }

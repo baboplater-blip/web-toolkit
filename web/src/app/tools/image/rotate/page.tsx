@@ -19,7 +19,8 @@ import { BatchProgressPanel } from '@/components/tools/BatchProgressPanel';
 import { FolderPreviewPanel } from '@/components/tools/FolderPreviewPanel';
 import {
   canvasToBlob,
-  detectFormatFromFile,
+  defaultOutputFormat,
+  supportsAvifEncode,
   formatExtension,
   loadImageFile,
   type ImageFormat,
@@ -50,6 +51,11 @@ export default function ImageRotatePage() {
   const [flipH, setFlipH] = useState(false);
   const [flipV, setFlipV] = useState(false);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>('jpeg');
+  // 캔버스 AVIF 인코딩 미지원 브라우저에서는 AVIF 버튼을 비활성화한다.
+  const [avifSupported, setAvifSupported] = useState<boolean | null>(null);
+  useEffect(() => {
+    void supportsAvifEncode().then(setAvifSupported);
+  }, []);
   const [quality, setQuality] = useState(90);
   const [processing, setProcessing] = useState(false);
   const [progressText, setProgressText] = useState('');
@@ -83,7 +89,7 @@ export default function ImageRotatePage() {
       const info = await loadImageFile(f);
       setFile(f);
       setLoaded(info);
-      const fmt = detectFormatFromFile(f) ?? 'jpeg';
+      const fmt = defaultOutputFormat(f, 'jpeg');
       setOutputFormat(fmt);
     } catch (err) {
       setError(err instanceof Error ? err.message : '이미지 로드 실패');
@@ -365,7 +371,7 @@ export default function ImageRotatePage() {
                     key={f}
                     type="button"
                     onClick={() => setOutputFormat(f)}
-                    disabled={processing}
+                    disabled={processing || (f === 'avif' && avifSupported === false)}
                     className={`h-9 text-xs rounded-md border transition-colors ${
                       outputFormat === f
                         ? 'bg-primary text-primary-foreground border-primary'

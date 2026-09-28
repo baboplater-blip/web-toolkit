@@ -85,6 +85,12 @@ export default function PdfRepairPage() {
           throwOnInvalidObject: false,
           updateMetadata: false,
         });
+        // 암호화 PDF 는 스트림이 암호화된 채 재저장되면 결과가 깨진다 → 잠금 해제 도구로 안내
+        if (doc.isEncrypted) {
+          appendLog('  → 암호화된 PDF — 복구 중단');
+          setError('암호화된 PDF 입니다. "PDF 잠금 해제" 도구로 먼저 암호를 해제한 뒤 복구하세요.');
+          return;
+        }
         const pageCount = doc.getPageCount();
         appendLog(`  → ${pageCount}페이지 파싱 성공`);
         if (pageCount > 0) {
@@ -144,8 +150,11 @@ export default function PdfRepairPage() {
           });
           const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
           const img = await outDoc.embedJpg(jpegBytes);
-          const pg = outDoc.addPage([canvas.width, canvas.height]);
-          pg.drawImage(img, { x: 0, y: 0, width: canvas.width, height: canvas.height });
+          // 렌더는 2배 해상도, 페이지 크기는 원본 pt 단위(1배) 유지
+          const pageW = viewport.width / 2;
+          const pageH = viewport.height / 2;
+          const pg = outDoc.addPage([pageW, pageH]);
+          pg.drawImage(img, { x: 0, y: 0, width: pageW, height: pageH });
           page.cleanup();
           success++;
         } catch (err) {

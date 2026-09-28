@@ -24,9 +24,11 @@ import {
   formatExtension,
   loadImageFile,
   type ImageFormat,
+  sizeReductionPercent,
+  uniqueFileName,
 } from '@/lib/tools/image-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
-import { compressionRatio, formatBytes } from '@/lib/compress/format';
+import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
   filterFiles,
@@ -188,11 +190,13 @@ export default function BatchCompressPage() {
 
       const zip = new JSZip();
       let totalCompressed = 0;
+      // 같은 이름(예: a.png·a.jpg → 둘 다 a.jpg)이 ZIP 에서 덮어써지지 않도록 번호를 붙인다.
+      const usedNames = new Set<string>();
       for (let i = 0; i < items.length; i++) {
         setProgressText(`압축 중 ${i + 1}/${items.length}`);
         const blob = await compressOne(items[i].file);
         totalCompressed += blob.size;
-        const fileName = `${stripExtension(items[i].file.name)}.${ext}`;
+        const fileName = uniqueFileName(usedNames, `${stripExtension(items[i].file.name)}.${ext}`);
         zip.file(fileName, await blob.arrayBuffer());
       }
 
@@ -220,7 +224,7 @@ export default function BatchCompressPage() {
     }
   };
 
-  const reduction = result ? compressionRatio(result.totalOriginal, result.totalCompressed) : 0;
+  const reduction = result ? sizeReductionPercent(result.totalOriginal, result.totalCompressed) : 0;
 
   const ready =
     inputMode === 'folder' ? allFolderFiles.length > 0 : items.length > 0;
@@ -426,7 +430,7 @@ export default function BatchCompressPage() {
                     reduction > 0 ? 'text-green-500' : 'text-yellow-500'
                   }`}
                 >
-                  {reduction > 0 ? `-${reduction}%` : '0%'}
+                  {reduction > 0 ? `-${reduction}%` : `+${-reduction}%`}
                 </p>
               </div>
             </div>

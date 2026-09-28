@@ -96,31 +96,40 @@ function parseField(
       const av = /^\d+$/.test(a) ? Number(a) : resolveName(a);
       const bv = /^\d+$/.test(b) ? Number(b) : resolveName(b);
       if (av === null || bv === null) throw new Error(`${fieldName}: '${base}' 해석 불가`);
-      lo = normalize(av);
-      hi = normalize(bv);
+      lo = av;
+      hi = bv;
     } else {
       const v = /^\d+$/.test(base) ? Number(base) : resolveName(base);
       if (v === null) throw new Error(`${fieldName}: '${base}' 해석 불가`);
-      lo = normalize(v);
-      hi = normalize(v);
+      lo = v;
+      hi = v;
     }
-    if (lo < min || hi > max || lo > hi) {
-      throw new Error(`${fieldName}: 범위 [${min}-${max}] 벗어남 (${lo}-${hi})`);
+    // wrapValue(예: 요일 7)까지 원시 값으로 허용한 뒤(5-7 같은 범위 지원),
+    // 실제 집합에 넣을 때 7→0 으로 접는다 (cron-next-runs 와 동일 로직).
+    const rawMax = wrapValue !== undefined ? Math.max(max, wrapValue) : max;
+    if (lo < min || hi > rawMax || lo > hi) {
+      throw new Error(`${fieldName}: 범위 [${min}-${rawMax}] 벗어남 (${lo}-${hi})`);
     }
-    for (let i = lo; i <= hi; i += step) set.add(i);
+    for (let i = lo; i <= hi; i += step) set.add(normalize(i));
   }
   const values = [...set].sort((a, b) => a - b);
-  return { raw, values, description: describeField(raw, values, min, max) };
+  return { raw, values, description: describeField(raw, values, min, max, fieldName) };
 }
 
-function describeField(raw: string, values: number[], min: number, max: number): string {
-  if (raw === '*' || raw === '?') return '매';
-  if (values.length === max - min + 1) return '매';
-  if (values.length === 1) return `${values[0]}에`;
+function describeField(raw: string, values: number[], min: number, max: number, unit: string): string {
+  if (raw === '*' || raw === '?') return `매${unit}`;
+  if (values.length === max - min + 1) return `매${unit}`;
+  if (values.length === 1) return `${values[0]}${unit}`;
   const stepMatch = raw.match(/\/(\d+)$/);
-  if (stepMatch) return `${stepMatch[1]}마다`;
-  if (values.length <= 3) return `${values.join(', ')}에`;
-  return `${values.length}개 시점에`;
+  if (stepMatch) {
+    const base = raw.split('/')[0];
+    const within = base !== '*' && base.includes('-') ? `${base.replace('-', '~')}${unit} 사이 ` : '';
+    return `${within}${stepMatch[1]}${unit}마다`;
+  }
+  const rangeMatch = raw.match(/^(\d+)-(\d+)$/);
+  if (rangeMatch) return `${rangeMatch[1]}~${rangeMatch[2]}${unit}`;
+  if (values.length <= 3) return `${values.join(', ')}${unit}`;
+  return `${unit} ${values.length}개 시점`;
 }
 
 function parseCron(expression: string): ParseResult {
@@ -186,9 +195,9 @@ function humanize(f: ParseResult['fields']): string {
   } else if (f.minute.raw === '0' && f.hour.values.length > 0 && f.hour.values.length < 24) {
     parts.push(`${f.hour.values.join(', ')}시 정각`);
   } else if (f.hour.values.length === 24) {
-    parts.push(`${f.minute.description} 분`);
+    parts.push(f.minute.description);
   } else {
-    parts.push(`${f.hour.description} 시 ${f.minute.description} 분`);
+    parts.push(`${f.hour.description} ${f.minute.description}`);
   }
 
   return parts.join(' · ');
@@ -215,8 +224,9 @@ function nextRuns(parsed: ParseResult, count: number, from: Date = new Date()): 
 
   // 표준 cron: 일(dayOfMonth)과 요일(dayOfWeek) 이 둘 다 제한적(`*` 아님)이면
   // 두 조건을 OR 로 결합한다(둘 중 하나라도 맞으면 실행). 한쪽이라도 `*` 면 AND.
-  const domRestricted = fields.dayOfMonth.raw !== '*';
-  const dowRestricted = fields.dayOfWeek.raw !== '*';
+  // `?` 는 `*` 와 마찬가지로 "제한 없음"이므로 restricted 로 세지 않는다.
+  const domRestricted = fields.dayOfMonth.raw !== '*' && fields.dayOfMonth.raw !== '?';
+  const dowRestricted = fields.dayOfWeek.raw !== '*' && fields.dayOfWeek.raw !== '?';
   const bothDayFieldsRestricted = domRestricted && dowRestricted;
 
   const results: Date[] = [];

@@ -26,7 +26,17 @@ export default function FadePage() {
 
   useEffect(() => {
     if (!file) return;
-    probeAudio(file).then((p) => setDuration(p.duration)).catch(() => {});
+    probeAudio(file)
+      .then((p) => {
+        setDuration(p.duration);
+        // 슬라이더 최대값(길이의 절반)을 넘는 기본값은 페이드 인·아웃이 겹치므로 잘라낸다.
+        const max = Math.min(20, p.duration / 2);
+        if (Number.isFinite(max) && max > 0) {
+          setFadeIn((v) => Math.min(v, Math.floor(max * 10) / 10));
+          setFadeOut((v) => Math.min(v, Math.floor(max * 10) / 10));
+        }
+      })
+      .catch(() => {});
   }, [file]);
 
   async function handleProcess() {
@@ -129,7 +139,7 @@ export default function FadePage() {
 
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
-      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} />}
+      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} metaText={`페이드 인 ${fadeIn.toFixed(1)}초 · 페이드 아웃 ${fadeOut.toFixed(1)}초 적용`} />}
       </main>
     </div>
   );

@@ -9,6 +9,7 @@ import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import {
   chapterTitle,
+  startsWithTitleHeading,
   extractBody,
   parseEpub,
   readChapter,
@@ -62,7 +63,8 @@ export default function EpubToMdPage() {
         const body = extractBody(ch.xhtml);
         const md = td.turndown(body);
         const title = chapterTitle(ch.xhtml, `Chapter ${i + 1}`);
-        chapters.push({ title, md });
+        // 본문이 같은 제목 태그로 시작하면 "# 제목" 을 덧붙이지 않는다(중복 방지).
+        chapters.push({ title, md: startsWithTitleHeading(ch.xhtml, title) ? md : `# ${title}\n\n${md}` });
       }
 
       const baseName = file.name.replace(/\.epub$/i, '');
@@ -70,7 +72,7 @@ export default function EpubToMdPage() {
       let filename: string;
       if (mode === 'single') {
         const combined = chapters
-          .map((c) => `# ${c.title}\n\n${c.md}`)
+          .map((c) => c.md)
           .join('\n\n---\n\n');
         blob = new Blob([combined], { type: 'text/markdown;charset=utf-8' });
         filename = `${baseName}.md`;
@@ -79,7 +81,7 @@ export default function EpubToMdPage() {
         chapters.forEach((c, i) => {
           const safeTitle = c.title.replace(/[\\/:*?"<>|]/g, '_').slice(0, 80);
           const fname = `${String(i + 1).padStart(3, '0')}-${safeTitle || 'chapter'}.md`;
-          zip.file(fname, `# ${c.title}\n\n${c.md}`);
+          zip.file(fname, c.md);
         });
         blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
         filename = `${baseName}-markdown.zip`;

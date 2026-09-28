@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { FileDropZone } from '@/components/tools/FileDropZone';
 import { Input } from '@/components/ui/input';
+import { readTextAutoEncoding } from '@/lib/tools/text-decode';
 
 const INITIAL_VISIBLE = 100;
 const LOAD_MORE_STEP = 200;
@@ -147,7 +148,7 @@ export default function CsvViewerPage() {
       return;
     }
     try {
-      const text = await file.text();
+      const text = await readTextAutoEncoding(file);
       const allRows = dropEmptyRows(parseCsv(text));
       if (allRows.length === 0) {
         setParsed(null);

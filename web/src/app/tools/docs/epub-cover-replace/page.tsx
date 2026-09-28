@@ -8,9 +8,11 @@ import { ResultCard } from '@/components/tools/ResultCard';
 import { Button } from '@/components/ui/button';
 import {
   fmtBytes,
+  mimeForExt,
   parseEpub,
   repackageEpub,
   resolveHref,
+  rewriteResourceRefs,
   type ParsedEpub,
 } from '@/lib/tools/epub-common';
 
@@ -78,58 +80,63 @@ export default function EpubCoverReplacePage() {
     setBusy(true);
     setResult(null);
     try {
-      const ext = (coverFile.type.split('/').pop() || 'jpg').toLowerCase();
-      const safeExt = ext === 'jpeg' ? 'jpg' : ext;
-      const coverName = `cover.${safeExt}`;
-      const newCoverPath = `${epub.opfDir}${coverName}`;
+      // 저장할 때마다 원본에서 다시 파싱 — 이전 저장이 zip 을 변형해 두 번째 저장이 꼬이지 않도록.
+      const ep = await parseEpub(epubFile);
+      const nameExt = (coverFile.name.split('.').pop() || '').toLowerCase();
+      const typeExt = (coverFile.type.split('/').pop() || '').toLowerCase();
+      const rawExt = typeExt || nameExt || 'jpg';
+      const safeExt = rawExt === 'jpeg' ? 'jpg' : rawExt === 'svg+xml' ? 'svg' : rawExt;
+      const coverMime = coverFile.type || mimeForExt(safeExt);
       const buf = await coverFile.arrayBuffer();
-      epub.zip.file(newCoverPath, buf);
+      let opfXml = ep.opfXml;
 
-      // OPF 수정 — 기존 cover-image properties 제거, 새 manifest item + meta name="cover" 갱신
-      let opfXml = epub.opfXml;
-
-      // 기존 cover-image 자산 properties 제거 (zip 파일도 제거)
-      if (epub.coverItemId) {
-        const oldItem = epub.manifest.get(epub.coverItemId);
-        if (oldItem) {
-          const oldPath = resolveHref(epub.opfDir, oldItem.href);
-          // 같은 path 가 아니면 삭제
-          if (oldPath !== newCoverPath) {
-            epub.zip.remove(oldPath);
-          }
-          // properties="cover-image" 토큰만 제거
+      const oldItem = ep.coverItemId ? ep.manifest.get(ep.coverItemId) : undefined;
+      if (oldItem) {
+        // 기존 표지 manifest 항목을 그대로 재사용: 같은 폴더·같은 이름에 확장자만 새 형식으로.
+        // (항목을 지우고 새로 넣으면 본문·표지 페이지의 <img> 참조가 깨진다)
+        const oldPath = resolveHref(ep.opfDir, oldItem.href);
+        const newPath = oldPath.replace(/\.[^./]+$/, '') + `.${safeExt}`;
+        const newHref = oldItem.href.replace(/\.[^./]+$/, '') + `.${safeExt}`;
+        if (newPath !== oldPath) ep.zip.remove(oldPath);
+        ep.zip.file(newPath, buf);
+        opfXml = opfXml.replace(
+          new RegExp(`<item\\b[^>]*\\bid\\s*=\\s*["']${escapeReg(oldItem.id)}["'][^>]*>`, 'i'),
+          (tag) =>
+            tag
+              .replace(/\bhref\s*=\s*["'][^"']*["']/i, `href="${newHref}"`)
+              .replace(/\bmedia-type\s*=\s*["'][^"']*["']/i, `media-type="${coverMime}"`),
+        );
+        // EPUB2 호환 meta name="cover" 가 없으면 추가
+        if (!/<meta[^>]*\bname\s*=\s*["']cover["']/i.test(opfXml)) {
           opfXml = opfXml.replace(
-            new RegExp(
-              `(<item\\b[^>]*\\bid\\s*=\\s*["']${escapeReg(epub.coverItemId)}["'][^>]*\\bproperties\\s*=\\s*["'][^"']*)\\bcover-image\\b([^"']*["'])`,
-              'i',
-            ),
-            '$1$2',
+            /<metadata\b[^>]*>/i,
+            (m) => `${m}\n    <meta name="cover" content="${oldItem.id}"/>`,
           );
-          // 기존 cover-image item 자체를 삭제하지는 않음 — id 충돌 시 새 id 사용
         }
+        if (newPath !== oldPath) {
+          await rewriteResourceRefs(ep.zip, new Map([[oldPath, newPath]]));
+        }
+      } else {
+        // 표지가 없던 책: 새 manifest 항목 + meta cover 추가
+        let coverName = `cover.${safeExt}`;
+        for (let n = 1; ep.zip.file(`${ep.opfDir}${coverName}`) && n < 100; n++) {
+          coverName = `cover-${n}.${safeExt}`;
+        }
+        let itemId = 'cover-image';
+        for (let n = 1; ep.manifest.has(itemId) && n < 100; n++) itemId = `cover-image-${n}`;
+        ep.zip.file(`${ep.opfDir}${coverName}`, buf);
+        const props = ep.version === '3' ? ' properties="cover-image"' : '';
+        const newItem = `    <item id="${itemId}" href="${coverName}" media-type="${coverMime}"${props}/>`;
+        opfXml = opfXml.replace(/<manifest\b[^>]*>/i, (m) => `${m}\n${newItem}`);
+        opfXml = opfXml.replace(/<meta[^>]*\bname\s*=\s*["']cover["'][^>]*\/?>(?:\s*<\/meta>)?\s*/i, '');
+        opfXml = opfXml.replace(
+          /<metadata\b[^>]*>/i,
+          (m) => `${m}\n    <meta name="cover" content="${itemId}"/>`,
+        );
       }
 
-      // 기존 cover-image manifest item 제거 (같은 id 'cover-image' 가 있으면)
-      opfXml = opfXml.replace(
-        /<item\b[^>]*\bid\s*=\s*["']cover-image["'][^>]*\/?>(?:\s*<\/item>)?/i,
-        '',
-      );
-
-      // 기존 meta name="cover" 제거
-      opfXml = opfXml.replace(/<meta[^>]*\bname\s*=\s*["']cover["'][^>]*\/?>(?:\s*<\/meta>)?\s*/i, '');
-
-      // 새 항목 삽입
-      const newItem = `    <item id="cover-image" href="${coverName}" media-type="${coverFile.type}" properties="cover-image"/>`;
-      opfXml = opfXml.replace(/<manifest\b[^>]*>/i, (m) => `${m}\n${newItem}`);
-
-      // meta cover 삽입 (EPUB2 호환)
-      opfXml = opfXml.replace(
-        /<metadata\b[^>]*>/i,
-        (m) => `${m}\n    <meta name="cover" content="cover-image"/>`,
-      );
-
-      epub.zip.file(epub.opfPath, opfXml);
-      const blob = await repackageEpub(epub.zip);
+      ep.zip.file(ep.opfPath, opfXml);
+      const blob = await repackageEpub(ep.zip);
       const baseName = epubFile.name.replace(/\.epub$/i, '');
       setResult({
         blobUrl: URL.createObjectURL(blob),

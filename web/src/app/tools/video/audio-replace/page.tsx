@@ -6,7 +6,7 @@ import { FileDropZone } from '@/components/tools/FileDropZone';
 import { ResultCard } from '@/components/tools/ResultCard';
 import { ToolHeader } from '@/components/tools/ToolHeader';
 import { Button } from '@/components/ui/button';
-import { cleanupFiles, getFFmpeg, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
+import { cleanupFiles, getFFmpeg, hasAudioStream, readOutput, writeFile } from '@/lib/tools/ffmpeg-common';
 import { AUDIO_ACCEPT, explainFfmpegError, limitsHint, validateMediaSize, VIDEO_ACCEPT } from '@/lib/tools/media-limits';
 
 type Mode = 'replace' | 'mix';
@@ -46,15 +46,24 @@ export default function AudioReplacePage() {
         await writeFile(ffmpeg, 'video.bin', video);
         await writeFile(ffmpeg, 'audio.bin', audio);
 
+        // mp4 에 그대로 복사 가능한 코덱(H.264/HEVC 등)은 컨테이너가 mp4/mov 계열일 때만 안전.
+        // webm(VP8/VP9)·avi 등은 mp4 에 넣으면 실패하므로 H.264 로 재인코딩한다.
+        const vExt = (video.name.split('.').pop() ?? '').toLowerCase();
+        const videoCodec = ['mp4', 'm4v', 'mov'].includes(vExt)
+          ? ['-c:v', 'copy']
+          : ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-pix_fmt', 'yuv420p'];
+        // 원본에 오디오가 없으면 믹스할 대상이 없으니 교체로 처리한다.
+        const effectiveMode = mode === 'mix' && !(await hasAudioStream(ffmpeg, 'video.bin')) ? 'replace' : mode;
+
         let args: string[];
-        if (mode === 'replace') {
+        if (effectiveMode === 'replace') {
           args = [
             '-y',
             '-i', 'video.bin',
             '-i', 'audio.bin',
             '-map', '0:v',
             '-map', '1:a',
-            '-c:v', 'copy',
+            ...videoCodec,
             '-c:a', 'aac',
             '-shortest',
             'out.mp4',
@@ -68,7 +77,7 @@ export default function AudioReplacePage() {
             '-i', 'audio.bin',
             '-filter_complex', filter,
             '-map', '0:v',
-            '-c:v', 'copy',
+            ...videoCodec,
             '-c:a', 'aac',
             'out.mp4',
           ];
@@ -167,7 +176,7 @@ export default function AudioReplacePage() {
 
       {error && <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
-      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} />}
+      {result && <ResultCard fileName={result.filename} blobUrl={result.blobUrl} originalSize={result.originalSize} compressedSize={result.compressedSize} metaText={mode === 'mix' ? '원본 오디오와 새 음원을 믹스한 MP4' : '오디오를 새 음원으로 교체한 MP4'} />}
       </main>
     </div>
   );

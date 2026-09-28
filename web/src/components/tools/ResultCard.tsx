@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Download } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { compressionRatio, formatBytes } from '@/lib/compress/format';
@@ -53,9 +53,17 @@ export function ResultCard({
   // blobUrl 은 이 카드의 다운로드 대상이다. 카드가 언마운트되거나 새 결과로
   // blobUrl 이 바뀌면 직전 URL 을 폐기해 ObjectURL 누수를 막는다.
   // (다운로드 타깃이므로 언마운트 시 폐기해도 안전 — 소비자가 별도로 보관하지 않는다)
+  // 폐기는 cleanup 에서 즉시 하지 않고 한 틱 미룬다 — StrictMode 이중 effect·같은 URL 로의
+  // 재마운트 시 곧바로 다시 붙는 경우엔 폐기하면 다운로드 링크가 죽기 때문이다.
+  const liveUrlRef = useRef<string | null>(null);
   useEffect(() => {
+    liveUrlRef.current = blobUrl;
     return () => {
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      liveUrlRef.current = null;
+      if (!blobUrl) return;
+      setTimeout(() => {
+        if (liveUrlRef.current !== blobUrl) URL.revokeObjectURL(blobUrl);
+      }, 0);
     };
   }, [blobUrl]);
 

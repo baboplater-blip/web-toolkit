@@ -81,7 +81,9 @@ function parseAss(s: string): SubtitleCue[] {
       const startIdx = format.indexOf('start');
       const endIdx = format.indexOf('end');
       const textIdx = format.indexOf('text');
-      if (startIdx < 0 || endIdx < 0) continue;
+      // Format 줄이 없거나 Text 필드가 없으면(textIdx<0) 마지막 CSV 필드가
+      // 자막 텍스트로 오인되므로 해당 Dialogue 는 건너뛴다.
+      if (startIdx < 0 || endIdx < 0 || textIdx < 0) continue;
       const start = parseTimecode(parts[startIdx]);
       const end = parseTimecode(parts[endIdx]);
       const text = parts.slice(textIdx).join(',').replace(/\\N/g, '\n').replace(/\{[^}]*\}/g, '');

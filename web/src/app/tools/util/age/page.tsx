@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, CalendarClock, Check, Copy } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -79,7 +79,8 @@ function computeAge(birth: Date, ref: Date): AgeResult {
   const milestones: AgeResult['milestones'] = [];
   for (const step of milestoneSteps) {
     const next = Math.ceil((totalDays + 1) / step) * step;
-    if (next === totalDays) continue;
+    // 20,000일처럼 여러 단계가 같은 날로 겹치면 한 번만 표시 (중복 key 방지)
+    if (next === totalDays || milestones.some((m) => m.daysAway === next - totalDays)) continue;
     const date = new Date(birth);
     date.setDate(date.getDate() + next);
     milestones.push({
@@ -112,8 +113,13 @@ function formatKoreanDate(d: Date): string {
 
 export default function AgeCalculatorPage() {
   const [birthInput, setBirthInput] = useState('');
-  const [refInput, setRefInput] = useState(formatYmd(todayDate()));
+  const [refInput, setRefInput] = useState('');
   const [copied, setCopied] = useState(false);
+
+  // 하이드레이션 안전: 초기 렌더는 빈 값(결정적). 마운트 후에만 오늘 날짜 주입.
+  useEffect(() => {
+    setRefInput(formatYmd(todayDate()));
+  }, []);
 
   const birth = useMemo(() => parseDate(birthInput), [birthInput]);
   const ref = useMemo(() => parseDate(refInput), [refInput]);

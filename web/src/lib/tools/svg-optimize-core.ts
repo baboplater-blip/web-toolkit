@@ -62,13 +62,25 @@ function collapseWhitespace(svg: string): string {
 function roundNumbers(svg: string, precision: number): string {
   const safePrecision = Math.max(0, Math.min(8, Math.floor(precision)));
   // 정수가 아닌 소수만 대상으로 한다(지수 표기 포함하지 않는 단순 십진수).
-  return svg.replace(/-?\d*\.\d+/g, (match) => {
-    const value = Number(match);
-    if (!Number.isFinite(value)) return match;
-    const rounded = Number(value.toFixed(safePrecision));
-    return String(rounded);
-  });
+  const roundValue = (text: string) =>
+    text.replace(/-?\d*\.\d+/g, (match) => {
+      const value = Number(match);
+      if (!Number.isFinite(value)) return match;
+      const rounded = Number(value.toFixed(safePrecision));
+      return String(rounded);
+    });
+  // 요소 태그의 속성 값만 반올림한다. <?xml version="1.0"?> 선언·텍스트 노드·
+  // URL/식별자 속성(href·xmlns·id·class 등)의 숫자는 의미가 바뀌므로 건드리지 않는다.
+  return svg.replace(/<[a-zA-Z][^>]*>/g, (tag) =>
+    tag.replace(/([\w:.-]+)(\s*=\s*)("[^"]*"|'[^']*')/g, (attr, name: string, eq: string, quoted: string) => {
+      if (ROUND_SKIP_ATTR.test(name)) return attr;
+      return `${name}${eq}${roundValue(quoted)}`;
+    }),
+  );
 }
+
+/** 반올림하면 안 되는 속성 이름(URL·식별자·버전 등) */
+const ROUND_SKIP_ATTR = /^(?:xmlns(?::.*)?|(?:xlink:)?href|src|id|class|version|baseProfile|font-family|data-.*|aria-.*)$/i;
 
 /** UTF-8 바이트 길이를 계산한다. */
 export function byteLength(text: string): number {

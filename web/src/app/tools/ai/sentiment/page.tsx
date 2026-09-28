@@ -36,6 +36,7 @@ const POSITIVE_WORDS = new Set<string>([
   '편안', '안전', '빠르', '쉽다', '쉬운', '간편', '신선', '튼튼', '우수', '탁월', '환상',
   '인상', '감동', '고급', '맛있', '시원', '훈훈', '따뜻', '믿음', '신뢰', '효율', '깨끗',
   '재밌', '재미', '괜찮', '좋아요', '굿잡', '최상', '뿌듯', '든든', '상쾌', '명품',
+  '좋지', '좋네', '좋습', '좋겠', '좋군',
 ]);
 
 // 부정 단어 사전(영어 + 한국어 어간).
@@ -61,6 +62,7 @@ const NEGATIVE_WORDS = new Set<string>([
   '끔찍', '역겹', '역겨', '답답', '복잡', '거슬', '시끄', '지겹', '지겨', '귀찮', '아쉽',
   '아쉬', '부족', '저질', '조잡', '허접', '꽝', '실수', '결함', '고장', '먹통', '느림',
   '비추', '환불', '사기', '거짓', '짜증나', '짜증남', '최하', '불량', '불친절',
+  '재미없', '맛없', '쓸모없', '의미없', '재미가없', '불만족',
 ]);
 
 // 부정어(앞 N토큰 내에 있으면 뒤따르는 감성어의 극성을 반전).
@@ -130,32 +132,50 @@ function baseClassify(token: string): Polarity {
   }
 
   // 한국어 등: 어간 포함 검사(예: "좋았어요" → "좋았" 포함).
+  // 가장 긴 어간을 우선한다 — "불친절"(부정)이 "친절"(긍정)에 먹히지 않도록.
+  let best: Polarity = 'neutral';
+  let bestLen = 0;
   for (const word of POSITIVE_WORDS) {
-    if (/[가-힣]/.test(word) && lower.includes(word)) return 'positive';
+    if (word.length > bestLen && /[가-힣]/.test(word) && lower.includes(word)) {
+      best = 'positive';
+      bestLen = word.length;
+    }
   }
   for (const word of NEGATIVE_WORDS) {
-    if (/[가-힣]/.test(word) && lower.includes(word)) return 'negative';
+    if (word.length >= bestLen && /[가-힣]/.test(word) && lower.includes(word)) {
+      best = 'negative';
+      bestLen = word.length;
+    }
   }
-  return 'neutral';
+  return best;
 }
 
-/** 토큰이 부정어인지(라틴 정확 일치 + 한국어 부분 포함) 판단한다. */
+// 한국어 전치 부정어는 독립 토큰일 때만 인정한다("안 좋다", "못 했다").
+// 부분 포함으로 검사하면 "서비스"(비)·"안녕"(안) 같은 일반 단어가 부정어로 오인된다.
+const KO_PRE_NEGATORS = new Set<string>(['안', '못', '덜', '아니', '아닌', '비']);
+
+/** 토큰이 (감성어 앞에 오는) 부정어인지 판단한다. */
 function isNegator(token: string): boolean {
   const lower = token.toLowerCase();
-  if (NEGATORS.has(lower)) return true;
-  // 한국어 부정 표현은 어간 포함으로 검사(예: "없었어요" → "없").
-  for (const word of NEGATORS) {
-    if (/[가-힣]/.test(word) && lower.includes(word)) return true;
-  }
-  return false;
+  if (/^[a-z']+$/.test(lower)) return NEGATORS.has(lower);
+  return KO_PRE_NEGATORS.has(lower);
 }
+
+/** 한국어 후치 부정("좋지 않다", "좋지 못했다", "좋은 게 아니다", "필요 없다")인지 판단한다. */
+function isKoPostNegator(token: string): boolean {
+  return /^(않|없|아니|아닌|못하|못했|못한)/.test(token);
+}
+
+/** "맛이 없다"·"재미가 없다" 처럼 명사 + 없다 조합이 부정 감성이 되는 경우. */
+const KO_NOUN_LACK = /^(맛|재미|쓸모|의미|소용|성의|개념|매력|센스)/;
 
 /** 토큰이 강조어인지 판단한다. */
 function isIntensifier(token: string): boolean {
   const lower = token.toLowerCase();
   if (INTENSIFIERS.has(lower)) return true;
+  // 한국어는 두 글자 이상 강조어로 시작할 때만 인정("굉장히", "완전히"). 한 글자("개")는 정확 일치만.
   for (const word of INTENSIFIERS) {
-    if (/[가-힣]/.test(word) && lower.includes(word)) return true;
+    if (word.length >= 2 && /[가-힣]/.test(word) && lower.startsWith(word)) return true;
   }
   return false;
 }
@@ -199,7 +219,18 @@ function analyzeTokens(text: string): { tokens: WordToken[]; positiveScore: numb
   for (let wi = 0; wi < wordIndices.length; wi += 1) {
     const tokenIndex = wordIndices[wi];
     const token = tokens[tokenIndex];
-    const basePolarity = baseClassify(token.raw);
+    let basePolarity = baseClassify(token.raw);
+    // "맛이 없었다" 처럼 명사 + 없다 → 부정.
+    if (
+      basePolarity === 'neutral' &&
+      /^없/.test(token.raw) &&
+      wi > 0 &&
+      KO_NOUN_LACK.test(tokens[wordIndices[wi - 1]].raw) &&
+      // 앞 명사가 이미 감성어("재미가")면 후치 부정 반전으로 처리되므로 중복 집계하지 않는다.
+      baseClassify(tokens[wordIndices[wi - 1]].raw) === 'neutral'
+    ) {
+      basePolarity = 'negative';
+    }
     if (basePolarity === 'neutral') continue;
 
     // 앞 NEGATION_WINDOW 단어 토큰 내 부정어/강조어 탐색.
@@ -211,6 +242,22 @@ function analyzeTokens(text: string): { tokens: WordToken[]; positiveScore: numb
       const prevRaw = tokens[wordIndices[prevWi]].raw;
       if (isNegator(prevRaw)) negated = true;
       if (isIntensifier(prevRaw)) weight = INTENSIFIER_BOOST;
+    }
+
+    // 한국어 후치 부정: 바로 뒤(또는 그다음) 단어가 "않/없/아니/못하" 로 시작하면 반전.
+    // ("좋지 않다", "만족스럽지 못했다") 단, "맛 없" 처럼 이미 부정으로 잡힌 없다 토큰 자신은 제외.
+    if (/[가-힣]/.test(token.raw)) {
+      for (let fwd = 1; fwd <= 2; fwd += 1) {
+        const nextWi = wi + fwd;
+        if (nextWi >= wordIndices.length) break;
+        const nextRaw = tokens[wordIndices[nextWi]].raw;
+        if (isKoPostNegator(nextRaw)) {
+          negated = !negated;
+          break;
+        }
+        // 다음 단어가 또 다른 감성어면 그쪽이 부정 대상이므로 탐색 중단.
+        if (baseClassify(nextRaw) !== 'neutral') break;
+      }
     }
 
     const finalPolarity: Polarity = negated

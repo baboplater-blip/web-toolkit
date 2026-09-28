@@ -23,9 +23,11 @@ import {
   loadImageFile,
   supportsAvifEncode,
   type ImageFormat,
+  sizeReductionPercent,
+  uniqueFileName,
 } from '@/lib/tools/image-common';
 import { stripExtension, triggerDownload } from '@/lib/tools/file-utils';
-import { formatBytes, compressionRatio } from '@/lib/compress/format';
+import { formatBytes } from '@/lib/compress/format';
 import {
   commonRoot,
   filterFiles,
@@ -204,6 +206,8 @@ export default function ImageConvertPage() {
       try {
         const zip = new JSZip();
         let totalSize = 0;
+        // 같은 이름(a.png·a.webp → a.jpg)이 ZIP 에서 덮어써지지 않도록 번호를 붙인다.
+        const usedNames = new Set<string>();
         for (let i = 0; i < items.length; i++) {
           if (ctrl.signal.aborted) {
             setError('사용자가 취소했습니다.');
@@ -212,7 +216,7 @@ export default function ImageConvertPage() {
           setProgress({ done: i, total: items.length, current: items[i].file.name });
           const blob = await convertOne(items[i].file);
           totalSize += blob.size;
-          const fileName = `${stripExtension(items[i].file.name)}.${ext}`;
+          const fileName = uniqueFileName(usedNames, `${stripExtension(items[i].file.name)}.${ext}`);
           zip.file(fileName, await blob.arrayBuffer());
         }
         setProgressText('ZIP 압축 중');
@@ -437,7 +441,7 @@ export default function ImageConvertPage() {
               <div>
                 <p className="text-[10px] text-muted-foreground">용량 변화</p>
                 {(() => {
-                  const r = compressionRatio(result.inputSize, result.totalSize);
+                  const r = sizeReductionPercent(result.inputSize, result.totalSize);
                   return (
                     <p
                       className={`text-sm font-semibold mt-0.5 ${

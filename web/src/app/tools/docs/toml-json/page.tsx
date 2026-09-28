@@ -29,7 +29,7 @@ ip = "10.0.0.1"`;
 /* 지원: [table] / [a.b.c] 테이블, key = value,                        */
 /*       문자열("..." / '...'), 정수·실수, true/false, 배열,           */
 /*       기본 인라인 테이블({ a = 1, b = 2 }), # 주석.                 */
-/* 미지원: 배열 테이블([[..]]), 다중행 문자열, 날짜 타입 → 안내 문구.  */
+/* 배열 테이블([[..]]) 지원, 날짜·시각은 문자열로 보존. 미지원: 다중행 문자열. */
 /* ------------------------------------------------------------------ */
 
 function parseToml(text: string): Record<string, JsonValue> {
@@ -43,7 +43,26 @@ function parseToml(text: string): Record<string, JsonValue> {
     if (!line) continue;
 
     if (line.startsWith('[[')) {
-      throw new Error(`${lineNo + 1}번째 줄: 배열 테이블([[ ]])은 지원하지 않습니다.`);
+      // 배열 테이블: 부모 테이블 아래 배열에 새 테이블을 추가하고 이후 키를 그 테이블에 기록.
+      if (!line.endsWith(']]')) {
+        throw new Error(`${lineNo + 1}번째 줄: 배열 테이블 헤더의 닫는 대괄호(]])가 없습니다.`);
+      }
+      const path = line.slice(2, -2).trim();
+      if (!path) throw new Error(`${lineNo + 1}번째 줄: 빈 배열 테이블 이름입니다.`);
+      const keys = splitDottedKey(path);
+      const parent = resolveTable(root, keys.slice(0, -1), lineNo + 1);
+      const last = keys[keys.length - 1];
+      const existing = parent[last];
+      const created: Record<string, JsonValue> = {};
+      if (existing === undefined) {
+        parent[last] = [created];
+      } else if (Array.isArray(existing)) {
+        existing.push(created);
+      } else {
+        throw new Error(`${lineNo + 1}번째 줄: '${last}' 키가 배열 테이블이 아닌 값과 충돌합니다.`);
+      }
+      current = created;
+      continue;
     }
 
     if (line.startsWith('[')) {
@@ -151,6 +170,9 @@ function resolveTable(
       node = created;
     } else if (isPlainObject(existing)) {
       node = existing;
+    } else if (Array.isArray(existing) && existing.length > 0 && isPlainObject(existing[existing.length - 1])) {
+      // [[a]] 뒤의 [a.b] 는 마지막 배열 테이블 요소를 가리킨다.
+      node = existing[existing.length - 1] as Record<string, JsonValue>;
     } else {
       throw new Error(`${lineNo}번째 줄: '${key}' 키가 테이블이 아닌 값과 충돌합니다.`);
     }
@@ -184,8 +206,21 @@ function parseTomlValue(raw: string, lineNo: number): JsonValue {
     return num;
   }
 
+  if (/^0x[0-9a-fA-F_]+$/.test(text)) return parseInt(text.slice(2).replace(/_/g, ''), 16);
+  if (/^0o[0-7_]+$/.test(text)) return parseInt(text.slice(2).replace(/_/g, ''), 8);
+  if (/^0b[01_]+$/.test(text)) return parseInt(text.slice(2).replace(/_/g, ''), 2);
+  if (/^[+-]?(inf|nan)$/.test(text)) return null; // JSON 은 inf/nan 표현 불가 → null
+
+  // 날짜·시각(오프셋/로컬 datetime, 로컬 date, 로컬 time)은 JSON 에 대응 타입이 없어 문자열로 보존.
+  if (
+    /^\d{4}-\d{2}-\d{2}([Tt ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?([Zz]|[+-]\d{2}:\d{2})?)?$/.test(text) ||
+    /^\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(text)
+  ) {
+    return text;
+  }
+
   throw new Error(
-    `${lineNo}번째 줄: 값 '${text}' 를 해석할 수 없습니다(날짜·다중행 문자열은 미지원).`,
+    `${lineNo}번째 줄: 값 '${text}' 를 해석할 수 없습니다(다중행 문자열은 미지원).`,
   );
 }
 
@@ -505,8 +540,8 @@ export default function TomlJsonPage() {
 
         <Separator />
         <p className="text-[10px] text-muted-foreground text-center">
-          자체 구현 파서 — 테이블·점 키·문자열·숫자·불리언·배열·인라인 테이블 지원. 배열 테이블([[ ]])·다중행
-          문자열·날짜 타입은 미지원.
+          자체 구현 파서 — 테이블·배열 테이블([[ ]])·점 키·문자열·숫자·불리언·배열·인라인 테이블 지원. 날짜·시각은
+          문자열로 변환되며, 다중행 문자열은 미지원.
         </p>
       </main>
     </div>

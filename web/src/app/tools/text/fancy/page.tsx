@@ -23,6 +23,11 @@ function buildOffsetMap(options: {
   upperStart?: number;
   lowerStart?: number;
   digitStart?: number;
+  /**
+   * 수학 알파벳 블록의 구멍(미배정 코드포인트, Cn) 보정 — 해당 글자는
+   * BMP Letterlike Symbols 블록의 기존 문자로 대체한다(미보정 시 □ 출력).
+   */
+  overrides?: Record<string, string>;
 }): (text: string) => string {
   const map = new Map<string, string>();
 
@@ -40,6 +45,11 @@ function buildOffsetMap(options: {
     Array.from(DIGITS).forEach((char, index) => {
       map.set(char, String.fromCodePoint(options.digitStart! + index));
     });
+  }
+  if (options.overrides) {
+    for (const [char, glyph] of Object.entries(options.overrides)) {
+      map.set(char, glyph);
+    }
   }
 
   return (text: string): string =>
@@ -80,9 +90,16 @@ const STYLES: FancyStyle[] = [
     id: 'italic',
     label: '기울임',
     // 수학 이탤릭은 숫자 미지원 → 숫자는 원문 보존
-    transform: buildOffsetMap({ upperStart: 0x1d434, lowerStart: 0x1d44e }),
+    // U+1D455 는 미배정(구멍) → PLANCK CONSTANT ℎ(U+210E) 로 보정
+    transform: buildOffsetMap({
+      upperStart: 0x1d434,
+      lowerStart: 0x1d44e,
+      overrides: { h: 'ℎ' },
+    }),
   },
   {
+    // 굵은 기울임(0x1D468/0x1D482)·굵은 필기체(0x1D4D0/0x1D4EA)·모노스페이스·
+    // 산세리프 굵게·전각 범위는 구멍 없이 전부 배정되어 보정 불필요.
     id: 'bold-italic',
     label: '굵은 기울임',
     transform: buildOffsetMap({ upperStart: 0x1d468, lowerStart: 0x1d482 }),
@@ -95,7 +112,22 @@ const STYLES: FancyStyle[] = [
   {
     id: 'double-struck',
     label: '겹선',
-    transform: buildOffsetMap({ upperStart: 0x1d538, lowerStart: 0x1d552, digitStart: 0x1d7d8 }),
+    // C·H·N·P·Q·R·Z 는 수학 겹선 블록에 미배정(구멍) →
+    // Letterlike Symbols 의 ℂ ℍ ℕ ℙ ℚ ℝ ℤ 로 보정
+    transform: buildOffsetMap({
+      upperStart: 0x1d538,
+      lowerStart: 0x1d552,
+      digitStart: 0x1d7d8,
+      overrides: {
+        C: 'ℂ',
+        H: 'ℍ',
+        N: 'ℕ',
+        P: 'ℙ',
+        Q: 'ℚ',
+        R: 'ℝ',
+        Z: 'ℤ',
+      },
+    }),
   },
   {
     id: 'monospace',

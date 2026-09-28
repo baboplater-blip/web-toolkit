@@ -10,7 +10,7 @@ import { ToolHeader } from '@/components/tools/ToolHeader';
  * 확장자 → MIME 타입 매핑(약 80종). 한 확장자가 여러 후보를 가질 수 있고,
  * 한 MIME 타입이 여러 확장자에 매핑될 수 있어 역방향 조회는 배열로 모은다.
  */
-const EXT_TO_MIME: Record<string, string> = {
+const EXT_TO_MIME: Record<string, string | string[]> = {
   // 텍스트·코드
   txt: 'text/plain',
   csv: 'text/csv',
@@ -19,7 +19,8 @@ const EXT_TO_MIME: Record<string, string> = {
   css: 'text/css',
   js: 'text/javascript',
   mjs: 'text/javascript',
-  ts: 'text/typescript',
+  // .ts 는 TypeScript 소스와 MPEG-TS 비디오 양쪽에 쓰인다.
+  ts: ['text/typescript', 'video/mp2t'],
   md: 'text/markdown',
   xml: 'application/xml',
   rtf: 'application/rtf',
@@ -85,7 +86,6 @@ const EXT_TO_MIME: Record<string, string> = {
   mpeg: 'video/mpeg',
   mpg: 'video/mpeg',
   ogv: 'video/ogg',
-  ts_video: 'video/mp2t',
   // 압축·바이너리
   zip: 'application/zip',
   gz: 'application/gzip',
@@ -104,10 +104,15 @@ interface ExtRow {
   mime: string;
 }
 
+/** (확장자, MIME) 평탄화 행 목록 — 다중 MIME 확장자(.ts 등)는 행으로 펼친다(모듈 로드 시 1회 계산). */
+const ALL_ROWS: ExtRow[] = Object.entries(EXT_TO_MIME).flatMap(([ext, mime]) =>
+  (Array.isArray(mime) ? mime : [mime]).map((m) => ({ ext, mime: m })),
+);
+
 /** MIME → 확장자 목록 역인덱스(모듈 로드 시 1회 계산). */
 const MIME_TO_EXTS: Record<string, string[]> = (() => {
   const index: Record<string, string[]> = {};
-  for (const [ext, mime] of Object.entries(EXT_TO_MIME)) {
+  for (const { ext, mime } of ALL_ROWS) {
     (index[mime] ??= []).push(ext);
   }
   return index;
@@ -121,7 +126,7 @@ function looksLikeMime(query: string): boolean {
 /** 입력에 맞는 결과 행을 계산한다. 빈 입력이면 전체 목록을 확장자 기준 정렬로 반환. */
 function lookup(rawQuery: string): ExtRow[] {
   const query = rawQuery.trim().toLowerCase().replace(/^\./, '');
-  const all: ExtRow[] = Object.entries(EXT_TO_MIME).map(([ext, mime]) => ({ ext, mime }));
+  const all: ExtRow[] = [...ALL_ROWS];
   if (query === '') return all.sort((a, b) => a.ext.localeCompare(b.ext));
 
   if (looksLikeMime(query)) {

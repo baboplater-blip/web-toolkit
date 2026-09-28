@@ -35,8 +35,9 @@ export default function PdfToExcelPage() {
       for (let p = 1; p <= pdf.numPages; p++) {
         const page = await pdf.getPage(p);
         const lines = await extractPageLines(page);
+        // 좌표 기반 셀 분리(가로 간격) 우선, 한 덩어리면 2칸 이상 공백 기준 폴백
         const rows = lines
-          .map((l) => splitRow(l.text))
+          .map((l) => (l.cells.length > 1 ? l.cells : splitRow(l.text)))
           .filter((r) => r.some((c) => c !== ''));
         pages.push(rows);
         rowCount += rows.length;

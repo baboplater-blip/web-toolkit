@@ -25,6 +25,7 @@ import {
 } from '@/lib/tools/ffmpeg-common';
 import { explainFfmpegError, validateMediaSize } from '@/lib/tools/media-limits';
 import { triggerDownload } from '@/lib/tools/file-utils';
+import { loadBitmap } from '@/lib/tools/image-common';
 import { formatBytes } from '@/lib/compress/format';
 
 interface QueueItem {
@@ -135,13 +136,37 @@ export default function GifMakerPage() {
 
       try {
         setProgressText('이미지 준비 중');
+        // concat demuxer 는 모든 입력이 같은 코덱·해상도라고 가정한다. PNG·JPG 를 섞거나
+        // 크기가 다른 이미지를 넣으면 디코딩이 실패해 0바이트 GIF 가 나오므로,
+        // 모든 프레임을 첫 이미지 비율의 동일 크기 PNG 로 정규화(가운데 맞춤, 여백 투명)한다.
         const digits = String(items.length).length;
+        const first = await loadBitmap(items[0].file);
+        const frameW = Math.max(2, Math.round(width));
+        const frameH = Math.max(2, Math.round((width * first.height) / first.width));
+        first.close();
+        const canvas = document.createElement('canvas');
+        canvas.width = frameW;
+        canvas.height = frameH;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas 컨텍스트를 생성할 수 없습니다.');
         for (let i = 0; i < items.length; i++) {
-          const ext = items[i].file.name.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
-          const name = `img_${String(i + 1).padStart(digits, '0')}.${ext}`;
+          const bmp = await loadBitmap(items[i].file);
+          const s = Math.min(frameW / bmp.width, frameH / bmp.height);
+          const dw = bmp.width * s;
+          const dh = bmp.height * s;
+          ctx.clearRect(0, 0, frameW, frameH);
+          ctx.drawImage(bmp, (frameW - dw) / 2, (frameH - dh) / 2, dw, dh);
+          bmp.close();
+          const png = await new Promise<Blob>((resolve, reject) =>
+            canvas.toBlob(
+              (b) => (b ? resolve(b) : reject(new Error('이미지 변환에 실패했습니다.'))),
+              'image/png',
+            ),
+          );
+          const name = `img_${String(i + 1).padStart(digits, '0')}.png`;
           inputNames.push(name);
           created.push(name);
-          await writeFile(ffmpeg, name, items[i].file);
+          await writeFile(ffmpeg, name, png);
         }
 
         // 모든 파일명을 일관되게 만들기 위해 concat 입력 파일 사용
@@ -190,6 +215,9 @@ export default function GifMakerPage() {
         ]);
 
         const blob = await readOutput(ffmpeg, 'output.gif', 'image/gif');
+        if (blob.size === 0) {
+          throw new Error('GIF 생성에 실패했습니다. 이미지가 손상되지 않았는지 확인해주세요.');
+        }
         setResult({
           blob,
           url: URL.createObjectURL(blob),
